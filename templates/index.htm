@@ -1,0 +1,67 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FBI Wanted API Wrapper</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f5f5f5;
+                color: #333;
+                text-align: center;
+                padding: 40px;
+            }
+            h1 {
+                color: #003366;
+            }
+            .count {
+                font-size: 1.2em;
+                color: #0078d7;
+                margin-bottom: 20px;
+            }
+            table {
+                margin: 0 auto;
+                border-collapse: collapse;
+                width: 60%;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            th, td {
+                padding: 10px 15px;
+                border-bottom: 1px solid #eee;
+            }
+            th {
+                background-color: #003366;
+                color: white;
+            }
+            tr:hover {
+                background-color: #f0f8ff;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the FBI Wanted API Wrapper</h1>
+        <div class="count">Total wanted persons listed: <strong>{{ total }}</strong></div>
+        <h2>Top 5 Wanted (Live Preview)</h2>
+        <table>
+            <tr><th>Image</th><th>Name</th></tr>
+            {% if items %}
+                {% for person in items %}
+                <tr>
+                    <td>
+                        {% if person.images %}
+                        <img src="{{ person.images[0].thumb }}" alt="{{ person.title }}" width="80" style="border-radius:6px">
+                        {% endif %}
+                    </td>
+                    <td><a href="{{ person.url }}" target="_blank">{{ person.title or 'Unknown' }}</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="2">No data available</td></tr>
+            {% endif %}
+        </table>
+        <p style="margin-top:20px;">View full data at <a href="/wanted">/wanted</a></p>
+    </body>
+</html>
