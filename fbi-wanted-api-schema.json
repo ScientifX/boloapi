@@ -1,0 +1,341 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FBI Wanted API Response",
+  "description": "Schema for FBI Wanted API search results",
+  "type": "object",
+  "required": ["total", "items", "page"],
+  "properties": {
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of results"
+    },
+    "items": {
+      "type": "array",
+      "description": "Array of wanted person records",
+      "items": {
+        "$ref": "#/definitions/WantedPerson"
+      }
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Current page number"
+    }
+  },
+  "definitions": {
+    "WantedPerson": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": ["string", "null"],
+          "description": "Unique identifier for the wanted person"
+        },
+        "title": {
+          "type": ["string", "null"],
+          "description": "Title of the wanted poster"
+        },
+        "description": {
+          "type": ["string", "null"],
+          "description": "Brief description"
+        },
+        "details": {
+          "type": ["string", "null"],
+          "description": "Detailed HTML description of the case"
+        },
+        "publication": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Publication date in ISO 8601 format"
+        },
+        "modified": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Last modified date in ISO 8601 format"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "description": "URL to the wanted poster page"
+        },
+        "path": {
+          "type": ["string", "null"],
+          "description": "Path component of the URL"
+        },
+        "pathId": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "description": "API path to this specific wanted person"
+        },
+        "status": {
+          "type": ["string", "null"],
+          "description": "Current status (e.g., 'located')"
+        },
+        "poster_classification": {
+          "type": ["string", "null"],
+          "description": "Classification of the poster (e.g., 'information')"
+        },
+        "person_classification": {
+          "type": ["string", "null"],
+          "description": "Classification of the person (e.g., 'Main')"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of subject categories"
+        },
+        "field_offices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of FBI field office identifiers"
+        },
+        "warning_message": {
+          "type": ["string", "null"],
+          "description": "Warning message if applicable"
+        },
+        "caution": {
+          "type": ["string", "null"],
+          "description": "Caution information"
+        },
+        "reward_text": {
+          "type": ["string", "null"],
+          "description": "Text describing the reward"
+        },
+        "reward_min": {
+          "type": ["integer", "null"],
+          "description": "Minimum reward amount"
+        },
+        "reward_max": {
+          "type": ["integer", "null"],
+          "description": "Maximum reward amount"
+        },
+        "sex": {
+          "type": ["string", "null"],
+          "description": "Sex of the person"
+        },
+        "race": {
+          "type": ["string", "null"],
+          "description": "Race of the person"
+        },
+        "race_raw": {
+          "type": ["string", "null"],
+          "description": "Raw race data"
+        },
+        "age_min": {
+          "type": ["integer", "null"],
+          "description": "Minimum age"
+        },
+        "age_max": {
+          "type": ["integer", "null"],
+          "description": "Maximum age"
+        },
+        "age_range": {
+          "type": ["string", "null"],
+          "description": "Age range as text"
+        },
+        "dates_of_birth_used": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Known dates of birth"
+        },
+        "place_of_birth": {
+          "type": ["string", "null"],
+          "description": "Place of birth"
+        },
+        "hair": {
+          "type": ["string", "null"],
+          "description": "Hair color"
+        },
+        "hair_raw": {
+          "type": ["string", "null"],
+          "description": "Raw hair data"
+        },
+        "eyes": {
+          "type": ["string", "null"],
+          "description": "Eye color"
+        },
+        "eyes_raw": {
+          "type": ["string", "null"],
+          "description": "Raw eye data"
+        },
+        "height_min": {
+          "type": ["integer", "null"],
+          "description": "Minimum height"
+        },
+        "height_max": {
+          "type": ["integer", "null"],
+          "description": "Maximum height"
+        },
+        "weight": {
+          "type": ["string", "null"],
+          "description": "Weight as text"
+        },
+        "weight_min": {
+          "type": ["integer", "null"],
+          "description": "Minimum weight"
+        },
+        "weight_max": {
+          "type": ["integer", "null"],
+          "description": "Maximum weight"
+        },
+        "build": {
+          "type": ["string", "null"],
+          "description": "Build/body type"
+        },
+        "complexion": {
+          "type": ["string", "null"],
+          "description": "Complexion"
+        },
+        "scars_and_marks": {
+          "type": ["string", "null"],
+          "description": "Scars and marks description"
+        },
+        "occupations": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Known occupations"
+        },
+        "languages": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Known languages"
+        },
+        "nationality": {
+          "type": ["string", "null"],
+          "description": "Nationality"
+        },
+        "aliases": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Known aliases"
+        },
+        "ncic": {
+          "type": ["string", "null"],
+          "description": "NCIC number"
+        },
+        "locations": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Known locations"
+        },
+        "possible_states": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Possible states where person may be located"
+        },
+        "possible_countries": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Possible countries where person may be located"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number"
+              },
+              "lon": {
+                "type": "number"
+              }
+            }
+          },
+          "description": "Geographic coordinates"
+        },
+        "legat_names": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Legal attaché names"
+        },
+        "suspects": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Suspect information"
+        },
+        "remarks": {
+          "type": ["string", "null"],
+          "description": "Additional remarks"
+        },
+        "additional_information": {
+          "type": ["string", "null"],
+          "description": "Additional information"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/File"
+          },
+          "description": "Associated files"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          },
+          "description": "Associated images"
+        }
+      }
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the file"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name/label of the file"
+        }
+      }
+    },
+    "Image": {
+      "type": "object",
+      "properties": {
+        "original": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to original image"
+        },
+        "large": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to large version"
+        },
+        "thumb": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to thumbnail"
+        },
+        "caption": {
+          "type": ["string", "null"],
+          "description": "Image caption"
+        }
+      }
+    }
+  }
+}
