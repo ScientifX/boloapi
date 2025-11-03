@@ -6,5 +6,5 @@ Remove-Item Env:\PGPASSWORD
 
 # Commit to git
 & "C:\Program Files\Git\bin\git.exe" add .
-& "C:\Program Files\Git\bin\git.exe" commit -m "Daily db backup plus collateral changes$(Get-Date -Format 'yyyyMMdd')"
+& "C:\Program Files\Git\bin\git.exe" commit -m "Daily db backup plus collateral changes on $(Get-Date -Format 'yyyy-MM-dd')"
 & "C:\Program Files\Git\bin\git.exe" push
