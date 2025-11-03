@@ -3,11 +3,17 @@ import psycopg2
 import re
 from dbconfig import DB_CONFIG
 from lookups import COUNTRIES, STATES
+
 from psycopg2.extensions import connection as Connection
 from psycopg2.extras import RealDictCursor
-from fastapi import APIRouter, HTTPException
+
+from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic import field_validator 
+
 from typing import List, Literal, Union, Any, Dict
 from enum import Enum
 from datetime import datetime
@@ -17,8 +23,138 @@ from contextlib import contextmanager
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+rate_max = "200/minute"
+limiter = Limiter(key_func=get_remote_address)
+
 # FastAPI Router
 router = APIRouter(prefix="/api/search", tags=["Search features"])
+
+# ============================================================================
+# VALIDATION HELPER FUNCTIONS
+# ============================================================================
+
+def validate_integer_value(value: Any, field_name: str) -> tuple:
+    """
+    Validate that a value can be converted to an integer.
+    Returns (is_valid, error_message)
+    """
+    # CRITICAL: Check boolean FIRST before int check (bool is subclass of int)
+    if isinstance(value, bool):
+        return False, f"{field_name} must be an integer, not a boolean"
+    
+    if isinstance(value, int):
+        return True, ""
+    
+    if isinstance(value, str):
+        try:
+            int(value)
+            return True, ""
+        except ValueError:
+            return False, f"{field_name} must be a valid integer, got: '{value}'"
+    
+    if isinstance(value, float):
+        if value.is_integer():
+            return True, ""
+        return False, f"{field_name} must be an integer, got float: {value}"
+    
+    return False, f"{field_name} must be an integer, got type: {type(value).__name__}"
+
+
+def validate_timestamp_value(value: Any, field_name: str) -> tuple:
+    """
+    Validate that a value is a valid date in YYYY-MM-DD format.
+    Returns (is_valid, error_message)
+    """
+    if isinstance(value, datetime):
+        return True, ""
+    
+    if not isinstance(value, str):
+        return False, f"{field_name} must be a date string in YYYY-MM-DD format, got type: {type(value).__name__}"
+    
+    # Check format with regex first (faster than parsing)
+    if not re.match(r'^\d{4}-\d{2}-\d{2}$', value):
+        return False, f"{field_name} must be in YYYY-MM-DD format, got: '{value}'"
+    
+    # Try to parse the date to ensure it's valid
+    try:
+        datetime.strptime(value, '%Y-%m-%d')
+        return True, ""
+    except ValueError:
+        return False, f"{field_name} is not a valid date: '{value}'"
+
+def validate_string_value(value: Any, field_name: str) -> tuple:
+    """
+    Validate that a value is a string.
+    Returns (is_valid, error_message)
+    """
+    if not isinstance(value, str):
+        return False, f"{field_name} must be a string, got type: {type(value).__name__}"
+    
+    if len(value.strip()) == 0:
+        return False, f"{field_name} cannot be empty or whitespace only"
+    
+    return True, ""
+
+def validate_field_value_type_impl(field: str, value: Any, operator: str = None) -> tuple:
+    """
+    Validate that a value matches the expected type for a field.
+    Returns (is_valid, error_message)
+    
+    Args:
+        field: The field name
+        value: The value to validate
+        operator: Optional operator (for context in error messages)
+    """
+    field_type = FieldTypeMap.get_type(field)
+    
+    # For 'between' operator, validate both values in the list
+    if operator == 'between':
+        if not isinstance(value, list):
+            return False, f"{field} with 'between' operator requires a list of 2 values"
+        if len(value) != 2:
+            return False, f"{field} with 'between' operator requires exactly 2 values, got {len(value)}"
+        
+        # Validate each value in the range
+        for idx, val in enumerate(value):
+            is_valid, error = validate_field_value_type_impl(field, val)
+            if not is_valid:
+                return False, f"{field}[{idx}] in range: {error}"
+        
+        # Ensure min < max
+        try:
+            if field_type == FieldDataType.INTEGER:
+                if int(value[0]) >= int(value[1]):
+                    return False, f"{field} range invalid: first value ({value[0]}) must be less than second value ({value[1]})"
+            elif field_type == FieldDataType.TIMESTAMP:
+                date1 = datetime.strptime(str(value[0]), '%Y-%m-%d')
+                date2 = datetime.strptime(str(value[1]), '%Y-%m-%d')
+                if date1 >= date2:
+                    return False, f"{field} range invalid: first date ({value[0]}) must be before second date ({value[1]})"
+        except Exception as e:
+            return False, f"{field} range comparison failed: {str(e)}"
+        
+        return True, ""
+    
+    # Validate single values based on field type
+    if field_type == FieldDataType.INTEGER:
+        return validate_integer_value(value, field)
+    
+    elif field_type == FieldDataType.TIMESTAMP:
+        return validate_timestamp_value(value, field)
+    
+    elif field_type == FieldDataType.STRING:
+        return validate_string_value(value, field)
+    
+    elif field_type == FieldDataType.TEXT_ARRAY:
+        # Array fields expect string values for searching
+        return validate_string_value(value, field)
+    
+    elif field_type == FieldDataType.JSONB:
+        # JSONB fields are more flexible, accept strings for now
+        return validate_string_value(value, field)
+    
+    return True, ""
+
 
 class FieldDataType(str, Enum):
     STRING = "string"
@@ -201,6 +337,24 @@ class FilterRule(BaseModel):
         - {"field": "age_min", "operator": "gte", "value": 25}
         - {"field": "reward_max", "operator": "between", "value": [5000, 50000]}
     """
+    model_config = ConfigDict(
+        extra='forbid',
+        json_schema_extra={
+            "examples": [
+                {
+                    "field": "title",
+                    "operator": "contains",
+                    "value": "Python"
+                    },
+                {
+                    "field": "reward_max",
+                    "operator": "between",
+                    "value": [5000, 50000]
+                    }
+                ]
+            }
+        )
+    
     field: AllowedField = Field(..., description="Database column to filter on")
     operator: ComparisonOperator = Field(..., description="Comparison operator")
     value: Union[str, int, float, datetime, List[Union[str, int, float, datetime]]] = Field(
@@ -214,6 +368,16 @@ class FilterRule(BaseModel):
         """Validate value based on operator and field type, and normalize special fields"""
         operator = info.data.get('operator')
         field = info.data.get('field')
+        
+        # First, validate the value type matches the field type
+        if field and operator:
+            field_name = field.value if hasattr(field, 'value') else field
+            operator_name = operator.value if hasattr(operator, 'value') else operator
+            
+            # Perform type validation
+            is_valid, error_msg = validate_field_value_type_impl(field_name, v, operator_name)
+            if not is_valid:
+                raise ValueError(error_msg)
         
         # Get field type if field is provided
         field_type = None
@@ -285,22 +449,36 @@ class FilterRule(BaseModel):
                         raise ValueError(f"'{operator.value}' operator requires a numeric value")
         
         return v
-    
-    class Config:
-        json_schema_extra = {
-            "examples": [
-                {
-                    "field": "title",
-                    "operator": "contains",
-                    "value": "Python"
-                },
-                {
-                    "field": "reward_max",
-                    "operator": "between",
-                    "value": [5000, 50000]
-                }
-            ]
-        }
+
+    @field_validator('operator')
+    @classmethod
+    def validate_operator_for_field_type(cls, v, info):
+        """Validate that operator is compatible with field type"""
+        field = info.data.get('field')
+        
+        if field:
+            field_name = field.value if hasattr(field, 'value') else field
+            field_type = FieldTypeMap.get_type(field_name)
+            
+            # String operators not allowed on numeric/timestamp fields
+            string_operators = {'contains', 'starts_with', 'ends_with'}
+            if v in string_operators:
+                if field_type in [FieldDataType.INTEGER, FieldDataType.TIMESTAMP]:
+                    raise ValueError(
+                        f"Operator '{v}' cannot be used with {field_type.value} field '{field_name}'. "
+                        f"Use numeric operators: equals, gt, lt, gte, lte, between"
+                    )
+            
+            # Numeric operators not allowed on string fields
+            numeric_operators = {'gt', 'lt', 'gte', 'lte', 'between'}
+            if v in numeric_operators:
+                if field_type == FieldDataType.STRING:
+                    raise ValueError(
+                        f"Operator '{v}' cannot be used with string field '{field_name}'. "
+                        f"Use string operators: equals, contains, starts_with, ends_with"
+                    )
+        
+        return v
 
 class FilterGroup(BaseModel):
     """
@@ -319,6 +497,18 @@ class FilterGroup(BaseModel):
             ]
         }
     """
+    model_config = ConfigDict(
+        extra='forbid',
+        json_schema_extra={
+            "example": {
+                "condition": "AND",
+                "rules": [
+                    {"field": "title", "operator": "contains", "value": "Murder"},
+                    {"field": "reward_max", "operator": "gte", "value": 10000}
+                    ]
+                }
+            }
+        )
     condition: LogicOperator = Field(..., description="How to combine rules in this group")
     rules: List[FilterRule] = Field(..., min_items=1, description="Filter rules in this group")
     
@@ -331,16 +521,6 @@ class FilterGroup(BaseModel):
             raise ValueError("Each group must contain at least one rule")
         return v
     
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "condition": "AND",
-                "rules": [
-                    {"field": "title", "operator": "contains", "value": "Murder"},
-                    {"field": "reward_max", "operator": "gte", "value": 10000}
-                ]
-            }
-        }
 
 class AdvancedSearchRequest(BaseModel):
     """
@@ -378,19 +558,37 @@ class AdvancedSearchRequest(BaseModel):
             "limit": 50
         }
     """
+    model_config = ConfigDict(
+        extra='forbid',
+        json_schema_extra={
+            "example": {
+                "groups": [
+                    {
+                        "condition": "AND",
+                        "rules": [
+                            {"field": "title", "operator": "contains", "value": "Murder"},
+                            {"field": "reward_max", "operator": "gte", "value": 10000}
+                            ]
+                        }
+                    ],
+                    "group_logic": "AND",
+                    "limit": 50
+                }
+            }
+        )
     groups: List[FilterGroup] = Field(
         ..., 
         min_items=1,
         description="List of filter groups to apply"
-    )
+        )
     group_logic: LogicOperator = Field(
         default=LogicOperator.AND,
         description="How to combine multiple groups (AND/OR)"
-    )
+        )
     limit: Literal[50, 100, 250, 500] = Field(
         default=50,
         description="Maximum number of results to return (default: 50)"
-    )
+        )
     
     @field_validator('groups')
     @classmethod
@@ -399,23 +597,7 @@ class AdvancedSearchRequest(BaseModel):
         if not v:
             raise ValueError("At least one filter group is required")
         return v
-        
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "groups": [
-                    {
-                        "condition": "AND",
-                        "rules": [
-                            {"field": "title", "operator": "contains", "value": "Murder"},
-                            {"field": "reward_max", "operator": "gte", "value": 10000}
-                        ]
-                    }
-                ],
-                "group_logic": "AND",
-                "limit": 50
-            }
-        }
+
 
 class SimpleFilter(BaseModel):
     """
@@ -436,6 +618,16 @@ class SimpleFilter(BaseModel):
         - {"field": "description", "value": "*armed*"}  # Contains "armed"
         - {"field": "sex", "value": "Male"}  # Exact match
     """
+    model_config = ConfigDict(
+        extra='forbid',
+        json_schema_extra={
+            "examples": [
+                {"field": "title", "value": "Murder*"},
+                {"field": "description", "value": "*armed*"},
+                {"field": "sex", "value": "Male"}
+                ]
+            }
+        )
     field: AllowedField = Field(..., description="Database column to search in")
     value: str = Field(
         ..., 
@@ -493,15 +685,44 @@ class SimpleFilter(BaseModel):
             raise ValueError("Wildcards (*) can only be at the beginning and/or end of the search value")
         
         return v
-    
-    class Config:
-        json_schema_extra = {
-            "examples": [
-                {"field": "title", "value": "Murder*"},
-                {"field": "description", "value": "*armed*"},
-                {"field": "sex", "value": "Male"}
-            ]
-        }
+
+    @field_validator('value')
+    @classmethod
+    def validate_value_type_for_field(cls, v, info):
+        """Validate value type matches field requirements"""
+        field = info.data.get('field')
+        
+        if field:
+            field_name = field.value if hasattr(field, 'value') else field
+            field_type = FieldTypeMap.get_type(field_name)
+            
+            # For integer fields, ensure value is numeric (after stripping wildcards)
+            if field_type == FieldDataType.INTEGER:
+                clean_value = v.strip('*')
+                try:
+                    int(clean_value)
+                except ValueError:
+                    raise ValueError(
+                        f"Field '{field_name}' is an integer field. "
+                        f"Value must be a valid integer, got: '{clean_value}'"
+                    )
+            
+            # For timestamp fields, ensure value is valid date (after stripping wildcards)
+            elif field_type == FieldDataType.TIMESTAMP:
+                clean_value = v.strip('*')
+                if not re.match(r'^\d{4}-\d{2}-\d{2}$', clean_value):
+                    raise ValueError(
+                        f"Field '{field_name}' is a timestamp field. "
+                        f"Value must be in YYYY-MM-DD format, got: '{clean_value}'"
+                    )
+                try:
+                    datetime.strptime(clean_value, '%Y-%m-%d')
+                except ValueError:
+                    raise ValueError(
+                        f"Field '{field_name}' has invalid date: '{clean_value}'"
+                    )
+        
+        return v
 
 class SimpleSearchRequest(BaseModel):
     """
@@ -530,6 +751,19 @@ class SimpleSearchRequest(BaseModel):
     This searches for records where title starts with "person" 
     AND description contains "tutorial"
     """
+    model_config = ConfigDict(
+        extra='forbid',
+        json_schema_extra={
+            "example": {
+                "filters": [
+                    {"field": "title", "value": "Murder*"},
+                    {"field": "description", "value": "*armed*"}
+                    ],
+                "logic": "AND",
+                "limit": 50
+                }
+            }
+        )
     filters: List[SimpleFilter] = Field(
         ...,
         min_items=1,
@@ -552,18 +786,7 @@ class SimpleSearchRequest(BaseModel):
         if not v:
             raise ValueError("At least one filter is required")
         return v
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "filters": [
-                    {"field": "title", "value": "Murder*"},
-                    {"field": "description", "value": "*armed*"}
-                ],
-                "logic": "AND",
-                "limit": 50
-            }
-        }
+
 
 def escape_sql_value(value: Any) -> str:
     """
@@ -722,10 +945,10 @@ def get_db_connection():
     **Perfect for:** Basic text searches without complex logic.
     
     **Wildcard Patterns:**
-    - `*text*` → Contains "text" anywhere in the field
-    - `text*` → Starts with "text"
-    - `*text` → Ends with "text"
-    - `text` → Exact match
+    - `*text*` â†’ Contains "text" anywhere in the field
+    - `text*` â†’ Starts with "text"
+    - `*text` â†’ Ends with "text"
+    - `text` â†’ Exact match
     
     **Examples:**
     
@@ -758,7 +981,8 @@ def get_db_connection():
     """,
     response_description="Query parameters, count, and array of full_data JSONB records"
 )
-async def simple_search(request: SimpleSearchRequest):
+@limiter.limit(rate_max)
+async def simple_search(request: Request, search_request: SimpleSearchRequest):
     """
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
@@ -768,7 +992,7 @@ async def simple_search(request: SimpleSearchRequest):
     where_clauses = []
     query_params = []
     
-    for filter_item in request.filters:
+    for filter_item in search_request.filters:
         field = filter_item.field.value
         value = filter_item.value
         
@@ -776,7 +1000,7 @@ async def simple_search(request: SimpleSearchRequest):
         is_string = FieldTypeMap.is_string_field(field)
         
         # Apply flex rules: auto-wrap string fields with wildcards
-        if request.rules == "flex" and is_string:
+        if search_request.rules == "flex" and is_string:
             if not ('*' in value):
                 value = f"*{value}*"
         
@@ -804,7 +1028,7 @@ async def simple_search(request: SimpleSearchRequest):
         query_params.extend(params)
     
     # Combine clauses with AND/OR
-    where_clause = f" {request.logic.value} ".join(where_clauses)
+    where_clause = f" {search_request.logic.value} ".join(where_clauses)
 
     print("")
     print("WHERE clause:", where_clause)
@@ -821,14 +1045,14 @@ async def simple_search(request: SimpleSearchRequest):
                     LIMIT %s
                 """
                 # Add limit to params
-                query_params.append(request.limit)
+                query_params.append(search_request.limit)
                 cur.execute(query, tuple(query_params))
                 results = cur.fetchall()
                 
         items = [row['full_data'] for row in results]
             
         return {
-            "query": request.model_dump(),
+            "query": search_request.model_dump(),
             "resultcount": len(items),
             "items": items
         }
@@ -944,7 +1168,8 @@ async def simple_search(request: SimpleSearchRequest):
     """,
     response_description="Query parameters, count, and array of full_data JSONB records"
 )
-async def advanced_search(request: AdvancedSearchRequest):
+@limiter.limit(rate_max)
+async def advanced_search(request: Request, search_request: AdvancedSearchRequest):
     """
     Execute an advanced search with grouped conditions.
     All validation is performed by Pydantic before this function runs.
@@ -964,7 +1189,7 @@ async def advanced_search(request: AdvancedSearchRequest):
         group_clauses = []
         query_params = []
         
-        for group in request.groups:
+        for group in search_request.groups:
             rule_clauses = []
             
             for rule in group.rules:
@@ -984,7 +1209,7 @@ async def advanced_search(request: AdvancedSearchRequest):
                 group_clauses.append(group_clause)
         
         # Combine groups with group_logic (AND/OR)
-        where_clause = f" {request.group_logic.value} ".join(group_clauses)
+        where_clause = f" {search_request.group_logic.value} ".join(group_clauses)
         
         # Debug logging
         print("")
@@ -1002,7 +1227,7 @@ async def advanced_search(request: AdvancedSearchRequest):
                     LIMIT %s
                 """
                 # Add limit to params
-                query_params.append(request.limit)
+                query_params.append(search_request.limit)
                 
                 # Execute the query with all parameters
                 cur.execute(query, tuple(query_params))
@@ -1013,7 +1238,7 @@ async def advanced_search(request: AdvancedSearchRequest):
         
         # Construct response payload
         return {
-            "query": request.model_dump(),
+            "query": search_request.model_dump(),
             "resultcount": len(items),
             "items": items
         }
@@ -1027,7 +1252,7 @@ async def advanced_search(request: AdvancedSearchRequest):
     "/",
     summary="API Information",
     description="Get information about this API and available endpoints"
-)
+    )
 async def root():
     """Return API information and usage guide"""
     return {

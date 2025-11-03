@@ -1,8 +1,16 @@
 import httpx, json, re
+
+# FastAPI setup
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+
+# Rate limiting libraries
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 from lookups import COUNTRIES, STATES
 import router_etl
 import router_search
@@ -11,7 +19,14 @@ templates = Jinja2Templates(directory="templates")
 
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
+# Initialize rate limiter
+rate_max = "250/minute"
+limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
 
@@ -94,20 +109,80 @@ async def health_check():
 
 def validate_string(value, field_name):
     """
-    Validate string is not empty or wildcard-only.
+    Validate string is not empty, not wildcard-only, not exceeding 100 characters,
+    and doesn't contain potentially dangerous characters.
     Returns error message if invalid, None if valid.
     """
     if value == "":
         return f"{field_name} cannot be empty"
     
-    # Check if string is only asterisks (one or more)
     if re.match(r'^\*+$', value):
         return f"{field_name} cannot be only wildcards"
+    
+    if len(value) > 100:
+        return f"{field_name} cannot exceed 100 characters (current length: {len(value)})"
+    
+    if '\x00' in value:
+        return f"{field_name} cannot contain null bytes"
+    
+    if re.search(r'\*{4,}', value):
+        return f"{field_name} cannot contain more than 3 consecutive wildcards"
+    
+    # Check for control characters (except common whitespace)
+    control_chars = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]')
+    if control_chars.search(value):
+        return f"{field_name} cannot contain control characters"
     
     return None
 
 
-def trim_recursive(data, path=""):
+def trim_recursive(data, path="", depth=0, max_depth=7):
+    """
+    Recursively trim strings in dict/list structures and validate.
+    Returns (trimmed_data, error_message)
+    """
+    # Prevent deeply nested structures that could cause stack overflow
+    if depth > max_depth:
+        return None, f"Maximum nesting depth ({max_depth}) exceeded at {path}"
+    
+    if isinstance(data, dict):
+        # Limit number of keys to prevent memory exhaustion
+        if len(data) > 100:
+            return None, f"Object at {path} cannot have more than 100 keys"
+        
+        result = {}
+        for k, v in data.items():
+            current_path = f"{path}.{k}" if path else k
+            trimmed_value, error = trim_recursive(v, current_path, depth + 1, max_depth)
+            if error:
+                return None, error
+            result[k] = trimmed_value
+        return result, None
+        
+    elif isinstance(data, list):
+        # Limit array length to prevent memory exhaustion
+        if len(data) > 100:
+            return None, f"Array at {path} cannot have more than 100 items"
+        
+        result = []
+        for idx, item in enumerate(data):
+            current_path = f"{path}[{idx}]"
+            trimmed_item, error = trim_recursive(item, current_path, depth + 1, max_depth)
+            if error:
+                return None, error
+            result.append(trimmed_item)
+        return result, None
+        
+    elif isinstance(data, str):
+        trimmed = data.strip()
+        error = validate_string(trimmed, path)
+        if error:
+            return None, error
+        return trimmed, None
+        
+    return data, None
+
+def trim_recursive_old(data, path=""):
     """
     Recursively trim strings in dict/list structures and validate.
     Returns (trimmed_data, error_message)
