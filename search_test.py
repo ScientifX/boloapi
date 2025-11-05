@@ -19,7 +19,7 @@ import csv
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
-test_type = "invalid"  # Change to "invalid" to test error handling
+test_type = "valid"  # Change to "invalid" to test error handling
 csv_mode = "overwrite"  # "overwrite" or "append"
 count_from = 1000
 count_to = 1000

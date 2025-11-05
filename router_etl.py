@@ -4,6 +4,7 @@ import logging
 import csv
 import asyncio
 import os
+import re
 
 from dbconfig import DB_CONFIG
 from typing import Literal
@@ -11,7 +12,7 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from io import StringIO
-from contextlib import contextmanager
+from contextlib import contextmanager 
 
 import psycopg2
 from psycopg2.extras import execute_values
@@ -255,6 +256,244 @@ def extract_poster_url(images: List[Dict]) -> Optional[str]:
     return None
 
 
+def clean_json_recursive(data: Any, field_name: str = '') -> Any:
+    """
+    Recursively clean JSON data by:
+    - Trimming whitespace from all string values
+    - Removing control characters from strings (replacing adjacent ones with single space)
+    - Removing basic HTML tags and decoding HTML entities
+    - Normalizing email addresses (lowercase, trimmed)
+    - Smart title case for 'title' field
+    - Normalizing punctuation (quotes, dashes)
+    - Removing zero-width and special Unicode characters
+    - Fixing repeated words
+    - Converting empty strings to null
+    - Preserving structure and null values
+    - Processing nested objects and arrays
+    """
+    import html
+    
+    # Control characters pattern (exclude space)
+    control_chars = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+')
+    
+    # HTML tags pattern
+    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Â', re.IGNORECASE)
+    
+    # Email pattern
+    email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+    
+    # Zero-width and invisible characters
+    invisible_chars = re.compile(r'[\u200B-\u200D\uFEFF\u00AD]')
+    
+    # BOM and directional markers
+    special_unicode = re.compile(r'[\uFEFF\u200E\u200F\u202A-\u202E]')
+    
+    # Various quote marks to normalize
+    quote_map = {
+        '\u2018': "'",  # Left single quotation mark
+        '\u2019': "'",  # Right single quotation mark
+        '\u201A': "'",  # Single low-9 quotation mark
+        '\u201B': "'",  # Single high-reversed-9 quotation mark
+        '\u201C': '"',  # Left double quotation mark
+        '\u201D': '"',  # Right double quotation mark
+        '\u201E': '"',  # Double low-9 quotation mark
+        '\u201F': '"',  # Double high-reversed-9 quotation mark
+        '\u2032': "'",  # Prime
+        '\u2033': '"',  # Double prime
+        '\u0060': "'",  # Grave accent
+        '\u00B4': "'",  # Acute accent
+    }
+    
+    # Various dash characters to normalize to hyphen
+    dash_map = {
+        '\u2010': '-',  # Hyphen
+        '\u2011': '-',  # Non-breaking hyphen
+        '\u2012': '-',  # Figure dash
+        '\u2013': '-',  # En dash
+        '\u2014': '-',  # Em dash
+        '\u2015': '-',  # Horizontal bar
+    }
+    
+    # Words to keep lowercase in title case (articles, conjunctions, prepositions)
+    lowercase_words = {
+        'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'in', 
+        'into', 'nor', 'of', 'on', 'or', 'over', 'the', 'to', 'under', 
+        'with', 'via', 'per', 'vs'
+    }
+    
+    # Common acronyms to preserve (without periods)
+    acronyms = {
+        'fbi', 'cia', 'atm', 'usa', 'uk', 'un', 'nato', 'aids', 'hiv', 
+        'dna', 'rna', 'ceo', 'cfo', 'cto', 'phd', 'md', 'jr', 'sr', 'iv',
+        'us', 'eu', 'nasa', 'swat', 'dea', 'atf', 'nsa', 'dhs'
+    }
+    
+    # Pattern for abbreviations with periods (U.S., U.K., etc.)
+    abbreviation_pattern = re.compile(r'^[A-Z](\.[A-Z])+\.?$')
+    
+    # Roman numerals
+    roman_numerals = re.compile(r'^(i|ii|iii|iv|v|vi|vii|viii|ix|x|xi|xii|xiii|xiv|xv)$', re.IGNORECASE)
+    
+    def smart_title_case(text: str) -> str:
+        """
+        Apply smart title case with proper handling of:
+        - Acronyms (FBI, USA, etc.)
+        - Abbreviations with periods (U.S., U.K., Jr., Sr., etc.)
+        - Roman numerals (I, II, III, etc.)
+        - Small words (and, or, the, of, etc.)
+        - Name prefixes (Mc, Mac, O', De, Van, etc.)
+        - First and last words always capitalized
+        """
+        words = text.split()
+        if not words:
+            return text
+        
+        result = []
+        for i, word in enumerate(words):
+            # Preserve punctuation
+            leading_punct = ''
+            trailing_punct = ''
+            
+            # Extract leading punctuation
+            while word and not word[0].isalnum():
+                leading_punct += word[0]
+                word = word[1:]
+            
+            # Extract trailing punctuation (but not periods that are part of abbreviations)
+            if abbreviation_pattern.match(word):
+                # This is an abbreviation like U.S. or Jr. - don't strip the periods
+                result.append(leading_punct + word.upper())
+                continue
+            
+            # Extract trailing punctuation for normal words
+            while word and not word[-1].isalnum():
+                trailing_punct = word[-1] + trailing_punct
+                word = word[:-1]
+            
+            if not word:
+                result.append(leading_punct + trailing_punct)
+                continue
+            
+            word_lower = word.lower()
+            
+            # Check if it's an abbreviation with periods (after removing trailing punct)
+            if abbreviation_pattern.match(word):
+                result.append(leading_punct + word.upper() + trailing_punct)
+                continue
+            
+            # Check if it's an acronym
+            if word_lower in acronyms:
+                # Special handling for Jr. and Sr.
+                if word_lower in ['jr', 'sr']:
+                    result.append(leading_punct + word.capitalize() + '.' + trailing_punct)
+                else:
+                    result.append(leading_punct + word_lower.upper() + trailing_punct)
+                continue
+            
+            # Check if it's a Roman numeral
+            if roman_numerals.match(word_lower):
+                result.append(leading_punct + word_lower.upper() + trailing_punct)
+                continue
+            
+            # First or last word - always capitalize
+            if i == 0 or i == len(words) - 1:
+                # Handle special name prefixes
+                if word_lower.startswith("mc") and len(word) > 2:
+                    result.append(leading_punct + "Mc" + word[2].upper() + word[3:].lower() + trailing_punct)
+                elif word_lower.startswith("mac") and len(word) > 3:
+                    result.append(leading_punct + "Mac" + word[3].upper() + word[4:].lower() + trailing_punct)
+                elif word_lower.startswith("o'") and len(word) > 2:
+                    result.append(leading_punct + "O'" + word[2].upper() + word[3:].lower() + trailing_punct)
+                else:
+                    result.append(leading_punct + word.capitalize() + trailing_punct)
+                continue
+            
+            # Small words stay lowercase (unless first/last)
+            if word_lower in lowercase_words:
+                result.append(leading_punct + word_lower + trailing_punct)
+                continue
+            
+            # Handle special name prefixes
+            if word_lower.startswith("mc") and len(word) > 2:
+                result.append(leading_punct + "Mc" + word[2].upper() + word[3:].lower() + trailing_punct)
+            elif word_lower.startswith("mac") and len(word) > 3:
+                result.append(leading_punct + "Mac" + word[3].upper() + word[4:].lower() + trailing_punct)
+            elif word_lower.startswith("o'") and len(word) > 2:
+                result.append(leading_punct + "O'" + word[2].upper() + word[3:].lower() + trailing_punct)
+            elif word_lower in ['de', 'van', 'von', 'der', 'den', 'del', 'della', 'di', 'da', 'le', 'la']:
+                result.append(leading_punct + word_lower + trailing_punct)
+            else:
+                result.append(leading_punct + word.capitalize() + trailing_punct)
+        
+        return ' '.join(result)
+    
+    if isinstance(data, dict):
+        cleaned = {}
+        for key, value in data.items():
+            cleaned[key] = clean_json_recursive(value, field_name=key)
+        return cleaned
+    
+    elif isinstance(data, list):
+        return [clean_json_recursive(item, field_name=field_name) for item in data]
+    
+    elif isinstance(data, str):
+        # Decode HTML entities first
+        decoded = html.unescape(data)
+        
+        # Remove HTML tags
+        no_html = html_tags.sub('', decoded)
+        
+        # Remove BOM and directional markers
+        no_special = special_unicode.sub('', no_html)
+        
+        # Remove zero-width and invisible characters
+        no_invisible = invisible_chars.sub('', no_special)
+        
+        # Normalize quotes
+        for old_quote, new_quote in quote_map.items():
+            no_invisible = no_invisible.replace(old_quote, new_quote)
+        
+        # Normalize dashes
+        for old_dash, new_dash in dash_map.items():
+            no_invisible = no_invisible.replace(old_dash, new_dash)
+        
+        # Replace control characters with space
+        no_control = control_chars.sub(' ', no_invisible)
+        
+        # Collapse multiple spaces and trim
+        trimmed = re.sub(r'\s+', ' ', no_control).strip()
+        
+        # Fix repeated words (simple case)
+        trimmed = re.sub(r'\b(\w+)\s+\1\b', r'\1', trimmed, flags=re.IGNORECASE)
+        
+        # Remove excessive punctuation (more than 3 of the same)
+        trimmed = re.sub(r'([!?.]){4,}', r'\1\1\1', trimmed)
+        
+        # Convert empty strings to null
+        if trimmed == '':
+            return None
+        
+        # Email normalization - if string matches email pattern
+        if email_pattern.fullmatch(trimmed):
+            # Convert to lowercase and strip whitespace
+            trimmed = trimmed.lower().strip()
+            # Remove dots before @ for Gmail (optional - uncomment if desired)
+            # if '@gmail.com' in trimmed:
+            #     local, domain = trimmed.split('@')
+            #     local = local.replace('.', '')
+            #     trimmed = f"{local}@{domain}"
+        
+        # Apply smart title case only for 'title' field
+        if field_name == 'title' and trimmed.isupper():
+            trimmed = smart_title_case(trimmed)
+        
+        return trimmed
+    
+    else:
+        # Return other types unchanged (int, float, bool, None)
+        return data
+    
+    
 def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single wanted person record into database-ready format
@@ -264,6 +503,11 @@ def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any
     uid = item.get('uid')
     if not uid:
         return None
+
+    # Create cleaned version of full_data
+    full_data_clean = clean_json_recursive(item)
+
+    # print(full_data_clean)
 
     return {
         'age_max': item.get('age_max'),
@@ -282,6 +526,7 @@ def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any
         'field_offices': extract_array_field(item, 'field_offices'),
         'first_seen_date': pull_date,
         'full_data': json.dumps(item),
+        'full_data_clean': json.dumps(full_data_clean),
         'hair': item.get('hair'),
         'hair_raw': item.get('hair_raw'),
         'height_max': item.get('height_max'),
@@ -321,7 +566,6 @@ def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any
         'weight': item.get('weight'),
         'weight_max': item.get('weight_max'),
         'weight_min': item.get('weight_min'),
-        'full_data': json.dumps(item),
         'data_pull_date': pull_date,
         'first_seen_date': pull_date,
         'last_seen_date': pull_date,
@@ -345,8 +589,8 @@ def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date
 
 def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> int:
     """
-    Batch insert wanted persons records
-    Returns number of records inserted
+    Batch upsert wanted persons records using MERGE logic
+    Returns number of records inserted or updated
     """
     if not records:
         return 0
@@ -355,7 +599,7 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
         'age_max', 'age_min', 'aliases', 'build', 'caution', 'complexion',
         'coordinates', 'data_pull_date', 'dates_of_birth_used', 'description',
         'details', 'eyes', 'eyes_raw', 'field_offices', 'first_seen_date',
-        'full_data', 'hair', 'hair_raw', 'height_max', 'height_min',
+        'full_data', 'full_data_clean', 'hair', 'hair_raw', 'height_max', 'height_min',
         'is_active', 'languages', 'last_seen_date', 'legat_names', 'locations',
         'modified', 'nationality', 'ncic', 'occupations', 'path', 'pathid',
         'person_classification', 'place_of_birth', 'possible_countries',
@@ -363,7 +607,10 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
         'race', 'race_raw', 'remarks', 'reward_max', 'reward_min', 'reward_text', 
         'scars_and_marks', 'sex', 'status', 'subjects', 'suspects', 'title', 'uid', 
         'url', 'warning_message', 'weight', 'weight_max', 'weight_min'
-        ]
+    ]
+    
+    # Non-key columns for UPDATE clause
+    non_key_columns = [col for col in columns if col not in ['uid', 'data_pull_date']]
 
     # Prepare values for batch insert
     values = []
@@ -372,13 +619,82 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
         values.append(row)
     
     with conn.cursor() as cur:
-        # Insert with ON CONFLICT DO NOTHING for duplicate uid+date
-        insert_query = f"""
-            INSERT INTO wanted_persons_v2 ({', '.join(columns)})
+        # UPSERT with ON CONFLICT DO UPDATE
+        upsert_query = f"""
+            INSERT INTO wanted_persons_v3 (
+                age_max, age_min, aliases, build, caution, complexion,
+                coordinates, data_pull_date, dates_of_birth_used, description,
+                details, eyes, eyes_raw, field_offices, first_seen_date,
+                full_data, full_data_clean, hair, hair_raw, height_max, height_min,
+                is_active, languages, last_seen_date, legat_names, locations,
+                modified, nationality, ncic, occupations, path, pathid,
+                person_classification, place_of_birth, possible_countries,
+                possible_states, poster_url, poster_classification, publication,
+                race, race_raw, remarks, reward_max, reward_min, reward_text,
+                scars_and_marks, sex, status, subjects, suspects, title, uid,
+                url, warning_message, weight, weight_max, weight_min
+            )
             VALUES %s
-            ON CONFLICT (uid, data_pull_date) DO NOTHING
+            ON CONFLICT (uid, data_pull_date) 
+            DO UPDATE SET
+                age_max = EXCLUDED.age_max,
+                age_min = EXCLUDED.age_min,
+                aliases = EXCLUDED.aliases,
+                build = EXCLUDED.build,
+                caution = EXCLUDED.caution,
+                complexion = EXCLUDED.complexion,
+                coordinates = EXCLUDED.coordinates,
+                dates_of_birth_used = EXCLUDED.dates_of_birth_used,
+                description = EXCLUDED.description,
+                details = EXCLUDED.details,
+                eyes = EXCLUDED.eyes,
+                eyes_raw = EXCLUDED.eyes_raw,
+                field_offices = EXCLUDED.field_offices,
+                first_seen_date = EXCLUDED.first_seen_date,
+                full_data = EXCLUDED.full_data,
+                full_data_clean = EXCLUDED.full_data_clean,
+                hair = EXCLUDED.hair,
+                hair_raw = EXCLUDED.hair_raw,
+                height_max = EXCLUDED.height_max,
+                height_min = EXCLUDED.height_min,
+                is_active = EXCLUDED.is_active,
+                languages = EXCLUDED.languages,
+                last_seen_date = EXCLUDED.last_seen_date,
+                legat_names = EXCLUDED.legat_names,
+                locations = EXCLUDED.locations,
+                modified = EXCLUDED.modified,
+                nationality = EXCLUDED.nationality,
+                ncic = EXCLUDED.ncic,
+                occupations = EXCLUDED.occupations,
+                path = EXCLUDED.path,
+                pathid = EXCLUDED.pathid,
+                person_classification = EXCLUDED.person_classification,
+                place_of_birth = EXCLUDED.place_of_birth,
+                possible_countries = EXCLUDED.possible_countries,
+                possible_states = EXCLUDED.possible_states,
+                poster_url = EXCLUDED.poster_url,
+                poster_classification = EXCLUDED.poster_classification,
+                publication = EXCLUDED.publication,
+                race = EXCLUDED.race,
+                race_raw = EXCLUDED.race_raw,
+                remarks = EXCLUDED.remarks,
+                reward_max = EXCLUDED.reward_max,
+                reward_min = EXCLUDED.reward_min,
+                reward_text = EXCLUDED.reward_text,
+                scars_and_marks = EXCLUDED.scars_and_marks,
+                sex = EXCLUDED.sex,
+                status = EXCLUDED.status,
+                subjects = EXCLUDED.subjects,
+                suspects = EXCLUDED.suspects,
+                title = EXCLUDED.title,
+                url = EXCLUDED.url,
+                warning_message = EXCLUDED.warning_message,
+                weight = EXCLUDED.weight,
+                weight_max = EXCLUDED.weight_max,
+                weight_min = EXCLUDED.weight_min,
+                updated_at = NOW()
         """
-        execute_values(cur, insert_query, values, page_size=100)
+        execute_values(cur, upsert_query, values, page_size=100)
         return cur.rowcount
 
 
@@ -391,7 +707,7 @@ def update_record_status(conn: Connection, current_uids: List[str], pull_date: d
         # Update last_seen_date for records in current pull
         if current_uids:
             cur.execute("""
-                UPDATE wanted_persons_v2
+                UPDATE wanted_persons_v3
                 SET last_seen_date = %s,
                     updated_at = NOW()
                 WHERE uid = ANY(%s)
@@ -497,7 +813,6 @@ async def data_load():
         file_path = "fbi-wanted-api-data.json"
 
         # Perform import
-        print("then")
         summary = import_data_set(file_path, pull_date)
         return summary
         
@@ -630,4 +945,3 @@ async def full_refresh(request: Request):
     except Exception as e:
         logger.error(f"Full refresh failed with unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Full refresh error: {str(e)}")
-            

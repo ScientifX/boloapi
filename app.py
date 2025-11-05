@@ -20,10 +20,10 @@ templates = Jinja2Templates(directory="templates")
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
 # Initialize rate limiter
-rate_max = "250/minute"
+rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
-app = FastAPI()
+app = FastAPI(title = "Bolo API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -79,6 +79,7 @@ async def trim_request_data(request: Request, call_next):
     return response
 
 @app.get("/", response_class=HTMLResponse)
+@limiter.limit(rate_max)
 async def root(request: Request):
     async with httpx.AsyncClient() as client:
         try:
@@ -100,9 +101,9 @@ async def root(request: Request):
         }
     )
 
-
 @app.get("/health", include_in_schema=False)
-async def health_check():
+@limiter.limit(rate_max)
+async def health_check(request: Request):
     """Health check endpoint"""
     return {"status": "healthy"}
 
@@ -134,7 +135,6 @@ def validate_string(value, field_name):
         return f"{field_name} cannot contain control characters"
     
     return None
-
 
 def trim_recursive(data, path="", depth=0, max_depth=7):
     """

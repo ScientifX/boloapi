@@ -1,0 +1,444 @@
+{
+  "total": 1060,
+  "items": [
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "lasvegas"
+      ],
+      "details": "<p>The Federal Bureau of Investigation's Las Vegas Field Office in Nevada is seeking the public's assistance in identifying the unknown suspect responsible for the defacement of Federal Buildings located at 501 South Las Vegas Boulevard, Las Vegas, Nevada, on the evening of June 11, 2025.  The unknown Black male was seen spray painting Federal Property.</p>\r\n<p> </p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/seeking-info/defacement-of-federal-property",
+      "occupations": null,
+      "eyes_raw": null,
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "information",
+      "possible_countries": null,
+      "eyes": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-07-08T19:27:28+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "Las Vegas, Nevada\r\nJune 11, 2025",
+      "person_classification": "Main",
+      "hair": null,
+      "reward_max": 0,
+      "title": "DEFACEMENT OF FEDERAL PROPERTY",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property",
+      "ncic": null,
+      "height_min": null,
+      "race": null,
+      "publication": "2025-06-25T09:42:00",
+      "weight_max": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv4.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv4.jpg",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv4.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv2.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv2.jpg",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv2.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv5.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv5.jpg",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv5.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv1.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv1.jpg",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/defacement-of-federal-property/lv1.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": "The FBI is offering a reward of up to $1,000 for information leading to the arrest and conviction of this unknown suspect.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "located",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": null,
+      "uid": "07f33176ac684ec19ac5a2794bdf196f",
+      "sex": null,
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/07f33176ac684ec19ac5a2794bdf196f"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "louisville"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/cei/terry-matthews",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": "Matthews has tattoos on his left and right forearms, his right wrist, and his right arm.",
+      "weight": "201 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/terry-matthews/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-07-02T14:33:15+00:00",
+      "age_min": null,
+      "caution": "<p>Terry Matthews is wanted for his alleged involvement in a drug trafficking organization that was responsible for methamphetamine and fentanyl trafficking offenses, firearms offenses, and money laundering. On May 6, 2025, a federal arrest warrant was issued for Matthews in the United States District Court, Western District of Kentucky, Louisville, Kentucky, after he was charged with Conspiracy to Possess with Intent to Distribute 400 Grams or More of Fentanyl; Distribution of 400 Grams or More of a Fentanyl Mixture; Distribution of 40 Grams or More of a Fentanyl Mixture; Distribution of Fentanyl; Possession of a Firearm in Furtherance of a Drug Trafficking Crime; Firearms Trafficking; Possession of a Firearm by a Prohibited Person; and Distribution of a Controlled Substance.</p>\r\n<p> </p>",
+      "description": "Conspiracy to Possess with Intent to Distribute 400 Grams or More of Fentanyl (One Count); Distribution of 400 Grams or More of a Fentanyl Mixture (One Count); Distribution of 40 Grams or More of a Fentanyl Mixture (Three Counts); Distribution of Fentanyl (Two Counts); Possession of a Firearm in Furtherance of a Drug Trafficking Crime (One Count); Firearms Trafficking (One Count); Possession of a Firearm by a Prohibited Person (One Count); Distribution of a Controlled Substance (One Count)",
+      "person_classification": "Main",
+      "hair": "brown",
+      "reward_max": 0,
+      "title": "TERRY MATTHEWS",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/cei/terry-matthews",
+      "ncic": null,
+      "height_min": 73,
+      "race": "black",
+      "publication": "2025-07-02T08:03:00",
+      "weight_max": 201,
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cei/terry-matthews/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/cei/terry-matthews/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/cei/terry-matthews/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/cei/terry-matthews/matthews.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/cei/terry-matthews/matthews.jpg",
+          "thumb": "https://www.fbi.gov/wanted/cei/terry-matthews/matthews.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": null,
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "September 25, 1980"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 201,
+      "hair_raw": "Brown",
+      "uid": "de4766a45bf4435bb3303b6da7d1febb",
+      "sex": "Male",
+      "height_max": 73,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/de4766a45bf4435bb3303b6da7d1febb"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": null,
+      "details": "<p>In June of 2021, Celeste Doghmi was reportedly last seen by her ex-boyfriend, leaving their apartment on 85 Academy Street in Auburn, Maine, and has not been seen or heard from since. She had recently given birth to a child, was in the process of enrolling for college, and was last active on social media on August 2, 2021. Her disappearance went unreported until 2023, when her ex-boyfriend was arrested for domestic abuse and the Maine Office of Child and Family Services began to search for Doghmi. The Maine State Police Department is asking for assistance in locating Doghmi or obtaining details regarding her disappearance.</p>",
+      "locations": null,
+      "age_range": "27 years old (at time of disappearance)",
+      "path": "/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": "Doghmi has a large tattoo on her right leg of a dream catcher with feathers, and a tattoo of the word  “John” on her left breast.",
+      "weight": "110 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-07-02T12:35:52+00:00",
+      "age_min": 27,
+      "caution": null,
+      "description": "Auburn, Maine\r\nJune 1, 2021",
+      "person_classification": "Main",
+      "hair": "brown",
+      "reward_max": 0,
+      "title": "CELESTE DIANA DOGHMI - AUBURN, MAINE",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine",
+      "ncic": null,
+      "height_min": 62,
+      "race": null,
+      "publication": "2025-07-02T07:26:00",
+      "weight_max": 110,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi2.png/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi2.png",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi2.png/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi3.png/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi3.png",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/celeste-diana-doghmi---auburn-maine/doghmi3.png/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Doghmi has ear piercings.</p>",
+      "reward_text": null,
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": 110,
+      "hair_raw": "Brown, longer than shoulder length",
+      "uid": "5126982a11c6494fa53fb44d54c56206",
+      "sex": "Female",
+      "height_max": 62,
+      "additional_information": null,
+      "age_max": 27,
+      "pathId": "https://api.fbi.gov/@wanted-person/5126982a11c6494fa53fb44d54c56206"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/vitelhomme-innocent",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "150 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-french.pdf/@@download/file/vitelhomme-innocent.French.pdf",
+          "name": "EN FRANAIS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-creole.pdf/@@download/file/vitelhomme-innocent.Creole.pdf",
+          "name": "Nan Kreyl Ayisyen"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-spanishfinal.pdf/@@download/file/vitelhomme-innocent.SpanishFINAL.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-07-01T15:31:48+00:00",
+      "age_min": null,
+      "caution": "<p>Vitel'Homme Innocent, as leader of the gang Kraze Barye, allegedly worked together with the gang 400 Mawozo, in the October 2021, kidnapping of 17 Christian Missionaries in Haiti, including five children, one as young as 8 months old. The hostages were allegedly held at gunpoint and most remained captive for 61 days. The gangs demanded ransom payment for each of the victims. Additionally, under the direction of Innocent, it is alleged that in October 2022, the Kraze Barye gang kidnapped a United States citizen in Haiti and killed a second United States citizen during the kidnapping attempt.</p>\r\n<p> </p>\r\n<p>Vitel'Homme Innocent was charged with Conspiracy to Commit Hostage Taking; Hostage Taking; Conspiracy to Commit Hostage Taking Resulting in Death; and Attempted Hostage Taking Resulting in Death by indictments filed in the United States District Court for the District of Columbia.</p>",
+      "description": "Conspiracy to Commit Hostage Taking; Hostage Taking; Conspiracy to Commit Hostage Taking Resulting in Death; Attempted Hostage Taking Resulting in Death",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "VITEL'HOMME INNOCENT",
+      "coordinates": [],
+      "place_of_birth": "Haiti",
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent",
+      "ncic": null,
+      "height_min": 67,
+      "race": "black",
+      "publication": "2022-11-03T10:49:00",
+      "weight_max": 150,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg",
+          "thumb": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": "The United States Department of State’s Transnational Organized Crime Rewards Program is offering a reward of up to $2 million for information leading to the arrest and/or conviction of Vitel'Homme Innocent.",
+      "nationality": "Haitian",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "March 27, 1986"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 150,
+      "hair_raw": "Black",
+      "uid": "466379d55d804fdeabfc3944c5d44331",
+      "sex": "Male",
+      "height_max": 70,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/466379d55d804fdeabfc3944c5d44331"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED A FLIGHT RISK",
+      "field_offices": [
+        "dallas"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/topten/cindy-rodriguez-singh",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": "Rodriguez Singh has tattoos on her back, left leg, right arm, right calf, right hand, and right leg.",
+      "weight": "120 to 140 pounds",
+      "poster_classification": "ten",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/singh-topten-hindi-web.pdf/@@download/file/Singh TopTen Hindi Web.pdf",
+          "name": " "
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/cindy-rodriguez-singh_tmwf-spanish-final.pdf/@@download/file/cindy-rodriguez-singh_TMWF.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-07-01T15:00:16+00:00",
+      "age_min": null,
+      "caution": "<p>Cindy Rodriguez Singh is wanted for allegedly killing her 6-year-old son. On March 20, 2023, the Everman Police Department was asked by the Texas Department of Family and Protective Services to conduct a welfare check on the 6-year-old son of Cindy Rodriguez Singh, after the child had not been seen since October 2022. During the welfare check, Rodriguez Singh lied to investigators and indicated that the child was in Mexico with his biological father and had been there since November 2022.</p>\r\n<p> </p>\r\n<p>On March 22, 2023, Rodriguez Singh, her husband, and 6 other juvenile children, boarded an international flight to India. Investigators confirmed that the missing child was not present and never boarded that flight. It is believed that Rodriguez Singh has not returned to the United States since boarding that flight. <br /> </p>\r\n<p>On October 31, 2023, Cindy Rodriguez Singh was charged with Capital Murder in the District Court of Tarrant County, Fort Worth, Texas. On November 2, 2023, a federal arrest warrant was issued for Rodriguez Singh in the United States District Court, Northern District of Texas, Fort Worth, Texas, after she was charged with Unlawful Flight to Avoid Prosecution. </p>",
+      "description": "Unlawful Flight to Avoid Prosecution - Capital Murder of a Person Under Ten Years of Age",
+      "person_classification": "Main",
+      "hair": "brown",
+      "reward_max": 0,
+      "title": "CINDY RODRIGUEZ SINGH",
+      "coordinates": [],
+      "place_of_birth": "Dallas, Texas",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Cecilia Rodriguez",
+        "Cindy Rodriguez",
+        "Cindy C. Rodriguez",
+        "Cindy Cecilia Rodriguez"
+      ],
+      "url": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh",
+      "ncic": null,
+      "height_min": 61,
+      "race": "hispanic",
+      "publication": "2024-07-11T13:11:00",
+      "weight_max": 140,
+      "subjects": [
+        "Ten Most Wanted Fugitives",
+        "Case of the Week"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/topten/cindy-rodriguez-singh/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Rodriguez Singh has ties to or may visit India and Mexico.</p>",
+      "reward_text": "The FBI is offering a reward of up to $250,000 for information leading to the arrest of Cindy Rodriguez Singh.",
+      "nationality": "American",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "January 30, 1985"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 120,
+      "hair_raw": "Brown",
+      "uid": "fa908b7efed64603b9f95efa0288643f",
+      "sex": "Female",
+      "height_max": 63,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/fa908b7efed64603b9f95efa0288643f"
+    }
+  ],
+  "page": 1
+}

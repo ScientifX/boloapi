@@ -23,8 +23,8 @@ from contextlib import contextmanager
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-rate_max = "200/minute"
-limiter = Limiter(key_func=get_remote_address)
+rate_max = "10/minute"
+limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # FastAPI Router
 router = APIRouter(prefix="/api/search", tags=["Search features"])

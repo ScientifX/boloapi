@@ -114,11 +114,11 @@ def super_simple_test():
     print("SUPER SIMPLE TEST - Just hammer the endpoint!")
     print("🔥" * 35 + "\n")
     
-    url = "http://localhost:8005/"
+    url = "http://localhost:8000/health/"
     
     print("Sending 20 requests as fast as possible...\n")
     
-    for i in range(1, 21):
+    for i in range(1, 300):
         r = requests.get(url)
         status = "✅ OK" if r.status_code == 200 else f"❌ {r.status_code}"
         remaining = r.headers.get('X-RateLimit-Remaining', '?')
