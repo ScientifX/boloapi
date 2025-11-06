@@ -17,9 +17,12 @@ from contextlib import contextmanager
 import psycopg2
 from psycopg2.extras import execute_values
 from psycopg2.extensions import connection as Connection
-from fastapi import APIRouter, HTTPException, status, Response, Request, Query
+from fastapi import APIRouter, HTTPException, status, Response, Request, Query, Depends
 from pydantic import BaseModel, Field
 from fastapi import APIRouter
+
+# Import auth utilities
+from auth import UserRole, require_role
 
 # Response Models
 class ImportSummary(BaseModel):
@@ -801,10 +804,20 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
 # FastAPI Router
 router = APIRouter(prefix="/api/etl", tags=["Data Import"], include_in_schema=True)
 
-@router.get("/load", response_model=ImportSummary, status_code=status.HTTP_200_OK)
-async def data_load():
+@router.get(
+    "/load", 
+    response_model=ImportSummary, 
+    status_code=status.HTTP_200_OK,
+    summary="Load FBI Data from File",
+    description="Import FBI wanted data from JSON file on server. **ADMIN ONLY**"
+)
+async def data_load(
+    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
+):
     """
     Import FBI wanted data from a JSON file on the server
+    
+    **Access:** ADMIN role only
     
     Returns a summary of the import operation including counts and any errors.
     """
@@ -832,14 +845,21 @@ async def data_load():
             detail=f"Import has failed: {str(e)}"
             )
 
-@router.get("/extract")
+@router.get(
+    "/extract",
+    summary="Extract FBI Data from API",
+    description="Extract FBI wanted data and save to file in JSON or CSV format. **ADMIN ONLY**"
+)
 async def get_wanted(
     request: Request,
     format: Literal["json", "csv"] = Query(default="json", description="Output format"),
-    size: Literal["default", "all"] = Query(default="default", description="Data size - 'default' for single page, 'all' for all records")
+    size: Literal["default", "all"] = Query(default="default", description="Data size - 'default' for single page, 'all' for all records"),
+    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
     ):
     """
     Extract FBI wanted data and save to file in JSON or CSV format.
+    
+    **Access:** ADMIN role only
     
     Parameters:
     - format: Output format - 'json' (default) or 'csv'
@@ -904,10 +924,19 @@ async def get_wanted(
                 logger.error(f"CSV conversion error: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"CSV conversion error: {str(e)}")
 
-@router.get("/full_refresh")
-async def full_refresh(request: Request):
+@router.get(
+    "/full_refresh",
+    summary="Full Data Refresh",
+    description="Perform a full refresh: extract all FBI wanted data to JSON file, then load it. **ADMIN ONLY**"
+)
+async def full_refresh(
+    request: Request,
+    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
+):
     """
     Perform a full refresh: extract all FBI wanted data to JSON file, then load it.
+    
+    **Access:** ADMIN role only
     
     This endpoint calls:
     1. /extract with format=json and size=all
@@ -921,15 +950,14 @@ async def full_refresh(request: Request):
         extract_response = await get_wanted(
             request=request,
             format="json",
-            size="all"
+            size="all",
+            current_role=current_role
         )
         logger.info(f"Extract completed: {extract_response}")
         
         # Step 2: Call load endpoint
         logger.info("Step 2: Loading extracted data")
-        # Assuming your load endpoint is in the same router
-        # If it's a different function name, replace 'load_data' with the actual function name
-        load_response = await data_load()
+        load_response = await data_load(current_role=current_role)
         logger.info(f"Load completed: {load_response}")
         
         logger.info("Full refresh process completed successfully")

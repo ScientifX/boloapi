@@ -7,7 +7,7 @@ from lookups import COUNTRIES, STATES
 from psycopg2.extensions import connection as Connection
 from psycopg2.extras import RealDictCursor
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -18,6 +18,15 @@ from typing import List, Literal, Union, Any, Dict
 from enum import Enum
 from datetime import datetime
 from contextlib import contextmanager
+
+# Import auth utilities
+from auth import (
+    UserRole, 
+    get_current_role, 
+    require_role, 
+    get_data_field_for_role,
+    validate_limit_for_role
+)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -585,7 +594,7 @@ class AdvancedSearchRequest(BaseModel):
         default=LogicOperator.AND,
         description="How to combine multiple groups (AND/OR)"
         )
-    limit: Literal[50, 100, 250, 500] = Field(
+    limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
         default=50,
         description="Maximum number of results to return (default: 50)"
         )
@@ -773,7 +782,7 @@ class SimpleSearchRequest(BaseModel):
         default=LogicOperator.AND,
         description="How to combine filters (AND/OR)"
         )
-    limit: Literal[50, 100, 250, 500] = Field(
+    limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
         default=50,
         description="Maximum number of results to return (default: 50)"
         )
@@ -942,13 +951,19 @@ def get_db_connection():
     description="""
     Perform a simple search using wildcard patterns.
     
+    **Access:** BASIC role or higher
+    **Result limits by role:**
+    - BASIC: Maximum 25 results, returns full_data
+    - PREMIUM: Maximum 5000 results, returns full_data_clean
+    - ADMIN: Maximum 5000 results, returns full_data_clean
+    
     **Perfect for:** Basic text searches without complex logic.
     
     **Wildcard Patterns:**
-    - `*text*` â†’ Contains "text" anywhere in the field
-    - `text*` â†’ Starts with "text"
-    - `*text` â†’ Ends with "text"
-    - `text` â†’ Exact match
+    - `*text*` → Contains "text" anywhere in the field
+    - `text*` → Starts with "text"
+    - `*text` → Ends with "text"
+    - `text` → Exact match
     
     **Examples:**
     
@@ -977,16 +992,27 @@ def get_db_connection():
     }
 ```
     
-    **Returns:** Query parameters, result count, and array of matching records (full_data)
+    **Returns:** Query parameters, result count, and array of matching records
     """,
-    response_description="Query parameters, count, and array of full_data JSONB records"
+    response_description="Query parameters, count, and array of JSONB records"
 )
 @limiter.limit(rate_max)
-async def simple_search(request: Request, search_request: SimpleSearchRequest):
+async def simple_search(
+    request: Request, 
+    search_request: SimpleSearchRequest,
+    current_role: UserRole = Depends(require_role(UserRole.BASIC))
+):
     """
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
+    Requires BASIC role or higher.
     """
+    
+    # Validate and enforce limit based on role
+    actual_limit = validate_limit_for_role(current_role, search_request.limit)
+    
+    # Determine which data field to return based on role
+    data_field = get_data_field_for_role(current_role)
 
     # Build WHERE clause from validated filters
     where_clauses = []
@@ -1039,20 +1065,22 @@ async def simple_search(request: Request, search_request: SimpleSearchRequest):
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
-                    SELECT full_data
+                    SELECT {data_field}
                     FROM vw_wanted_persons_active
                     WHERE {where_clause}
                     LIMIT %s
                 """
                 # Add limit to params
-                query_params.append(search_request.limit)
+                query_params.append(actual_limit)
                 cur.execute(query, tuple(query_params))
                 results = cur.fetchall()
                 
-        items = [row['full_data'] for row in results]
+        items = [row[data_field] for row in results]
             
         return {
             "query": search_request.model_dump(),
+            "role": current_role.value,
+            "data_field": data_field,
             "resultcount": len(items),
             "items": items
         }
@@ -1066,6 +1094,11 @@ async def simple_search(request: Request, search_request: SimpleSearchRequest):
     summary="Advanced Search with Grouped Conditions",
     description="""
     Perform advanced searches with grouped conditions and multiple operators.
+    
+    **Access:** PREMIUM role or higher
+    **Result limits by role:**
+    - PREMIUM: Maximum 5000 results, returns full_data_clean
+    - ADMIN: Maximum 5000 results, returns full_data_clean
     
     **Perfect for:** Complex queries with multiple conditions and grouping logic.
     
@@ -1127,53 +1160,21 @@ async def simple_search(request: Request, search_request: SimpleSearchRequest):
 ```
     **Result:** (sex = "Male" AND age between 25-45) OR (reward >= 50000 AND subjects contains "Murder")
     
-    **Example 3:** Array field search with text arrays
-```json
-    {
-        "groups": [
-            {
-                "condition": "OR",
-                "rules": [
-                    {"field": "languages", "operator": "contains", "value": "Spanish"},
-                    {"field": "languages", "operator": "contains", "value": "Portuguese"}
-                ]
-            }
-        ],
-        "group_logic": "AND",
-        "limit": 50
-    }
-```
-    **Result:** Languages include Spanish OR Portuguese
-    
-    **Example 4:** Multiple conditions across different field types
-```json
-    {
-        "groups": [
-            {
-                "condition": "AND",
-                "rules": [
-                    {"field": "title", "operator": "starts_with", "value": "KIDNAPPING"},
-                    {"field": "possible_states", "operator": "contains", "value": "California"},
-                    {"field": "age_min", "operator": "gte", "value": 18}
-                ]
-            }
-        ],
-        "group_logic": "AND",
-        "limit": 250
-    }
-```
-    **Result:** Title starts with "KIDNAPPING" AND California in possible states AND minimum age >= 18
-    
-    **Returns:** Query parameters, result count, and array of matching records (full_data)
+    **Returns:** Query parameters, result count, and array of matching records
     """,
-    response_description="Query parameters, count, and array of full_data JSONB records"
+    response_description="Query parameters, count, and array of JSONB records"
 )
 @limiter.limit(rate_max)
-async def advanced_search(request: Request, search_request: AdvancedSearchRequest):
+async def advanced_search(
+    request: Request, 
+    search_request: AdvancedSearchRequest,
+    current_role: UserRole = Depends(require_role(UserRole.PREMIUM))
+):
     """
     Execute an advanced search with grouped conditions.
     All validation is performed by Pydantic before this function runs.
-    Returns only the full_data JSONB column from matching rows.
+    Returns the appropriate JSONB column based on user role.
+    Requires PREMIUM role or higher.
     
     This function supports:
     - Multiple filter groups combined with AND/OR logic
@@ -1183,6 +1184,12 @@ async def advanced_search(request: Request, search_request: AdvancedSearchReques
     - Text array fields (languages, aliases, locations, etc.)
     - Complex nested boolean logic
     """
+    
+    # Validate and enforce limit based on role
+    actual_limit = validate_limit_for_role(current_role, search_request.limit)
+    
+    # Determine which data field to return based on role
+    data_field = get_data_field_for_role(current_role)
     
     try:
         # Build grouped WHERE clauses from validated request
@@ -1221,24 +1228,26 @@ async def advanced_search(request: Request, search_request: AdvancedSearchReques
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
-                    SELECT full_data
+                    SELECT {data_field}
                     FROM vw_wanted_persons_active
                     WHERE {where_clause}
                     LIMIT %s
                 """
                 # Add limit to params
-                query_params.append(search_request.limit)
+                query_params.append(actual_limit)
                 
                 # Execute the query with all parameters
                 cur.execute(query, tuple(query_params))
                 results = cur.fetchall()
         
-        # Extract full_data JSONB from each row
-        items = [row['full_data'] for row in results]
+        # Extract appropriate data field from each row
+        items = [row[data_field] for row in results]
         
         # Construct response payload
         return {
             "query": search_request.model_dump(),
+            "role": current_role.value,
+            "data_field": data_field,
             "resultcount": len(items),
             "items": items
         }
@@ -1254,13 +1263,19 @@ async def advanced_search(request: Request, search_request: AdvancedSearchReques
     description="Get information about this API and available endpoints"
     )
 async def root():
-    """Return API information and usage guide"""
+    """Return API information and usage guide - accessible to all roles"""
     return {
         "name": "Advanced Search API",
         "version": "1.0.0",
         "endpoints": {
-            "/simple": "Simple wildcard-based search",
-            "/advanced": "Advanced search with grouped conditions and numeric operators",
+            "/simple": "Simple wildcard-based search (BASIC role or higher)",
+            "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)",
+        },
+        "access_levels": {
+            "PUBLIC": "Root endpoints only",
+            "BASIC": "Simple search, max 25 results, full_data",
+            "PREMIUM": "Simple + Advanced search, max 5000 results, full_data_clean",
+            "ADMIN": "All endpoints, max 5000 results, full_data_clean"
         },
         "searchable_fields": [
             "String fields: title, description, details, sex, race, etc.",
@@ -1272,6 +1287,6 @@ async def root():
             "numeric": ["equals", "gt", "lt", "gte", "lte", "between"],
             "arrays": ["equals", "contains", "starts_with", "ends_with"]
         },
-        "result_limits": [50, 100, 250, 500],
+        "result_limits": [25, 50, 100, 250, 500, 5000],
         "default_limit": 50
     }
