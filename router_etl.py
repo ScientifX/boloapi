@@ -849,7 +849,7 @@ async def data_load(
     "/extract",
     summary="Extract FBI Data from API",
     description="Extract FBI wanted data and save to file in JSON or CSV format. **ADMIN ONLY**"
-)
+    )
 async def get_wanted(
     request: Request,
     format: Literal["json", "csv"] = Query(default="json", description="Output format"),
@@ -892,7 +892,7 @@ async def get_wanted(
         
         # Save as JSON file
         if format == "json":
-            filename = "fbi-wanted-api-data.json"
+            filename = "data/fbi-wanted-api-data.json"
             try:
                 with open(filename, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
@@ -904,11 +904,11 @@ async def get_wanted(
         
         # Save as CSV file
         if format == "csv":
-            filename = "fbi-wanted-api-data.csv"
+            filename = "data/fbi-wanted-api-data.csv"
             try:
                 logger.info("Converting to CSV format")
                 # Load the schema and extract simple fields
-                schema_path = "fbi-wanted-api-schema.json"
+                schema_path = "data/fbi-wanted-api-schema.json"
                 simple_fields = load_simple_fields_from_schema(schema_path)
                 
                 # Convert to CSV
@@ -928,11 +928,11 @@ async def get_wanted(
     "/full_refresh",
     summary="Full Data Refresh",
     description="Perform a full refresh: extract all FBI wanted data to JSON file, then load it. **ADMIN ONLY**"
-)
+    )
 async def full_refresh(
     request: Request,
     current_role: UserRole = Depends(require_role(UserRole.ADMIN))
-):
+    ):
     """
     Perform a full refresh: extract all FBI wanted data to JSON file, then load it.
     

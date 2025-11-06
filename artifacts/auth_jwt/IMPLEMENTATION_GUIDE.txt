@@ -1,0 +1,434 @@
+================================================================================
+JWT AUTHENTICATION SYSTEM - IMPLEMENTATION GUIDE
+================================================================================
+
+OVERVIEW
+--------
+This authentication system implements secure JWT-based authentication with
+role-based access control. It addresses all security concerns from the original
+proposal and follows industry best practices.
+
+KEY IMPROVEMENTS OVER ORIGINAL DESIGN
+--------------------------------------
+1. ✓ Secure activation tokens (cryptographically random, time-limited)
+2. ✓ API keys stored as bcrypt hashes (never plaintext)
+3. ✓ JWT tokens with 1-hour expiration
+4. ✓ Secure key reset flow
+5. ✓ Proper separation of concerns (modular design)
+6. ✓ Email validation
+7. ✓ Protection against duplicate registrations
+
+ARCHITECTURE
+------------
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         USER REGISTRATION                            │
+│                                                                      │
+│  POST /auth/register                                                │
+│    ↓                                                                 │
+│  Generate: user_id, activation_token, api_key_hash                  │
+│    ↓                                                                 │
+│  Store in database (is_active=false)                                │
+│    ↓                                                                 │
+│  Send activation email with token                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         ACCOUNT ACTIVATION                           │
+│                                                                      │
+│  GET /auth/activate?token={secure_token}                            │
+│    ↓                                                                 │
+│  Verify token not expired                                           │
+│    ↓                                                                 │
+│  Set is_active=true, generate new API key                           │
+│    ↓                                                                 │
+│  Return API key (display on secure page)                            │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         TOKEN GENERATION                             │
+│                                                                      │
+│  POST /auth/token {api_key}                                         │
+│    ↓                                                                 │
+│  Verify API key against hashes                                      │
+│    ↓                                                                 │
+│  Generate JWT with claims: {user_id, role, exp}                     │
+│    ↓                                                                 │
+│  Return JWT token (1 hour expiry)                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                      ACCESSING PROTECTED ENDPOINTS                   │
+│                                                                      │
+│  Request with: Authorization: Bearer {jwt_token}                    │
+│    ↓                                                                 │
+│  JWT middleware validates token                                     │
+│    ↓                                                                 │
+│  Extract user_id and role from token                                │
+│    ↓                                                                 │
+│  Apply role-based access control                                    │
+│    ↓                                                                 │
+│  Execute endpoint logic                                             │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+FILES CREATED
+-------------
+
+1. schema_auth.sql
+   - Database schema for users table
+   - Indexes for performance
+   - Triggers for timestamp updates
+   - View for active users
+
+2. security_utils.py
+   - API key generation (cryptographically secure)
+   - Activation token generation
+   - Bcrypt hashing for API keys
+   - Email validation
+
+3. jwt_utils.py
+   - JWT token creation
+   - JWT token validation and decoding
+   - Claims extraction helpers
+
+4. router_auth.py
+   - Registration endpoint
+   - Activation endpoint  
+   - Token generation endpoint
+   - API key reset endpoint
+   - Database helper functions
+
+5. jwt_auth.py
+   - JWT authentication dependencies for FastAPI
+   - Token validation middleware
+   - Role-based access decorators
+   - Replaces session-based auth
+
+6. auth_v2.py (updated version of auth.py)
+   - Works with both session and JWT auth
+   - Shared authorization logic
+   - Role hierarchy and permissions
+
+7. router_search_jwt_example.py
+   - Example showing how to update existing endpoints
+   - Migration patterns from session to JWT
+   - Before/after code samples
+
+8. app_with_auth.py
+   - Updated main app file
+   - Includes auth router
+   - Shows integration points
+
+9. test_auth.py
+   - Complete test suite
+   - Tests all authentication flows
+   - Validates security controls
+
+
+INSTALLATION STEPS
+------------------
+
+1. Install dependencies:
+   pip install PyJWT==2.8.0 bcrypt==4.1.2
+
+2. Set environment variable for JWT secret:
+   export JWT_SECRET_KEY="your-super-secret-key-min-32-characters-long"
+   
+   Or update jwt_utils.py directly (not recommended for production)
+
+3. Create database table:
+   psql -U your_user -d your_database -f schema_auth.sql
+
+4. Add dbconfig.py if not present:
+   DB_CONFIG = {
+       "host": "localhost",
+       "port": 5432,
+       "database": "your_database",
+       "user": "your_user",
+       "password": "your_password"
+   }
+
+5. Update your app.py:
+   - Import router_auth
+   - Add: app.include_router(router_auth.router)
+
+6. Start your FastAPI app:
+   uvicorn app:app --reload
+
+
+MIGRATION GUIDE: SESSION → JWT
+-------------------------------
+
+For each protected endpoint, make these changes:
+
+BEFORE (session-based):
+  from auth import UserRole, require_role
+  
+  @router.post("/endpoint")
+  async def endpoint(current_role: UserRole = Depends(require_role(UserRole.BASIC))):
+      # Use current_role...
+
+AFTER (JWT-based):
+  from auth import UserRole
+  from jwt_auth import require_jwt_role
+  
+  @router.post("/endpoint")
+  async def endpoint(current_user: dict = Depends(require_jwt_role(UserRole.BASIC))):
+      current_role = current_user["role"]
+      user_id = current_user["user_id"]
+      # Use current_role and user_id...
+
+The authorization logic (has_role, get_data_field_for_role, etc.) remains
+unchanged because it works with the UserRole enum regardless of auth method.
+
+
+TESTING
+-------
+
+1. Run the test suite:
+   python test_auth.py
+
+   This will test:
+   - User registration
+   - Duplicate registration handling
+   - Account activation
+   - JWT token generation
+   - Protected endpoint access with/without token
+   - Invalid token rejection
+   - API key reset
+   - Token invalidation after key reset
+
+2. Manual testing with curl:
+
+   # Register
+   curl -X POST http://localhost:8000/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"email": "test@example.com"}'
+
+   # Activate (get token from email/response)
+   curl http://localhost:8000/auth/activate?token={activation_token}
+
+   # Get JWT token (use API key from activation)
+   curl -X POST http://localhost:8000/auth/token \
+     -H "Content-Type: application/json" \
+     -d '{"api_key": "your_api_key"}'
+
+   # Access protected endpoint
+   curl -X POST http://localhost:8000/api/search/simple \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer {jwt_token}" \
+     -d '{
+       "filters": [{"field": "sex", "value": "Male"}],
+       "limit": 25
+     }'
+
+
+SECURITY FEATURES
+-----------------
+
+1. API Key Security:
+   - Generated using secrets module (cryptographically secure)
+   - 32 characters long (alphanumeric)
+   - Stored as bcrypt hash (never plaintext)
+   - Can be reset by user
+
+2. Activation Token Security:
+   - Generated using secrets.token_urlsafe (URL-safe, cryptographically secure)
+   - Time-limited (48 hours expiration)
+   - Single-use (cleared after activation)
+   - Cannot be guessed or brute-forced
+
+3. JWT Token Security:
+   - Short-lived (1 hour expiration)
+   - Signed with HS256 algorithm
+   - Contains minimal claims (user_id, role, exp, iat)
+   - Cannot be forged without secret key
+
+4. Password/Key Hashing:
+   - Bcrypt with 12 rounds
+   - Resistant to rainbow table attacks
+   - Computationally expensive to crack
+
+5. Input Validation:
+   - Email format validation
+   - Length limits on all inputs
+   - Type checking via Pydantic
+
+6. Rate Limiting:
+   - 10 requests/minute on most endpoints
+   - 3 requests/hour on key reset (stricter)
+
+7. Database Security:
+   - Parameterized queries (no SQL injection)
+   - Proper indexing for performance
+   - No sensitive data in logs
+
+
+ROLE-BASED ACCESS CONTROL
+--------------------------
+
+Role Hierarchy (lowest to highest):
+  PUBLIC (0) → BASIC (1) → PREMIUM (2) → ADMIN (3)
+
+Access Levels:
+  PUBLIC:
+    - / (homepage)
+    - /health
+    - /auth/* (all auth endpoints)
+    - /api/search/ (info only)
+  
+  BASIC:
+    - Everything PUBLIC can access
+    - /api/search/simple (max 25 results, full_data)
+  
+  PREMIUM:
+    - Everything BASIC can access
+    - /api/search/advanced (max 5000 results, full_data_clean)
+  
+  ADMIN:
+    - Everything PREMIUM can access
+    - /api/etl/* (all ETL endpoints)
+    - User management (future)
+
+
+PRODUCTION CONSIDERATIONS
+--------------------------
+
+1. Email Service:
+   - Implement send_activation_email() function
+   - Use service like SendGrid, AWS SES, or Mailgun
+   - Include unsubscribe links
+   - Retry logic for failed sends
+
+2. Environment Variables:
+   - JWT_SECRET_KEY (required, min 32 chars)
+   - DATABASE credentials
+   - Email service credentials
+   - Set https_only=True for session middleware
+
+3. HTTPS:
+   - Required for production
+   - Protects tokens in transit
+   - Use Let's Encrypt or cloud provider SSL
+
+4. Database:
+   - Regular backups
+   - Connection pooling
+   - Read replicas for scaling
+
+5. Monitoring:
+   - Log authentication attempts
+   - Monitor failed logins
+   - Alert on unusual patterns
+   - Track token usage
+
+6. Rate Limiting:
+   - Implement per-user rate limiting (not just IP)
+   - Use Redis for distributed rate limiting
+   - Different limits per endpoint/role
+
+7. Token Refresh:
+   - Consider implementing refresh tokens
+   - Allow longer sessions without compromising security
+   - Refresh tokens can be revoked
+
+8. API Key Management:
+   - Allow users to create multiple API keys
+   - Name/label keys for tracking
+   - Last-used timestamps
+   - Revocation without password reset
+
+
+COMMON ISSUES & SOLUTIONS
+--------------------------
+
+1. "Invalid token" error:
+   - Check JWT_SECRET_KEY matches between token creation and validation
+   - Verify token hasn't expired (1 hour limit)
+   - Ensure Authorization header format: "Bearer {token}"
+
+2. "Email already registered" but user can't login:
+   - User may not have activated account
+   - Resend activation: POST /auth/register again with same email
+   - Or implement /auth/resend-activation endpoint
+
+3. Lost API key:
+   - Use POST /auth/key/reset with email
+   - New key invalidates old one
+   - All old tokens become invalid
+
+4. Token expires too quickly:
+   - Adjust JWT_ACCESS_TOKEN_EXPIRE_MINUTES in jwt_utils.py
+   - Consider implementing refresh tokens
+   - Current: 60 minutes (1 hour)
+
+5. Database connection issues:
+   - Verify dbconfig.py settings
+   - Check PostgreSQL is running
+   - Verify users table exists
+
+
+FUTURE ENHANCEMENTS
+-------------------
+
+1. Refresh Tokens:
+   - Long-lived tokens for getting new access tokens
+   - Stored in database for revocation
+   - Rotate on each use
+
+2. OAuth Integration:
+   - Google, GitHub, Microsoft login
+   - Social authentication
+   - Automatic account linking
+
+3. Two-Factor Authentication:
+   - TOTP (Time-based OTP)
+   - SMS verification
+   - Backup codes
+
+4. API Key Management Dashboard:
+   - Web UI for managing keys
+   - View usage statistics
+   - Create/revoke multiple keys
+   - Set per-key permissions
+
+5. Audit Logging:
+   - Track all authentication events
+   - Login attempts (success/fail)
+   - API key usage
+   - Role changes
+   - Export for compliance
+
+6. Email Templates:
+   - HTML email templates
+   - Branding/customization
+   - Multiple languages
+   - Transactional email tracking
+
+7. User Profiles:
+   - Additional user metadata
+   - Preferences
+   - Usage statistics
+   - Billing integration
+
+8. Admin Dashboard:
+   - User management
+   - Role assignment
+   - Usage monitoring
+   - System health
+
+
+CONTACT & SUPPORT
+-----------------
+For questions or issues with this authentication system:
+1. Review this guide thoroughly
+2. Check test_auth.py for working examples
+3. Review router_search_jwt_example.py for migration patterns
+4. Check FastAPI docs: https://fastapi.tiangolo.com/
+5. Check PyJWT docs: https://pyjwt.readthedocs.io/
+
+
+================================================================================
+END OF GUIDE
+================================================================================

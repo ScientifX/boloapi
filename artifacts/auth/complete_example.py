@@ -20,7 +20,7 @@ import logging
 load_dotenv()
 
 # Configuration
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+SECRET_KEY = os.getenv("API_JWT_SECRET_KEY", "your-secret-key-change-in-production")
 LEMON_SQUEEZY_API_KEY = os.getenv("LEMON_SQUEEZY_API_KEY")
 LEMON_SQUEEZY_API_URL = "https://api.lemonsqueezy.com/v1"
 

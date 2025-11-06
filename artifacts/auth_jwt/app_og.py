@@ -1,15 +1,3 @@
-"""
-EXAMPLE: Updated app.py to include JWT authentication
-
-Key Changes:
-1. Import router_auth
-2. Include router_auth in the app
-3. Update role middleware to work with JWT (optional - can be removed if using JWT exclusively)
-4. Keep session middleware for backward compatibility during migration
-
-This example shows how to integrate the auth router into your existing app.
-"""
-
 import httpx, json, re
 
 # FastAPI setup
@@ -38,7 +26,6 @@ from auth import (
 
 import router_etl
 import router_search
-import router_auth 
 
 templates = Jinja2Templates(directory="templates")
 
@@ -48,26 +35,18 @@ FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
-app = FastAPI(
-    title="Bolo API",
-    description="Bolo API",
-    version="2.0.0"
-    )
-
+app = FastAPI(title = "Bolo API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Include routers
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
-app.include_router(router_auth.router) 
 
 # Custom middleware class for role and trimming
+from starlette.middleware.base import BaseHTTPMiddleware
+
 class RoleAndTrimMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # TESTING ONLY: Automatically set role from MANUAL_TEST_ROLE
-        # NOTE: This is now optional if using JWT authentication
-        # You can remove this block once fully migrated to JWT
         if SESSION_ROLE_KEY not in request.session:
             set_user_role(request, MANUAL_TEST_ROLE)
         
@@ -119,7 +98,6 @@ class RoleAndTrimMiddleware(BaseHTTPMiddleware):
 app.add_middleware(RoleAndTrimMiddleware)
 
 # Add session middleware LAST (executes FIRST due to reverse order)
-# NOTE: Can be removed once fully migrated to JWT, but keeping for backward compatibility
 app.add_middleware(
     SessionMiddleware,
     secret_key="your-secret-key-change-this-in-production-min-32-chars",
@@ -134,10 +112,10 @@ app.add_middleware(
 async def root(request: Request):
     """
     Homepage - accessible by all roles (PUBLIC and above)
-    Shows API information and authentication instructions
+    Shows current user role for testing purposes
     """
-    # Public endpoint - no authentication required
-    current_role = get_current_role(request)  # For session-based testing
+    # Public endpoint - no role check needed
+    current_role = get_current_role(request)
     
     async with httpx.AsyncClient() as client:
         try:
@@ -156,16 +134,7 @@ async def root(request: Request):
             "request": request,
             "total": total,
             "items": items,
-            "current_role": current_role.value,  # For testing display
-            "auth_info": {
-                "type": "JWT Bearer Token",
-                "endpoints": {
-                    "register": "/auth/register",
-                    "activate": "/auth/activate",
-                    "token": "/auth/token",
-                    "docs": "/docs"
-                }
-            }
+            "current_role": current_role.value  # Pass role to template for display
         }
     )
 
@@ -176,41 +145,35 @@ async def health_check(request: Request):
     current_role = get_current_role(request)
     return {
         "status": "healthy",
-        "role": current_role.value,
-        "authentication": "JWT Bearer Token",
-        "docs": "/docs"
+        "role": current_role.value
     }
 
-# Session-based role endpoints (for testing/migration)
-# These can be removed once fully migrated to JWT
-@app.get("/role", include_in_schema=True, tags=["Testing"])
+@app.get("/role", include_in_schema=True)
 @limiter.limit(rate_max)
 async def get_role(request: Request):
-    """Get current user role - for testing purposes (session-based)"""
+    """Get current user role - for testing purposes"""
     current_role = get_current_role(request)
     return {
         "current_role": current_role.value,
         "role_level": ROLE_HIERARCHY[current_role],
         "test_mode": True,
-        "note": "For JWT authentication, use /auth/token endpoint",
-        "migration_note": "This endpoint uses session-based auth and will be deprecated"
+        "note": "Change MANUAL_TEST_ROLE in auth.py to test different roles"
     }
 
-@app.post("/role/set", include_in_schema=True, tags=["Testing"])
+@app.post("/role/set", include_in_schema=True)
 @limiter.limit(rate_max)
 async def set_role(request: Request, role: UserRole):
     """
-    Manually set user role - for testing purposes only (session-based)
-    In production, use JWT authentication via /auth/token
+    Manually set user role - for testing purposes only
+    In production, this would be replaced by proper authentication
     """
     set_user_role(request, role)
     return {
         "message": f"Role set to {role.value}",
-        "current_role": role.value,
-        "note": "This is session-based auth for testing. Use JWT auth in production."
+        "current_role": role.value
     }
 
-# Validation functions (unchanged)
+
 def validate_string(value, field_name):
     """
     Validate string is not empty, not wildcard-only, not exceeding 100 characters,
