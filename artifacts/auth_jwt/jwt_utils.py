@@ -3,7 +3,7 @@ JWT utilities for authentication
 Handles token generation, validation, and claims extraction
 """
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 import jwt
 from auth import UserRole
@@ -30,15 +30,15 @@ def create_access_token(user_id: str, role: UserRole, expires_delta: Optional[ti
         Encoded JWT token as string
     """
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc)+ expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode = {
         "sub": user_id,  # Subject (user_id)
         "role": role.value,  # User role
         "exp": expire,  # Expiration time
-        "iat": datetime.utcnow(),  # Issued at
+        "iat": datetime.now(timezone.utc),  # Issued at
         "type": "access"  # Token type
     }
     

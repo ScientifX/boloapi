@@ -3,17 +3,11 @@ JWT utilities for authentication
 Handles token generation, validation, and claims extraction
 """
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
-
 import jwt
-
 from auth import UserRole
-
-# JWT Configuration
-API_JWT_SECRET_KEY = os.getenv("API_JWT_SECRET_KEY", "your-super-secret-jwt-key-change-in-production-min-32-chars")
-JWT_ALGORITHM = "HS256"
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
+from config import API_JWT_SECRET_KEY, API_JWT_ALGORITHM, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 
 class JWTError(Exception):
     """Custom exception for JWT-related errors"""
@@ -32,19 +26,21 @@ def create_access_token(user_id: str, role: UserRole, expires_delta: Optional[ti
         Encoded JWT token as string
     """
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        # Ensure we have an integer for timedelta
+        expire_minutes = int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) if isinstance(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, str) else API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
     
     to_encode = {
         "sub": user_id,  # Subject (user_id)
         "role": role.value,  # User role
         "exp": expire,  # Expiration time
-        "iat": datetime.utcnow(),  # Issued at
+        "iat": datetime.now(timezone.utc),  # Issued at
         "type": "access"  # Token type
     }
     
-    encoded_jwt = jwt.encode(to_encode, API_JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, API_JWT_SECRET_KEY, algorithm=API_JWT_ALGORITHM)
     return encoded_jwt
 
 def decode_access_token(token: str) -> Dict[str, Any]:
@@ -61,7 +57,7 @@ def decode_access_token(token: str) -> Dict[str, Any]:
         JWTError: If token is invalid, expired, or malformed
     """
     try:
-        payload = jwt.decode(token, API_JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, API_JWT_SECRET_KEY, algorithms=[API_JWT_ALGORITHM])
         
         # Validate token type
         if payload.get("type") != "access":

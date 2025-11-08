@@ -6,7 +6,7 @@ import asyncio
 import os
 import re
 
-from dbconfig import DB_CONFIG
+from config import DB_CONFIG
 from typing import Literal
 from datetime import datetime, date
 from pathlib import Path

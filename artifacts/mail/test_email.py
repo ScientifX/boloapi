@@ -11,7 +11,7 @@ Example:
 
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add parent directory to path if running standalone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -22,8 +22,7 @@ from email_utils import (
     send_api_key_email,
     send_welcome_email,
     get_email_sender
-)
-
+    )
 
 def print_section(title):
     """Print a formatted section header"""
@@ -42,7 +41,8 @@ def check_configuration():
         print(f"   Client ID:    {EmailConfig.CLIENT_ID[:8]}...")
         print(f"   Client Secret: {'*' * 32}")
         print(f"   From Address: {EmailConfig.FROM_ADDRESS}")
-        print(f"   API Base URL: {EmailConfig.API_BASE_URL}")
+        print(f"   From Name: {EmailConfig.FROM_NAME}")
+        print(f"   API Base URL: {EmailConfig.APP_BASE_URL}")
         return True
     else:
         missing = EmailConfig.get_missing_config()
@@ -81,7 +81,7 @@ def test_activation_email(test_email):
     """Test sending activation email"""
     print_section("Testing Activation Email")
     
-    test_token = f"test-activation-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+    test_token = f"test-activation-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
     
     print(f"Sending activation email to: {test_email}")
     print(f"Test activation token: {test_token}")
@@ -107,7 +107,7 @@ def test_api_key_email(test_email):
     """Test sending API key reset email"""
     print_section("Testing API Key Reset Email")
     
-    test_api_key = f"test_key_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_abcdef1234567890"
+    test_api_key = f"test_key_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_abcdef1234567890"
     
     print(f"Sending API key email to: {test_email}")
     print(f"Test API key: {test_api_key}")
@@ -133,7 +133,7 @@ def test_welcome_email(test_email):
     """Test sending welcome email"""
     print_section("Testing Welcome Email")
     
-    test_api_key = f"test_key_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_abcdef1234567890"
+    test_api_key = f"test_key_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_abcdef1234567890"
     
     print(f"Sending welcome email to: {test_email}")
     print(f"Test API key: {test_api_key}")
@@ -161,7 +161,7 @@ def run_all_tests(test_email):
     print("  EMAIL FUNCTIONALITY TEST SUITE")
     print("█"*70)
     print(f"\nTest email address: {test_email}")
-    print(f"Test started at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"Test started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     
     # Track results
     results = {

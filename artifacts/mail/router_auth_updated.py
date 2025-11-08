@@ -4,7 +4,7 @@ Handles user registration, activation, and JWT token generation
 """
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from contextlib import contextmanager
 from typing import Optional
 import logging
@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from dbconfig import DB_CONFIG
+from config import DB_CONFIG, API_AZURE_CLIENT_ID, API_EMAIL_FROM_ADDRESS
 from auth import UserRole
 from security_utils import (
     generate_api_key_and_hash,
@@ -180,7 +180,7 @@ async def register(request: Request, register_req: RegisterRequest):
                 # User exists but not activated - resend activation
                 user_id = existing_user['user_id']
                 activation_token = generate_activation_token()
-                activation_expires = datetime.utcnow() + timedelta(hours=48)
+                activation_expires = datetime.now(timezone.utc) + timedelta(hours=48)
                 
                 with get_db_connection() as conn:
                     with conn.cursor() as cur:
@@ -222,7 +222,7 @@ async def register(request: Request, register_req: RegisterRequest):
         # Create new user
         api_key, api_key_hash = generate_api_key_and_hash()
         activation_token = generate_activation_token()
-        activation_expires = datetime.utcnow() + timedelta(hours=48)
+        activation_expires = datetime.now(timezone.utc) + timedelta(hours=48)
         
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -311,7 +311,7 @@ async def activate(request: Request, token: str = Field(..., description="Activa
             )
         
         # Check if token expired
-        if user['activation_expires_at'] and user['activation_expires_at'] < datetime.utcnow():
+        if user['activation_expires_at'] and user['activation_expires_at'] < datetime.now(timezone.utc):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Activation token expired. Please register again."

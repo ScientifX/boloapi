@@ -1,0 +1,133 @@
+"""
+Configuration Management
+Loads all environment variables for the application.
+Works in both development (with .env file) and production (Railway/cloud env vars).
+
+Development setup:
+    1. Create a .env file in project root
+    2. Add variables like: API_DB_HOST=localhost
+    3. python-dotenv will load them automatically
+
+Production setup:
+    1. Set environment variables in Railway dashboard
+    2. No .env file needed - Railway injects env vars directly
+"""
+import os
+from typing import Optional
+
+# Load .env file for local development only
+# In production (Railway), this does nothing and environment variables are already set
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Loads .env file if it exists
+except ImportError:
+    # python-dotenv not installed - that's OK for production
+    pass
+
+# ============================================================================
+# DATABASE CONFIGURATION
+# ============================================================================
+
+DB_CONFIG = {
+    "host": os.getenv('API_DB_HOST'),
+    "port": os.getenv('API_DB_PORT'),
+    "database": os.getenv('API_DB_DATABASE'),
+    "user": os.getenv('API_DB_USER'),
+    "password": os.getenv('API_DB_PASSWORD')
+}
+
+# ============================================================================
+# JWT CONFIGURATION
+# ============================================================================
+
+API_JWT_SECRET_KEY = os.getenv('API_JWT_SECRET_KEY')
+API_JWT_ALGORITHM = os.getenv('API_JWT_ALGORITHM')
+API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv('API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES')
+
+# ============================================================================
+# EMAIL CONFIGURATION (Microsoft Graph API)
+# ============================================================================
+
+# Microsoft Azure AD App Registration
+API_AZURE_CLIENT_ID = os.getenv('API_AZURE_CLIENT_ID')
+API_AZURE_CLIENT_SECRET = os.getenv('API_AZURE_CLIENT_SECRET')
+API_AZURE_TENANT_ID = os.getenv('API_AZURE_TENANT_ID')
+
+# Email settings
+API_EMAIL_FROM_ADDRESS = os.getenv('API_EMAIL_FROM_ADDRESS') 
+API_EMAIL_FROM_NAME = os.getenv('API_EMAIL_FROM_NAME') 
+
+# Application URL (for email links)
+API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')  # Default for dev
+
+# ============================================================================
+# API CONFIGURATION
+# ============================================================================
+
+API_TITLE = "BoloAPI"
+API_VERSION = "2.0.0"
+API_DESCRIPTION = "A Comprehensive FBI Wanted Persons Search API"
+
+# Rate limiting
+RATE_LIMIT_DEFAULT = "10/minute"
+
+# ============================================================================
+# VALIDATION HELPERS
+# ============================================================================
+
+def validate_config() -> list[str]:
+    """
+    Validate that required configuration variables are set.
+    Returns list of missing variables.
+    
+    Call this at application startup to fail fast if config is incomplete.
+    """
+    required_vars = {
+        # Database (required)
+        'API_DB_HOST': DB_CONFIG['host'],
+        'API_DB_PORT': DB_CONFIG['port'],
+        'API_DB_DATABASE': DB_CONFIG['database'],
+        'API_DB_USER': DB_CONFIG['user'],
+        'API_DB_PASSWORD': DB_CONFIG['password'],
+        
+        # Email (required)
+        'API_AZURE_CLIENT_ID': API_AZURE_CLIENT_ID,
+        'API_AZURE_CLIENT_SECRET': API_AZURE_CLIENT_SECRET,
+        'API_AZURE_TENANT_ID': API_AZURE_TENANT_ID,
+        'API_EMAIL_FROM_ADDRESS': API_EMAIL_FROM_ADDRESS,
+        
+        # Security (required)
+        'API_JWT_SECRET_KEY': API_JWT_SECRET_KEY,
+        'API_JWT_ALGORITHM': API_JWT_ALGORITHM,
+        'API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES': int(os.getenv('API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES'))
+        }
+    
+    missing = []
+    for var_name, var_value in required_vars.items():
+        if not var_value:
+            missing.append(var_name)
+    
+    return missing
+
+def get_config_summary() -> dict:
+    """
+    Get a summary of configuration status (safe for logging).
+    Does NOT include sensitive values.
+    """
+    return {
+        "database": {
+            "host": DB_CONFIG['host'],
+            "port": DB_CONFIG['port'],
+            "database": DB_CONFIG['database'],
+            "configured": bool(DB_CONFIG['host'] and DB_CONFIG['database'])
+        },
+        "email": {
+            "provider": "Microsoft Graph API",
+            "from_address": API_EMAIL_FROM_ADDRESS,
+            "configured": bool(API_AZURE_CLIENT_ID and API_AZURE_CLIENT_SECRET)
+        },
+        "app": {
+            "base_url": API_APP_BASE_URL,
+            "jwt_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        }
+    }

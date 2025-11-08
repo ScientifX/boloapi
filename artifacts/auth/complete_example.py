@@ -12,7 +12,7 @@ from typing import Optional
 import httpx
 import jwt
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import logging
 
@@ -99,7 +99,7 @@ def create_token(user_id: str, email: str, subscription_id: Optional[str] = None
         "user_id": user_id,
         "email": email,
         "subscription_id": subscription_id,
-        "exp": datetime.utcnow() + timedelta(minutes=30)
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=30)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 

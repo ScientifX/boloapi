@@ -1,7 +1,7 @@
 import logging
 import psycopg2
 import re
-from dbconfig import DB_CONFIG
+from config import DB_CONFIG
 from lookups import COUNTRIES, STATES
 
 from psycopg2.extensions import connection as Connection

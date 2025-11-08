@@ -7,7 +7,7 @@ Required environment variables:
     - MICROSOFT_CLIENT_ID: App registration client ID
     - MICROSOFT_CLIENT_SECRET: App registration client secret
     - EMAIL_FROM_ADDRESS: The email address to send from (must be in your M365)
-    - API_BASE_URL: Your API's base URL (for activation links)
+    - APP_BASE_URL: Your API's base URL (for activation links)
 
 Setup Instructions:
 1. Register an application in Azure AD (https://portal.azure.com)
@@ -20,21 +20,22 @@ Setup Instructions:
 import os
 import requests
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 
-# Configure logging
+# Configure logging 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class EmailConfig:
     """Email configuration from environment variables"""
-    TENANT_ID = os.getenv("MICROSOFT_TENANT_ID")
-    CLIENT_ID = os.getenv("MICROSOFT_CLIENT_ID")
-    CLIENT_SECRET = os.getenv("MICROSOFT_CLIENT_SECRET")
-    FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS")
-    API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+    TENANT_ID     = os.getenv("API_AZURE_TENANT_ID")
+    CLIENT_ID     = os.getenv("API_AZURE_CLIENT_ID")
+    CLIENT_SECRET = os.getenv("API_AZURE_CLIENT_SECRET")
+    FROM_ADDRESS  = os.getenv("API_EMAIL_FROM_ADDRESS")
+    FROM_NAME     = os.getenv("API_EMAIL_FROM_NAME")
+    APP_BASE_URL  = os.getenv("API_APP_BASE_URL")
     
     @classmethod
     def is_configured(cls) -> bool:
@@ -51,13 +52,15 @@ class EmailConfig:
         """Get list of missing configuration variables"""
         missing = []
         if not cls.TENANT_ID:
-            missing.append("MICROSOFT_TENANT_ID")
+            missing.append("API_AZURE_TENANT_ID")
         if not cls.CLIENT_ID:
-            missing.append("MICROSOFT_CLIENT_ID")
+            missing.append("API_AZURE_CLIENT_ID")
         if not cls.CLIENT_SECRET:
-            missing.append("MICROSOFT_CLIENT_SECRET")
+            missing.append("API_AZURE_CLIENT_SECRET")
         if not cls.FROM_ADDRESS:
-            missing.append("EMAIL_FROM_ADDRESS")
+            missing.append("API_EMAIL_FROM_ADDRESS")
+        if not cls.FROM_NAME:
+            missing.append("API_EMAIL_FROM_NAME")
         return missing
 
 
@@ -75,7 +78,7 @@ class GraphAPIEmailSender:
         """
         # Check cache
         if self.token_cache and self.token_expires_at:
-            if datetime.utcnow() < self.token_expires_at:
+            if datetime.now(timezone.utc) < self.token_expires_at:
                 return self.token_cache
         
         # Request new token
@@ -96,7 +99,7 @@ class GraphAPIEmailSender:
             self.token_cache = token_data["access_token"]
             # Cache for slightly less than expiration time
             expires_in = token_data.get("expires_in", 3600)
-            self.token_expires_at = datetime.utcnow() + timedelta(seconds=expires_in - 60)
+            self.token_expires_at = datetime.now(timezone.utc) + timedelta(seconds=expires_in - 60)
             
             logger.info("Successfully obtained Microsoft Graph API access token")
             return self.token_cache
@@ -200,9 +203,9 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    activation_link = f"{EmailConfig.API_BASE_URL}/auth/activate?token={activation_token}"
+    activation_link = f"{EmailConfig.APP_BASE_URL}/auth/activate?token={activation_token}"
     
-    subject = "Activate Your FBI Wanted API Account"
+    subject = f"Activate Your {EmailConfig.FROM_NAME} Account"
     
     html_body = f"""
     <!DOCTYPE html>
@@ -258,11 +261,11 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
     </head>
     <body>
         <div class="header">
-            <h1>Welcome to FBI Wanted API</h1>
+            <h1>Welcome to {EmailConfig.FROM_NAME}</h1>
         </div>
         <div class="content">
             <h2>Activate Your Account</h2>
-            <p>Thank you for registering for the FBI Wanted API. To complete your registration and receive your API key, please activate your account by clicking the button below:</p>
+            <p>Thank you for registering with {EmailConfig.FROM_NAME}. To complete your registration and receive your API key, please activate your account by clicking the button below:</p>
             
             <div style="text-align: center;">
                 <a href="{activation_link}" class="button">Activate Account</a>
@@ -309,7 +312,7 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = "Your New FBI Wanted API Key"
+    subject = f"Your New {EmailConfig.FROM_NAME} Key"
     
     html_body = f"""
     <!DOCTYPE html>
@@ -367,7 +370,7 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
     </head>
     <body>
         <div class="header">
-            <h1>🔑 API Key Reset</h1>
+            <h1>🔑 {EmailConfig.FROM_NAME} Key Reset</h1>
         </div>
         <div class="content">
             <h2>Your New API Key</h2>
@@ -394,7 +397,7 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
             
             <p><strong>Example request:</strong></p>
             <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto;">
-curl -X POST "{EmailConfig.API_BASE_URL}/auth/token" \\
+curl -X POST "{EmailConfig.APP_BASE_URL}/auth/token" \\
   -H "Content-Type: application/json" \\
   -d '{{"api_key": "{api_key}"}}'
             </pre>
@@ -423,7 +426,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = "Welcome to FBI Wanted API - Your API Key"
+    subject = f"Welcome to {EmailConfig.FROM_NAME} - Your API Key"
     
     html_body = f"""
     <!DOCTYPE html>
@@ -484,7 +487,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
             <h1>✅ Account Activated!</h1>
         </div>
         <div class="content">
-            <h2>Welcome to FBI Wanted API</h2>
+            <h2>Welcome to {EmailConfig.FROM_NAME}</h2>
             <p>Your account has been successfully activated! Here is your API key:</p>
             
             <div class="api-key">
@@ -495,7 +498,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
                 <strong>💡 Getting Started:</strong><br>
                 1. Save your API key in a secure location<br>
                 2. Exchange it for access tokens using <code>/auth/token</code><br>
-                3. Use tokens to access FBI wanted persons data<br>
+                3. Use tokens to access FBI Wanted API data<br>
                 4. Your role: <strong>BASIC</strong> (25 records per request)
             </div>
             
@@ -503,14 +506,14 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
             
             <p>1. Get an access token:</p>
             <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto;">
-curl -X POST "{EmailConfig.API_BASE_URL}/auth/token" \\
+curl -X POST "{EmailConfig.APP_BASE_URL}/auth/token" \\
   -H "Content-Type: application/json" \\
   -d '{{"api_key": "{api_key}"}}'
             </pre>
             
             <p>2. Make your first search:</p>
             <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto;">
-curl "{EmailConfig.API_BASE_URL}/search/simple?field=sex&value=Male" \\
+curl "{EmailConfig.APP_BASE_URL}/search/simple?field=sex&value=Male" \\
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
             </pre>
             
@@ -522,7 +525,7 @@ curl "{EmailConfig.API_BASE_URL}/search/simple?field=sex&value=Male" \\
                 <li>Full field documentation</li>
             </ul>
             
-            <p><strong>Documentation:</strong> Visit <a href="{EmailConfig.API_BASE_URL}/docs">{EmailConfig.API_BASE_URL}/docs</a> for complete API documentation.</p>
+            <p><strong>Documentation:</strong> Visit <a href="{EmailConfig.APP_BASE_URL}/docs">{EmailConfig.APP_BASE_URL}/docs</a> for complete API documentation.</p>
             
             <div class="footer">
                 <p>Need help? Check our documentation or contact support.</p>
