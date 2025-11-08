@@ -958,13 +958,13 @@ async def full_refresh(
             request=request,
             format="json",
             size="all",
-            current_role=current_role
-        )
+            current_user=current_user
+            )
         logger.info(f"Extract completed: {extract_response}")
         
         # Step 2: Call load endpoint
         logger.info("Step 2: Loading extracted data")
-        load_response = await data_load(current_role=current_role)
+        load_response = await data_load(current_user=current_user)
         logger.info(f"Load completed: {load_response}")
         
         logger.info("Full refresh process completed successfully")

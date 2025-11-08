@@ -942,17 +942,22 @@ def get_db_connection():
     
     **Access:** BASIC role or higher
     **Result limits by role:**
-    - BASIC: Maximum 25 results, returns full_data
-    - PREMIUM: Maximum 5000 results, returns full_data_clean
-    - ADMIN: Maximum 5000 results, returns full_data_clean
+    - BASIC: Maximum 25 results, returns raw data
+    - PREMIUM: Maximum 5000 results, returns cleaned data
+    - ADMIN: Maximum 5000 results, returns cleaned data
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
     
     **Perfect for:** Basic text searches without complex logic.
     
     **Wildcard Patterns:**
-    - `*text*` → Contains "text" anywhere in the field
-    - `text*` → Starts with "text"
-    - `*text` → Ends with "text"
-    - `text` → Exact match
+    - `*text*` â†’ Contains "text" anywhere in the field
+    - `text*` â†’ Starts with "text"
+    - `*text` â†’ Ends with "text"
+    - `text` â†’ Exact match
     
     **Examples:**
     
@@ -981,9 +986,9 @@ def get_db_connection():
     }
 ```
     
-    **Returns:** Query parameters, result count, and array of matching records
+    **Returns:** Query parameters, result count, and array of matching records (each with data_type and data fields)
     """,
-    response_description="Query parameters, count, and array of JSONB records"
+    response_description="Query parameters, count, and array of records with data_type and data fields"
     )
 @limiter.limit(rate_max)
 async def simple_search(
@@ -1067,12 +1072,20 @@ async def simple_search(
                 cur.execute(query, tuple(query_params))
                 results = cur.fetchall()
                 
-        items = [row[data_field] for row in results]
+        # Extract data and add data_type indicator
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
             
         return {
             "query": search_request.model_dump(),
             "role": current_role.value,
-            "data_field": data_field,
             "resultcount": len(items),
             "items": items
         }
@@ -1088,8 +1101,13 @@ async def simple_search(
     
     **Access:** PREMIUM role or higher
     **Result limits by role:**
-    - PREMIUM: Maximum 5000 results, returns full_data_clean
-    - ADMIN: Maximum 5000 results, returns full_data_clean
+    - PREMIUM: Maximum 5000 results, returns cleaned data
+    - ADMIN: Maximum 5000 results, returns cleaned data
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
     
     **Perfect for:** Complex queries with multiple conditions and grouping logic.
     
@@ -1151,9 +1169,9 @@ async def simple_search(
 ```
     **Result:** (sex = "Male" AND age between 25-45) OR (reward >= 50000 AND subjects contains "Murder")
     
-    **Returns:** Query parameters, result count, and array of matching records
+    **Returns:** Query parameters, result count, and array of matching records (each with data_type and data fields)
     """,
-    response_description="Query parameters, count, and array of JSONB records"
+    response_description="Query parameters, count, and array of records with data_type and data fields"
 )
 @limiter.limit(rate_max)
 async def advanced_search(
@@ -1233,14 +1251,21 @@ async def advanced_search(
                 cur.execute(query, tuple(query_params))
                 results = cur.fetchall()
         
-        # Extract appropriate data field from each row
-        items = [row[data_field] for row in results]
+        # Extract data and add data_type indicator
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
         
         # Construct response payload
         return {
             "query": search_request.model_dump(),
             "role": current_role.value,
-            "data_field": data_field,
             "resultcount": len(items),
             "items": items
         }
