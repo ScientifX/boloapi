@@ -19,14 +19,8 @@ from enum import Enum
 from datetime import datetime
 from contextlib import contextmanager
 
-# Import auth utilities
-from auth import (
-    UserRole, 
-    get_current_role, 
-    require_role, 
-    get_data_field_for_role,
-    validate_limit_for_role
-)
+from auth import UserRole, get_data_field_for_role, validate_limit_for_role
+from jwt_auth import require_jwt_role
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -67,7 +61,6 @@ def validate_integer_value(value: Any, field_name: str) -> tuple:
         return False, f"{field_name} must be an integer, got float: {value}"
     
     return False, f"{field_name} must be an integer, got type: {type(value).__name__}"
-
 
 def validate_timestamp_value(value: Any, field_name: str) -> tuple:
     """
@@ -530,7 +523,6 @@ class FilterGroup(BaseModel):
             raise ValueError("Each group must contain at least one rule")
         return v
     
-
 class AdvancedSearchRequest(BaseModel):
     """
     Advanced search request with grouped conditions.
@@ -606,7 +598,6 @@ class AdvancedSearchRequest(BaseModel):
         if not v:
             raise ValueError("At least one filter group is required")
         return v
-
 
 class SimpleFilter(BaseModel):
     """
@@ -796,7 +787,6 @@ class SimpleSearchRequest(BaseModel):
             raise ValueError("At least one filter is required")
         return v
 
-
 def escape_sql_value(value: Any) -> str:
     """
     Escape values for SQL to prevent injection.
@@ -944,7 +934,6 @@ def get_db_connection():
         if conn:
             conn.close()
 
-
 @router.post(
     "/simple",
     summary="Simple Search with Wildcards",
@@ -995,19 +984,22 @@ def get_db_connection():
     **Returns:** Query parameters, result count, and array of matching records
     """,
     response_description="Query parameters, count, and array of JSONB records"
-)
+    )
 @limiter.limit(rate_max)
 async def simple_search(
     request: Request, 
     search_request: SimpleSearchRequest,
-    current_role: UserRole = Depends(require_role(UserRole.BASIC))
-):
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC)) 
+    ):
     """
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
     Requires BASIC role or higher.
     """
-    
+
+    current_role = current_user["role"]
+    user_id = current_user["user_id"]
+
     # Validate and enforce limit based on role
     actual_limit = validate_limit_for_role(current_role, search_request.limit)
     
@@ -1087,7 +1079,6 @@ async def simple_search(
             
     except Exception as e:
         raise Exception(f"Database Error: {str(e)}")
-    
 
 @router.post(
     "/advanced",
@@ -1168,8 +1159,8 @@ async def simple_search(
 async def advanced_search(
     request: Request, 
     search_request: AdvancedSearchRequest,
-    current_role: UserRole = Depends(require_role(UserRole.PREMIUM))
-):
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
+    ):
     """
     Execute an advanced search with grouped conditions.
     All validation is performed by Pydantic before this function runs.
@@ -1184,7 +1175,9 @@ async def advanced_search(
     - Text array fields (languages, aliases, locations, etc.)
     - Complex nested boolean logic
     """
-    
+    current_role = current_user["role"]
+    user_id = current_user["user_id"] 
+
     # Validate and enforce limit based on role
     actual_limit = validate_limit_for_role(current_role, search_request.limit)
     

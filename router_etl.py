@@ -22,7 +22,8 @@ from pydantic import BaseModel, Field
 from fastapi import APIRouter
 
 # Import auth utilities
-from auth import UserRole, require_role
+from auth import UserRole
+from jwt_auth import require_jwt_role
 
 # Response Models
 class ImportSummary(BaseModel):
@@ -810,10 +811,10 @@ router = APIRouter(prefix="/api/etl", tags=["Data Import"], include_in_schema=Tr
     status_code=status.HTTP_200_OK,
     summary="Load FBI Data from File",
     description="Import FBI wanted data from JSON file on server. **ADMIN ONLY**"
-)
+    )
 async def data_load(
-    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
-):
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
     """
     Import FBI wanted data from a JSON file on the server
     
@@ -821,9 +822,11 @@ async def data_load(
     
     Returns a summary of the import operation including counts and any errors.
     """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"] 
     try:
         pull_date = date.today()
-        file_path = "fbi-wanted-api-data.json"
+        file_path = "data/fbi-wanted-api-data.json"
 
         # Perform import
         summary = import_data_set(file_path, pull_date)
@@ -854,7 +857,7 @@ async def get_wanted(
     request: Request,
     format: Literal["json", "csv"] = Query(default="json", description="Output format"),
     size: Literal["default", "all"] = Query(default="default", description="Data size - 'default' for single page, 'all' for all records"),
-    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
     Extract FBI wanted data and save to file in JSON or CSV format.
@@ -866,6 +869,8 @@ async def get_wanted(
     - size: Data size - 'default' (single page) or 'all' (all records across all pages)
     - All other query parameters are passed through to the FBI API
     """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"]
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             # Filter out our custom parameters before passing to FBI API
@@ -931,7 +936,7 @@ async def get_wanted(
     )
 async def full_refresh(
     request: Request,
-    current_role: UserRole = Depends(require_role(UserRole.ADMIN))
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
     Perform a full refresh: extract all FBI wanted data to JSON file, then load it.
@@ -942,6 +947,8 @@ async def full_refresh(
     1. /extract with format=json and size=all
     2. /load to process the extracted data
     """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"] 
     try:
         logger.info("Starting full refresh process")
         

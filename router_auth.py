@@ -100,7 +100,7 @@ def get_user_by_email(email: str) -> Optional[dict]:
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
-                "SELECT * FROM users WHERE email = %s",
+                "SELECT * FROM tbl_users WHERE email = %s",
                 (email,)
             )
             return cur.fetchone()
@@ -110,7 +110,7 @@ def get_user_by_id(user_id: str) -> Optional[dict]:
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
-                "SELECT * FROM users WHERE user_id = %s",
+                "SELECT * FROM tbl_users WHERE user_id = %s",
                 (user_id,)
             )
             return cur.fetchone()
@@ -120,7 +120,7 @@ def get_user_by_activation_token(token: str) -> Optional[dict]:
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
-                "SELECT * FROM users WHERE activation_token = %s",
+                "SELECT * FROM tbl_users WHERE activation_token = %s",
                 (token,)
             )
             return cur.fetchone()
@@ -175,7 +175,7 @@ async def register(request: Request, register_req: RegisterRequest):
                     with conn.cursor() as cur:
                         cur.execute(
                             """
-                            UPDATE users 
+                            UPDATE tbl_users 
                             SET activation_token = %s,
                                 activation_expires_at = %s,
                                 updated_at = NOW()
@@ -204,7 +204,7 @@ async def register(request: Request, register_req: RegisterRequest):
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(
                     """
-                    INSERT INTO users (
+                    INSERT INTO tbl_users (
                         email, role, api_key_hash, activation_token, activation_expires_at
                     )
                     VALUES (%s, %s, %s, %s, %s)
@@ -289,7 +289,7 @@ async def activate(request: Request, token: str):
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    UPDATE users
+                    UPDATE tbl_users
                     SET is_active = TRUE,
                         activation_token = NULL,
                         activation_expires_at = NULL,
@@ -342,7 +342,7 @@ async def get_token(request: Request, token_req: TokenRequest):
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(
-                    "SELECT user_id, api_key_hash, role, is_active FROM users WHERE is_active = TRUE"
+                    "SELECT user_id, api_key_hash, role, is_active FROM tbl_users WHERE is_active = TRUE"
                 )
                 users = cur.fetchall()
         
@@ -363,7 +363,7 @@ async def get_token(request: Request, token_req: TokenRequest):
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "UPDATE users SET last_login_at = NOW() WHERE user_id = %s",
+                    "UPDATE tbl_users SET last_login_at = NOW() WHERE user_id = %s",
                     (authenticated_user['user_id'],)
                 )
                 conn.commit()
@@ -439,7 +439,7 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    UPDATE users
+                    UPDATE tbl_users
                     SET api_key_hash = %s,
                         updated_at = NOW()
                     WHERE user_id = %s

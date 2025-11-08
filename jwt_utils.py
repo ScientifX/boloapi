@@ -5,7 +5,9 @@ Handles token generation, validation, and claims extraction
 import os
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
+
 import jwt
+
 from auth import UserRole
 
 # JWT Configuration
