@@ -1,22 +1,25 @@
 """
-Authentication Router (Production Version with Email Integration)
+Authentication Router
 Handles user registration, activation, and JWT token generation
-Includes Microsoft Graph API email functionality
 """
-import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime, timedelta, timezone
 from contextlib import contextmanager
 from typing import Optional
-import logging
 
-from fastapi import APIRouter, HTTPException, Request, status, Query
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from config import ( 
+    DB_CONFIG, 
+    API_AZURE_CLIENT_ID, 
+    API_EMAIL_FROM_ADDRESS, 
+    API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+    ) 
+
 from auth import UserRole
 from security_utils import (
     generate_api_key_and_hash,
@@ -24,17 +27,7 @@ from security_utils import (
     verify_api_key,
     is_valid_email
 )
-from jwt_utils import create_access_token
-from email_utils import (
-    send_activation_email,
-    send_api_key_email,
-    send_welcome_email,
-    EmailConfig
-)
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from jwt_utils import create_access_token, decode_access_token, JWTError
 
 # Rate limiter
 rate_max = "10/minute"
@@ -65,14 +58,12 @@ class RegisterResponse(BaseModel):
     user_id: str
     email: str
     note: str
-    email_sent: bool
 
 class ActivateResponse(BaseModel):
     """Response after successful activation"""
     message: str
     api_key: str
     instructions: str
-    email_sent: bool
 
 class TokenRequest(BaseModel):
     """Request model for token generation"""
@@ -90,7 +81,6 @@ class ResetKeyResponse(BaseModel):
     message: str
     api_key: str
     instructions: str
-    email_sent: bool
 
 # ============================================================================
 # DATABASE HELPERS
@@ -161,16 +151,13 @@ def get_user_by_activation_token(token: str) -> Optional[dict]:
     
     **Note:** If email already exists and is inactive, a new activation email will be sent.
     If already active, you'll be informed to use the existing account.
-    
-    **Email:** Activation email will be sent if email is configured. Otherwise, activation token 
-    will be provided in response for testing purposes.
     """
 )
 @limiter.limit(rate_max)
 async def register(request: Request, register_req: RegisterRequest):
     """
     Register a new user account.
-    Sends activation email with secure token if email is configured.
+    Sends activation email with secure token.
     """
     try:
         email = register_req.email
@@ -200,36 +187,18 @@ async def register(request: Request, register_req: RegisterRequest):
                                 updated_at = NOW()
                             WHERE user_id = %s
                             """,
-                            (activation_token, activation_expires.replace(tzinfo=None), user_id)
+                            (activation_token, activation_expires, user_id)
                         )
                         conn.commit()
                 
-                # Send activation email if configured
-                email_sent = False
-                if EmailConfig.is_configured():
-                    try:
-                        email_sent = send_activation_email(email, activation_token)
-                        if email_sent:
-                            logger.info(f"Activation email resent to {email}")
-                        else:
-                            logger.warning(f"Failed to send activation email to {email}")
-                    except Exception as e:
-                        logger.error(f"Error sending activation email to {email}: {str(e)}")
-                else:
-                    logger.warning("Email not configured - activation email not sent")
-                
-                # Prepare response
-                if email_sent:
-                    note = "Check your email for the activation link."
-                else:
-                    note = f"Email not configured. For testing, activate at: /auth/activate?token={activation_token}"
+                # TODO: Send activation email
+                # send_activation_email(email, activation_token)
                 
                 return RegisterResponse(
-                    message="Activation email resent" if email_sent else "Registration record updated (email disabled)",
+                    message="Activation email resent",
                     user_id=str(user_id),
                     email=email,
-                    note=note,
-                    email_sent=email_sent
+                    note=f"Check your email for the activation link. For testing: /auth/activate?token={activation_token}"
                 )
         
         # Create new user
@@ -247,52 +216,25 @@ async def register(request: Request, register_req: RegisterRequest):
                     VALUES (%s, %s, %s, %s, %s)
                     RETURNING user_id
                     """,
-                    (email, UserRole.BASIC.value, api_key_hash, activation_token, activation_expires.replace(tzinfo=None))
+                    (email, UserRole.BASIC.value, api_key_hash, activation_token, activation_expires)
                 )
                 result = cur.fetchone()
                 user_id = result['user_id']
                 conn.commit()
         
-        logger.info(f"New user registered: {email} (user_id: {user_id})")
-        
-        # Send activation email if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_activation_email(email, activation_token)
-                if email_sent:
-                    logger.info(f"Activation email sent to {email}")
-                else:
-                    logger.warning(f"Failed to send activation email to {email}")
-            except Exception as e:
-                logger.error(f"Error sending activation email to {email}: {str(e)}")
-        else:
-            logger.warning("Email not configured - activation email not sent")
-        
-        # Prepare response
-        if email_sent:
-            message = "Registration successful. Check your email for activation link."
-            note = (
-                "📧 STEP 1: Check your email for the ACTIVATION link and click it. "
-                "📧 STEP 2: After clicking, you'll receive a WELCOME email with your API key. "
-                "Use the API key from the WELCOME email (not the activation email)."
-            )
-        else:
-            message = "Registration successful (email disabled)"
-            note = f"For testing, activate at: /auth/activate?token={activation_token}"
+        # TODO: Send activation email
+        # send_activation_email(email, activation_token)
         
         return RegisterResponse(
-            message=message,
+            message="Registration successful. Check your email for activation link.",
             user_id=str(user_id),
             email=email,
-            note=note,
-            email_sent=email_sent
+            note=f"For testing, activate at: /auth/activate?token={activation_token}"
         )
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Registration error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Registration failed: {str(e)}"
@@ -303,33 +245,29 @@ async def register(request: Request, register_req: RegisterRequest):
     response_model=ActivateResponse,
     summary="Activate Account",
     description="""
-    Activate your account using the token sent to your email.
+    Activate your account using the token from your activation email.
     
     **Process:**
-    1. Click the activation link in your email (or use token from registration response if email disabled)
-    2. Account is activated
-    3. Receive your API key
-    4. Welcome email sent with API key copy (if email configured)
+    1. Click the link in your activation email
+    2. Your account will be activated
+    3. You'll receive your API key
     
     **Important:** Save your API key securely. You'll need it to get access tokens.
-    
-    **Note:** Activation tokens expire after 48 hours.
     """
 )
 @limiter.limit(rate_max)
-async def activate(request: Request, token: str = Query(..., description="Activation token from email")):
+async def activate(request: Request, token: str):
     """
-    Activate user account with token from email.
-    Generates and returns API key.
-    Sends welcome email with API key if email is configured.
+    Activate user account with activation token.
+    Returns the API key upon successful activation.
     """
     try:
-        # Find user by activation token
+        # Get user by activation token
         user = get_user_by_activation_token(token)
         
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired activation token"
             )
         
@@ -341,22 +279,15 @@ async def activate(request: Request, token: str = Query(..., description="Activa
             )
         
         # Check if token expired
-        if user['activation_expires_at']:
-            # Make comparison timezone-aware or timezone-naive depending on database value
-            expiry_time = user['activation_expires_at']
-            current_time = datetime.now(timezone.utc)
-            
-            # If expiry_time is naive (no timezone), make current_time naive too
-            if expiry_time.tzinfo is None:
-                current_time = datetime.now()
-            
-            if expiry_time < current_time:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Activation token expired. Please register again."
-                )
+        if user['activation_expires_at'] and user['activation_expires_at'] < datetime.now(timezone.utc):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Activation token expired. Please register again."
+            )
         
-        # Generate new API key for activation
+        # Get the API key hash (we'll need to show instructions)
+        # Note: We can't retrieve the original API key since it's hashed
+        # For activation, we need to generate a new one
         api_key, api_key_hash = generate_api_key_and_hash()
         
         # Activate account
@@ -376,48 +307,15 @@ async def activate(request: Request, token: str = Query(..., description="Activa
                 )
                 conn.commit()
         
-        logger.info(f"Account activated: {user['email']} (user_id: {user['user_id']})")
-        
-        # Send welcome email with API key if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_welcome_email(user['email'], api_key)
-                if email_sent:
-                    logger.info(f"Welcome email sent to {user['email']}")
-                else:
-                    logger.warning(f"Failed to send welcome email to {user['email']}")
-            except Exception as e:
-                logger.error(f"Error sending welcome email to {user['email']}: {str(e)}")
-        else:
-            logger.warning("Email not configured - welcome email not sent")
-        
-        # Prepare response
-        if email_sent:
-            instructions = (
-                "✅ Account activated! Your API key has been sent to your email. "
-                "IMPORTANT: Use the API key from the WELCOME email (not the activation email). "
-                "Save it securely - you won't be able to retrieve it again. "
-                "Use it with /auth/token to get access tokens."
-            )
-        else:
-            instructions = (
-                "Save this API key securely - you won't be able to see it again. "
-                "Use it with /auth/token to get access tokens. "
-                "(Email disabled - no welcome email sent)"
-            )
-        
         return ActivateResponse(
             message="Account activated successfully!",
             api_key=api_key,
-            instructions=instructions,
-            email_sent=email_sent
+            instructions="Save this API key securely. Use it with /auth/token to get access tokens. You won't be able to see this key again."
         )
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Activation error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Activation failed: {str(e)}"
@@ -450,7 +348,7 @@ async def get_token(request: Request, token_req: TokenRequest):
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(
-                    "SELECT user_id, api_key_hash, role, is_active, email FROM tbl_users WHERE is_active = TRUE"
+                    "SELECT user_id, api_key_hash, role, is_active FROM tbl_users WHERE is_active = TRUE"
                 )
                 users = cur.fetchall()
         
@@ -476,26 +374,25 @@ async def get_token(request: Request, token_req: TokenRequest):
                 )
                 conn.commit()
         
-        logger.info(f"Token generated for user: {authenticated_user['email']} (user_id: {authenticated_user['user_id']})")
-        
         # Create JWT token
         user_role = UserRole(authenticated_user['role'])
         access_token = create_access_token(
             user_id=str(authenticated_user['user_id']),
             role=user_role
-        )
+            )
+        
+        # from jwt_utils import API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
         
         return TokenResponse(
             access_token=access_token,
             token_type="bearer",
             expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             role=user_role.value
-        )
-        
+            )
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Token generation error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Token generation failed: {str(e)}"
@@ -511,7 +408,7 @@ async def get_token(request: Request, token_req: TokenRequest):
     **Process:**
     1. Submit your email address
     2. A new API key will be generated
-    3. Check your email for the new key (or see response if email disabled)
+    3. Check your email for the new key
     
     **Security Note:** This will invalidate your old API key and all tokens generated from it.
     """
@@ -520,7 +417,7 @@ async def get_token(request: Request, token_req: TokenRequest):
 async def reset_api_key(request: Request, register_req: RegisterRequest):
     """
     Reset API key for an existing active user.
-    Sends new API key via email if email is configured.
+    Sends new API key via email.
     """
     try:
         email = register_req.email
@@ -540,56 +437,16 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
                 detail="Account not activated. Please activate your account first."
             )
         
-        # Check daily reset limit
-        MAX_DAILY_RESETS = int(os.getenv('API_MAX_DAILY_KEY_RESETS'))
-        
-        # Check if user has exceeded daily reset limit
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(
-                    """
-                    SELECT key_reset_count, key_reset_date
-                    FROM tbl_users
-                    WHERE user_id = %s
-                    """,
-                    (user['user_id'],)
-                )
-                reset_data = cur.fetchone()
-                
-                today = datetime.now().date()
-                reset_count = reset_data.get('key_reset_count', 0) if reset_data else 0
-                reset_date = reset_data.get('key_reset_date') if reset_data else None
-                
-                # Convert reset_date to date if it's a datetime
-                if reset_date and hasattr(reset_date, 'date'):
-                    reset_date = reset_date.date()
-                
-                # Reset counter if it's a new day
-                if reset_date != today:
-                    reset_count = 0
-                
-                # Check if limit exceeded
-                if reset_count >= MAX_DAILY_RESETS:
-                    raise HTTPException(
-                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Daily key reset limit ({MAX_DAILY_RESETS}) reached. Try again tomorrow."
-                    )
-        
         # Generate new API key
         api_key, api_key_hash = generate_api_key_and_hash()
         
-        # Update in database with reset counter
+        # Update in database
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
                     UPDATE tbl_users
                     SET api_key_hash = %s,
-                        key_reset_count = CASE 
-                            WHEN key_reset_date = CURRENT_DATE THEN key_reset_count + 1
-                            ELSE 1
-                        END,
-                        key_reset_date = CURRENT_DATE,
                         updated_at = NOW()
                     WHERE user_id = %s
                     """,
@@ -597,48 +454,18 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
                 )
                 conn.commit()
         
-        logger.info(f"API key reset for user: {email} (user_id: {user['user_id']})")
-        
-        # Send new API key via email if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_api_key_email(email, api_key)
-                if email_sent:
-                    logger.info(f"API key reset email sent to {email}")
-                else:
-                    logger.warning(f"Failed to send API key reset email to {email}")
-            except Exception as e:
-                logger.error(f"Error sending API key reset email to {email}: {str(e)}")
-        else:
-            logger.warning("Email not configured - API key not sent via email")
-        
-        # Prepare response
-        if email_sent:
-            message = "API key reset successful - check your email"
-            instructions = (
-                "Your old API key and all tokens generated from it are now invalid. "
-                "The new key has been sent to your email. Save it securely."
-            )
-        else:
-            message = "API key reset successful (email disabled)"
-            instructions = (
-                "Your old API key and all tokens generated from it are now invalid. "
-                "Save this new key securely. Use it with /auth/token to get access tokens. "
-                "(Email disabled - no notification sent)"
-            )
+        # TODO: Send new API key via email
+        # send_api_key_email(email, api_key)
         
         return ResetKeyResponse(
-            message=message,
+            message="API key reset successful",
             api_key=api_key,
-            instructions=instructions,
-            email_sent=email_sent
+            instructions="Your old API key and all tokens generated from it are now invalid. Save this new key securely."
         )
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Key reset error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Key reset failed: {str(e)}"
@@ -651,15 +478,12 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
 )
 async def auth_info():
     """Return authentication information"""
-    email_status = EmailConfig.is_configured()
-    
-    base_info = {
+    return {
         "name": "Authentication API",
-        "version": "2.0.0",
-        "email_configured": email_status,
+        "version": "1.0.0",
         "flow": {
             "1_register": "POST /auth/register with email",
-            "2_activate": "GET /auth/activate?token={token} from email" if email_status else "GET /auth/activate?token={token} from registration response",
+            "2_activate": "GET /auth/activate?token={token} from email",
             "3_get_token": "POST /auth/token with API key",
             "4_use_token": "Include 'Authorization: Bearer {token}' header in requests"
         },
@@ -671,49 +495,7 @@ async def auth_info():
         },
         "token_info": {
             "type": "JWT Bearer",
-            "expiration": f"{API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES} minutes",
+            "expiration": "1 hour",
             "usage": "Authorization: Bearer {access_token}"
         }
     }
-    
-    if email_status:
-        base_info["email_info"] = {
-            "provider": "Microsoft Graph API",
-            "from_address": EmailConfig.FROM_ADDRESS,
-            "from_name": EmailConfig.FROM_NAME
-        }
-    else:
-        base_info["email_info"] = {
-            "status": "not configured",
-            "note": "Email notifications disabled. Activation tokens and API keys will be shown in API responses for testing."
-        }
-    
-    return base_info
-
-@router.get(
-    "/health",
-    summary="Authentication Health Check",
-    description="Check authentication system health including email configuration"
-)
-async def auth_health():
-    """Check authentication system health"""
-    email_configured = EmailConfig.is_configured()
-    
-    health_status = {
-        "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "components": {
-            "database": "operational",
-            "jwt": "operational",
-            "email": "configured" if email_configured else "not configured"
-        }
-    }
-    
-    if not email_configured:
-        health_status["warnings"] = [
-            "Email not configured - activation tokens and API keys will be shown in responses"
-        ]
-        missing = EmailConfig.get_missing_config()
-        health_status["missing_config"] = missing
-    
-    return health_status

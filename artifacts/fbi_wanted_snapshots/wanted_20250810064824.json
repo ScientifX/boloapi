@@ -1,0 +1,1793 @@
+{
+  "total": 41,
+  "items": [
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/vitelhomme-innocent",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "150 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-french.pdf/@@download/file/vitelhomme-innocent.French.pdf",
+          "name": "EN FRANAIS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-creole.pdf/@@download/file/vitelhomme-innocent.Creole.pdf",
+          "name": "Nan Kreyl Ayisyen"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vitelhomme-innocent-spanishfinal.pdf/@@download/file/vitelhomme-innocent.SpanishFINAL.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-07-01T15:31:48+00:00",
+      "age_min": null,
+      "caution": "<p>Vitel'Homme Innocent, as leader of the gang Kraze Barye, allegedly worked together with the gang 400 Mawozo, in the October 2021, kidnapping of 17 Christian Missionaries in Haiti, including five children, one as young as 8 months old. The hostages were allegedly held at gunpoint and most remained captive for 61 days. The gangs demanded ransom payment for each of the victims. Additionally, under the direction of Innocent, it is alleged that in October 2022, the Kraze Barye gang kidnapped a United States citizen in Haiti and killed a second United States citizen during the kidnapping attempt.</p>\r\n<p>\u00a0</p>\r\n<p>Vitel'Homme Innocent was charged with Conspiracy to Commit Hostage Taking; Hostage Taking; Conspiracy to Commit Hostage Taking Resulting in Death; and Attempted Hostage Taking Resulting in Death by indictments filed in the United States District Court for the District of Columbia.</p>",
+      "description": "Conspiracy to Commit Hostage Taking; Hostage Taking; Conspiracy to Commit Hostage Taking Resulting in Death; Attempted Hostage Taking Resulting in Death",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "VITEL'HOMME INNOCENT",
+      "coordinates": [],
+      "place_of_birth": "Haiti",
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent",
+      "ncic": null,
+      "height_min": 67,
+      "race": "black",
+      "publication": "2022-11-03T10:49:00",
+      "weight_max": 150,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg",
+          "thumb": "https://www.fbi.gov/wanted/additional/vitelhomme-innocent/vhinnocent2.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": "The United States Department of State\u2019s Transnational Organized Crime Rewards Program is offering a reward of up to $2 million for information leading to the arrest and/or conviction of Vitel'Homme Innocent.",
+      "nationality": "Haitian",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "March 27, 1986"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 150,
+      "hair_raw": "Black",
+      "uid": "466379d55d804fdeabfc3944c5d44331",
+      "sex": "Male",
+      "height_max": 70,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/466379d55d804fdeabfc3944c5d44331"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": "<p>The Federal Bureau of Investigation's Miami Field Office is seeking information on a carjacking that took place on November 26, 2024, near SW North River Drive in Miami, Florida. The carjacked vehicle, which has since been recovered, is described as a white 2019 Ford Mustang with a black convertible top. Law enforcement is looking for an individual who may fit the following description: Black male, approximately 20 to 30 years old, 5\u20198\u201d to 5\u201911\u201d, with short hair.\u00a0 Anyone who observed an individual driving, operating, or in the vicinity of a Mustang fitting this description in Pahokee, Florida, between November 26 and 28, 2024, are asked to contact the FBI.\u00a0</p>\r\n<p>\u00a0</p>\r\n<p>\u00a0</p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/seeking-info/carjacking",
+      "occupations": null,
+      "eyes_raw": null,
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "information",
+      "possible_countries": null,
+      "eyes": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/carjacking/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-06-11T15:15:51+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "Miami, Florida\r\nNovember 26, 2024",
+      "person_classification": "Main",
+      "hair": null,
+      "reward_max": 0,
+      "title": "CARJACKING",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/carjacking",
+      "ncic": null,
+      "height_min": null,
+      "race": null,
+      "publication": "2025-06-09T09:40:00",
+      "weight_max": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/carjacking/@@images/image/large",
+          "caption": "2019 Ford Mustang",
+          "original": "https://www.fbi.gov/wanted/seeking-info/carjacking/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/carjacking/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": "The FBI is offering a reward of up to $2,500 for information leading to the arrest and conviction of the unknown suspect(s) responsible for this carjacking.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": null,
+      "uid": "60374b2f019c4455a42e6578b8122ee5",
+      "sex": null,
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/60374b2f019c4455a42e6578b8122ee5"
+    },
+    {
+      "possible_states": [
+        "US-FL"
+      ],
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/wcc/luis-benitez",
+      "occupations": [
+        "Businessman"
+      ],
+      "eyes_raw": "Brown",
+      "scars_and_marks": "None known",
+      "weight": "180 pounds",
+      "poster_classification": "default",
+      "possible_countries": [
+        "CUB",
+        "DOM",
+        "NIC",
+        "USA"
+      ],
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/luis-benitez/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/luis-benitez/luis-benitez-spanish-final.pdf/@@download/file/luis-benitez.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-06-10T14:04:41+00:00",
+      "age_min": null,
+      "caution": "<p>Luis Benitez, <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/carlos-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/carlos-benitez\">Carlos Benitez</a>, and <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/jose-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/jose-benitez\">Jose Benitez </a>are wanted for their alleged involvement in a multi-million dollar scheme to defraud Medicare in the Miami-Dade area of Florida. It is alleged that from 2001 through 2004, the Benitez brothers, using straw owners to disguise their own involvement, owned and directed eleven medical clinics that purportedly provided HIV infusion treatment to infected Medicare beneficiaries. However, the medication that was alleged to have been given to the patients was medically unnecessary and often never given to the patients. The patients received kickbacks for their Medicare information. The Benitez brothers then allegedly opened sham companies to launder millions of dollars coming into the clinics from Medicare.</p>\r\n<p>\u00a0</p>\r\n<p>On May 22, 2008, the Benitez brothers were indicted by a Federal Grand Jury for the United States District Court, Southern District of Florida, for conspiracy to defraud the United States, to cause the submission of false claims, and to pay health care kickbacks; conspiracy to commit health care fraud; submission of false claims; money laundering conspiracy; and money laundering. That same day, federal warrants were issued for their arrests.</p>",
+      "description": "Conspiracy to Defraud the United States, to Cause the Submission of False Claims, and to Pay Health Care Kickbacks; Conspiracy to Commit Health Care Fraud; Submission of False Claims; Money Laundering Conspiracy; Money Laundering",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "LUIS BENITEZ",
+      "coordinates": [],
+      "place_of_birth": "Cuba",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Luis Enrique Gonzalez",
+        "Luis E. Benitez",
+        "Luis Enrique Benitez Gonzalez"
+      ],
+      "url": "https://www.fbi.gov/wanted/wcc/luis-benitez",
+      "ncic": "W484468798",
+      "height_min": 71,
+      "race": "hispanic",
+      "publication": "2010-08-12T19:35:00",
+      "weight_max": 180,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/luis-benitez/@@images/image/large",
+          "caption": "Photograph taken in 2005",
+          "original": "https://www.fbi.gov/wanted/wcc/luis-benitez/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/wcc/luis-benitez/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Luis Benitez injured his leg and walks with a limp. He may travel to Cuba, the Dominican Republic and Nicaragua.</p>",
+      "reward_text": null,
+      "nationality": "Cuban",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "June 6, 1966"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 180,
+      "hair_raw": "Black",
+      "uid": "574e3cf3531d3fe1c7903a75a023209a",
+      "sex": "Male",
+      "height_max": 71,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/574e3cf3531d3fe1c7903a75a023209a"
+    },
+    {
+      "possible_states": [
+        "US-FL"
+      ],
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/wcc/jose-benitez",
+      "occupations": [
+        "Businessman"
+      ],
+      "eyes_raw": "Brown",
+      "scars_and_marks": "None known",
+      "weight": "155 pounds",
+      "poster_classification": "default",
+      "possible_countries": [
+        "CUB",
+        "DMA",
+        "DOM",
+        "NIC",
+        "USA"
+      ],
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/jose-benitez/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/jose-benitez/jose-benitez-spanish-final.pdf/@@download/file/jose-benitez.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-06-10T14:02:52+00:00",
+      "age_min": null,
+      "caution": "<p>Jose Benitez, <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/carlos-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/carlos-benitez\">Carlos Benitez</a>, and <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/luis-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/luis-benitez\">Luis Benitez</a> are wanted for their alleged involvement in a multi-million dollar scheme to defraud Medicare in the Miami-Dade area of Florida. It is alleged that from 2001 through 2004, the Benitez brothers, using straw owners to disguise their own involvement, owned and directed eleven medical clinics that purportedly provided HIV infusion treatment to infected Medicare beneficiaries. However, the medication that was alleged to have been given to the patients was medically unnecessary and often never given to the patients. The patients received kickbacks for their Medicare information. The Benitez brothers then allegedly opened sham companies to launder millions of dollars coming into the clinics from Medicare.</p>\r\n<p>\u00a0</p>\r\n<p>On May 22, 2008, the Benitez brothers were indicted by a Federal Grand Jury for the United States District Court, Southern District of Florida, for conspiracy to defraud the United States, to cause the submission of false claims, and to pay health care kickbacks; conspiracy to commit health care fraud; submission of false claims; money laundering conspiracy; and money laundering. That same day, federal warrants were issued for their arrests.</p>",
+      "description": "Conspiracy to Defraud the United States, to Cause the Submission of False Claims, and to Pay Health Care Kickbacks; Conspiracy to Commit Health Care Fraud; Submission of False Claims; Money Laundering Conspiracy; Money Laundering",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "JOSE BENITEZ",
+      "coordinates": [],
+      "place_of_birth": "Cuba",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Jose Manuel Benitez",
+        "Jose Manuel Gonzalez",
+        "Jose Manuel Benitez Gonzalez"
+      ],
+      "url": "https://www.fbi.gov/wanted/wcc/jose-benitez",
+      "ncic": "W514486351",
+      "height_min": 71,
+      "race": "hispanic",
+      "publication": "2010-08-17T15:50:00",
+      "weight_max": 155,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/jose-benitez/@@images/image/large",
+          "caption": "Photograph taken in 2007",
+          "original": "https://www.fbi.gov/wanted/wcc/jose-benitez/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/wcc/jose-benitez/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Jose Benitez may have travelled to Cuba, the Dominican Republic, and Nicaragua.</p>",
+      "reward_text": null,
+      "nationality": "Cuban",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "February 29, 1964"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 155,
+      "hair_raw": "Black",
+      "uid": "4e956bd7292c3a844aea29c79833f975",
+      "sex": "Male",
+      "height_max": 71,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/4e956bd7292c3a844aea29c79833f975"
+    },
+    {
+      "possible_states": [
+        "US-FL"
+      ],
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/wcc/carlos-benitez",
+      "occupations": [
+        "Businessman"
+      ],
+      "eyes_raw": "Brown",
+      "scars_and_marks": "None known",
+      "weight": "180 pounds",
+      "poster_classification": "default",
+      "possible_countries": [
+        "CRI",
+        "CUB",
+        "DOM",
+        "NIC",
+        "USA"
+      ],
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/carlos-benitez/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/carlos-benitez/carlos-benitez-spanish-final.pdf/@@download/file/carlos-benitez.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-06-10T14:01:26+00:00",
+      "age_min": null,
+      "caution": "<p>Carlos Benitez, <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/luis-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/luis-benitez\">Luis Benitez </a>and <a data-linktype=\"external\" href=\"https://www.fbi.gov/wanted/wcc/jose-benitez\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/wcc/jose-benitez\">Jose Benitez</a> are wanted for their alleged involvement in a multi-million dollar scheme to defraud Medicare in the Miami-Dade area of Florida. It is alleged that from 2001 through 2004, the Benitez brothers, using straw owners to disguise their own involvement, owned and directed eleven medical clinics that purportedly provided HIV infusion treatment to infected Medicare beneficiaries. However, the medication that was alleged to have been given to the patients was medically unnecessary and often never given to the patients. The patients received kickbacks for their Medicare information. The Benitez brothers then allegedly opened sham companies to launder millions of dollars coming into the clinics from Medicare.</p>\r\n<p>\u00a0</p>\r\n<p>On May 22, 2008, the Benitez brothers were indicted by a Federal Grand Jury for the United States District Court, Southern District of Florida, for conspiracy to defraud the United States, to cause the submission of false claims, and to pay health care kickbacks; conspiracy to commit health care fraud; submission of false claims; money laundering conspiracy; and money laundering. That same day, federal warrants were issued for their arrests.</p>",
+      "description": "Conspiracy to Defraud the United States, to Cause the Submission of False Claims, and to Pay Health Care Kickbacks; Conspiracy to Commit Health Care Fraud; Submission of False Claims; Money Laundering Conspiracy; Money Laundering",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "CARLOS BENITEZ",
+      "coordinates": [],
+      "place_of_birth": "Cuba",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Carlos M. Benitez Gonzalez",
+        "Carlos M. Benitez",
+        "Carlos Manuel Benitez Gonzalez"
+      ],
+      "url": "https://www.fbi.gov/wanted/wcc/carlos-benitez",
+      "ncic": "W344452842",
+      "height_min": 69,
+      "race": "hispanic",
+      "publication": "2010-08-17T15:40:00",
+      "weight_max": 180,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/carlos-benitez/@@images/image/large",
+          "caption": "Photograph taken in 2005",
+          "original": "https://www.fbi.gov/wanted/wcc/carlos-benitez/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/wcc/carlos-benitez/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Carlos Benitez may have traveled to Costa Rica, Cuba, the Dominican Republic and Nicaragua.</p>",
+      "reward_text": null,
+      "nationality": "Cuban",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "August 3, 1961"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 180,
+      "hair_raw": "Black",
+      "uid": "e3fea65939bd6028912b2e93baafac6c",
+      "sex": "Male",
+      "height_max": 69,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/e3fea65939bd6028912b2e93baafac6c"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/cyber/pak-jin-song",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/pak-jin-song/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-21T13:05:39+00:00",
+      "age_min": null,
+      "caution": "<p>Pak Jin-Song is wanted for his alleged involvement in a fraudulent scheme to obtain remote information technology (IT) work with U.S. companies that generated revenue for the Democratic People's Republic of Korea (DPRK). It is alleged that from approximately April 2018 through August 2024, Pak Jin-Song and others obtained work from at least sixty-four U.S. companies. Payments from ten of those companies generated at least $866,255 in revenue, most of which was then laundered through a Chinese bank account.<br /><br /></p>\r\n<p>Pak Jin-Song and others allegedly used forged and stolen identity documents, including U.S. passports containing the stolen personally identifiable information of a U.S. person, to conceal their true identities so that these North Korean nationals could circumvent sanctions and other laws to obtain employment with U.S. companies. It is further alleged that these individuals conspired to launder payments for the remote IT work through a variety of accounts designed to promote the scheme and conceal its proceeds.<br /><br /></p>\r\n<p>On January 21, 2025, a federal arrest warrant was issued for Pak Jin-Song in the United States District Court for the Southern District of Florida, Miami, Florida, after he was charged with\u00a0Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False Identification Documents; and Conspiracy to Violate the International Emergency Economic Powers Act.</p>",
+      "description": "Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False\r\nIdentification Documents; Conspiracy to Violate the International Emergency Economic Powers Act",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "PAK JIN-SONG",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": "Asian",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Glaus Li"
+      ],
+      "url": "https://www.fbi.gov/wanted/cyber/pak-jin-song",
+      "ncic": null,
+      "height_min": null,
+      "race": "asian",
+      "publication": "2025-02-03T11:20:00",
+      "weight_max": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cyber/pak-jin-song/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/cyber/pak-jin-song/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/cyber/pak-jin-song/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": null,
+      "nationality": "North Korean",
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": "Black",
+      "uid": "51c0db5e0a8d46559efcef2cb0d50edd",
+      "sex": "Male",
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/51c0db5e0a8d46559efcef2cb0d50edd"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/cyber/jin-sung-il",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/jin-sung-il/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-21T13:04:45+00:00",
+      "age_min": null,
+      "caution": "<p>Jin Sung-Il is wanted for his alleged involvement in a fraudulent scheme to obtain remote information technology (IT) work with U.S. companies that generated revenue for the Democratic People's Republic of Korea (DPRK). It is alleged that from approximately April 2018 through August 2024, Jin Sung-Il and others obtained work from at least sixty-four U.S. companies. Payments from ten of those companies generated at least $866,255 in revenue, most of which was then laundered through a Chinese bank account.<br /><br /></p>\r\n<p>Jin Sung-Il and others allegedly used forged and stolen identity documents, including U.S. passports containing the stolen personally identifiable information of a U.S. person, to conceal their true identities so that these North Korean nationals could circumvent sanctions and other laws to obtain employment with U.S. companies. It is further alleged that these individuals conspired to launder payments for the remote IT work through a variety of accounts designed to promote the scheme and conceal its proceeds.<br /><br /></p>\r\n<p>On January 21, 2025, a federal arrest warrant was issued for Jin Sung-Il in the United States District Court for the Southern District of Florida, Miami, Florida, after he was charged with\u00a0Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False Identification Documents; and Conspiracy to Violate the International Emergency Economic Powers Act.</p>\r\n<p>\u00a0</p>",
+      "description": "Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False \r\nIdentification Documents; Conspiracy to Violate the International Emergency Economic Powers Act",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "JIN SUNG-IL",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": "Asian",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Jin Song-Il",
+        "Richard Stewart",
+        "Pedro Alonso",
+        "Pedro Alonso de los Reyes",
+        "Stewart Conn"
+      ],
+      "url": "https://www.fbi.gov/wanted/cyber/jin-sung-il",
+      "ncic": null,
+      "height_min": null,
+      "race": "asian",
+      "publication": "2025-02-03T08:11:00",
+      "weight_max": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cyber/jin-sung-il/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/cyber/jin-sung-il/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/cyber/jin-sung-il/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": null,
+      "nationality": "North Korean",
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": "Black",
+      "uid": "b8fa10a540cb48408d271e4fed6785ac",
+      "sex": "Male",
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/b8fa10a540cb48408d271e4fed6785ac"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/cyber/dprk-it-fraud",
+      "occupations": null,
+      "eyes_raw": null,
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-21T13:00:01+00:00",
+      "age_min": null,
+      "caution": "<p><a data-urltype=\"/view\" href=\"https://www.fbi.gov/wanted/cyber/jin-sung-il\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/jin-sung-il\">Jin Sung-Il </a>and <a data-urltype=\"/view\" href=\"https://www.fbi.gov/wanted/cyber/pak-jin-song\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/pak-jin-song\">Pak Jin-Song</a> are wanted for their alleged involvement in a fraudulent scheme to obtain remote information technology (IT) work with U.S. companies that generated revenue for the Democratic People's Republic of Korea (DPRK). It is alleged that from approximately April 2018 through August 2024, Jin Sung-Il, Pak Jin-Song, and others obtained work from at least sixty-four U.S. companies. Payments from ten of those companies generated at least $866,255 in revenue, most of which was then laundered through a Chinese bank account.</p>\r\n<p>\u00a0</p>\r\n<p>Jin Sung-Il, Pak Jin-Song, and others allegedly used forged and stolen identity documents, including U.S. passports containing the stolen personally identifiable information of a U.S. person, to conceal their true identities so that these North Korean nationals could circumvent sanctions and other laws to obtain employment with U.S. companies. It is further alleged that these individuals conspired to launder payments for the remote IT work through a variety of accounts designed to promote the scheme and conceal its proceeds.</p>\r\n<p>\u00a0</p>\r\n<p>On January 21, 2025, federal arrest warrants were issued for each of the men in the United States District Court for the Southern District of Florida, Miami, Florida, after they were charged with\u00a0Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False Identification Documents; and Conspiracy to Violate the International Emergency Economic Powers Act.</p>",
+      "description": "Conspiracy to Damage a Protected Computer; Conspiracy to Commit Wire Fraud and Mail Fraud; Conspiracy to Commit Money Laundering; Conspiracy to Transfer False\r\nIdentification Documents; Conspiracy to Violate the International Emergency Economic Powers Act",
+      "person_classification": "Main",
+      "hair": null,
+      "reward_max": 0,
+      "title": "DPRK IT FRAUD",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud",
+      "ncic": null,
+      "height_min": null,
+      "race": null,
+      "publication": "2025-02-11T14:15:00",
+      "weight_max": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/jin-sungil.jpeg/@@images/image/large",
+          "caption": "Jin Sung-Il",
+          "original": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/jin-sungil.jpeg",
+          "thumb": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/jin-sungil.jpeg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/pak-jin-song.jpeg/@@images/image/large",
+          "caption": "Pak Jin-Song",
+          "original": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/pak-jin-song.jpeg",
+          "thumb": "https://www.fbi.gov/wanted/cyber/dprk-it-fraud/pak-jin-song.jpeg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": null,
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": null,
+      "uid": "04da8eecb6054f28bc8318e2a7ca131c",
+      "sex": null,
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/04da8eecb6054f28bc8318e2a7ca131c"
+    },
+    {
+      "possible_states": [
+        "US-CA",
+        "US-FL",
+        "US-LA"
+      ],
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami"
+      ],
+      "details": "<p>Pedro Santamaria is wanted for his alleged involvement in the robbery of a tractor-trailer carrying precious metals traveling from Miami, Florida, to Boston, Massachusetts, that occurred in Wilson County, North Carolina, on March 1, 2015.\u00a0 Santamaria allegedly was a gunman during\u00a0the robbery in which\u00a0he\u00a0allegedly bound and dragged victims into the woods during the robbery. On May 18, 2016,\u00a0a federal arrest warrant was issued by the United States District Court for the Southern District of Florida after\u00a0Santamaria was charged with conspiracy to commit Hobbs Act robbery and conspiracy to possess a firearm in furtherance of a crime of violence.</p>\r\n<p>\u00a0</p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/pedro-santamaria",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": "Santamaria has a scar on his left forearm.",
+      "weight": "180 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/pedro-santamaria/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-20T19:13:36+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "Conspiracy to Commit Hobbs Act Robbery; Conspiracy to Possess a Firearm in Furtherance of a Crime of Violence",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "PEDRO SANTAMARIA",
+      "coordinates": [],
+      "place_of_birth": "Cuba",
+      "languages": null,
+      "race_raw": "Black (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/additional/pedro-santamaria",
+      "ncic": "W576294395",
+      "height_min": 67,
+      "race": "black",
+      "publication": "2018-09-26T13:34:00",
+      "weight_max": 180,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/pedro-santamaria/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/additional/pedro-santamaria/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/pedro-santamaria/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Santamaria has ties to California, Florida, Louisiana, and Texas.\u00a0\u00a0</p>",
+      "reward_text": "The FBI is offering a  reward of up to $10,000 for information leading to the arrest and conviction of Pedro Santamaria.",
+      "nationality": "Cuban",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "June 6, 1962",
+        "June 7, 1962",
+        "June 8, 1962",
+        "June 24, 1962",
+        "June 06, 1962",
+        "July 8, 1962",
+        "August 8, 1962 ",
+        "June 8, 1967"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 180,
+      "hair_raw": "Black",
+      "uid": "804a254d8f2444eebdf8bb276548392d",
+      "sex": "Male",
+      "height_max": 67,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/804a254d8f2444eebdf8bb276548392d"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/renel-destina",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "150 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/renel-destina/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/renel-destina/destinafrench.pdf/@@download/file/DestinaFrench.pdf",
+          "name": "EN FRANAIS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/renel-destina/renel_destina-haitian_creole.pdf/@@download/file/Renel_Destina.Haitian_Creole.pdf",
+          "name": "Nan Kreyl Ayisyen"
+        }
+      ],
+      "modified": "2025-02-20T19:13:34+00:00",
+      "age_min": null,
+      "caution": "<p>Renel Destina, as leader of the gang Gran Ravine, allegedly participated in kidnappings of United States citizens for ransom in 2021. In February 2021, Destina and associates allegedly kidnapped a United States citizen at gunpoint and held the victim for ransom for 14 days. The victim was allegedly held at gunpoint, beaten, and threatened by the gang, and was released only after a ransom was paid.</p>\r\n<p>Renel Destina was charged with Conspiracy to Commit Hostage Taking and Hostage Taking by an indictment filed in the United States District Court for the District of Columbia.</p>",
+      "description": "Conspiracy to Commit Hostage Taking; Hostage Taking",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "RENEL DESTINA",
+      "coordinates": [],
+      "place_of_birth": "Haiti",
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "\"Ti Lapli\""
+      ],
+      "url": "https://www.fbi.gov/wanted/additional/renel-destina",
+      "ncic": null,
+      "height_min": 67,
+      "race": "black",
+      "publication": "2022-11-03T11:25:00",
+      "weight_max": 150,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/renel-destina/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/additional/renel-destina/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/renel-destina/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Destina has ties to or may travel to the Dominican Republic.</p>",
+      "reward_text": null,
+      "nationality": "Haitian",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "June 11, 1982"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 150,
+      "hair_raw": "Black",
+      "uid": "a4b6f3be4bba4a7492f9cc79b7bcba4d",
+      "sex": "Male",
+      "height_max": 70,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/a4b6f3be4bba4a7492f9cc79b7bcba4d"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": "<p>On December 6, 1982, Maribel Oquendo-Carrero left her home in Homestead, Florida, to walk to the corner store.\u00a0 Family members report she made it to the store and purchased items.\u00a0 Maribel has not been seen or heard from since.\u00a0 At the time she went missing, she was 9 years old, wearing a white t-shirt, blue and pink pants, and new beige and brown shoes.\u00a0 Both of Maribel\u2019s ears are pierced.</p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/kidnap/maribel-oquendo-carrero",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "54 pounds (at the time of her disappearance)",
+      "poster_classification": "missing",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/maribel-oquendo-carrero-updated_spanish.pdf/@@download/file/maribel-oquendo-carrero updated_Spanish.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-02-20T19:13:15+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "December 6, 1982\r\nHomestead, Florida",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "MARIBEL OQUENDO-CARRERO",
+      "coordinates": [],
+      "place_of_birth": "Camden, New Jersey",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Maribel Oquendo",
+        "Maribel Oquendo-Carrera",
+        "Marylin Oquendo"
+      ],
+      "url": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero",
+      "ncic": null,
+      "height_min": 51,
+      "race": "hispanic",
+      "publication": "2022-11-21T11:42:00",
+      "weight_max": 54,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/@@images/image/large",
+          "caption": "Photograph taken August 1982",
+          "original": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/maribel_ageprogressed.png/@@images/image/large",
+          "caption": "Photograph age-progressed to 47 years old",
+          "original": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/maribel_ageprogressed.png",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/maribel-oquendo-carrero/maribel_ageprogressed.png/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Maribel has ties to Puerto Rico, New Jersey, New York, and Florida.</p>",
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the recovery of Maribel Oquendo-Carrero and/or the identification, arrest, and conviction of the person responsible for her disappearance.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "August 22, 1973"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 54,
+      "hair_raw": "Black",
+      "uid": "4b12f45f7a4d41a3948db738f94ca658",
+      "sex": "Female",
+      "height_max": 51,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/4b12f45f7a4d41a3948db738f94ca658"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED AN ESCAPE RISK",
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/cei/rodolfo-mantilla",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla/mantilla-spanish-final.pdf/@@download/file/Mantilla.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-02-20T00:21:43+00:00",
+      "age_min": null,
+      "caution": "<p>Rodolfo Mantilla is wanted for allegedly importing bulk kilogram quantities of cocaine into the United States, specifically South Florida. It is alleged that the narcotics are then provided to distributors who sell the drugs for Mantilla, and provide him the cash.\u00a0</p>\r\n<p>\u00a0</p>\r\n<p>On April 11, 2024, a federal arrest warrant was issued for Mantilla in the United States District Court for the Southern District of Florida, Ft. Lauderdale, Florida, after he was charged with\u00a0Conspiracy to Possess with Intent to Distribute Controlled Substances; Possession with Intent to Distribute Controlled Substances; and Distribution of a Controlled Substance.</p>",
+      "description": "Conspiracy to Possess with Intent to Distribute Controlled Substances; Possession with Intent to Distribute Controlled Substances; Distribution of a Controlled Substance",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "RODOLFO MANTILLA",
+      "coordinates": [],
+      "place_of_birth": "Florida",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "\"Rudy\""
+      ],
+      "url": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla",
+      "ncic": null,
+      "height_min": 69,
+      "race": "hispanic",
+      "publication": "2024-07-16T09:06:00",
+      "weight_max": null,
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/cei/rodolfo-mantilla/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Mantilla has ties to or may visit the Dominican Republic and the Bahamas.</p>",
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the arrest and conviction of Rodolfo Mantilla.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "February 27, 1981"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": "Black",
+      "uid": "63317cf0ccc44bb8a3f4bf834e2231f9",
+      "sex": "Male",
+      "height_max": 69,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/63317cf0ccc44bb8a3f4bf834e2231f9"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/emanuel-salomon",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "160 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/emanuel-salomon/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/emanuel-salomon/salomonfrench.pdf/@@download/file/SalomonFrench.pdf",
+          "name": "EN FRANAIS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/emanuel-salomon/emanuel_salomon-haitian_creole.pdf/@@download/file/Emanuel_Salomon-Haitian_Creole.pdf",
+          "name": "Nan Kreyl Ayisyen"
+        }
+      ],
+      "modified": "2025-02-20T00:21:15+00:00",
+      "age_min": null,
+      "caution": "<p>Emanuel Salomon, as second in command of the gang Village De Dieu, allegedly participated in kidnappings of United States citizens for ransom in 2021. In January 2021, Salomon and associates allegedly kidnapped a United States citizen at gunpoint and held the victim for ransom for 11 days. The victim was allegedly held at gunpoint, beaten, and threatened by the gang, and was released only after a ransom was paid.</p>\r\n<p>Emanuel Salomon was charged with Conspiracy to Commit Hostage Taking and Hostage Taking by a criminal complaint filed in the United States District Court for the District of Columbia, Washington, D.C. on November 2, 2022.\u00a0</p>",
+      "description": "Conspiracy to Commit Hostage Taking; Hostage Taking",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "EMANUEL SALOMON",
+      "coordinates": [],
+      "place_of_birth": "Haiti",
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "\"Mano\"",
+        "\"Manno\""
+      ],
+      "url": "https://www.fbi.gov/wanted/additional/emanuel-salomon",
+      "ncic": null,
+      "height_min": 67,
+      "race": "black",
+      "publication": "2022-11-03T11:41:00",
+      "weight_max": 160,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/emanuel-salomon/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/additional/emanuel-salomon/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/emanuel-salomon/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Salomon has ties to or may visit the Dominican Republic and Mexico.</p>",
+      "reward_text": null,
+      "nationality": "Haitian",
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": 160,
+      "hair_raw": "Black",
+      "uid": "b54a9ec0a2fb42c19c5c550e957d6155",
+      "sex": "Male",
+      "height_max": 70,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/b54a9ec0a2fb42c19c5c550e957d6155"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/moustafa-abed-ayoub",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "Approximately 165 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/moustafaayoub_final-arabic.pdf/@@download/file/moustafaayoub_final.arabic.pdf",
+          "name": " "
+        }
+      ],
+      "modified": "2025-02-20T00:19:08+00:00",
+      "age_min": null,
+      "caution": "<p>Moustafa Abed Ayoub is being sought for procurement of citizenship and unlawful naturalization.<br /><br /></p>\r\n<p>Ayoub allegedly provided false testimony about the length of his trips outside of the United States to U.S. Immigration Officers. Subjects filing under United States Citizenship and Immigration Service Form must have been present in the United States for at least 30 months. Ayoub claimed he met this standard, however, travel records indicate Ayoub was actually outside of the United States for over 1020 days, thereby making Ayoub ineligible for naturalization.<br /><br /></p>\r\n<p>Ayoub reportedly served as a brigadier general for Syrian Intelligence services during the early 1980s through the late 1990s. Ayoub served in both the Hama and Homs, Syria, area and was later believed to have served in Damascus, Syria.<br /><br /></p>\r\n<p>On July 21, 2016, a federal arrest warrant was issued for Ayoub in the United States District Court, Southern District of Florida, Miami, Florida, after Ayoub was charged with Procurement of Citizenship or Naturalization Unlawfully.</p>",
+      "description": "Procurement of Citizenship or Naturalization Unlawfully",
+      "person_classification": "Main",
+      "hair": null,
+      "reward_max": 0,
+      "title": "MOUSTAFA ABED AYOUB",
+      "coordinates": [],
+      "place_of_birth": "Syria",
+      "languages": [
+        "Arabic"
+      ],
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Ayub Mustafa",
+        "Ayus Mousstafa",
+        "Ayoub Mustafa",
+        "Ayoub Mustafa",
+        "Ayoub Moustafa Adeb"
+      ],
+      "url": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub",
+      "ncic": "W306850944",
+      "height_min": 68,
+      "race": null,
+      "publication": "2016-08-01T12:21:00",
+      "weight_max": 165,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/@@images/image/large",
+          "caption": "Photograph taken in 2004",
+          "original": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/ayoub-2.png/@@images/image/large",
+          "caption": "Photograph taken in 2006",
+          "original": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/ayoub-2.png",
+          "thumb": "https://www.fbi.gov/wanted/additional/moustafa-abed-ayoub/ayoub-2.png/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Ayoub has ties to South Florida, including Fort Lauderdale and Miami. Ayoub is believed to be currently located in Syria, and is known to travel periodically to Lebanon.</p>",
+      "reward_text": null,
+      "nationality": "Syrian",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "June 10, 1941"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 165,
+      "hair_raw": "White",
+      "uid": "91756fad20354f8196b2a1714692e036",
+      "sex": "Male",
+      "height_max": 68,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/91756fad20354f8196b2a1714692e036"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/additional/mauro-ociel-valenzuela-reyes",
+      "occupations": [
+        "Airframe and power plant (A&P) mechanic; former Federal Aviation Administration certified aircraft mechanic"
+      ],
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "170 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/vr-portuguese.pdf/@@download/file/VR portuguese.pdf",
+          "name": "EM PORTUGUS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/vr-german.pdf/@@download/file/VR German.pdf",
+          "name": "AUF DEUTSCH"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/mauro-ociel-valenzuela-reyes-en-espanol.pdf/@@download/file/Mauro Ociel Valenzuela Reyes EN ESPA\u00d1OL.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "modified": "2025-02-20T00:19:06+00:00",
+      "age_min": null,
+      "caution": "<p>Mauro Ociel Valenzuela-Reyes is wanted for his alleged involvement in the crash of ValuJet Airlines Flight 592 in 1996.</p>\r\n<p>\u00a0</p>\r\n<p>On May 11, 1996, Flight 592 crashed in the Florida Everglades, killing all 110 people on board. Investigation led to the indictment of an aircraft repair facility in Florida, and three of its employees, in connection with improperly packaged chemical oxygen generators that were loaded on Flight 592 and signed off by company employees despite lacking safety caps. Valenzuela-Reyes is the final employee wanted in connection with this incident.</p>\r\n<p>\u00a0</p>\r\n<p>On April 6, 2000, a federal arrest warrant was issued for Valenzuela-Reyes in the United States District Court, Southern District of Florida, after he was charged with disobedience and resistance to lawful order and command of the United States District Court for the Southern District of Florida, and failure to appear for trial. Valenzuela-Reyes was previously charged on July 13, 1999, with conspiracy to make false statements to the Federal Aviation Administration and the Department of Transportation; false statements to the Federal Aviation Administration and the Department of Transportation; and causing the transportation of hazardous material.</p>",
+      "description": "Disobedience and Resistance to Lawful Order and Command of the United States District Court for the Southern District of Florida; Failure to Appear for Trial; Conspiracy to Make False Statements to the Federal Aviation Administration and the Department of Transportation; False statements to the Federal Aviation Administration and the Department of Transportation; Causing the Transport of Hazardous Materials",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "MAURO OCIEL VALENZUELA-REYES",
+      "coordinates": [],
+      "place_of_birth": "La Calera, Chile",
+      "languages": null,
+      "race_raw": "White (Hispanic)",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Mauro Valenzuela-Reyes",
+        "Mauro Valenzuela",
+        "Mauro O. Valenzuela",
+        "Mauro Ociel Valenzuela",
+        "Reyes Mauro Valenzuela",
+        "Mauro Valenzvela-Reyes",
+        "Mauro Reyes"
+      ],
+      "url": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes",
+      "ncic": "W860126244",
+      "height_min": 70,
+      "race": "hispanic",
+      "publication": "2017-06-09T14:33:00",
+      "weight_max": 170,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/@@images/image/large",
+          "caption": "Photograph taken in 1996",
+          "original": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-2.jpg/@@images/image/large",
+          "caption": "Photograph age-progressed to age 48",
+          "original": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-2.jpg",
+          "thumb": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-2.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-3.jpg/@@images/image/large",
+          "caption": "Photograph age-progressed to age 48",
+          "original": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-3.jpg",
+          "thumb": "https://www.fbi.gov/wanted/additional/mauro-ociel-valenzuela-reyes/valenzuela-3.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Valenzuela-Reyes may be living under a false identity.</p>\r\n<p>\u00a0</p>\r\n<p>He may be in Chile and may travel to Peru, Argentina, Brazil, and Bolivia, and other South American countries. He has ties to Georgia in the United States of America.</p>",
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the location and capture of Mauro Ociel Valenzuela-Reyes.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "April 18, 1969"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 170,
+      "hair_raw": "Black",
+      "uid": "49c18e556a424e7a8d5fa12b59a04405",
+      "sex": "Male",
+      "height_max": 72,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/49c18e556a424e7a8d5fa12b59a04405"
+    },
+    {
+      "possible_states": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "miami",
+        "newark"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/dt/george-edward-wright",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": "Wright has scars on his head, left cheek, and near his right eye.  He also has a burn scar on his upper left forearm.",
+      "weight": "160 to 170 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/dt/george-edward-wright/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/dt/george-edward-wright/wrightportuguese.pdf/@@download/file/wrightportuguese.pdf",
+          "name": "EM PORTUGUS"
+        }
+      ],
+      "modified": "2025-02-20T00:18:27+00:00",
+      "age_min": null,
+      "caution": "<p>George Edward Wright is wanted for his involvement in a series of crimes dating back to 1962.</p>\r\n<p>\u00a0</p>\r\n<p>On November 23, 1962, Wright and an accomplice, who was arrested,\u00a0shot and killed the owner of a\u00a0gas station in Wall, New Jersey, during the commission of a robbery at the business.\u00a0 On December 13, 1962, Wright was indicted for the murder.\u00a0 He entered a plea of \"no defense\", and was sentenced to prison for a period of 15 to 30 years.\u00a0 Then, on August 22, 1970, Wright escaped from the New Jersey State Prison in Leesburg, New Jersey.\u00a0 The State of New Jersey issued an arrest warrant for Wright after he was charged with escape and, on August 26, 1970, a federal arrest warrant was issued for Wright in the United States District Court, District of New Jersey, Trenton, New Jersey, after he was charged with unlawful flight to avoid confinement.</p>\r\n<p>\u00a0</p>\r\n<p>On July 31, 1972, Wright, and others who were arrested, hijacked a Delta Airlines jet en route from Detroit, Michigan, to Miami, Florida.\u00a0 The hijackers used handguns and made threats against the passengers on the plane.\u00a0 At the time, Wright used the name Reverend Larry Burgess, wore\u00a0the clothing\u00a0of a cleric, and carried a Bible.\u00a0 He used a gun concealed in the Bible to confront the aircraft's pilot and crew.\u00a0 After a ransom was delivered to the hijackers, the passengers were released in Miami.\u00a0 The hijackers and the plane's crew then flew to Boston, Massachusetts, refueled, picked up an international navigator, and flew to Algiers.\u00a0 The plane and ransom were then returned to the United States Government,\u00a0while the hijackers remained free.</p>\r\n<p>\u00a0</p>\r\n<p>On September 26, 2011, after more than 40 years as a fugitive, Wright was arrested in Portugal.\u00a0 He was released from custody in October of 2011, and remains in Portugal, where he continues to live.\u00a0 Wright\u00a0is the sole hijacker to remain at large.</p>",
+      "description": "Unlawful Flight to Avoid Confinement - Escape (Murder); Air Piracy (Seizing by Force an Aircraft in Air Commerce); Aiding and Abetting",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "GEORGE EDWARD WRIGHT",
+      "coordinates": [],
+      "place_of_birth": "Virginia",
+      "languages": null,
+      "race_raw": "Black",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "George E. Wright",
+        "George Wright",
+        "Larry Burgess",
+        "Larry Darnell Burgess",
+        "Reverend L. Burgess",
+        "Reverend Burgess",
+        "Jack Ragland"
+      ],
+      "url": "https://www.fbi.gov/wanted/dt/george-edward-wright",
+      "ncic": "W244803836",
+      "height_min": 71,
+      "race": "black",
+      "publication": "2017-07-26T13:51:00",
+      "weight_max": 170,
+      "subjects": [
+        "Domestic Terrorism"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/@@images/image/large",
+          "caption": "Photograph taken in 2011",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright1962.jpg/@@images/image/large",
+          "caption": "Photograph taken in 1962",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright1962.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright1962.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011d.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011d.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011d.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011f.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011f.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011f.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011b.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011b.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011b.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011c.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011c.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011c.jpg/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011e.jpg/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011e.jpg",
+          "thumb": "https://www.fbi.gov/wanted/dt/george-edward-wright/wright2011e.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Wright is known to be living in Portugal.</p>",
+      "reward_text": null,
+      "nationality": "American",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "March 29, 1943",
+        "October 4, 1950",
+        "November 11, 1950"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 160,
+      "hair_raw": "Black",
+      "uid": "fcf75675bc66432c82f3304db19fb6e8",
+      "sex": "Male",
+      "height_max": 72,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/fcf75675bc66432c82f3304db19fb6e8"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": "<p>Haneul Oh was last seen on December 20, 2021, in Davie, Florida.\u00a0 Her disappearance occurred under suspicious circumstances.\u00a0 She is known to drive a\u00a02005 Toyota Corolla, gray in color, with New Jersey license plates reading L20NAZ.</p>\r\n<p>\u00a0</p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/kidnap/haneul-oh",
+      "occupations": null,
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "105 pounds",
+      "poster_classification": "missing",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/haneul-oh/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/haneul-oh/ohkorean.pdf/@@download/file/ohkorean.pdf",
+          "name": ""
+        }
+      ],
+      "modified": "2025-02-20T00:17:24+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "December 20, 2021\r\nDavie, Florida",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "HANEUL OH",
+      "coordinates": [],
+      "place_of_birth": "Korea",
+      "languages": null,
+      "race_raw": "Asian",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/kidnap/haneul-oh",
+      "ncic": null,
+      "height_min": 60,
+      "race": "asian",
+      "publication": "2022-02-10T09:51:00",
+      "weight_max": 105,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/haneul-oh/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/kidnap/haneul-oh/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/haneul-oh/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/haneul-oh/ohcar.jpg/@@images/image/large",
+          "caption": "Oh's Car",
+          "original": "https://www.fbi.gov/wanted/kidnap/haneul-oh/ohcar.jpg",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/haneul-oh/ohcar.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Haneul Oh has ties to\u00a0New Jersey; Baltimore, Maryland; and Korea.\u00a0\u00a0She is a Korean National living and studying in the United States.</p>",
+      "reward_text": null,
+      "nationality": "Korean",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "January 28, 2000"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 105,
+      "hair_raw": "Black",
+      "uid": "f1a6d821a6da40f5bb718b7ad844fb29",
+      "sex": "Female",
+      "height_max": 60,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/f1a6d821a6da40f5bb718b7ad844fb29"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": "<p>The FBI is seeking information on the bombing of Alas Chiricanas Airlines Flight 00901 on July 19, 1994, or any of the suspicious activity described.<br /><br /><br />At approximately 4:30 p.m. Central Daylight Time (CDT), Flight 00901 departed from France Field, Col\u00f3n, Panama, with a destination of Panama City, Panama. The flight exploded shortly after takeoff, killing all 21 people on board. Authorities are seeking information that may pertain to possible suspect(s) and the crime that occurred aboard this flight. All deceased passengers and crew were identified except for one body, which has possibly been identified as Ali Hawa Jamal. He is suspected of carrying the bomb aboard the aircraft.</p>\r\n<p><br />According to reports, on May 27, 1994, an unidentified male of Middle Eastern descent, used the stolen credit card of a U.S. citizen to rent a Mazda 4x4 at a Vantage Rent-a-Car located in Panama City, Panama. The next day the same unidentified individual called the car rental agency and stated he wanted to rent a second car, a Jeep Cherokee 4x4, as his friend was using the initial car that was rented. The unknown individual charged both cars to the stolen credit card. Both cars were later found abandoned near Tocumen Airport in Panama City, Panama.</p>\r\n<p><br />On May 28, 1994, it was further reported that possibly the same unknown male, utilizing the same stolen credit card, purchased a two-line telephone system from a Panamanian business. The individual possibly identified as Ali Hawa Jamal, had a Motorola Radio P-500 with him during the Alas Chiricanas Airlines flight.</p>\r\n<p><br />It is unknown if the unidentified males shown in the photos above, were associates of Ali Hawa Jamal. These unknown males are believed to have traveled to Colombia, Venezuela, Costa Rica, and Lebanon. It is alleged that the unknown males were in contact with individuals that have been linked to weapons traffickers. The terrorist group Ansar Allah expressed support for the bombing through multiple media outlets. It is suspected that the attack was linked to a terrorist group or groups allied with Ansar Allah's political beliefs.</p>",
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1",
+      "occupations": null,
+      "eyes_raw": null,
+      "scars_and_marks": null,
+      "weight": null,
+      "poster_classification": "information",
+      "possible_countries": null,
+      "eyes": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alaschiricanasv2-spanish-final.pdf/@@download/file/alaschiricanasv2.Spanish.final.pdf",
+          "name": "EN ESPAOL"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alaschiricanasv2_italian-final.pdf/@@download/file/alaschiricanasv2_Italian.FINAL.pdf",
+          "name": "IN ITALIANO"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alaschiricanasv2_portuguese-final.pdf/@@download/file/alaschiricanasv2_Portuguese.final.pdf",
+          "name": "EM PORTUGUS"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alaschiricanasv2_hebrew-final.pdf/@@download/file/alaschiricanasv2_Hebrew.final.pdf",
+          "name": ""
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas-chiricanasv2_arabic_final.pdf/@@download/file/Alas Chiricanasv2_Arabic_Final.pdf",
+          "name": " "
+        }
+      ],
+      "modified": "2025-02-20T00:17:03+00:00",
+      "age_min": null,
+      "caution": null,
+      "description": "Unknown Suspect(s)\r\nPanama\r\nJuly 19, 1994",
+      "person_classification": "Main",
+      "hair": null,
+      "reward_max": 0,
+      "title": "BOMBING OF ALAS CHIRICANAS AIRLINES FLIGHT 00901",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1",
+      "ncic": null,
+      "height_min": null,
+      "race": null,
+      "publication": "2024-05-29T08:28:00",
+      "weight_max": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/@@images/image/large",
+          "caption": "Unidentified Males",
+          "original": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas3.png/@@images/image/large",
+          "caption": "Unidentified male",
+          "original": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas3.png",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas3.png/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas1.png/@@images/image/large",
+          "caption": "Unidentified male",
+          "original": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas1.png",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alas1.png/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alihawajamal.jpeg/@@images/image/large",
+          "caption": "Composite sketch created in 1994 - Ali Hawa Jamal",
+          "original": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alihawajamal.jpeg",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/bombing-of-alas-chiricanas-airlines-flight-00901-1/alihawajamal.jpeg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": null,
+      "reward_text": "The Rewards For Justice Program, United States Department of State, is offering a reward of up to $5 million for information leading to the arrest or conviction in any country of any individual who committed, attempted or conspired to commit, or aided or abetted in the commission of the July 19, 1994, bombing of Alas Chiricanas Flight 00901 that resulted in the deaths of three U.S. citizens.",
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": null,
+      "status": "na",
+      "build": null,
+      "weight_min": null,
+      "hair_raw": null,
+      "uid": "5c6d8b303d9546349bb545509c194a65",
+      "sex": null,
+      "height_max": null,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/5c6d8b303d9546349bb545509c194a65"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/wcc/khalid-ahmed-satary",
+      "occupations": [
+        "Laboratory Owner"
+      ],
+      "eyes_raw": "Brown",
+      "scars_and_marks": null,
+      "weight": "150 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-20T00:16:59+00:00",
+      "age_min": null,
+      "caution": "<p>Khalid Ahmed Satary is wanted for violating pre-trial release. On September 26, 2019, Satary was indicted in the United States District Court for the Eastern District of Louisiana, New Orleans, Louisiana. He was charged with conspiracy to commit health care fraud and wire fraud, health care fraud, conspiracy to defraud the United States and to pay and receive illegal health care kickbacks and bribes, and conspiracy to launder monetary instruments.<br /><br /></p>\r\n<p>On November 23, 2022, a federal arrest warrant was issued for Satary in the United States District Court for the Eastern District of Louisiana, New Orleans, Louisiana, for pre-trial release violation.\u00a0</p>\r\n<p>\u00a0</p>\r\n<p>\u00a0</p>",
+      "description": "Pre-Trial Release Violation (Conspiracy to Commit Health Care Fraud and Wire Fraud; Health Care Fraud; Conspiracy to Defraud the United States and to Pay and Receive Illegal Health Care Kickbacks; Conspiracy to Launder Monetary Instruments)",
+      "person_classification": "Main",
+      "hair": "black",
+      "reward_max": 0,
+      "title": "KHALID AHMED SATARY",
+      "coordinates": [],
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "Khalid Satary",
+        "Khalid A. Satary",
+        "Khalio A. Satary",
+        "Rocky Satary",
+        "DJ Rock Satary"
+      ],
+      "url": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary",
+      "ncic": "W390929994",
+      "height_min": 67,
+      "race": null,
+      "publication": "2023-01-04T13:18:00",
+      "weight_max": 150,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/@@images/image/large",
+          "caption": null,
+          "original": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/@@images/image/thumb"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/satary2.png/@@images/image/large",
+          "caption": "",
+          "original": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/satary2.png",
+          "thumb": "https://www.fbi.gov/wanted/wcc/khalid-ahmed-satary/satary2.png/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Satary has ties or may travel to Houston, Texas; Atlanta, Georgia; Delray Beach, Florida; and Dubai, United Arab Emirates.</p>",
+      "reward_text": null,
+      "nationality": null,
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "May 27, 1972",
+        "March 28, 1972",
+        "November 27, 1972"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 150,
+      "hair_raw": "Black",
+      "uid": "9845f0c6253348278fc882703d99681f",
+      "sex": "Male",
+      "height_max": 67,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/9845f0c6253348278fc882703d99681f"
+    },
+    {
+      "possible_states": null,
+      "warning_message": null,
+      "field_offices": [
+        "miami"
+      ],
+      "details": null,
+      "locations": null,
+      "age_range": null,
+      "path": "/wanted/wcc/james-alexander-ward",
+      "occupations": [
+        "Securities Broker"
+      ],
+      "eyes_raw": "Hazel",
+      "scars_and_marks": null,
+      "weight": "150 to 155 pounds",
+      "poster_classification": "default",
+      "possible_countries": null,
+      "eyes": "hazel",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/james-alexander-ward/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-02-20T00:16:05+00:00",
+      "age_min": null,
+      "caution": "<p>James Alexander Ward is wanted for his alleged involvement in a precious metals fraud scheme that operated in Florida from September of 2007 to March of 2010.</p>\r\n<p>\u00a0</p>\r\n<p>Ward allegedly operated an entity called Kastle &amp; Hawk, Inc., which solicited investors to buy precious metals such as gold, silver, and platinum on a leveraged basis. Instead of investing the approximately $400,000 Ward received from at least 12 investors, Ward allegedly used the money for his own personal use and benefit. No precious metals were ever acquired for investors.</p>\r\n<p>\u00a0</p>\r\n<p>A federal arrest warrant was issued for Ward in the United States District Court, Southern District of Florida, Miami, Florida, on September 6, 2012, after he was charged with wire fraud.</p>",
+      "description": "Wire Fraud",
+      "person_classification": "Main",
+      "hair": "blond",
+      "reward_max": 0,
+      "title": "JAMES ALEXANDER WARD",
+      "coordinates": [],
+      "place_of_birth": "Glasgow, Scotland, United Kingdom",
+      "languages": null,
+      "race_raw": "White",
+      "reward_min": 0,
+      "complexion": null,
+      "aliases": [
+        "James Ward",
+        "James A. Ward",
+        "Jamie D. Ward"
+      ],
+      "url": "https://www.fbi.gov/wanted/wcc/james-alexander-ward",
+      "ncic": "W565779415",
+      "height_min": 68,
+      "race": "white",
+      "publication": "2018-08-07T09:10:00",
+      "weight_max": 155,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wcc/james-alexander-ward/@@images/image/large",
+          "caption": "Photograph taken in 2018",
+          "original": "https://www.fbi.gov/wanted/wcc/james-alexander-ward/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/wcc/james-alexander-ward/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "remarks": "<p>Ward may travel within the United Kingdom, to include England, Scotland, Wales, and Northern Ireland. He may also travel to Canada and Mexico.</p>\r\n<p>\u00a0</p>\r\n<p>He has previously resided in Miami Beach, Florida.</p>",
+      "reward_text": null,
+      "nationality": "Scottish",
+      "legat_names": null,
+      "dates_of_birth_used": [
+        "April 27, 1953"
+      ],
+      "status": "na",
+      "build": null,
+      "weight_min": 150,
+      "hair_raw": "Blond - may change his hair color frequently",
+      "uid": "c9d03ee2fa9d4b38987d9a1f7d8effe4",
+      "sex": "Male",
+      "height_max": 68,
+      "additional_information": null,
+      "age_max": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/c9d03ee2fa9d4b38987d9a1f7d8effe4"
+    }
+  ],
+  "page": 1
+}

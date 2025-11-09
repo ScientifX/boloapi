@@ -1,0 +1,1626 @@
+{
+  "total": 969,
+  "items": [
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/francisco-javier-roman-bardales/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "40d2e1d386014a05a9ddb0f5f2defe10",
+      "weight": null,
+      "occupations": null,
+      "field_offices": null,
+      "locations": null,
+      "reward_text": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "December 2, 1977"
+      ],
+      "caution": "<p>Francisco Javier Roman-Bardales is wanted for his alleged involvement in the direction of MS-13 activity in the United States, Mexico, and El Salvador.\u00a0 He is alleged to be a senior leader of MS-13.\u00a0 Roman-Bardales has been charged with several offenses for his alleged role in ordering numerous acts of violence against civilians and rival gang members, as well as his role in drug distribution and extortion schemes in the United States and El Salvador.\u00a0 A federal arrest warrant was issued for Roman-Bardales in the United States District Court, Eastern District of New York, Central Islip, New York, on September 22, 2022, after he was charged with Conspiracy to Provide Material Support to Terrorists, Narco-Terrorism Conspiracy, Racketeering Conspiracy, and Alien Smuggling Conspiracy.</p>\r\n<p>\u00a0</p>\r\n<p>This case is being investigated as part of Joint Task Force Vulcan.</p>\r\n<p>\u00a0</p>",
+      "nationality": "Salvadoran",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "aliases": [
+        "\"Veterano de Tribus\""
+      ],
+      "race_raw": "White (Hispanic)",
+      "suspects": null,
+      "publication": "2022-10-12T06:49:00",
+      "title": "FRANCISCO JAVIER ROMAN-BARDALES",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": [
+        "Spanish"
+      ],
+      "complexion": null,
+      "build": null,
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Conspiracy to Provide and Conceal Material Support and Resources to Terrorists; Narco-Terrorism Conspiracy; Racketeering Conspiracy; Alien Smuggling Conspiracy",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cei/francisco-javier-roman-bardales/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cei/francisco-javier-roman-bardales/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cei/francisco-javier-roman-bardales/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/cei/francisco-javier-roman-bardales",
+      "sex": "Male",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/cei/francisco-javier-roman-bardales",
+      "possible_states": null,
+      "modified": "2023-02-24T00:00:25+00:00",
+      "reward_max": 0,
+      "race": "hispanic",
+      "height_max": null,
+      "place_of_birth": "Ahuachapan, El Salvador",
+      "height_min": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/40d2e1d386014a05a9ddb0f5f2defe10"
+    },
+    {
+      "age_min": null,
+      "weight_max": null,
+      "person_classification": "Main",
+      "race_raw": "Pacific Islander",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "e2c3d91ad7c046a18d5cf5b877afc5e0",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "recovered",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/breadson-john/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/breadson-john/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/breadson-john/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/breadson-john/john2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/breadson-john/john2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/breadson-john/john2.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/breadson-john/john3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/breadson-john/john3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/breadson-john/john3.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": "<p>The FBI's Seattle Field Office is assisting the Vancouver Police Department in Vancouver, Washington with their search for\u00a0Breadson John.</p>\r\n<p>\u00a0</p>\r\n<p>On June 17, 2022, Vancouver Police Detectives attempted to conduct a welfare check at the Vancouver residence of missing juvenile Breadson John, based on concerns for his welfare voiced by members of the community.\u00a0 Investigators have been unable to locate Breadson.\u00a0 He has also been known to use the name \u2018Brxsan\u2019.</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "June 2022\r\nVancouver, Washington",
+      "weight_min": null,
+      "height_min": null,
+      "path": "/wanted/kidnap/breadson-john",
+      "occupations": null,
+      "modified": "2023-02-23T20:43:01+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/breadson-john/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "October 17, 2014"
+      ],
+      "scars_and_marks": null,
+      "race": null,
+      "weight": null,
+      "remarks": "<p>The photographs shown are more than a year old and Breadson\u2019s appearance is likely to have\u00a0changed.\u00a0 He has ties to or may visit\u00a0Hawaii, Arizona, Washington, and the Truk/Chuuk Islands in the Federated States of Micronesia.</p>",
+      "ncic": null,
+      "title": "BREADSON JOHN",
+      "height_max": null,
+      "place_of_birth": "Hawaii",
+      "coordinates": [],
+      "hair": "black",
+      "eyes": "brown",
+      "hair_raw": "Black",
+      "publication": "2023-01-20T07:41:00",
+      "field_offices": [
+        "seattle"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Brxsan John"
+      ],
+      "possible_states": null,
+      "languages": [
+        "English",
+        "Trukese / Chuukese"
+      ],
+      "additional_information": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/kidnap/breadson-john",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/e2c3d91ad7c046a18d5cf5b877afc5e0"
+    },
+    {
+      "age_min": null,
+      "weight_max": 185,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $5,000 for information leading to the arrest and conviction of Elliott Estevan Peralta.",
+      "uid": "9ce8a58b6497442197e04d739890441c",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": "Photograph taken in 2021",
+          "thumb": "https://www.fbi.gov/wanted/cei/elliott-estevan-peralta/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cei/elliott-estevan-peralta/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cei/elliott-estevan-peralta/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": null,
+      "reward_min": 0,
+      "description": "Possession of a Firearm and Ammunition by a Convicted Felon; Possessing of a Firearm in Furtherance of a Drug Trafficking Crime; Possession with Intent to Distribute 40 Grams and More of Mixture and Substance Containing Fentanyl (N-Phenyl-N-[1-(2-phenylethyl)-4-piperidinyl] propanamide); Possession with Intent to Distribute 500 Grams and More of a Mixture and Substance Containing Methamphetamine; Conspiracy to Possess with Intent to Distribute",
+      "weight_min": 185,
+      "height_min": 71,
+      "path": "/wanted/cei/elliott-estevan-peralta",
+      "occupations": null,
+      "modified": "2023-02-23T13:52:08+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/elliott-estevan-peralta/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "legat_names": null,
+      "caution": "<p>Elliott Estevan Peralta is wanted on firearm and drug-trafficking charges.\u00a0 In early November of 2022, FBI Violent Gang Task Force agents in Albuquerque, New Mexico, executed a search warrant at Peralta's residence in Albuquerque and found two firearms, approximately 1,099 grams of methamphetamine, and 105 grams of blue \"M 30\" pills containing fentanyl.\u00a0 At the time, Peralta escaped the residence and eluded capture.</p>\r\n<p>\u00a0</p>\r\n<p>A federal arrest warrant was issued for Peralta in the United States District Court for the District of New Mexico, Albuquerque, New Mexico, on November 7, 2022, after Peralta was charged with several federal firearms and drug-trafficking offenses.</p>\r\n<p>\u00a0</p>",
+      "dates_of_birth_used": [
+        "September 10, 1988"
+      ],
+      "scars_and_marks": "Peralta has multiple piercings and a tattoo on his neck.",
+      "race": "white",
+      "weight": "185 pounds",
+      "remarks": "<p>Peralta may have ties to Belen, New Mexico.</p>",
+      "ncic": "W510789254",
+      "title": "ELLIOTT ESTEVAN PERALTA",
+      "height_max": 71,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "black",
+      "eyes": "brown",
+      "hair_raw": "Black",
+      "publication": "2023-02-03T08:30:00",
+      "field_offices": [
+        "albuquerque"
+      ],
+      "complexion": null,
+      "aliases": [
+        "\"Cash\"",
+        "Elliott Peralta",
+        "Hugo Rivas",
+        "Elliotte E. Peralta"
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/cei/elliott-estevan-peralta",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/9ce8a58b6497442197e04d739890441c"
+    },
+    {
+      "age_min": null,
+      "weight_max": 120,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the location of Ciera Breland.",
+      "uid": "64b2d14f57744e1b968f18974f2fe0b2",
+      "reward_max": 0,
+      "sex": "Female",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/ciera_breland2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/ciera_breland2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/ciera_breland2.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": "<p>Ciera Breland was last known to be visiting her family in Johns Creek, Georgia, from Carmel, Indiana, the week of February 20, 2022, with her husband, their five-month-old son, and their white labradoodle. Breland\u2019s husband reported her missing on February 26, 2022, to the Carmel Police Department in Indiana. However, there is no evidence that Breland ever returned home after the family\u2019s trip to Georgia. Breland\u2019s last known location while visiting Georgia was at a residence on Highgate Manor Court in Johns Creek on February 23, 2022, at 7:17 p.m. Breland and her family were known to be traveling in a white 2017 Volkswagen Tiguan with Georgia license plate RMB 5869.</p>",
+      "reward_min": 0,
+      "description": "February 23, 2022\r\nJohns Creek, Georgia",
+      "weight_min": 120,
+      "height_min": 60,
+      "path": "/wanted/kidnap/ciera-locklair-breland",
+      "occupations": null,
+      "modified": "2023-02-23T13:51:48+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "January 10, 1991"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "120 pounds",
+      "remarks": null,
+      "ncic": null,
+      "title": "CIERA LOCKLAIR BRELAND",
+      "height_max": 60,
+      "place_of_birth": "Florida",
+      "coordinates": [],
+      "hair": "blond",
+      "eyes": "brown",
+      "hair_raw": "Blonde",
+      "publication": "2022-03-30T14:52:00",
+      "field_offices": [
+        "atlanta"
+      ],
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Kidnappings and Missing Persons",
+        "Case of the Week"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/kidnap/ciera-locklair-breland",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/64b2d14f57744e1b968f18974f2fe0b2"
+    },
+    {
+      "age_min": null,
+      "weight_max": null,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "b953c05b852a4b719c0a152ef8a73ffd",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits/@@images/image",
+          "large": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": null,
+      "reward_min": 0,
+      "description": "Conspiracy to Defraud the United States; Conspiracy to Violate the International Emergency Economic Powers Act (IEEPA); Bank Fraud Conspiracy; Wire Fraud Conspiracy; Wire Fraud; Money Laundering Conspiracy; Money Laundering; Conspiracy to Violate the Export Control Reform Act (ECRA); Smuggling Goods from the United States; Failure to File Electronic Export Information",
+      "weight_min": null,
+      "height_min": null,
+      "path": "/wanted/counterintelligence/boris-yakovlevich-livshits",
+      "occupations": [
+        "Electrical Engineer"
+      ],
+      "modified": "2023-02-23T00:09:46+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits/livshitsrussian.pdf/@@download/file/livshitsrussian.pdf",
+          "name": "\u041d\u0410 \u0420\u0423\u0421\u0421\u041a\u041e\u041c"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": "<p>Boris Yakovlevich Livshits is wanted for his alleged involvement in the Russian-backed procurement network Serniya/Sertal from 2017 to 2022. Livshits and his co-conspirators allegedly unlawfully sourced, purchased, and shipped military and sensitive dual-use technologies from United States manufacturers to Russian end users. These items included advanced testing equipment used in quantum computing, hypersonic missiles, nuclear weapons development, and other military and space-based military applications.</p>\r\n<p>\u00a0</p>\r\n<p>Serniya\u2019s clients included the National Research Nuclear University of the Moscow Engineering Physics Institute; the Ministry of Defense; the Foreign Intelligence Service (\"SVR\"); and various components of the Federal Security Service (\"FSB\"), Russia's principal security agency and the main successor agency to the Soviet Union's KGB.</p>\r\n<p>\u00a0</p>\r\n<p>Livshits allegedly controlled several American and international front companies that operated on behalf of the Serniya Network. These entities conducted no actual business and were allegedly used to obfuscate the role of Russian or sanctioned entities in transactions with American and Western technology companies. Livshits allegedly facilitated the financing and smuggling of\u00a0tens of thousands of controlled, American-manufactured\u00a0military grade sniper bullets and rounds. \u00a0Livshits was indicted by the United States District Court, Eastern District of New York, Brooklyn, New York, on December 5, 2022, and a federal warrant was issued for his arrest.</p>\r\n<p>\u00a0</p>",
+      "dates_of_birth_used": [
+        "May 9, 1970"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": null,
+      "remarks": "<p>Livshits has ties to Russia, Estonia, Finland, Kazakhstan, Germany, Latvia, Lithuania, and the United States.\u00a0\u00a0</p>",
+      "ncic": null,
+      "title": "BORIS YAKOVLEVICH LIVSHITS",
+      "height_max": null,
+      "place_of_birth": "Leningrad, Russia",
+      "coordinates": [],
+      "hair": "black",
+      "eyes": null,
+      "hair_raw": "Black / Bald",
+      "publication": "2022-12-01T12:17:00",
+      "field_offices": [
+        "newyork"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Boris Levitan",
+        "Boris Livshitc",
+        "David Wetzky"
+      ],
+      "possible_states": null,
+      "languages": [
+        "Russian",
+        "English"
+      ],
+      "additional_information": null,
+      "subjects": [
+        "Counterintelligence"
+      ],
+      "nationality": "Russian",
+      "url": "https://www.fbi.gov/wanted/counterintelligence/boris-yakovlevich-livshits",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/b953c05b852a4b719c0a152ef8a73ffd"
+    },
+    {
+      "age_min": 6,
+      "weight_max": 60,
+      "person_classification": "Main",
+      "race_raw": "White (Hispanic)",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "b166d627e11149aa82c02d1533e3b650",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": "Photograph taken at Time of Disappearance",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/@@images/image/large"
+        },
+        {
+          "caption": "Photograph Age Progressed to 31 Years Old",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/delacruzage.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/delacruzage.jpg",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/delacruzage.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": "<p>Jesus de la Cruz was last seen on September 28, 1996, walking on Park Street near his residence in Lynn, Massachusetts. He was six years old at the time of his disappearance and has not been seen since. De la Cruz has a scar above his left eye, birthmarks on his left calf and the left side of his forehead, and his left ear is pierced. He was last seen wearing a white t-shirt, blue jeans, and brown and yellow boots.</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "September 28, 1996\r\nLynn, Massachusetts",
+      "weight_min": 60,
+      "height_min": 54,
+      "path": "/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:46+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts/delacruz.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": null,
+      "race": "hispanic",
+      "weight": "60 pounds (at time of disappearance)",
+      "remarks": "<p>De la Cruz has a scar above his left eye, birthmarks on his left calf and the left side of his forehead, and has his left ear pierced.</p>",
+      "ncic": null,
+      "title": "JESUS DE LA CRUZ - LYNN, MASSACHUSETTS",
+      "height_max": 54,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "brown",
+      "hair_raw": "Brown",
+      "publication": "2021-09-28T10:00:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/jesus-de-la-cruz---lynn-massachusetts",
+      "locations": null,
+      "age_range": "6 years old (at time of disappearance)",
+      "age_max": 6,
+      "@id": "https://api.fbi.gov/@wanted-person/b166d627e11149aa82c02d1533e3b650"
+    },
+    {
+      "age_min": null,
+      "weight_max": 140,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "142392c0348645b583aa7ef252170fa5",
+      "reward_max": 0,
+      "sex": "Female",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks1.jpeg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks1.jpeg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks1.jpeg/@@images/image/large"
+        },
+        {
+          "caption": "Photograph taken circa 1974 or 1975",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks2.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks2.png",
+          "large": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks2.png/@@images/image/large"
+        },
+        {
+          "caption": "Photograph taken in 1972",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks4.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks4.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/sparks4.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": "<p>The Federal Bureau of Investigation's Albuquerque Field Office, along with the Sandoval County Sheriff's Office in New Mexico, are seeking the public's assistance in identifying the circumstances surrounding the homicide of Mary Aleta \"Molly\" Sparks in 1975.</p>\r\n<p>\u00a0</p>\r\n<p>Sparks, 21, was last seen on July 23, 1975, between 9:00 p.m. and 11:00 p.m. at Rosa's Cantina in Algodones, New Mexico, where she was to meet with friends and fellow members of an all-female rugby team.</p>\r\n<p>\u00a0</p>\r\n<p>Her body was found in a drainage ditch west of the bar on July 24, 1975. The cause of death was blunt force trauma to her head and neck, with possible strangulation.</p>",
+      "reward_min": 0,
+      "description": "Homicide Victim\r\nAlgodones, New Mexico\r\nJuly 23-24, 1975",
+      "weight_min": 140,
+      "height_min": 66,
+      "path": "/wanted/seeking-info/mary-aleta-molly-sparks",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:45+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "March 29, 1954"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "140 pounds",
+      "remarks": null,
+      "ncic": null,
+      "title": "MARY ALETA \"MOLLY\" SPARKS",
+      "height_max": 66,
+      "place_of_birth": "Albuquerque, New Mexico",
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": null,
+      "hair_raw": "Brown",
+      "publication": "2020-07-14T12:38:00",
+      "field_offices": [
+        "albuquerque"
+      ],
+      "complexion": null,
+      "aliases": [
+        "\"Molly\""
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/seeking-info/mary-aleta-molly-sparks",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/142392c0348645b583aa7ef252170fa5"
+    },
+    {
+      "age_min": null,
+      "weight_max": 115,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the recovery of Natasha \"Alex\" Carter and the identification, arrest, and/or conviction of the person responsible for her disappearance.",
+      "uid": "33df244225ef43f6ab7d71ee4b043b4e",
+      "reward_max": 0,
+      "sex": "Female",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/@@images/image/large"
+        },
+        {
+          "caption": "Age-Progressed Photograph",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/cartersage.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/cartersage.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/cartersage.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Green",
+      "details": "<p>Susan Gail Carter was last seen in Beckley, West Virginia, on August 8, 2000, with her daughter, <a href=\"https://www.fbi.gov/wanted/kidnap/natasha-alex-carter\" data-val=\"https://www.fbi.gov/wanted/kidnap/natasha-alex-carter\" data-linktype=\"external\" data-urltype=\"/view\">Natasha \"Alex\" Carter</a>.\u00a0 They may have traveled out of state and left West Virginia.\u00a0 Susan had been involved in a contentious battle over Natasha's custody with the child's father and had told him he would never see his daughter again.\u00a0 Natasha's grandmother believed the child was afraid of her mother and did not want to live with her.\u00a0 Susan may be using the alias Susan Gail Carter Webb and she may alter her appearance.\u00a0</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "August 8, 2000\r\nBeckley, West Virginia",
+      "weight_min": 115,
+      "height_min": 66,
+      "path": "/wanted/kidnap/susan-gail-carter",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:45+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "March 8, 1959"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "115 pounds",
+      "remarks": null,
+      "ncic": null,
+      "title": "SUSAN GAIL CARTER",
+      "height_max": 66,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "blond",
+      "eyes": "green",
+      "hair_raw": "Blonde",
+      "publication": "2021-11-09T07:48:00",
+      "field_offices": [
+        "pittsburgh"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Susan Gail Carter Webb"
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/kidnap/susan-gail-carter",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/33df244225ef43f6ab7d71ee4b043b4e"
+    },
+    {
+      "age_min": null,
+      "weight_max": 201,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "47f6beaf11c4433386490bae77d84d9b",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": "Photograph taken in 2016",
+          "thumb": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/@@images/image",
+          "large": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/@@images/image/large"
+        },
+        {
+          "caption": "Photograph taken in 2011",
+          "thumb": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/victory-2011.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/victory-2011.jpg",
+          "large": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/victory-2011.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": null,
+      "reward_min": 0,
+      "description": "Escape; Felon in Possession of  Firearm and Ammunition; Possession of a Stolen Firearm",
+      "weight_min": 196,
+      "height_min": 73,
+      "path": "/wanted/additional/aaron-paul-victory",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:45+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/aaron-paul-victory/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS AND AN ESCAPE RISK",
+      "legat_names": null,
+      "caution": "<p>Aaron Paul Victory, a convicted felon, is wanted for his escape from the Choctaw County Jail in Hugo, Oklahoma, on August 7, 2017.</p>\r\n<p>On December 27, 2016, Victory allegedly committed first degree burglary in Choctaw County, Oklahoma, before pointing a firearm at law enforcement and fleeing on foot. On December 29, 2016, Victory was arrested in Pushmataha County, Oklahoma, and a firearm was located. Victory was charged in Pushmataha County District Court with possession of a firearm after a felony conviction. On February 15, 2017, a federal arrest warrant for Victory was issued in the United States District Court, Eastern District of Oklahoma, Muskogee, Oklahoma, after he was charged with felon in possession of a firearm and ammunition and possession of a stolen firearm. The warrant was served at the Pushmataha County jail, where Victory was being held for the state charges.</p>\r\n<p>Victory plead guilty to one count of felon in possession of a firearm and ammunition and possession of a stolen firearm on May 8, 2017, and he was remanded into the custody of the United States Marshals Service. On May 10, 2017, Victory was charged with second degree burglary and auto theft in Choctaw County District Court, in Hugo, Oklahoma.</p>\r\n<p>On July 24, 2017, Victory was transferred to the Choctaw County Jail pursuant to a Second Writ of Habeas Corpus Ad Prosequandum, in order to appear for a hearing before the Choctaw County District Court on July 25, 2017.</p>\r\n<p>On August 7, 2017, at approximately 9:20 p.m., Victory allegedly broke a window in his cell and accessed the roof. Once on the roof, he allegedly fashioned electrical cords into a rope, then escaped the jail.</p>\r\n<p>On August 21, 2017, Victory was indicted by the United States District Court, Eastern District of Oklahoma, Muskogee, Oklahoma, for escape, and a federal warrant was issued for his arrest.</p>",
+      "dates_of_birth_used": [
+        "January 28, 1979",
+        "July 28, 1979",
+        "January 28, 1969"
+      ],
+      "scars_and_marks": "Victory is heavily tattooed. He has tattoos on his left and right arms, back, left and right calves, right leg, and left shoulder. He has scars on his head and right cheek.",
+      "race": "white",
+      "weight": "196 to 201 pounds",
+      "remarks": "<p>Victory is an avid outdoorsman who can survive in rugged terrain.</p>",
+      "ncic": null,
+      "title": "AARON PAUL VICTORY",
+      "height_max": 76,
+      "place_of_birth": "Oklahoma",
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "brown",
+      "hair_raw": "Brown",
+      "publication": "2020-04-07T12:27:00",
+      "field_offices": [
+        "oklahomacity"
+      ],
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Additional Violent Crimes"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/additional/aaron-paul-victory",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/47f6beaf11c4433386490bae77d84d9b"
+    },
+    {
+      "age_min": null,
+      "weight_max": 42,
+      "person_classification": "Main",
+      "race_raw": "White (Hispanic)",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the recovery of Aranza Maria Ochoa Lopez.",
+      "uid": "06dfa08bfb6f45519a54de4fb785dbd4",
+      "reward_max": 0,
+      "sex": "Female",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": "Photograph taken in 2018",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Blue",
+      "details": "<p>The FBI's Seattle Field Office is assisting the Vancouver Police Department in Washington with their search for Aranza Maria Ochoa Lopez.</p>\r\n<p>\u00a0</p>\r\n<p>On October 25, 2018, Aranza was allegedly removed from a mall in Vancouver, Washington, by her biological mother, who was taken into custody in September of 2019 in Puebla, Mexico. It is believed that Aranza may still be in Mexico.</p>",
+      "reward_min": 0,
+      "description": "October 25, 2018\r\nVancouver, Washington",
+      "weight_min": 40,
+      "height_min": 40,
+      "path": "/wanted/kidnap/aranza-maria-ochoa-lopez",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:45+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez/lopezspanish.pdf/@@download/file/lopezspanish.pdf",
+          "name": "EN ESPA\u00d1OL"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "April 17, 2014"
+      ],
+      "scars_and_marks": "Aranza has pierced ears.",
+      "race": "hispanic",
+      "weight": "Approximately 40 to 42 pounds (at time of disappearance)",
+      "remarks": "<p>Aranza was last seen wearing a long-sleeved dark blue shirt with a bulldog on the front; blue, purple, and white striped pants; and Paw Patrol shoes. Her appearance may have been altered through hair dye and makeup.</p>",
+      "ncic": null,
+      "title": "ARANZA MARIA OCHOA LOPEZ",
+      "height_max": 42,
+      "place_of_birth": "Centralia, Washington",
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "blue",
+      "hair_raw": "Blonde/light brown  (at time of disappearance)",
+      "publication": "2019-05-06T09:11:00",
+      "field_offices": [
+        "seattle"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Aganza Maria Ochoa Lopez",
+        "Aranza Ochoa Lopez"
+      ],
+      "possible_states": null,
+      "languages": [
+        "English",
+        "Beginner Spanish"
+      ],
+      "additional_information": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/kidnap/aranza-maria-ochoa-lopez",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/06dfa08bfb6f45519a54de4fb785dbd4"
+    },
+    {
+      "age_min": 36,
+      "weight_max": 190,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "1584feee758e4cd39136171ef1c007f9",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin2.jpg",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin2.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin3.jpg",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin3.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Blue",
+      "details": "<p>Bryan McGehrin was last seen at his mother\u2019s residence on October 25, 2019, in Taneytown, Maryland.\u00a0 When he left her residence, he did not say where he was going.\u00a0 He was released from jail in Hagerstown, Maryland, two days prior.\u00a0 McGehrin does not have a cell phone but would historically make contact with his family using his friends\u2019 phones.\u00a0 McGehrin has depression and was not taking medication for it.\u00a0 He was supposed to attend a probation meeting but missed it. If you have any information regarding this investigation, please contact the Westminster Police Department.</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "October 25, 2019\r\nTaneytown, Maryland",
+      "weight_min": 190,
+      "height_min": 68,
+      "path": "/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:43+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland/mcgehrin.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "190 pounds",
+      "remarks": "<p>McGehrin was last wearing gray sweatpants, a blue/gray hooded jacket, white tennis shoes, and a baseball cap.</p>",
+      "ncic": null,
+      "title": "BRYAN MATTHEW MCGEHRIN - TANEYTOWN, MARYLAND",
+      "height_max": 68,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "blue",
+      "hair_raw": "Brown",
+      "publication": "2022-03-21T07:35:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/bryan-matthew-mcgehrin---taneytown-maryland",
+      "locations": null,
+      "age_range": "36 years old (at time of disappearance)",
+      "age_max": 36,
+      "@id": "https://api.fbi.gov/@wanted-person/1584feee758e4cd39136171ef1c007f9"
+    },
+    {
+      "age_min": 20,
+      "weight_max": 145,
+      "person_classification": "Main",
+      "race_raw": "Black",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "7d60ad83779047dd95914d0d1bf79e11",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/thumbnail_-waterloo-township-mi-2.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/thumbnail_-waterloo-township-mi-2.png",
+          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/thumbnail_-waterloo-township-mi-2.png/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": "<p>On Wednesday, August 30, 1978, the skeletal remains of a black male dressed in women\u2019s clothing and a wig were found bound and wrapped in plastic trash bags. The male had a right shoulder surgical implantation of two large staples into the lateral aspect of greater tubercle of the right humerus and a 32 mm (1 \u00bc\u201d) screw into the anterior border of glenoid fossa of the right scapula. He was missing 10 teeth to include his two upper front teeth and there was evidence of a healed nasal fracture. The cause of death could not be determined; however, based on how the body was found this case is considered a homicide. The Michigan State Police (MSP) Violent Crimes Unit (VCU) is requesting assistance with identifying this male and any similar cases.</p>",
+      "reward_min": 0,
+      "description": "August 30, 1978 \r\nWaterloo Township, Michigan",
+      "weight_min": 114,
+      "height_min": 62,
+      "path": "/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:43+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan/alert-unidentified_human_remains-waterloo-township-mi.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": null,
+      "race": "black",
+      "weight": "114 to 145 pounds",
+      "remarks": "<p>Unknown Distinguishing Characteristics: May have had a sizable scar on right shoulder from surgical intervention. Missing 10 teeth including the two upper front teeth. Evidence of a healed nasal fracture.</p>\r\n<p>Clothing/Belongings: Blue jeans (size 26 waist, 33 \u00bd\u201d inseam); violet long-sleeve blouse (size 14, 100% silk, label \"IRKA\"); beige long-sleeve blouse (size 5/6, 100% polyester, label \"RD2\"); reddish brown nylon neck scarf; panty hose; bra (size 34); bikini panty (size 4); glossy black high heeled shoes (4 1/2 inch) with gold tassel ankle tie; gold bracelet.</p>",
+      "ncic": null,
+      "title": "JOHN DOE - WATERLOO TOWNSHIP, MICHIGAN",
+      "height_max": 69,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "black",
+      "eyes": null,
+      "hair_raw": "Black (natural), auburn wavy collar length wig",
+      "publication": "2021-02-23T11:33:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Unidentified Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---waterloo-township-michigan",
+      "locations": null,
+      "age_range": "20 to 45 years old",
+      "age_max": 45,
+      "@id": "https://api.fbi.gov/@wanted-person/7d60ad83779047dd95914d0d1bf79e11"
+    },
+    {
+      "age_min": 22,
+      "weight_max": 170,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "b241a3d5007b4abcba4a085ea95831a1",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/mitchell-todd-hein/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/mitchell-todd-hein/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/mitchell-todd-hein/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": "<p>Jefferson County Sheriff\u2019s Office in Colorado is seeking assistance from the public to locate Mitchell Todd Hein. Hein visited family in Jefferson County, Colorado, in December of 1982 and abruptly left in January or February of 1983 without saying goodbye to anyone. He was carrying his clothes and belongings in a black trash bag. According to a friend, Hein showed up in Clinton, Oklahoma, and then in early March 1983, Hein hitched a ride with the friend's father to California. They stopped for the night in Indio, California. Hein left the hotel room and has not been seen or heard from since. It was reported that Hein had thrown away his driver's license and social security card and may have had no form of identification on him.</p>",
+      "reward_min": 0,
+      "description": "Indio, California\r\nFebruary 1, 1983",
+      "weight_min": 170,
+      "height_min": 70,
+      "path": "/wanted/vicap/missing-persons/mitchell-todd-hein",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:42+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/mitchell-todd-hein/vicap-alert-mitchell-hein-12-1-2020.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": "The victim had a major scar on his knee and a full beard when last seen.",
+      "race": "white",
+      "weight": "Approximately 170 pounds",
+      "remarks": "<p>Clothing included the following: Tattered blue jeans; a flannel shirt; and either tennis shoes or work boots.</p>",
+      "ncic": null,
+      "title": "MITCHELL TODD HEIN - INDIO, CALIFORNIA",
+      "height_max": 72,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "brown",
+      "hair_raw": "Brown/auburn and naturally curly",
+      "publication": "2020-12-10T13:40:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/mitchell-todd-hein",
+      "locations": null,
+      "age_range": "Approximately 22 years old",
+      "age_max": 22,
+      "@id": "https://api.fbi.gov/@wanted-person/b241a3d5007b4abcba4a085ea95831a1"
+    },
+    {
+      "age_min": null,
+      "weight_max": null,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "ed1cf9975e584bb6a1abbcff11f4cf7d",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov/@@images/image",
+          "large": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": null,
+      "reward_min": 0,
+      "description": "Conspiracy to Commit Theft of Trade Secrets; Attempted Theft of Trade Secrets",
+      "weight_min": null,
+      "height_min": null,
+      "path": "/wanted/counterintelligence/alexander-yuryevich-korshunov",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:41+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov/korshunovrussian.pdf/@@download/file/KorshunovRussian.pdf",
+          "name": "\u041d\u0410 \u0420\u0423\u0421\u0421\u041a\u041e\u041c"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": "<p>Alexander Yuryevich Korshunov is wanted for his alleged involvement in the theft of trade secrets from the United States.\u00a0 In 2009, Russian state-owned aviation company United Engine Corporation (UEC) appointed Korshunov as its director of marketing and sales.\u00a0 UEC had been \u201centity listed\u201d by the United States Department of Commerce in September of 2018 for acting contrary to the national security or foreign policy interests of the United States.\u00a0 It is alleged that, between 2013 and 2018, Korshunov conspired and attempted to steal trade secrets from an American aviation company.\u00a0\u00a0Korshunov\u2019s job was to encourage Western aviation companies to work with UEC to advance Russia\u2019s aviation technology.\u00a0 He hired engineers employed by a subsidiary of a large United States aviation company to consult on the re-design of the Russian PD-14 aero engine.\u00a0 Korshunov also allegedly hid UEC\u2019s procurements of Western technology through subsidiaries and partner companies, and was able to acquire the United States aviation company\u2019s confidential, protected, and unique engineering patterns, plans, and procedures for the benefit of Russia.</p>\r\n<p>\u00a0</p>\r\n<p>Korshunov was indicted by the United States District Court, Southern District of Ohio, Cincinnati, Ohio, on August 21, 2019.</p>\r\n<p>\u00a0</p>",
+      "dates_of_birth_used": [
+        "May 19, 1962"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": null,
+      "remarks": "<p>Korshunov worked as the director of a Russian state-owned company while also serving as an intelligence officer with Russia\u2019s Foreign Intelligence Service (SVR).</p>",
+      "ncic": null,
+      "title": "ALEXANDER YURYEVICH KORSHUNOV",
+      "height_max": null,
+      "place_of_birth": "Russia",
+      "coordinates": [],
+      "hair": "gray",
+      "eyes": null,
+      "hair_raw": "Gray",
+      "publication": "2020-12-14T07:47:00",
+      "field_offices": [
+        "cincinnati"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Aleksandr Korshunov"
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Counterintelligence"
+      ],
+      "nationality": "Russian",
+      "url": "https://www.fbi.gov/wanted/counterintelligence/alexander-yuryevich-korshunov",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/ed1cf9975e584bb6a1abbcff11f4cf7d"
+    },
+    {
+      "age_min": null,
+      "weight_max": 210,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of Frederick Arias.",
+      "uid": "8ff4f4c1329a40c686d8f553062c2996",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": "Photograph taken in 2019",
+          "thumb": "https://www.fbi.gov/wanted/wcc/frederick-arias/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wcc/frederick-arias/@@images/image",
+          "large": "https://www.fbi.gov/wanted/wcc/frederick-arias/@@images/image/large"
+        },
+        {
+          "caption": "Photograph taken in 2009",
+          "thumb": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias2009.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias2009.png",
+          "large": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias2009.png/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Hazel",
+      "details": null,
+      "reward_min": 0,
+      "description": "Unlawful Flight to Avoid Prosecution - Conspiracy; Fraudulent Schemes and Artifices; Money Laundering in the First Degree; Theft (10 Counts); Illegal Control of an Enterprise (Two Counts); Forgery; Fraudulent Schemes and Practices; Failure to Appear",
+      "weight_min": 209,
+      "height_min": 68,
+      "path": "/wanted/wcc/frederick-arias",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:41+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/frederick-arias/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias-norwegian-8-18-2020.pdf/@@download/file/Arias Norwegian 8-18-2020.pdf",
+          "name": "P\u00c5 NORSK"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias-czech-8-19-2020.pdf/@@download/file/Arias Czech 8-19-2020.pdf",
+          "name": "V \u010cE\u0160TIN\u011a"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wcc/frederick-arias/arias-spanish-9-15-2020.pdf/@@download/file/Arias Spanish 9-15-2020.pdf",
+          "name": "EN ESPA\u00d1OL"
+        }
+      ],
+      "warning_message": "SHOULD BE CONSIDERED AN ESCAPE RISK",
+      "legat_names": null,
+      "caution": "<p>Frederick Arias is wanted for his alleged involvement in a fraud scheme in which victim investors lost over $9 million dollars.</p>\r\n<p>Between December of 2015 and October of 2017, Arias allegedly told investors that The Joseph Project was a safe and secure investment with guaranteed profits. Instead, Arias allegedly withdrew funds to pay personal expenses and wired funds overseas.</p>\r\n<p>On June 6, 2019, Arias was charged with conspiracy; fraudulent schemes and artifices; money laundering in the first degree; ten counts of theft; two counts of illegal control of an enterprise; forgery; and fraudulent schemes by the Superior Court of the State of Arizona in and for the County of Maricopa, and a warrant was issued for his arrest. On June 10, 2019, Arias was arrested in Kirkland, Washington. On June 13, 2019, Arias was released from custody on bond, and subsequently failed to appear for an extradition hearing. On June 17, 2019, Arias was indicted on the above 17 charges related to the fraud scheme. On June 26, 2019, the King County District Court in King County, Washington, charged Arias with failure to appear, and a warrant was issued for his arrest. On March 19, 2020, Arias was charged federally with unlawful flight to avoid prosecution in the United States District Court for the District of Arizona, Phoenix, Arizona, and a warrant was issued for his arrest.</p>\r\n<p>\u00a0</p>",
+      "dates_of_birth_used": [
+        "September 13, 1966"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "209 to 210 pounds",
+      "remarks": "<p>Arias has ties to, or may visit, Canada, Norway, Australia, the Czech Republic, and the Dominican Republic. He is a former law enforcement officer. Arias has previously resided in Kirkland, Washington.</p>",
+      "ncic": null,
+      "title": "FREDERICK ARIAS",
+      "height_max": 70,
+      "place_of_birth": "New York",
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "hazel",
+      "hair_raw": "Brown",
+      "publication": "2019-11-27T08:10:00",
+      "field_offices": [
+        "phoenix"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Fred Arias",
+        "Frederick M. Arias"
+      ],
+      "possible_states": null,
+      "languages": [
+        "Spanish",
+        "English"
+      ],
+      "additional_information": null,
+      "subjects": [
+        "White-Collar Crime"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/wcc/frederick-arias",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/8ff4f4c1329a40c686d8f553062c2996"
+    },
+    {
+      "age_min": 22,
+      "weight_max": 160,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "8774527c934e485297718c705533307a",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/doran2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/doran2.jpg",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/doran2.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Blue /Hazel",
+      "details": "<p>Randy Stewart Doran left his family\u2019s Los Angeles, California, residence in early 1978. His last communication with family members was in early April 1978 when he called an aunt, stating he was working on a shipping dock (possibly on the SS President riverboat) in New Orleans, Louisiana. Prior to his disappearance, he sent a postcard to his aunt from New Orleans saying he was doing fine. He has never been heard from again.</p>\r\n<p>\u00a0</p>\r\n<p>Doran was known to hitchhike, traveling across the country from California to Florida. He was a U.S. Marine Corps veteran, an avid guitar player, and liked to write short stories and poetry. He also carried a small pocket Bible with him. Fingerprints are available for comparison, and DNA from family members is in CODIS.</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "April 1, 1978\r\nNew Orleans, Louisiana",
+      "weight_min": 160,
+      "height_min": 71,
+      "path": "/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:41+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana/vicap-alert-2021-06-07-doran-1.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": "Doran has a scar on his upper lip.  He also has an extra vertebrae in his spine.",
+      "race": "white",
+      "weight": "160 pounds",
+      "remarks": null,
+      "ncic": null,
+      "title": "RANDY STEWART DORAN - NEW ORLEANS, LOUISIANA",
+      "height_max": 71,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "blue",
+      "hair_raw": "Brown, Collar Length",
+      "publication": "2021-06-24T08:53:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/randy-stewart-doran---new-orleans-louisiana",
+      "locations": null,
+      "age_range": "22 (at time of disappearance)",
+      "age_max": 22,
+      "@id": "https://api.fbi.gov/@wanted-person/8774527c934e485297718c705533307a"
+    },
+    {
+      "age_min": null,
+      "weight_max": null,
+      "person_classification": "Main",
+      "race_raw": null,
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $15,000 for information leading to the arrest and conviction of the individual(s) responsible for the murder of Dhulfiqar Kareem Mseer.",
+      "uid": "8a3744a5b3224886a0affe5df455a4c0",
+      "reward_max": 0,
+      "sex": null,
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/dhulfiqar-kareem-mseer/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/dhulfiqar-kareem-mseer/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/dhulfiqar-kareem-mseer/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": "<p>On December 11, 2020, 23-year-old Dhulfiqar Kareem Mseer was working as an Uber driver.\u00a0 Shortly before midnight, he arrived in the area of NE Stafford Street and NE 11th\u00a0Avenue in Portland, Oregon, to pick\u00a0up a fare.\u00a0 He was shot by multiple subjects\u00a0who fired approximately 70 rounds.\u00a0 He died several days later.\u00a0 The subjects got into two cars before leaving the area.\u00a0 One of the cars is believed to be a VW Eos.\u00a0 Shell casings recovered at the scene have been matched to casings found at other gang-involved shootings in the area.</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "Homicide Victim\r\nPortland, Oregon\r\nDecember 11, 2020",
+      "weight_min": null,
+      "height_min": null,
+      "path": "/wanted/seeking-info/dhulfiqar-kareem-mseer",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:41+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/dhulfiqar-kareem-mseer/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": null,
+      "race": null,
+      "weight": null,
+      "remarks": null,
+      "ncic": null,
+      "title": "DHULFIQAR KAREEM MSEER",
+      "height_max": null,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": null,
+      "eyes": null,
+      "hair_raw": null,
+      "publication": "2021-10-18T08:07:00",
+      "field_offices": [
+        "portland"
+      ],
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/dhulfiqar-kareem-mseer",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/8a3744a5b3224886a0affe5df455a4c0"
+    },
+    {
+      "age_min": null,
+      "weight_max": 160,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "b4db60d7ed14449cb73ba39564ef9e19",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Blue, wears glasses",
+      "details": "<p>On Thursday, October 26, 1995, James S. Ruland was last seen hitchhiking in North Fond du Lac, Wisconsin. Nine days later, he was reported missing by his sister. On November 14, 1995, Ruland\u2019s white Dodge Aires station wagon was recovered from the Stretch Truck Stop near North Fond du Lac. The keys were in the ignition and Ruland\u2019s personal possessions were in the cargo area.</p>\r\n<p>Ruland sustained a severe head injury when he was young which required a shunt implant. The initial shunt failed, necessitating a second shunt. The implants required \u201cbilateral burr holes\u201d so the shunts could pass through his skull. Fond du Lac Sheriff\u2019s Office is requesting assistance with locating Ruland.</p>",
+      "reward_min": 0,
+      "description": "October 26, 1995\r\nNorth Fond du Lac, Wisconsin",
+      "weight_min": 160,
+      "height_min": 72,
+      "path": "/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:40+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin/vicap-alert-2021-02-05-missing_person-2021-02-05-james-s-ruland-master-1.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": null,
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": "160 pounds",
+      "remarks": "<p>Distinguishing Characteristics: Metal plate in head - bilateral burr holes/shunts, mustache</p>\r\n<p>Clothing/Belongings: Green camouflage jacket, silver wire rimmed glasses</p>",
+      "ncic": null,
+      "title": "JAMES S. RULAND - NORTH FOND du LAC, WISCONSIN",
+      "height_max": 72,
+      "place_of_birth": null,
+      "coordinates": [],
+      "hair": "brown",
+      "eyes": "blue",
+      "hair_raw": "Brown, collar length",
+      "publication": "2021-02-23T08:02:00",
+      "field_offices": null,
+      "complexion": null,
+      "aliases": null,
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "nationality": null,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/james-s-ruland---north-fond-du-lac-wisconsin",
+      "locations": null,
+      "age_range": "Forty years old",
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/b4db60d7ed14449cb73ba39564ef9e19"
+    },
+    {
+      "age_min": null,
+      "weight_max": 115,
+      "person_classification": "Main",
+      "race_raw": "Native American/Alaskan Native",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the identification, arrest, and conviction of person(s) responsible for the disappearance of Mary Johnson (Davis).",
+      "uid": "d68267f4793d4ed1a27d4f51685865c3",
+      "reward_max": 0,
+      "sex": "Female",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson2.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/johnson3.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": "Brown",
+      "details": "<p>The Federal Bureau of Investigation's Seattle Field Office and the Tulalip Tribal Police are investigating the disappearance of Mary Johnson (Davis), last seen November 25, 2020, walking east on\u00a0Firetrail Road on the Tulalip Reservation in Washington State.\u00a0 Mary was traveling to a friend\u2019s house and never arrived.\u00a0 She was reported missing December 9, 2020.\u00a0</p>\r\n<p>\u00a0</p>",
+      "reward_min": 0,
+      "description": "November 25, 2020\r\nTulalip Reservation\r\nWashington State",
+      "weight_min": 115,
+      "height_min": 66,
+      "path": "/wanted/kidnap/mary-johnson-davis",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:40+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": null,
+      "dates_of_birth_used": [
+        "August 31, 1981"
+      ],
+      "scars_and_marks": "Mary has a Sunburst-type tattoo on her upper right arm.",
+      "race": "native",
+      "weight": "115 pounds",
+      "remarks": null,
+      "ncic": null,
+      "title": "MARY JOHNSON (DAVIS)",
+      "height_max": 66,
+      "place_of_birth": "Washington State",
+      "coordinates": [],
+      "hair": "black",
+      "eyes": "brown",
+      "hair_raw": "Black",
+      "publication": "2021-09-14T06:37:00",
+      "field_offices": [
+        "seattle"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Mary E. Davis",
+        "Mary E. Johnson"
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Kidnappings and Missing Persons",
+        "Indian Country"
+      ],
+      "nationality": "American",
+      "url": "https://www.fbi.gov/wanted/kidnap/mary-johnson-davis",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/d68267f4793d4ed1a27d4f51685865c3"
+    },
+    {
+      "age_min": null,
+      "weight_max": null,
+      "person_classification": "Main",
+      "race_raw": "White",
+      "suspects": null,
+      "possible_countries": null,
+      "reward_text": null,
+      "uid": "ec44a773c34a4da694e878a6a51d60de",
+      "reward_max": 0,
+      "sex": "Male",
+      "build": null,
+      "status": "na",
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin4.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin4.jpg",
+          "large": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin4.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin5.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin5.jpg",
+          "large": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/polyanin5.jpg/@@images/image/large"
+        }
+      ],
+      "eyes_raw": null,
+      "details": null,
+      "reward_min": 0,
+      "description": "Conspiracy to Commit Fraud and Related Activity in Connection with Computers; Intentional Damage to a Protected Computer; Conspiracy to Commit Money Laundering",
+      "weight_min": null,
+      "height_min": null,
+      "path": "/wanted/cyber/yevgyeniy-igoryevich-polyanin",
+      "occupations": null,
+      "modified": "2023-02-23T00:09:39+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin/download.pdf",
+          "name": "English"
+        }
+      ],
+      "warning_message": null,
+      "legat_names": null,
+      "caution": "<p>Yevgyeniy Igoryevich Polyanin is wanted for his alleged involvement in ransomware attacks and money laundering activities.\u00a0 It is alleged that, through the use and deployment of Sodinokibi and REvil ransomware, Polyanin left electronic notes in the form of a text file on victims\u2019 computers.\u00a0 The notes included web addresses for the victims to visit and have their files decrypted.\u00a0 Upon\u00a0visiting these web addresses, victims were given the ransom amount demanded and provided a virtual currency address to use to pay the ransom.\u00a0 If a victim paid the ransom amount, Polyanin provided the decryption key, and the victims then were able to access their files.\u00a0 If a victim did not pay the ransom, Polyanin typically posted the victims\u2019 exfiltrated data or claimed he sold the exfiltrated data to third parties.\u00a0 Polyanin has been charged in an indictment filed in the United States District Court for\u00a0the Northern District of Texas, Dallas, Texas, with conspiracy to commit fraud and related activity in connection with computers, substantive counts of intentional damage to protected computers, and conspiracy to commit money laundering.</p>\r\n<p>\u00a0</p>",
+      "dates_of_birth_used": [
+        "March 4, 1993"
+      ],
+      "scars_and_marks": null,
+      "race": "white",
+      "weight": null,
+      "remarks": "<p>Polyanin is believed to be in Russia, possibly in\u00a0Barnaul, and is one of many Sodinokibi/REvil ransomware affiliates.</p>",
+      "ncic": null,
+      "title": "YEVGYENIY IGORYEVICH POLYANIN",
+      "height_max": null,
+      "place_of_birth": "Russia",
+      "coordinates": [],
+      "hair": null,
+      "eyes": null,
+      "hair_raw": null,
+      "publication": "2021-11-04T14:40:00",
+      "field_offices": [
+        "dallas"
+      ],
+      "complexion": null,
+      "aliases": [
+        "Yevhgyeniy Polyanin",
+        "Yevgeniy Polyanin",
+        "Yevgveniey Igorevich Polyanon",
+        "Evegnii Igorevich Polianin",
+        "Evgeniy Polyanin",
+        "Evgeniy Igorevich Polyanin",
+        "\"lk-4d4\""
+      ],
+      "possible_states": null,
+      "languages": null,
+      "additional_information": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "nationality": "Russian",
+      "url": "https://www.fbi.gov/wanted/cyber/yevgyeniy-igoryevich-polyanin",
+      "locations": null,
+      "age_range": null,
+      "age_max": null,
+      "@id": "https://api.fbi.gov/@wanted-person/ec44a773c34a4da694e878a6a51d60de"
+    }
+  ],
+  "page": 1
+}

@@ -1,0 +1,1711 @@
+{
+  "total": 1007,
+  "items": [
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "98df11f3903d4ecab8940693471cbca8",
+      "weight": "112 pounds (at time of disappearance)",
+      "occupations": null,
+      "field_offices": [
+        "seattle"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Female",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "February 10, 1967"
+      ],
+      "caution": null,
+      "nationality": "American",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Kidnappings and Missing Persons",
+        "Indian Country"
+      ],
+      "aliases": null,
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2023-08-25T07:57:00",
+      "title": "CARLOTTA MARIA SANCHEZ",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>On August 30, 1979, Carlotta Maria Sanchez, accompanied by her cousin,\u00a0<a data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/kidnap/elsie-eldora-luscier\" href=\"https://www.fbi.gov/wanted/kidnap/elsie-eldora-luscier\" data-linktype=\"external\">Elsie Eldora Luscier</a>, disappeared from Taholah, Washington, which is in the Quinault Nation Indian Reservation.\u00a0 The FBI is seeking information about the disappearance of both girls, and about those responsible for their disappearance.</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "August 30, 1979\r\nTaholah, Washington",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/sanchezc2.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/sanchezc2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez/sanchezc2.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 112,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/kidnap/carlotta-maria-sanchez",
+      "eyes_raw": "Brown",
+      "weight_max": 112,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/kidnap/carlotta-maria-sanchez",
+      "possible_states": null,
+      "modified": "2023-10-10T15:18:19+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": 66,
+      "place_of_birth": "Yuma, Arizona",
+      "height_min": 66,
+      "poster_classification": "missing",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/98df11f3903d4ecab8940693471cbca8"
+    },
+    {
+      "dates_of_birth_used": [
+        "April 13, 1961"
+      ],
+      "weight_min": 190,
+      "url": "https://www.fbi.gov/wanted/murders/robert-william-fisher",
+      "age_min": null,
+      "hair": "brown",
+      "weight": "190 pounds",
+      "reward_text": null,
+      "title": "ROBERT WILLIAM FISHER",
+      "weight_max": 190,
+      "uid": "83a7764745a647a8b37fdab212c6c81b",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/murders/robert-william-fisher/download.pdf",
+          "name": "English"
+        }
+      ],
+      "aliases": [
+        "Robert W. Fisher"
+      ],
+      "subjects": [
+        "Violent Crime - Murders"
+      ],
+      "coordinates": [],
+      "description": "Unlawful Flight to Avoid Prosecution - First Degree Murder (3 Counts), Arson of an Occupied Structure",
+      "reward_max": 0,
+      "sex": "Male",
+      "locations": null,
+      "race": "white",
+      "complexion": "Light",
+      "path": "/wanted/murders/robert-william-fisher",
+      "possible_countries": null,
+      "publication": "2010-07-20T16:25:00",
+      "scars_and_marks": "Fisher has surgical scars on his lower back.",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND EXTREMELY DANGEROUS",
+      "details": null,
+      "race_raw": "White",
+      "eyes_raw": "Blue",
+      "languages": null,
+      "poster_classification": "default",
+      "build": "Medium",
+      "place_of_birth": "Brooklyn, New York",
+      "height_max": 72,
+      "possible_states": null,
+      "caution": "<p>Robert William Fisher is wanted for allegedly killing his wife and two young children and then blowing up the house in which they all lived in Scottsdale, Arizona, in April of 2001.</p>",
+      "occupations": [
+        "Surgical Catheter Technician",
+        "Respiratory Therapist",
+        "Fireman"
+      ],
+      "status": "na",
+      "person_classification": "Main",
+      "legat_names": null,
+      "hair_raw": "Brown",
+      "ncic": null,
+      "reward_min": 0,
+      "field_offices": [
+        "phoenix"
+      ],
+      "images": [
+        {
+          "caption": "Photograph taken in 1999",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/@@images/image/thumb"
+        },
+        {
+          "caption": "Photograph taken in 1997",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher2bw.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher2bw.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher2bw.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithbeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithbeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithbeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairnobeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairnobeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairnobeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithgoatee.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithgoatee.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairwithgoatee.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldlongbeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldlongbeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldlongbeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandgoatee.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandgoatee.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandgoatee.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairnobeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairnobeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/longhairnobeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandbeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandbeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/shorthairandbeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "Age-enhanced photograph",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldnobeard.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldnobeard.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/baldnobeard.jpg/@@images/image/thumb"
+        },
+        {
+          "caption": "",
+          "large": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher5bw.jpg/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher5bw.jpg",
+          "thumb": "https://www.fbi.gov/wanted/murders/robert-william-fisher/fisher5bw.jpg/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "age_max": null,
+      "additional_information": null,
+      "age_range": null,
+      "nationality": "American",
+      "height_min": 72,
+      "modified": "2023-10-10T00:00:23+00:00",
+      "remarks": "<p>Fisher is physically fit and is an avid outdoorsman, hunter, and fisherman. He has a noticeable gold crown on his upper left first bicuspid tooth. He may walk with an exaggerated erect posture and his chest pushed out due to a lower back injury. Fisher is known to chew tobacco heavily. He has ties to New Mexico and Florida. Fisher is believed to be in possession of several weapons, including a high-powered rifle.</p>",
+      "eyes": "blue",
+      "@id": "https://api.fbi.gov/@wanted-person/83a7764745a647a8b37fdab212c6c81b"
+    },
+    {
+      "dates_of_birth_used": null,
+      "weight_min": 110,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania",
+      "age_min": 24,
+      "hair": "brown",
+      "weight": "110 pounds",
+      "reward_text": null,
+      "title": "DAWN MARIE MOZINO - BRYN MAWR, PENNSYLVANIA",
+      "weight_max": 110,
+      "uid": "6821fa45714045a186f52c84db67ae72",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania/vicap-alert-2020-05-03_missing-person_dawn-mozino-public.pdf",
+          "name": "English"
+        }
+      ],
+      "aliases": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "coordinates": [],
+      "description": "Bryn Mawr, Pennsylvania\r\nMay 22, 1989",
+      "reward_max": 0,
+      "sex": "Female",
+      "locations": null,
+      "race": "white",
+      "complexion": null,
+      "path": "/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania",
+      "possible_countries": null,
+      "publication": "2020-05-13T13:45:00",
+      "scars_and_marks": null,
+      "warning_message": null,
+      "details": "<p>On May 22, 1989, Dawn Marie Mozino was last seen at the bus stop near Bryn Mawr Hospital, where she worked in food services.\u00a0 Mozino never arrived home after her shift.\u00a0 Mozino is learning disabled, with a mental capacity of a 13-year-old person.\u00a0 She was last seen wearing a gray skirt, maroon vest, white shirt, and black bow tie.</p>\r\n<p>\u00a0</p>",
+      "race_raw": "White",
+      "eyes_raw": "Brown",
+      "languages": null,
+      "poster_classification": "default",
+      "build": null,
+      "place_of_birth": null,
+      "height_max": 58,
+      "possible_states": null,
+      "caution": null,
+      "occupations": null,
+      "status": "na",
+      "person_classification": "Main",
+      "legat_names": null,
+      "hair_raw": "Brown, Curly",
+      "ncic": null,
+      "reward_min": 0,
+      "field_offices": null,
+      "images": [
+        {
+          "caption": null,
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/dawn-marie-mozino---bryn-mawr-pennsylvania/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "age_max": 24,
+      "additional_information": null,
+      "age_range": "24 years old at time of disappearance",
+      "nationality": null,
+      "height_min": 58,
+      "modified": "2023-10-10T00:00:22+00:00",
+      "remarks": null,
+      "eyes": "brown",
+      "@id": "https://api.fbi.gov/@wanted-person/6821fa45714045a186f52c84db67ae72"
+    },
+    {
+      "dates_of_birth_used": null,
+      "weight_min": 110,
+      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon",
+      "age_min": 30,
+      "hair": "brown",
+      "weight": "110 to 140 pounds",
+      "reward_text": null,
+      "title": "JANE DOE - LINN COUNTY, OREGON",
+      "weight_max": 140,
+      "uid": "9dc24203f49b46419d6cd4f1a434ec5a",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon/alert-2020-05-02-oregon.pdf",
+          "name": "English"
+        }
+      ],
+      "aliases": null,
+      "subjects": [
+        "ViCAP Unidentified Persons"
+      ],
+      "coordinates": [],
+      "description": "Linn County, Oregon\r\nApril 3, 2020",
+      "reward_max": 0,
+      "sex": "Female",
+      "locations": null,
+      "race": "white",
+      "complexion": null,
+      "path": "/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon",
+      "possible_countries": null,
+      "publication": "2020-05-12T12:48:00",
+      "scars_and_marks": null,
+      "warning_message": null,
+      "details": "<p>On April 3, 2020, the partially skeletonized remains of an adult female were discovered along a dirt road off Santiam Highway (U.S. 20) in the Willamette National Forest, Linn County, Oregon. Cause of death has not been determined, but the estimated time of death is between eight weeks and one year prior to discovery. No personal effects to include jewelry, identification, or cell phone were recovered. Dental records are available for comparison.</p>\r\n<p>\u00a0</p>",
+      "race_raw": "White",
+      "eyes_raw": null,
+      "languages": null,
+      "poster_classification": "default",
+      "build": null,
+      "place_of_birth": null,
+      "height_max": null,
+      "possible_states": null,
+      "caution": null,
+      "occupations": null,
+      "status": "na",
+      "person_classification": "Main",
+      "legat_names": null,
+      "hair_raw": "Short, Wavy, Brown",
+      "ncic": null,
+      "reward_min": 0,
+      "field_offices": null,
+      "images": [
+        {
+          "caption": null,
+          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon/@@images/image/large",
+          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon/@@images/image",
+          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/jane-doe---linn-county-oregon/@@images/image/thumb"
+        }
+      ],
+      "suspects": null,
+      "age_max": 50,
+      "additional_information": null,
+      "age_range": "30 to 50 years old (at time of death)",
+      "nationality": null,
+      "height_min": null,
+      "modified": "2023-10-10T00:00:22+00:00",
+      "remarks": null,
+      "eyes": null,
+      "@id": "https://api.fbi.gov/@wanted-person/9dc24203f49b46419d6cd4f1a434ec5a"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/jason-jolkowski/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "6d48971b0cc2449693a1d027beb41f8a",
+      "weight": "160 pounds",
+      "occupations": null,
+      "field_offices": [
+        "omaha"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Male",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "June 24, 1981"
+      ],
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "aliases": null,
+      "race_raw": "White",
+      "suspects": null,
+      "publication": "2023-10-03T16:07:00",
+      "title": "JASON JOLKOWSKI",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>On June 13, 2001, Jason Jolkowski went missing after leaving his residence in Omaha, Nebraska.\u00a0He was last seen walking to work at Fazoli's restaurant and was supposed to meet a friend at Benson High School.</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "June 13, 2001\r\nOmaha, Nebraska",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/jason-jolkowski/@@images/image/large",
+          "caption": "Photograph taken approximately 2000 or 2001",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jason-jolkowski/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jason-jolkowski/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 160,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/kidnap/jason-jolkowski",
+      "eyes_raw": "Brown",
+      "weight_max": 160,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/kidnap/jason-jolkowski",
+      "possible_states": null,
+      "modified": "2023-10-06T12:58:42+00:00",
+      "reward_max": 0,
+      "race": "white",
+      "height_max": 72,
+      "place_of_birth": null,
+      "height_min": 72,
+      "poster_classification": "missing",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/6d48971b0cc2449693a1d027beb41f8a"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/additional/demarco-johnson/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "83795f74f05240f1b85f314bcbfac2f7",
+      "weight": "200 pounds",
+      "occupations": null,
+      "field_offices": [
+        "atlanta"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Male",
+      "hair": "black",
+      "ncic": "W683117061",
+      "dates_of_birth_used": [
+        "November 14, 2001"
+      ],
+      "caution": "<p>Demarco Johnson is wanted for his alleged participation in the robbery of an armored truck in Tucker, Georgia, on February 6, 2023, as well as the robbery of an armored truck in Snellville, Georgia, on March 20, 2023.\u00a0</p>\r\n<p>\u00a0</p>\r\n<p>A federal arrest warrant was issued for Demarco Johnson on August 23, 2023, in the United States District Court, Northern District of Georgia, Atlanta, Georgia, after he was charged with conspiracy to commit Hobbs Act robbery, Hobbs Act robbery, and possession of a firearm during a crime of violence.\u00a0</p>",
+      "nationality": "American",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Additional Violent Crimes",
+        "Case of the Week"
+      ],
+      "aliases": [
+        "\"Gloxk\"",
+        "Demarco Areius Johnson"
+      ],
+      "race_raw": "Black",
+      "suspects": null,
+      "publication": "2023-09-29T11:32:00",
+      "title": "DEMARCO JOHNSON",
+      "coordinates": [],
+      "hair_raw": "Black",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Conspiracy to Commit Hobbs Act Robbery; Hobbs Act Robbery; Possession of a Firearm During a Crime of Violence",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/additional/demarco-johnson/@@images/image/large",
+          "caption": "Photograph taken in 2019",
+          "thumb": "https://www.fbi.gov/wanted/additional/demarco-johnson/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/additional/demarco-johnson/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson1.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2023",
+          "thumb": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson1.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson2.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2023",
+          "thumb": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/additional/demarco-johnson/demarcojohnson2.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 200,
+      "additional_information": null,
+      "remarks": "<p>Johnson is previously known to live in Stone Mountain, Georgia.</p>",
+      "path": "/wanted/additional/demarco-johnson",
+      "eyes_raw": "Brown",
+      "weight_max": 200,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/additional/demarco-johnson",
+      "possible_states": null,
+      "modified": "2023-10-04T19:31:06+00:00",
+      "reward_max": 0,
+      "race": "black",
+      "height_max": 72,
+      "place_of_birth": "Georgia",
+      "height_min": 72,
+      "poster_classification": "default",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/83795f74f05240f1b85f314bcbfac2f7"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "e3e4565e4eeffe4e4177119058ee867d",
+      "weight": "Unknown",
+      "occupations": null,
+      "field_offices": [
+        "washingtondc"
+      ],
+      "locations": null,
+      "reward_text": "The Rewards For Justice Program, United States Department of State, is offering a reward of up to $5 million for information leading directly to the apprehension or conviction, in any country, of Husayn Muhammad Al-Umari. The United States Department of Defense is offering a reward of up to $200,000 for information leading to the capture of Al-Umari.",
+      "sex": "Male",
+      "hair": "black",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "1936"
+      ],
+      "caution": "<p>Husayn Muhammad Al-Umari was indicted in the District of Columbia for his alleged role in the August 11, 1982, bombing of Pan Am Flight 830, while it was en route from Japan to Hawaii. He is alleged to have prepared the bomb that was placed under a seat on Flight 830, resulting in the death of a 16-year-old passenger and injuring 16 other passengers.</p>",
+      "nationality": "Unknown",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": "Al-Umari has a scar on the fingers of his right hand to his forearm, and a scar on his left hand in the web between the thumb and index finger (2 to 3 inches).",
+      "subjects": [
+        "Most Wanted Terrorists"
+      ],
+      "aliases": [
+        "Abu Ibrahim",
+        "Hussein Mohammed Al-Umari",
+        "\"The Bomb Man\""
+      ],
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2010-07-26T10:10:00",
+      "title": "HUSAYN MUHAMMAD AL-UMARI",
+      "coordinates": [],
+      "hair_raw": "Black/Gray (balding)",
+      "languages": [
+        "Palestinian Arabic (Lebanese accent), English"
+      ],
+      "complexion": "Light",
+      "build": "Medium to Large",
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Conspiracy to Commit Assault and Damage Property; Conspiracy to Commit Murder; Murder; Aircraft Sabotage; Damaging Aircraft Used in Foreign Commerce; Placing Bombs on Aircraft; Assault; Attempted Aircraft Sabotage; Aiding and Abetting",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/teralumari_hm2.jpg/@@images/image/large",
+          "caption": "Age progressed drawing prepared in 2009",
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/teralumari_hm2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari/teralumari_hm2.jpg"
+        }
+      ],
+      "possible_countries": [
+        "CUB",
+        "ISR",
+        "JPN",
+        "LBN",
+        "PSE"
+      ],
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": "<p>Al-Umari has thin lips, a cleft chin, and a wide mouth. He wears a mustache, glasses, and dresses very well. Al-Umari is a Sunni Muslim and doesn't drink or gamble, but smokes Cuban cigars. He has a high school education and is a mechanic and explosives expert. Al-Umari formed 15 May Organization in 1979, whose mission was to promote the Palestinian cause through violence towards supporters of Israel. Al-Umari has a Lebanese passport.</p>",
+      "path": "/wanted/wanted_terrorists/husayn-muhammad-al-umari",
+      "eyes_raw": "Brown",
+      "weight_max": null,
+      "reward_min": 100000,
+      "url": "https://www.fbi.gov/wanted/wanted_terrorists/husayn-muhammad-al-umari",
+      "possible_states": [
+        "US-DC",
+        "US-HI"
+      ],
+      "modified": "2023-10-04T15:45:07+00:00",
+      "reward_max": 999999,
+      "race": null,
+      "height_max": 68,
+      "place_of_birth": "Jaffa, Palestine",
+      "height_min": 67,
+      "poster_classification": "terrorist",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/e3e4565e4eeffe4e4177119058ee867d"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "f425178e9826407da0a9b2b2fda2945d",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "charlotte"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "aliases": null,
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2021-02-02T15:16:00",
+      "title": "TIMOTHY DUMAS, SR. AND MASTER SERGEANT WILLIAM LAVIGNE III",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>The FBI's Charlotte Field Office in North Carolina and the U.S. Army Criminal Investigation Command are asking for the public's assistance in creating a timeline around the deaths of Timothy Dumas, Sr., and Master Sergeant William Lavigne III.</p>\r\n<p>Dumas, Sr., 44, and Lavigne, 37, were found dead on Fort Bragg near Manchester Road in Cumberland County, North Carolina, on December 2, 2020. Investigators are seeking to create a timeline of their location and activities on December 1 and 2, 2020. A gray 2016 Chevrolet Colorado pickup truck belonging to Lavigne was found at the crime scene near Manchester Road. A dark-colored 2015 Dodge Ram pickup truck belonging to Dumas, Sr., was found abandoned at another location.</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Homicide Victims\r\nCumberland County, North Carolina\r\nDecember 2, 2020",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dumas.jpg/@@images/image/large",
+          "caption": "Timothy Dumas, Sr.",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dumas.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dumas.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dodge-ram.png/@@images/image/large",
+          "caption": "Dumas, Sr.'s 2015 Dodge Ram pickup truck",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dodge-ram.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/dodge-ram.png"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/lavigne.jpg/@@images/image/large",
+          "caption": "Master Sergeant William Lavigne III",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/lavigne.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/lavigne.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/chevrolet.jpg/@@images/image/large",
+          "caption": "Lavigne's 2016 Chevy Colorado pickup truck",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/chevrolet.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne/chevrolet.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/seeking-info/dumas-and-lavigne",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/dumas-and-lavigne",
+      "possible_states": null,
+      "modified": "2023-10-02T21:14:16+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/f425178e9826407da0a9b2b2fda2945d"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/raddulan_sahiron-tagalog-final.pdf/@@download/file/Raddulan_Sahiron.Tagalog.final.pdf",
+          "name": "Sa tagalog"
+        }
+      ],
+      "age_range": null,
+      "uid": "ec797859-d531-40d7-8894-945044934bde",
+      "weight": "140 pounds",
+      "occupations": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "locations": null,
+      "reward_text": "The Rewards For Justice Program, United States Department of State, is offering a reward of up to $1 million for information leading to the arrest of Raddulan Sahiron.",
+      "sex": "Male",
+      "hair": "gray",
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": "<p>Raddulan Sahiron is wanted for his alleged involvement in the kidnapping of a United States Citizen. On November 14, 1993, the victim was abducted from his residence at Simbahan, Pangutaran, Sulu, Philippines, by approximately 14 armed members of the terrorist organization Al Harakat al Islamiyyah, also known as the Abu Sayyaf Group. The victim was transported to the terrorist's jungle camp on the Southern Philippine island of Jolo. He was held captive for 23 days until his release on December 7, 1993.</p>\r\n<p>\u00a0</p>\r\n<p>Sahiron was indicted in the United States District Court, District of Columbia, on February 27, 2007, and was charged with hostage taking and aiding and abetting and causing an act to be done. An arrest warrant was issued on the same date. Sahiron has been the overall leader of the Abu Sayyaf Group since 2005, and is believed to be in the area of Patikul Jolo, Sulu, Philippines.</p>",
+      "nationality": "Filipino",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": "Sahiron's right arm is amputated above his elbow.",
+      "subjects": [
+        "Most Wanted Terrorists"
+      ],
+      "aliases": [
+        "Radullan Sahiron",
+        "Radulan Sahiron",
+        "Raddulan Sahirun",
+        "Commander Putol"
+      ],
+      "race_raw": "Asian",
+      "suspects": null,
+      "publication": "2012-09-07T07:00:00",
+      "title": "RADDULAN SAHIRON",
+      "coordinates": [],
+      "hair_raw": "Gray",
+      "languages": [
+        "Tausug",
+        "Arabic"
+      ],
+      "complexion": null,
+      "build": "Slight",
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "black",
+      "person_classification": "Main",
+      "description": "Hostage Taking; Aiding and Abetting and Causing an Act to be Done",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/sahiron3.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/sahiron3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron/sahiron3.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 140,
+      "additional_information": null,
+      "remarks": "<p>Sahiron is thought to be currently located in his ancestral domain at Patikul Jolo, Sulu, Philippines, an island approximately 600 miles south of Manila.</p>",
+      "path": "/wanted/wanted_terrorists/raddulan-sahiron",
+      "eyes_raw": "Black",
+      "weight_max": 140,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/wanted_terrorists/raddulan-sahiron",
+      "possible_states": null,
+      "modified": "2023-10-02T15:03:35+00:00",
+      "reward_max": 0,
+      "race": "asian",
+      "height_max": 66,
+      "place_of_birth": "Kabbun Takas, Patikul, Jolo, Philippines",
+      "height_min": 66,
+      "poster_classification": "terrorist",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/ec797859-d531-40d7-8894-945044934bde"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/melvin-navarro-morgan/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "4156efbe2a024fcf82f64805b839ba74",
+      "weight": "150 pounds",
+      "occupations": null,
+      "field_offices": [
+        "kansascity"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Male",
+      "hair": "black",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "August 22, 1993"
+      ],
+      "caution": "<p>Melvin Navarro Morgan is wanted for allegedly knowingly and intentionally possessing with intent to distribute, 50 grams or more of methamphetamine. He was charged on August 29, 2023, in the United States District Court, Western District of Missouri, Springfield, Missouri, and a federal warrant was issued for his arrest.\u00a0</p>",
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": "Morgan has tattoos on his neck, chest and arms.",
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "aliases": [
+        "\u201cYoshi\u201d",
+        "Melvin N. Morgan",
+        "Melvin Morgan"
+      ],
+      "race_raw": "Black",
+      "suspects": null,
+      "publication": "2023-09-28T14:40:00",
+      "title": "MELVIN NAVARRO MORGAN",
+      "coordinates": [],
+      "hair_raw": "Black",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Possession with the Intent to Distribute, 50 grams or more of Methamphetamine",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cei/melvin-navarro-morgan/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cei/melvin-navarro-morgan/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cei/melvin-navarro-morgan/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 150,
+      "additional_information": null,
+      "remarks": "<p>Morgan was last seen in and around the Springfield, Missouri area.</p>",
+      "path": "/wanted/cei/melvin-navarro-morgan",
+      "eyes_raw": "Brown",
+      "weight_max": 150,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/cei/melvin-navarro-morgan",
+      "possible_states": null,
+      "modified": "2023-10-02T14:20:53+00:00",
+      "reward_max": 0,
+      "race": "black",
+      "height_max": 66,
+      "place_of_birth": null,
+      "height_min": 66,
+      "poster_classification": "default",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/4156efbe2a024fcf82f64805b839ba74"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/counterintelligence/aleksey-ippolitov/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "de2cbb03d43648dd8ff39e3cc4877b50",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "newyork"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Male",
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "December 13, 1965"
+      ],
+      "caution": "<p>Aleksey Ippolitov, a purported\u00a0SVR intelligence officer, is wanted for his alleged involvement in the Russian-backed procurement network Serniya/Sertal from 2017 to 2022. Ippolitov and his co-conspirators allegedly unlawfully sourced, purchased, and shipped military and sensitive dual-use technologies from United States manufacturers to Russian end users. These items included advanced testing equipment used in quantum computing, hypersonic missiles, nuclear weapons development, and other military and space-based military applications.</p>\r\n<p>\u00a0</p>\r\n<p>Serniya\u2019s clients included the National Research Nuclear University of the Moscow Engineering Physics Institute; the Ministry of Defense; the Foreign Intelligence Service (\"SVR\"); and various components of the Federal Security Service (\"FSB\"), Russia's principal security agency and the main successor agency to the Soviet Union's KGB.</p>\r\n<p>\u00a0</p>\r\n<p>Ippolitov was affiliated with the All-Russian Scientific Research Institute of Electromechanics, a Moscow-based research institute and a subsidiary of ROSCOSMOS, the Russian state space corporation, which developed satellites and military spacecraft. He was also affiliated with the All-Russian Research Institute for Optical and Physical Measurements (\"VNIIOFI\").\u00a0 Ippolitov was indicted by the United States District Court, Eastern District of New York, Brooklyn, New York, on December 5, 2022, and a federal warrant was issued for his arrest.</p>\r\n<p>\u00a0</p>",
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Counterintelligence"
+      ],
+      "aliases": null,
+      "race_raw": "White",
+      "suspects": null,
+      "publication": "2022-12-05T07:05:00",
+      "title": "ALEKSEY IPPOLITOV",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": [
+        "Russian"
+      ],
+      "complexion": null,
+      "build": null,
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Conspiracy to Defraud the United States; Conspiracy to Violate the International Emergency Economic Powers Act (IEEPA); Bank Fraud Conspiracy; Wire Fraud Conspiracy; Wire Fraud; Money Laundering Conspiracy; Money Laundering; Conspiracy to Violate the Export Control Reform Act (ECRA); Smuggling Goods from the United States; Failure to File Electronic Export Information",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/counterintelligence/aleksey-ippolitov/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/counterintelligence/aleksey-ippolitov/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/counterintelligence/aleksey-ippolitov/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": "<p>Aleksey Ippolitov is believed to be a Russian intelligence officer for the Russian Foreign Intelligence Service, also known as SVR.</p>",
+      "path": "/wanted/counterintelligence/aleksey-ippolitov",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/counterintelligence/aleksey-ippolitov",
+      "possible_states": null,
+      "modified": "2023-09-28T12:05:14+00:00",
+      "reward_max": 0,
+      "race": "white",
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "default",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/de2cbb03d43648dd8ff39e3cc4877b50"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "91e9976624e54d9594d580e09f16ab16",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "charlotte"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "aliases": null,
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2023-09-20T10:03:00",
+      "title": "BRANDON LEE WAGONER",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>On May 30, 2023, the body of 33-year-old Brandon Lee Wagoner was found along the Blue Ridge Parkway near milepost 221 in Alleghany County, North Carolina. Law enforcement rangers from the National Park Service determined Wagoner was hit by a vehicle and killed. Investigators are looking for witnesses who traveled along the Blue Ridge Parkway on the evening of May 29, 2023, or in the early morning hours of May 30, 2023.</p>\r\n<p>\u00a0</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Hit-and-Run Victim\r\nAlleghany County, North Carolina\r\nMay 30, 2023",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/brandon_wagoner_2.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/brandon_wagoner_2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner/brandon_wagoner_2.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/seeking-info/brandon-lee-wagoner",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/brandon-lee-wagoner",
+      "possible_states": null,
+      "modified": "2023-09-27T20:43:55+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/91e9976624e54d9594d580e09f16ab16"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "c7acc640dab84ab98719852cec68f07d",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "columbia"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the arrest and conviction of the person(s) responsible for the murders of Tasjunique Graham and Bailey Simon.",
+      "sex": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "aliases": null,
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2022-02-22T12:11:00",
+      "title": "TASJUNIQUE GRAHAM AND BAILEY SIMON",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>The Federal Bureau of Investigation in Columbia, South Carolina, is seeking information regarding the death of\u00a0Tasjunique Graham, age 23, and her three-year-old daughter Bailey Simon.\u00a0 On September 28, 2020, Graham and her daughter were shot and killed at their residence in the 1600 block of Suggs Street in Conway, South Carolina, by an unknown individual(s). To date, there have been no arrests made in the case.</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Homicide Victims\r\nConway, South Carolina\r\nSeptember 28, 2020",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/grahamsimon2.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/grahamsimon2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon/grahamsimon2.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/seeking-info/tasjunique-graham-and-bailey-simon",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/tasjunique-graham-and-bailey-simon",
+      "possible_states": null,
+      "modified": "2023-09-27T16:23:44+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/c7acc640dab84ab98719852cec68f07d"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "f2271deabe4f457eb1ebcac6a01d1422",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the identification, apprehension, and conviction of the person(s) responsible for the homicide of Kevin Robert Harris II.",
+      "sex": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "aliases": null,
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2017-09-19T09:14:00",
+      "title": "KEVIN ROBERT HARRIS II",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>The Federal Bureau of Investigation and the Inglewood Police Department are asking for the public's assistance in identifying the individual(s) responsible for the homicide of Kevin Robert Harris II in Inglewood, California.\u00a0</p>\r\n<p>\u00a0</p>\r\n<p>On September 20, 2009, at approximately 8:00 p.m., Harris was shot to death in his vehicle near the corner of 118th Place and Crenshaw Boulevard. Harris was a 21-year-old man and a songwriter with a burgeoning career in the music industry when he was murdered.</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Victim",
+      "description": "Murder Victim\r\nInglewood, California\r\nSeptember 20, 2009",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris2.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris2.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris3.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris3.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris4.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris4.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris4.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris5.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris5.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii/harris5.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": "<p>Harris was a basketball player and a graduate of St. Bernard High School in Los Angeles, California.</p>",
+      "path": "/wanted/seeking-info/kevin-robert-harris-ii",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/kevin-robert-harris-ii",
+      "possible_states": null,
+      "modified": "2023-09-27T16:10:37+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/f2271deabe4f457eb1ebcac6a01d1422"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "402f543a5d5644f6ac72a287466b3e59",
+      "weight": "90 pounds",
+      "occupations": null,
+      "field_offices": [
+        "charlotte"
+      ],
+      "locations": null,
+      "reward_text": null,
+      "sex": "Female",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "April 11, 2011"
+      ],
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "aliases": null,
+      "race_raw": "White",
+      "suspects": null,
+      "publication": "2022-12-16T14:31:00",
+      "title": "MADALINA COJOCARI",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>Madalina Cojocari was last seen on surveillance video getting off her school bus outside her home in Cornelius, North Carolina, on November 21, 2022, and has not been seen since. She was reported missing to her school on December 15, 2022. Her parents reported last seeing her on November 23, 2022. Madalina was last seen wearing jeans, pink, purple and white Adidas shoes, and a white t-shirt and jacket.</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "November 21, 2022\r\nCornelius, North Carolina",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina2.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina2.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina3.jpg/@@images/image/large",
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari/madalina3.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 90,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/kidnap/madalina-cojocari",
+      "eyes_raw": "Brown",
+      "weight_max": 90,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/kidnap/madalina-cojocari",
+      "possible_states": null,
+      "modified": "2023-09-27T13:16:36+00:00",
+      "reward_max": 0,
+      "race": "white",
+      "height_max": 58,
+      "place_of_birth": null,
+      "height_min": 58,
+      "poster_classification": "missing",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/402f543a5d5644f6ac72a287466b3e59"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "3b6b73ae-a7d3-4bbd-a23b-3a490f4b985a",
+      "weight": "170 pounds",
+      "occupations": null,
+      "field_offices": [
+        "boston"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $50,000 for information leading directly to the capture and return of Ahmad Abousamra to the United States.",
+      "sex": "Male",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "September 19, 1981"
+      ],
+      "caution": "<p>Ahmad Abousamra was indicted after taking multiple trips to Pakistan and Yemen where he allegedly attempted to obtain military training for the purpose of killing American soldiers overseas. On November 5, 2009, a federal arrest warrant was issued for Abousamra in the United States District Court, District of Massachusetts, Boston, Massachusetts, after he was charged with conspiracy to provide material support to terrorists; providing and attempting to provide material support to terrorists; conspiracy to kill in a foreign country; conspiracy; and false statements.</p>",
+      "nationality": "Syrian, United States",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Most Wanted Terrorists"
+      ],
+      "aliases": [
+        "Ahmad Abou-Samra",
+        "Abu Fadl",
+        "Ahmad Abou",
+        "Ahmad Abou Samira",
+        "Ahmad Samra",
+        "Ahmad Abu Samra",
+        "Ahmad Abou Samra"
+      ],
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2012-03-27T11:00:00",
+      "title": "AHMAD ABOUSAMRA",
+      "coordinates": [],
+      "hair_raw": "Dark Brown",
+      "languages": [
+        "English",
+        "Arabic"
+      ],
+      "complexion": null,
+      "build": "Slim",
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Conspiracy to Provide Material Support to Terrorists; Providing and Attempting to Provide Material Support to Terrorists; Conspiracy to Kill in a Foreign Country; Conspiracy; False Statements",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/@@images/image/large",
+          "caption": "Photograph taken in 2004",
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamragas2002.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2002",
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamragas2002.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamragas2002.jpg"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamra2002.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2002",
+          "thumb": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamra2002.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra/abousamra2002.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 170,
+      "additional_information": null,
+      "remarks": "<p>Abousamra grew up near Boston, Massachusetts, and also has ties to the Detroit, Michigan, area. Abousamra is thought to have left the United States in 2006, and may now be living in Aleppo, Syria. He may be with his wife and at least one child, a young daughter.</p>",
+      "path": "/wanted/wanted_terrorists/ahmad-abousamra",
+      "eyes_raw": "Brown",
+      "weight_max": 170,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/wanted_terrorists/ahmad-abousamra",
+      "possible_states": null,
+      "modified": "2023-09-26T14:58:24+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": 71,
+      "place_of_birth": "France",
+      "height_min": 71,
+      "poster_classification": "terrorist",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/3b6b73ae-a7d3-4bbd-a23b-3a490f4b985a"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/vicap-alert-2023-09-04.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": "21 at time of disappearance",
+      "uid": "fc812dc202c342428aaf50e4a6cd1af2",
+      "weight": "165 pounds",
+      "occupations": null,
+      "field_offices": null,
+      "locations": null,
+      "reward_text": null,
+      "sex": "Male",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": 21,
+      "age_max": 21,
+      "scars_and_marks": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "aliases": null,
+      "race_raw": "White",
+      "suspects": null,
+      "publication": "2023-09-22T12:29:00",
+      "title": "DALE EUGENE KELLEY - SACRAMENTO, CALIFORNIA",
+      "coordinates": [],
+      "hair_raw": "Brown, collar length",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>On May 20, 1981, Dale Eugene Kelley,\u00a0a student and football player at American River College in Sacramento, California, left his residence driving his orange 1976 Toyota Celica\u00a0(California plate 598TIH). Kelley was heading to Los Angeles, California, to visit his then girlfriend. When he did not arrive that afternoon, his girlfriend contacted Kelley\u2019s roommates, who told her he left that morning. Kelley has not been seen or heard from since. Two weeks later, on June 4, 1981, Kelley\u2019s vehicle was located abandoned in New Orleans, Louisiana. Inside the vehicle was a \u201cPat O\u2018Brien\u2019s\u201d postcard, a book entitled \u201cTexas\u201d and a map of Texas.</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": "green",
+      "person_classification": "Main",
+      "description": "May 20, 1981\r\nSacramento, California",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/@@images/image/large",
+          "caption": "Photo taken in 1981.",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/dale-kelley2.jpg/@@images/image/large",
+          "caption": "Photo taken in 1980.",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/dale-kelley2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley/dale-kelley2.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 165,
+      "additional_information": null,
+      "remarks": "<p>Kelley was wearing jeans and a T-shirt, with no further description.</p>",
+      "path": "/wanted/vicap/missing-persons/dale-eugene-kelley",
+      "eyes_raw": "Green",
+      "weight_max": 165,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/dale-eugene-kelley",
+      "possible_states": null,
+      "modified": "2023-09-22T18:41:52+00:00",
+      "reward_max": 0,
+      "race": "white",
+      "height_max": 70,
+      "place_of_birth": null,
+      "height_min": 70,
+      "poster_classification": "default",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/fc812dc202c342428aaf50e4a6cd1af2"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/samuel-lee-rose/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "6a10488a61644376a213fee9e5621f24",
+      "weight": "165 to 190 pounds",
+      "occupations": null,
+      "field_offices": [
+        "pittsburgh"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of Samuel Lee Rose.",
+      "sex": "Male",
+      "hair": "black",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "September 10, 1980"
+      ],
+      "caution": "<p>Samuel Lee Rose is wanted for his alleged involvement in a drug-trafficking operation in which\u00a0large amounts of heroin, fentanyl, cocaine base, and cocaine hydrochloride were moved from Hagerstown, Maryland, to locations in Berkeley County, West Virginia, from August of 2020 to June of 2021.\u00a0 The drugs seized during the investigation amounted to 8.6 kilograms of cocaine, 1.02 kilograms of heroin, and 12 ounces of cocaine base\u00a0\u201ccrack.\"\u00a0 The drug enterprise allegedly involved a sophisticated operation including the use of a purported business to act as a front for drug-trafficking and the laundering of hundreds of thousands of dollars in drug proceeds.\u00a0 On July 20, 2021, a federal arrest warrant was issued for Rose in the United States District Court, Northern District of West Virginia, Martinsburg, West Virginia, after he was charged with multiple counts of drug-trafficking violations.</p>\r\n<p>\u00a0</p>\r\n<p>\u00a0</p>",
+      "nationality": "American",
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": "Rose has a scar on his abdomen.",
+      "subjects": [
+        "Criminal Enterprise Investigations"
+      ],
+      "aliases": [
+        "Samuel L. Rose",
+        "Samuel Lee Rose, Jr.",
+        "Sam Rose",
+        "Samual Lee Rose",
+        "Black Sam Rose",
+        "\u201cSammy\"",
+        "\"Sunny\"",
+        "\"Black\"",
+        "\"Black Sam\""
+      ],
+      "race_raw": "Black",
+      "suspects": null,
+      "publication": "2023-05-30T07:09:00",
+      "title": "SAMUEL LEE ROSE",
+      "coordinates": [],
+      "hair_raw": "Black",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": null,
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Conspiracy to Possess with Intent to Distribute and to Distribute Heroin, Fentanyl, Cocaine Base, and Cocaine Hydrochloride; Aiding and Abetting the Distribution of Cocaine Hydrochloride; Aiding and Abetting the Distribution of Cocaine Base; Aiding and Abetting the Distribution of Heroin; Aiding and Abetting the Distribution of a Heroin and Fentanyl Mixture; Aiding and Abetting the Distribution of 28 Grams or More of Cocaine Base",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/cei/samuel-lee-rose/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cei/samuel-lee-rose/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cei/samuel-lee-rose/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": 165,
+      "additional_information": null,
+      "remarks": "<p>Rose has ties to\u00a0Martinsburg, West Virginia; Washington, D.C.; Baltimore, Maryland; and Prince\u00a0Georges County, Maryland.</p>",
+      "path": "/wanted/cei/samuel-lee-rose",
+      "eyes_raw": "Brown",
+      "weight_max": 190,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/cei/samuel-lee-rose",
+      "possible_states": null,
+      "modified": "2023-09-20T15:56:04+00:00",
+      "reward_max": 0,
+      "race": "black",
+      "height_max": 69,
+      "place_of_birth": "Washington, D.C.",
+      "height_min": 66,
+      "poster_classification": "default",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "@id": "https://api.fbi.gov/@wanted-person/6a10488a61644376a213fee9e5621f24"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "0147262dbe904224b768941c58c4888c",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "minneapolis"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for independently verifiable information leading to the arrest and conviction of those responsible for the death of Micheliegh Iron Cloud.",
+      "sex": "Female",
+      "hair": "brown",
+      "ncic": null,
+      "dates_of_birth_used": [
+        "March 9, 1990"
+      ],
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information",
+        "Indian Country"
+      ],
+      "aliases": null,
+      "race_raw": "Native American",
+      "suspects": null,
+      "publication": "2023-08-28T11:31:00",
+      "title": "MICHELIEGH IRON CLOUD",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>The FBI's Minneapolis Field Office is seeking information regarding the hit-and-run death of Micheliegh Iron Cloud in Parmelee, South Dakota, on June 17, 2022. At approximately 12:00 a.m., on June 17, 2022, Micheliegh Iron Cloud was walking down the side of Highway 63 carrying a one-year-old boy when they were struck by a vehicle. Micheliegh was found deceased, while the boy survived.</p>\r\n<p>\u00a0</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": "brown",
+      "person_classification": "Main",
+      "description": "Vehicular Homicide Victim\r\nParmelee, South Dakota\r\nJune 17, 2022",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/@@images/image/large",
+          "caption": "Photograph has been retouched",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/@@images/image"
+        },
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/micheliegh-iron-cloud-02.jpg/@@images/image/large",
+          "caption": "Photograph has been retouched",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/micheliegh-iron-cloud-02.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud/micheliegh-iron-cloud-02.jpg"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/seeking-info/micheliegh-iron-cloud",
+      "eyes_raw": "Brown",
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/micheliegh-iron-cloud",
+      "possible_states": null,
+      "modified": "2023-09-20T12:13:51+00:00",
+      "reward_max": 0,
+      "race": "native",
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/0147262dbe904224b768941c58c4888c"
+    },
+    {
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/delon-bushrod/download.pdf",
+          "name": "English"
+        }
+      ],
+      "age_range": null,
+      "uid": "c713169666b34208b4d481d604552cec",
+      "weight": null,
+      "occupations": null,
+      "field_offices": [
+        "baltimore"
+      ],
+      "locations": null,
+      "reward_text": "The FBI is offering a reward of up to $15,000 for information leading to the arrest and conviction of those individuals responsible for the murder of Delon Bushrod, Jr.",
+      "sex": null,
+      "hair": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "caution": null,
+      "nationality": null,
+      "age_min": null,
+      "age_max": null,
+      "scars_and_marks": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "aliases": [
+        "\"Lonnie\"",
+        "\"LonnieDaGoat\""
+      ],
+      "race_raw": null,
+      "suspects": null,
+      "publication": "2023-02-23T11:21:00",
+      "title": "DELON BUSHROD, JR.",
+      "coordinates": [],
+      "hair_raw": null,
+      "languages": null,
+      "complexion": null,
+      "build": null,
+      "details": "<p>The Federal Bureau of Investigation's Baltimore Field Office is seeking information regarding the murder of Delon Bushrod, Jr., who was fatally shot in the 2800 block of Bookert Drive in the Cherry Hill neighborhood of Baltimore, Maryland, on\u00a0September 19, 2022.\u00a0 His body was located the next day.</p>\r\n<p>\u00a0</p>",
+      "status": "na",
+      "legat_names": null,
+      "eyes": null,
+      "person_classification": "Main",
+      "description": "Homicide Victim\r\nBaltimore, Maryland\r\nSeptember 19, 2022",
+      "images": [
+        {
+          "large": "https://www.fbi.gov/wanted/seeking-info/delon-bushrod/@@images/image/large",
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/delon-bushrod/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/delon-bushrod/@@images/image"
+        }
+      ],
+      "possible_countries": null,
+      "weight_min": null,
+      "additional_information": null,
+      "remarks": null,
+      "path": "/wanted/seeking-info/delon-bushrod",
+      "eyes_raw": null,
+      "weight_max": null,
+      "reward_min": 0,
+      "url": "https://www.fbi.gov/wanted/seeking-info/delon-bushrod",
+      "possible_states": null,
+      "modified": "2023-09-19T14:20:44+00:00",
+      "reward_max": 0,
+      "race": null,
+      "height_max": null,
+      "place_of_birth": null,
+      "height_min": null,
+      "poster_classification": "information",
+      "warning_message": null,
+      "@id": "https://api.fbi.gov/@wanted-person/c713169666b34208b4d481d604552cec"
+    }
+  ],
+  "page": 1
+}

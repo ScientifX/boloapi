@@ -1,0 +1,1844 @@
+{
+  "total": 957,
+  "items": [
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/jeanine-deriddere/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/jeanine-deriddere/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/jeanine-deriddere/@@images/image/large",
+          "caption": null
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": "<p><a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/leslie-delbecq\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/leslie-delbecq\">Leslie Delbecq</a> and her mother, Jeanine De Riddere, are wanted for their alleged involvement in the kidnapping of Leslie Delbecq's daughter, <a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/leslie-delbecq/gabrielle-dahm\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/leslie-delbecq/gabrielle-dahm\">Gabrielle Dahm</a>, from Broward County, Florida, in 2010. Leslie Delbecq is the ex-wife of Christopher Dahm, Gabrielle's biological father. In January 2010, during a court hearing in Florida, Delbecq and Dahm were awarded joint custody of Gabrielle.</p>\r\n<p>\u00a0</p>\r\n<p>However, it is alleged that Leslie Delbecq and Jeanine De Riddere arranged for Gabrielle to be taken from Florida on August 2, 2010, and arrive in Abu Dhabi, United Arab Emirates, on August 4, 2010. All of their tickets to Abu Dhabi allegedly were purchased through an airline employee. On August 4, 2010, Leslie Delbecq failed to return Gabrielle to her father, Christopher Dahm, as stated in the Broward County Court order. Gabrielle is believed to have been moved to Abu Dhabi in violation of the court order that denied Leslie Delbecq's request to relocate to Abu Dhabi with Gabrielle, and stated that Gabrielle is to remain in the United States.</p>\r\n<p>\u00a0</p>\r\n<p>On June 21, 2011, Leslie Delbecq and Jeanine De Riddere were indicted for international parental kidnapping by a Federal Grand Jury for the United States District Court, Southern District of Florida. Federal warrants were issued for their arrests.</p>",
+      "suspects": null,
+      "aliases": [
+        "Jeanine Delbecq",
+        "Jeanine C. De Riddere",
+        "Jeanine C. Delbecq"
+      ],
+      "age_max": null,
+      "height_max": null,
+      "reward_max": 0,
+      "ncic": "W762967209",
+      "occupations": null,
+      "description": "International Parental Kidnapping",
+      "dates_of_birth_used": [
+        "April 24, 1955"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/jeanine-deriddere/download.pdf"
+        }
+      ],
+      "title": "JEANINE DE RIDDERE",
+      "coordinates": [],
+      "place_of_birth": "Democratic Republic of Congo",
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": null,
+      "weight_max": null,
+      "weight_min": null,
+      "details": null,
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/jeanine-deriddere",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2012-02-07T07:00:00",
+      "eyes": "brown",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "130 to 135 pounds (approximately 59 kg)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "miami"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Accomplice",
+      "remarks": "<p>Jeanine De Riddere speaks English and may speak other languages. She has dual citizenship in Belgium and the Democratic Republic of Congo. She may travel to Dubai, United Arab Emirates and Belgium.</p>",
+      "uid": "33202d83a9877c6ae8953b018de15057",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/jeanine-deriddere",
+      "nationality": "Congolese",
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:02:19+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/33202d83a9877c6ae8953b018de15057"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/fernandezfrancina2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/fernandezfrancina2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/fernandezfrancina2.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2003"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Francina D. Fernandez",
+        "Francina Dacanay"
+      ],
+      "age_max": null,
+      "height_max": 63,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": [
+        "Paralegal"
+      ],
+      "description": "International Parental Kidnapping - Detainment or Consealment of a Child From Legal Custodian",
+      "dates_of_birth_used": [
+        "April 29, 1970"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/download.pdf"
+        },
+        {
+          "name": "Sa tagalog",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez/fernandezftagalog.pdf/@@download/file/FernandezfTagalog.pdf"
+        }
+      ],
+      "title": "FRANCINA DACANAY FERNANDEZ",
+      "coordinates": [],
+      "place_of_birth": "Philippines",
+      "race_raw": "Asian",
+      "sex": "Female",
+      "height_min": 63,
+      "weight_max": 100,
+      "weight_min": 100,
+      "details": "<p>During the course of their relationship, Francina Fernandez and her boyfriend had three boys, who are now adults. The couple never married and in June of 2001 the relationship ended. The two became embroiled in a very lengthy and aggressive custody-visitation dispute in the San Diego Family Court. In early November of 2004, the mother reportedly mentioned to the father that she and the children were planning a 2-week vacation in New Zealand. He told her that the trip would violate the court orders, and Fernandez's attorney was served with a notice of an ex-parte hearing scheduled for November 8, 2004.\u00a0 At the hearing, a judge ordered that neither parent could take the children out of the jurisdiction of the court and that the children's passports were to be relinquished. The passports were never returned. Also, in November it was reported that Fernandez abruptly left her job and a relative filed a missing person's report for her. Fernandez may have fled with her children to the Philippines.<br /><br />On December 9, 2004, a state warrant was issued in the state of California, San Diego County, charging Francina Dacanay Fernandez with three counts of child abduction. A federal arrest warrant was subsequently issued on February 4, 2005, in the United States District Court, Southern District of California, charging Fernandez with international parental kidnapping.</p>\r\n<p>\u00a0</p>",
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/francina-dacanay-fernandez",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2010-09-28T13:15:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "100 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "sandiego"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Francina Fernandez has ties to California and the Philippines.</p>",
+      "uid": "9bcf6e6250d11973078abf2417cca400",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/francina-dacanay-fernandez",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black",
+      "modified": "2022-12-21T00:02:18+00:00",
+      "race": "asian",
+      "@id": "https://api.fbi.gov/@wanted-person/9bcf6e6250d11973078abf2417cca400"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/@@images/image/large",
+          "caption": "Photograph taken in 2015"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma2.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2013"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma_2012.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma_2012.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/reyes_ma_2012.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2012"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": null,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "",
+      "dates_of_birth_used": [
+        "April 2, 2008"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes/download.pdf"
+        }
+      ],
+      "title": "MICHAEL ALEXANDER REYES",
+      "coordinates": [
+        {
+          "formatted": "Miami, FL, USA",
+          "lng": -80.19179020000001,
+          "lat": 25.7616798
+        }
+      ],
+      "place_of_birth": "Miami, Florida",
+      "race_raw": "White (Hispanic)",
+      "sex": "Male",
+      "height_min": null,
+      "weight_max": null,
+      "weight_min": null,
+      "details": null,
+      "age_range": null,
+      "subjects": [
+        "Michael Reyes",
+        "Parental Kidnapping Victim",
+        "Reyes",
+        "Michael Alexander Reyes"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes",
+      "status": "na",
+      "possible_states": [
+        "US-FL"
+      ],
+      "publication": "2014-03-08T07:00:00",
+      "eyes": null,
+      "hair": null,
+      "legat_names": null,
+      "weight": null,
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "miami"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "ARG",
+        "ECU",
+        "ITA",
+        "USA"
+      ],
+      "person_classification": "Victim",
+      "remarks": null,
+      "uid": "ed92b954-e7a2-4206-930f-c7d3ccc52e16",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": "Michael has brown eyes and red hair.  He has a birthmark on his lower left arm.",
+      "eyes_raw": null,
+      "hair_raw": null,
+      "modified": "2022-12-21T00:02:15+00:00",
+      "race": "hispanic",
+      "@id": "https://api.fbi.gov/@wanted-person/ed92b954-e7a2-4206-930f-c7d3ccc52e16"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/mahmood_f3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/mahmood_f3.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/mahmood_f3.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 30,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "",
+      "dates_of_birth_used": [
+        "November 26, 2003"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr/download.pdf"
+        }
+      ],
+      "title": "MOHAMMAD HUSSAIN METLA, JR.",
+      "coordinates": [
+        {
+          "formatted": "New Jersey, USA",
+          "lng": -74.4056612,
+          "lat": 40.0583238
+        }
+      ],
+      "place_of_birth": "New Jersey",
+      "race_raw": "White (Central Asian)",
+      "sex": "Male",
+      "height_min": 30,
+      "weight_max": 26,
+      "weight_min": 26,
+      "details": null,
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping Victim",
+        "Mohammad Hussain Metla",
+        "Metla",
+        "Mohammad Hussain Metla, Jr.",
+        "Mohammad Hussain Metla Jr."
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr",
+      "status": "na",
+      "possible_states": [
+        "US-NJ"
+      ],
+      "publication": "2010-09-27T11:00:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "26 pounds (at time of his disappearance)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "newyork"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "PAK",
+        "USA"
+      ],
+      "person_classification": "Victim",
+      "remarks": null,
+      "uid": "a1b2f35673ede93551e4cffa368a9f87",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black",
+      "modified": "2022-12-21T00:02:15+00:00",
+      "race": "asian",
+      "@id": "https://api.fbi.gov/@wanted-person/a1b2f35673ede93551e4cffa368a9f87"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/@@images/image/large",
+          "caption": "Photograph taken in 2007"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/francesconi_mb2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/francesconi_mb2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/francesconi_mb2.jpg/@@images/image/large",
+          "caption": "Photograph taken circa 2013"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Mary Bethlehem"
+      ],
+      "age_max": null,
+      "height_max": 65,
+      "reward_max": 0,
+      "ncic": "W547700968",
+      "occupations": [
+        "Chef"
+      ],
+      "description": "International Parental Kidnapping",
+      "dates_of_birth_used": [
+        "July 9, 1984"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/download.pdf"
+        }
+      ],
+      "title": "MARIA BELEN FRANCESCONI",
+      "coordinates": [],
+      "place_of_birth": "Argentina",
+      "race_raw": "White (Hispanic)",
+      "sex": "Female",
+      "height_min": 65,
+      "weight_max": 110,
+      "weight_min": 110,
+      "details": "<p>Maria Belen Francesconi is wanted for her alleged involvement in the kidnapping of her son, <a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi/michael-alexander-reyes\">Michael Alexander Reyes</a>, from Miami, Florida. Francesconi no longer has legal custody of Michael.</p>\r\n<p>\u00a0</p>\r\n<p>On August 31, 2008, shortly after the birth of her son, Michael, Francesconi travelled to Argentina to visit family with Michael. Michael's father, Miguel Reyes, authorized the foreign travel with the agreement that Francesconi would return to the United States with their son. However, Francesconi never returned to the United States and ceased all contact with Reyes. Michael was located by Interpol in Argentina.</p>\r\n<p>\u00a0</p>\r\n<p>On November 27, 2009, the Civil Court, pursuant to the Hague Convention, ordered the return of Michael to the United States. On December 21, 2010, the Supreme Court of Argentina upheld the decision of the Civil Court and ordered the return of Michael to the United States. That order has yet to be executed, and the child remains in Argentina.</p>\r\n<p>\u00a0</p>\r\n<p>On March 26, 2012, the Florida Miami-Dade Family Court issued a final judgment, finding Reyes to be Michael's natural and biological father, and ordered physical and legal custody of Michael to Reyes. On June 25, 2013, Francesconi was indicted for international parental kidnapping by a Federal Grand Jury for the United States District Court, Southern District of Florida. That same day, a federal warrant was issued for Francesconi's arrest.</p>",
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/maria-belen-francesconi",
+      "status": "na",
+      "possible_states": [
+        "US-FL"
+      ],
+      "publication": "2014-03-08T07:00:00",
+      "eyes": "blue",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "110 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "miami"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "ARG"
+      ],
+      "person_classification": "Main",
+      "remarks": "<p>Francesconi enjoys fine cuisine. She may display erratic behavior. Francesconi speaks English, Spanish and Italian fluently. Francesconi has dual citizenship in Argentina and Italy. She has ties to Italy, Argentina, possibly Ecuador, and countries surrounding Argentina. She is believed to be in Argentina.</p>",
+      "uid": "074ce53c-b6e1-4e43-a261-f678a0a715bc",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/maria-belen-francesconi",
+      "nationality": "Argentinian",
+      "warning_message": null,
+      "scars_and_marks": "Francesconi has tattoos on her back, lower abdomen, and right ankle.",
+      "eyes_raw": "Blue",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:02:15+00:00",
+      "race": "hispanic",
+      "@id": "https://api.fbi.gov/@wanted-person/074ce53c-b6e1-4e43-a261-f678a0a715bc"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mahmood_fwed1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mahmood_fwed1.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mahmood_fwed1.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 66,
+      "reward_max": 0,
+      "ncic": "W962392393",
+      "occupations": null,
+      "description": "International Parental Kidnapping",
+      "dates_of_birth_used": [
+        "November 27, 1979"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/download.pdf"
+        }
+      ],
+      "title": "FLORA MAHMOOD",
+      "coordinates": [],
+      "place_of_birth": "Pakistan",
+      "race_raw": "White (Central Asian)",
+      "sex": "Female",
+      "height_min": 66,
+      "weight_max": 133,
+      "weight_min": 133,
+      "details": "<p>On November 6, 2004, Flora Mahmood allegedly took her son, <a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood/mohammad-hussain-metla-jr\">Mohammad Hussain Metla, Jr</a>., and departed JFK airport in New York en route to Dubai. The boy was taken without the consent of his father, who was the primary custodial parent. On November 6, 2004, a Middlesex County Grand Jury indicted Flora Mahmood for interference with custody and a warrant was issued for her arrest.</p>\r\n<p>\u00a0</p>\r\n<p>On or about December 15, 2004, it is alleged that Mahmood departed Dubai and traveled to Lahore, Pakistan, where she may still be residing with her son. After a final judgment of divorce was issued between Mahmood and her husband, he was awarded legal and physical custody of the boy. On May 17, 2007, a federal arrest warrant for Mahmood was issued in the United States District Court, Eastern District of New York, Brooklyn, New York.</p>",
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/flora-mahmood",
+      "status": "na",
+      "possible_states": [
+        "US-NY"
+      ],
+      "publication": "2010-09-27T11:00:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "133 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "newyork"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "PAK",
+        "USA"
+      ],
+      "person_classification": "Main",
+      "remarks": "<p>Mahmood may have fled to Lahore, Pakistan, via Dubai. She is a British citizen and may travel on a British passport. Mahmood recently got married.</p>",
+      "uid": "b67c94e7c7c33e8fb0fc99f7ad158b40",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/flora-mahmood",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black",
+      "modified": "2022-12-21T00:02:15+00:00",
+      "race": "asian",
+      "@id": "https://api.fbi.gov/@wanted-person/b67c94e7c7c33e8fb0fc99f7ad158b40"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/@@images/image/large",
+          "caption": "Photograph taken in 2017"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-1.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-1.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2017"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-and-jaafar-1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-and-jaafar-1.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-and-jaafar-1.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2014"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h2.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2006"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h3.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar_h3.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2004"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-old.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-old.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-old.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Hilal Hassan Ali",
+        "Hilal Hasan Ali",
+        "Helal Hasan Jaafar",
+        "Hilal Jaafar Al-Lawati",
+        "Helal Hasan Jaefer",
+        "Hilal Jaafar",
+        "Helel Hasan Jaafar",
+        "Hilal Hasan Ali Jaafar",
+        "Helal Hassan Ali Jaafar",
+        "Hilal Hasan Al-Lawati",
+        "Hasan Ali Al-Lawati",
+        "Hasan Ali",
+        "Abu Ali",
+        "Hilal bin Hasan Al-Lawati"
+      ],
+      "age_max": null,
+      "height_max": 70,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": [
+        "Jaafar is the Imam for the Masjed Ibrahim Alkhaleel mosque in the Al-Ghubra suburb of Muscat, Oman. He has a daily television show on Oman TV in Muscat. Jaafar also works in the Office of Islamic Affairs of Luwatia in Muttrah, an administrative district of Muscat."
+      ],
+      "description": "International Parental Kidnapping",
+      "dates_of_birth_used": [
+        "September 2, 1967"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/download.pdf"
+        },
+        {
+          "name": "\u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/jaafar-arabic.pdf/@@download/file/Jaafar Arabic.pdf"
+        }
+      ],
+      "title": "HILAL HASAN ALI JAAFAR",
+      "coordinates": [],
+      "place_of_birth": "Kuwait",
+      "race_raw": "White (Kuwaitian with darker complexion than photographed above)",
+      "sex": "Male",
+      "height_min": 70,
+      "weight_max": 200,
+      "weight_min": 200,
+      "details": "<p>Hilal Hasan Ali Jaafar is wanted for international parental kidnapping. Jaafar allegedly abducted his son, <a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar\">Mohamed Ali Helal Jaafar</a>, on January 20, 2006, while they were overseas in Oman. When Mohamed's mother was ready to return from Oman, to her home in Toledo, Ohio, her husband Jaafar would not release Mohamed to her. Both father and son are believed to be in Muscat, Oman in Al-Khouair. On September 19, 2006, Jaafar's wife was granted an absolute divorce from him, and she was named sole residential parent and legal custodian of Mohamed.</p>\r\n<p>On August 11, 2008, Hilal Hasan Ali Jaafar was charged with willfully retaining a child under the age of 16, who has been in the United States, outside of the United States, with the intent to obstruct the lawful exercise of the parental rights of physical custody of the child. Additionally, a federal arrest warrant was issued by the United States District Court, Northern District of Ohio, Western Division.</p>",
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/hilal-hasan-ali-jaafar",
+      "status": "na",
+      "possible_states": [
+        "US-OH"
+      ],
+      "publication": "2010-09-09T21:20:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "Approximately 200 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "cleveland"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "IND",
+        "IRN",
+        "JOR",
+        "KWT",
+        "LBN",
+        "OMN",
+        "SAU",
+        "SYR",
+        "USA",
+        "YEM"
+      ],
+      "person_classification": "Main",
+      "remarks": "<p>Hilal Hasan Ali Jaafar may have ties to the following areas: Toledo, Ohio; Oman; Iran; Kuwait; India; Lebanon; Syria; Saudi Arabia; Yemen; and Dubai. Additionally, Jaafar speaks the following languages: Arabic; Farsi; English; Indian; Turkish (limited); and Al-Lawati (local dialect in Oman region). Regarding physical characteristics, Jaafar wears glasses on occasion and has a small mole/birthmark on his left cheek, which is undetectable under his facial hair. Jaafar is a religious person and a member of the Al-Lawati tribe. He may be dangerous and have violent tendencies.</p>",
+      "uid": "06a74b4518656a7a8bcea09fa4e5e2e7",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black (slight gray coloring, mostly bald on top of head)",
+      "modified": "2022-12-21T00:02:14+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/06a74b4518656a7a8bcea09fa4e5e2e7"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/greenberg-collins_2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/greenberg-collins_2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/greenberg-collins_2.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Reiko Nakata-Greenberg",
+        "Reiko Nakata",
+        "Reiko Greenberg",
+        "Reiko Nakata Greenberg",
+        "Reiko Nakata Greenberg-Collin"
+      ],
+      "age_max": null,
+      "height_max": 65,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "Unlawful Flight To Avoid Prosecution - Child Abduction",
+      "dates_of_birth_used": [
+        "June 3, 1964"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/download.pdf"
+        }
+      ],
+      "title": "REIKO NAKATA GREENBERG-COLLINS",
+      "coordinates": [],
+      "place_of_birth": "Japan",
+      "race_raw": "Asian",
+      "sex": "Female",
+      "height_min": 65,
+      "weight_max": 110,
+      "weight_min": 110,
+      "details": "<p>On June 16, 2008, Reiko Nakata Greenberg-Collins is believed to have left Santa Ana, California, with her six-year-old son, <a data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins\" href=\"https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins\">Keisuke Christian Collins</a>, and travelled to Japan. At the time, Greenberg-Collins was involved in a custody dispute with the child's father, who was originally scheduled for visitation that evening.</p>\r\n<p>\u00a0</p>\r\n<p>A warrant for child abduction was issued by Orange County, California, on August 26, 2008. A federal arrest warrant was issued on September 15, 2008, by the United States District Court, Central District of California, after Greenberg-Collins was charged with unlawful flight to avoid prosecution.</p>",
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/reiko-nakata-greenberg-collins",
+      "status": "na",
+      "possible_states": [
+        "US-CA"
+      ],
+      "publication": "2010-09-24T20:30:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "110 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "JPN",
+        "USA"
+      ],
+      "person_classification": "Main",
+      "remarks": "<p>Reiko Greenberg-Collins is believed to be residing in Japan with Keisuke Collins.</p>",
+      "uid": "5fcdd7dad088f7d1aefbbec2454f2557",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black",
+      "modified": "2022-12-21T00:02:14+00:00",
+      "race": "asian",
+      "@id": "https://api.fbi.gov/@wanted-person/5fcdd7dad088f7d1aefbbec2454f2557"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/keisuke_collins_2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/keisuke_collins_2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/keisuke_collins_2.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Keisuke Nakata"
+      ],
+      "age_max": null,
+      "height_max": 42,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "",
+      "dates_of_birth_used": [
+        "March 3, 2003"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins/download.pdf"
+        }
+      ],
+      "title": "KEISUKE CHRISTIAN COLLINS",
+      "coordinates": [
+        {
+          "formatted": "California, USA",
+          "lng": -119.41793239999998,
+          "lat": 36.778261
+        }
+      ],
+      "place_of_birth": "California",
+      "race_raw": "Biracial (Asian and White)",
+      "sex": "Male",
+      "height_min": 42,
+      "weight_max": 40,
+      "weight_min": 40,
+      "details": null,
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping Victim",
+        "Keisuke Christian Collins",
+        "Keisuke Nakata",
+        "Keisuke Collins",
+        "Collins"
+      ],
+      "languages": null,
+      "path": "/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins",
+      "status": "na",
+      "possible_states": [
+        "US-CA"
+      ],
+      "publication": "2010-09-24T16:20:00",
+      "eyes": "brown",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "40 pounds (at the time of his disappearance)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "reward_min": 0,
+      "possible_countries": [
+        "JPN",
+        "USA"
+      ],
+      "person_classification": "Victim",
+      "remarks": null,
+      "uid": "b115ad96b9dc3beb643410329ab4780c",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/reiko-nakata-greenberg-collins/keisuke-christian-collins",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:02:14+00:00",
+      "race": "asian",
+      "@id": "https://api.fbi.gov/@wanted-person/b115ad96b9dc3beb643410329ab4780c"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/@@images/image",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/@@images/image/large",
+          "caption": "Photograph taken in 2015"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-2.jpg/@@images/image/large",
+          "caption": ""
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-and-jaafar-1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-and-jaafar-1.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-and-jaafar-1.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2014"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jafaar_m2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jafaar_m2.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jafaar_m2.jpg/@@images/image/large",
+          "caption": "Photograph taken approximately 2007/2008"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jaafar_m3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jaafar_m3.jpg",
+          "large": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/jaafar_m3.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2005"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "\"Hamudy\"",
+        "Mohamed Ali",
+        "Helal, Hasan",
+        "Mohamed Ali Bin Helal Bin Hasan Jaafar Al-Lawati"
+      ],
+      "age_max": null,
+      "height_max": null,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "",
+      "dates_of_birth_used": [
+        "October 20, 2002"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/download.pdf"
+        },
+        {
+          "name": "\u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+          "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar/mohamed-arabic.pdf/@@download/file/Mohamed Arabic.pdf"
+        }
+      ],
+      "title": "MOHAMED ALI HELAL JAAFAR",
+      "coordinates": [],
+      "place_of_birth": "Toledo, Ohio",
+      "race_raw": "White (Kuwaitian/Lebanese with darker complexion than photographed above)",
+      "sex": "Male",
+      "height_min": null,
+      "weight_max": null,
+      "weight_min": null,
+      "details": null,
+      "age_range": null,
+      "subjects": [
+        "Parental Kidnapping Victim"
+      ],
+      "languages": [
+        "Arabic",
+        "Al-Lawati (local dialect in Oman region)"
+      ],
+      "path": "/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2010-09-09T17:20:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "25 pounds (at time of abduction) 60-65 pounds (as of 2010)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "cleveland"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Victim",
+      "remarks": "<p>Mohamed Ali Helal Jaafar may have ties to the following areas: Toledo, Ohio; Oman; Iran; Kuwait; India; Lebanon; Syria; Saudi Arabia; Yemen; and Dubai. Additionally, Mohamed has asthma.</p>",
+      "uid": "329f44695b41d99302e2eba79c791c58",
+      "url": "https://www.fbi.gov/wanted/parental-kidnappings/hilal-hasan-ali-jaafar/mohamed-ali-helal-jaafar",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black - Curly Hair (as of 2010)",
+      "modified": "2022-12-21T00:02:14+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/329f44695b41d99302e2eba79c791c58"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/jane.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/jane.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/jane.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 71,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "November 14, 1993\r\nConroe, Texas",
+      "dates_of_birth_used": [
+        "December 16, 1958"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone/download.pdf"
+        }
+      ],
+      "title": "JANE MCDONALD-CRONE",
+      "coordinates": [],
+      "place_of_birth": null,
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 71,
+      "weight_max": 140,
+      "weight_min": 140,
+      "details": "<p>Jane McDonald-Crone left her home near Magnolia, Texas for her job at a tool company in Houston, Texas the morning of November 12, 1993. She did not return to her home or to her workplace after leaving work that evening. Crone is believed to be a victim of a possible kidnapping.</p>\r\n<p>\u00a0</p>\r\n<p>Crone's 1982 blue Ford Mustang, Texas license number FXY-01G was found November 16, 1993, in southwest Montgomery County, Texas, a few miles from her home. Her purse and identification were not found in the car and there were no signs of violence.</p>\r\n<p>\u00a0</p>\r\n<p>Crone was seen dancing with a man at a night club in north Harris County, Texas, at about 1 a.m. on November 14, 1993. She was last seen wearing dark jeans, a light colored blouse with long sleeves, and white sneakers.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/jane-mcdonald-crone",
+      "status": "na",
+      "possible_states": [
+        "US-TX"
+      ],
+      "publication": "2010-09-10T09:25:00",
+      "eyes": "green",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "140 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "houston"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Crone was attending North Harris County College, in Tomball, Texas at the time of her disappearance.</p>",
+      "uid": "2fc94895e0cf169da9f199b632742bd5",
+      "url": "https://www.fbi.gov/wanted/kidnap/jane-mcdonald-crone",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Green",
+      "hair_raw": "Dark Brown",
+      "modified": "2022-12-21T00:01:55+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/2fc94895e0cf169da9f199b632742bd5"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl2.jpg/@@images/image/large",
+          "caption": ""
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/marcum_jl3.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 66,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "February 16, 2003\r\nDenver, Colorado",
+      "dates_of_birth_used": [
+        "June 15, 1977"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum/download.pdf"
+        }
+      ],
+      "title": "JENNIFER LYNN MARCUM",
+      "coordinates": [],
+      "place_of_birth": "Colorado",
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 66,
+      "weight_max": 115,
+      "weight_min": 115,
+      "details": "<p>On approximately February 16, 2003, Jennifer Lynn Marcum disappeared from the Denver International Airport, Denver, Colorado. She has not been seen since that time.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/jennifer-lynn-marcum",
+      "status": "na",
+      "possible_states": [
+        "US-CO"
+      ],
+      "publication": "2010-09-13T11:25:00",
+      "eyes": "blue",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "115 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "denver"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Marcum has pierced ears.</p>",
+      "uid": "fae1a09d2658378bb4f369d329239c3c",
+      "url": "https://www.fbi.gov/wanted/kidnap/jennifer-lynn-marcum",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Blue",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:01:55+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/fae1a09d2658378bb4f369d329239c3c"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d2.jpg/@@images/image/large",
+          "caption": "On the night of March 30, 2007, an unidentified man was seen and photographed with Dana Rishpy, an Israeli National, at the Mezzanine Hotel in Tulum, Mexico. Dana Rishpy has not been seen since that night."
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d3.jpg/@@images/image/large",
+          "caption": "On the night of March 30, 2007, an unidentified man was seen and photographed with Dana Rishpy, an Israeli National, at the Mezzanine Hotel in Tulum, Mexico. Dana Rishpy has not been seen since that night."
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d5.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d5.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/rishpy_d5.jpg/@@images/image/large",
+          "caption": "On the night of March 30, 2007, an unidentified man was seen and photographed with Dana Rishpy, an Israeli National, at the Mezzanine Hotel in Tulum, Mexico. Dana Rishpy has not been seen since that night."
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 67,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "March 30, 2007\r\nTulum, Mexico",
+      "dates_of_birth_used": [
+        "May 26, 1982"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/dana-rishpy/download.pdf"
+        }
+      ],
+      "title": "DANA RISHPY",
+      "coordinates": [],
+      "place_of_birth": "Israel",
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 67,
+      "weight_max": 120,
+      "weight_min": 120,
+      "details": "<p>On the night of March 30, 2007, an unidentified man was seen and photographed with Dana Rishpy, an Israeli National, at the Mezzanine Hotel in Tulum, Mexico. Dana Rishpy has not been seen since that night. The FBI and Israeli National Police are seeking the public's assistance with identifying the man.\u00a0 He is described as a White male with a thin build. He appears to be either North American or possibly Australian. He is not a fugitive from the law. This information could help in locating Dana Rishpy and/or provide new information about her disappearance.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/dana-rishpy",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2010-09-10T09:20:00",
+      "eyes": "blue",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "120 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": null,
+      "reward_min": 0,
+      "possible_countries": [
+        "AUS",
+        "DEU",
+        "ISR",
+        "MEX"
+      ],
+      "person_classification": "Main",
+      "remarks": "<p>Dana Rishpy is a dual citizen of Israel and Germany.</p>",
+      "uid": "434abb03a165859609b88fa5fd0da9a0",
+      "url": "https://www.fbi.gov/wanted/kidnap/dana-rishpy",
+      "nationality": "Israeli",
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Blue",
+      "hair_raw": "Brown, Long, Wavy",
+      "modified": "2022-12-21T00:01:54+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/434abb03a165859609b88fa5fd0da9a0"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker3.jpg/@@images/image/large",
+          "caption": ""
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker4.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker4.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker4.jpg/@@images/image/large",
+          "caption": ""
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalkerage.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalkerage.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalkerage.jpg/@@images/image/large",
+          "caption": "Photograph age progressed to 14 years.  Courtesy NCMEC."
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker5.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker5.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker5.jpg/@@images/image/large",
+          "caption": ""
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker1.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/rainwalker1.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 66,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "November 1, 2007\r\nGreenwich, New York",
+      "dates_of_birth_used": [
+        "August 2, 1995"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker/download.pdf"
+        }
+      ],
+      "title": "JALIEK L. RAINWALKER",
+      "coordinates": [],
+      "place_of_birth": null,
+      "race_raw": "Biracial (Black and White)",
+      "sex": "Male",
+      "height_min": 66,
+      "weight_max": 105,
+      "weight_min": 105,
+      "details": "<p>Jaliek L. Rainwalker was last seen on November 1, 2007, at his residence in Greenwich, New York. He was last seen wearing blue jeans, a yellow fleece pull-over, a gray t-shirt with a dragon on the front, and black canvas high-top sneakers. He may use the nickname \"Jay\".</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/jaliek-l.-rainwalker",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2011-09-26T11:00:00",
+      "eyes": "green",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "105 pounds (at the time of his disappearance)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "albany"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Victim",
+      "remarks": "<p>Rainwalker has a slight speech impediment and pronounces the letter \"r\" like a \"w\".</p>",
+      "uid": "37921d0b3cac12b6a41725145aed4c1c",
+      "url": "https://www.fbi.gov/wanted/kidnap/jaliek-l.-rainwalker",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Green",
+      "hair_raw": "Light Brown (curly with some blond highlights)",
+      "modified": "2022-12-21T00:01:54+00:00",
+      "race": "black",
+      "@id": "https://api.fbi.gov/@wanted-person/37921d0b3cac12b6a41725145aed4c1c"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/karen-s.-adams/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/karen-s.-adams/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/karen-s.-adams/@@images/image/large",
+          "caption": null
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 64,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "March 11, 2007\r\nHancock County, West Virginia",
+      "dates_of_birth_used": [
+        "January 10, 1953"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/karen-s.-adams/download.pdf"
+        }
+      ],
+      "title": "KAREN S. ADAMS",
+      "coordinates": [],
+      "place_of_birth": "Pennsylvania",
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 64,
+      "weight_max": 120,
+      "weight_min": 120,
+      "details": "<p>Karen S. Adams was last seen at a popular gambling location in Hancock County, West Virginia. On the evening of March 11, 2007, Adams drove her red/maroon, four-door, 2005 Suzuki Forenza sedan with Pennsylvania license plate ETD5587 just across the Pennsylvania state line to the Mountaineer Casino Racetrack and Resort to play bingo. She was seen there and was known to have left the bingo area around 11 p.m. that evening, possibly headed to the gaming side of the resort to play the slot machines. She was observed on surveillance video at approximately 3 a.m. on the morning of March 12, 2007, leaving the gambling complex and she has not been seen nor heard from since that time. Her car has also not been located.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/karen-s.-adams",
+      "status": "na",
+      "possible_states": [
+        "US-PA",
+        "US-VA",
+        "US-WV"
+      ],
+      "publication": "2010-09-10T09:20:00",
+      "eyes": "green",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "120 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "pittsburgh"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Adams worked at a local elementary school as a teacher's aide and at a local department store as a cashier clerk. She was not married, but did own a dog to which she was quite attached. Adams enjoyed playing local bingo. She lived in Independence Township, Pennsylvania, which is close to the West Virginia border.</p>",
+      "uid": "ec10384e175f813412de1eba5fb82907",
+      "url": "https://www.fbi.gov/wanted/kidnap/karen-s.-adams",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Green",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:01:54+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/ec10384e175f813412de1eba5fb82907"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/@@images/image/large",
+          "caption": "Photograph taken in May 2012"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab2.jpg/@@images/image/large",
+          "caption": "Photograph taken in July 2012"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab3.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/tice_ab3.jpg/@@images/image/large",
+          "caption": "Photograph taken in August 2012"
+        }
+      ],
+      "reward_text": "The United States Government is offering a reward of up to $1 million for information leading directly to the safe location, recovery, and return of Austin Bennett Tice.",
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": null,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": [
+        "Freelance photo journalist"
+      ],
+      "description": "August 13, 2012\r\nDamascus, Syria",
+      "dates_of_birth_used": [
+        "August 11, 1981"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/download.pdf"
+        },
+        {
+          "name": "\u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+          "url": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/ticearabicupdate.pdf/@@download/file/ticearabicupdate.pdf"
+        },
+        {
+          "name": "T\u00dcRK\u00c7E DE",
+          "url": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice/ticeturkishupdate.pdf/@@download/file/ticeturkishupdate.pdf"
+        }
+      ],
+      "title": "AUSTIN BENNETT TICE",
+      "coordinates": [],
+      "place_of_birth": "Plano, Texas",
+      "race_raw": "White",
+      "sex": "Male",
+      "height_min": null,
+      "weight_max": 195,
+      "weight_min": 88,
+      "details": "<p>Austin Bennett Tice was kidnapped in Damascus, Syria on August 13, 2012. Austin was a freelance journalist and photographer for a variety of news organizations including CBS, The Washington Post, and The McClatchy Company. Austin was kidnapped while reporting in Daraya, a Damascus suburb.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": [
+        "English"
+      ],
+      "path": "/wanted/kidnap/austin-bennett-tice",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2013-05-15T07:00:00",
+      "eyes": "brown",
+      "hair": "brown",
+      "legat_names": null,
+      "weight": "88 kg (195 pounds)",
+      "age_min": null,
+      "build": "Medium",
+      "field_offices": [
+        "washingtondc"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Victim",
+      "remarks": null,
+      "uid": "182dece9-f0cd-494e-88ec-bfe7accf6529",
+      "url": "https://www.fbi.gov/wanted/kidnap/austin-bennett-tice",
+      "nationality": "United States",
+      "warning_message": null,
+      "scars_and_marks": "Austin has a scar below his left nipple and a metal plate in his jaw.  Austin has the following tattoos: an Eagle on the left side of his back; a tribal band on his left arm from his shoulder to his mid-bicep; and a barbed wire band on his right arm.",
+      "eyes_raw": "Brown",
+      "hair_raw": "Brown",
+      "modified": "2022-12-21T00:01:54+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/182dece9-f0cd-494e-88ec-bfe7accf6529"
+    },
+    {
+      "complexion": "Fair",
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/@@images/image/large",
+          "caption": "Photograph taken in 2011"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssami-side-taken-early-2011.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssami-side-taken-early-2011.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssami-side-taken-early-2011.jpg/@@images/image/large",
+          "caption": "Photograph taken in 2011"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": [
+        "Shibli Yousef Alayasami",
+        "Shibli Alayssami",
+        "Chibi Youssef al-Aysami"
+      ],
+      "age_max": null,
+      "height_max": null,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "May 24, 2011\r\nAley, Lebanon",
+      "dates_of_birth_used": [
+        "February 5, 1925",
+        "February 5, 1922"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/download.pdf"
+        },
+        {
+          "name": "T\u00fcrk\u00e7e'de",
+          "url": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssamiturkish2.pdf/@@download/file/AlayssamiTurkish2.pdf"
+        },
+        {
+          "name": "EN FRAN\u00c7AIS",
+          "url": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssamifrench2.pdf/@@download/file/AlayssamiFrench2.pdf"
+        },
+        {
+          "name": "\u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+          "url": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami/alayssamiarabic.pdf/@@download/file/AlayssamiArabic.pdf"
+        }
+      ],
+      "title": "SHIBILI YOUSEF ALAYSSAMI",
+      "coordinates": [],
+      "place_of_birth": "Matan, Syria",
+      "race_raw": "White",
+      "sex": "Male",
+      "height_min": null,
+      "weight_max": 73,
+      "weight_min": 160,
+      "details": "<p>Shibili Yousef Alayssami, a Legal Permanent Resident of the United States, departed the United States on May 18, 2011, and arrived in Lebanon on May 19, 2011. On May 24, 2011, at approximately 4:00 p.m., Alayssami went for a walk near his daughter's residence in Aley, Lebanon, and failed to return. Witnesses described Alayssami being forced into one of three black SUVs that he encountered during his walk. An exhaustive search for Alayssami was conducted, initially by friends and neighbors and subsequently by local authorities who canvassed hospitals throughout Lebanon and used K9 dogs in their search of the surrounding areas. The current whereabouts of Shibili Alayssami are unknown.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": [
+        "Arabic and French"
+      ],
+      "path": "/wanted/kidnap/shibili-yousef-alayssami",
+      "status": "na",
+      "possible_states": null,
+      "publication": "2014-07-09T07:00:00",
+      "eyes": "brown",
+      "hair": null,
+      "legat_names": null,
+      "weight": "160 pounds (73 kg)",
+      "age_min": null,
+      "build": "Medium",
+      "field_offices": [
+        "washingtondc"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Victim",
+      "remarks": "<p>Alayssami has a white moustache and a small brown mole on the right side of his chin. He has complete lower dentures over two implants and a fixed bridge with partial upper dentures. At the time of his disappearance, Alayssami was reportedly in good health but was taking medication to control high cholesterol and blood pressure. He was also in possession of a walking cane.</p>",
+      "uid": "8f1644dd-7b52-4940-9ea7-fbb7ba8dc282",
+      "url": "https://www.fbi.gov/wanted/kidnap/shibili-yousef-alayssami",
+      "nationality": "Syrian",
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "White",
+      "modified": "2022-12-21T00:01:53+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/8f1644dd-7b52-4940-9ea7-fbb7ba8dc282"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/@@images/image/large",
+          "caption": null
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/boffman_l2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/boffman_l2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/boffman_l2.jpg/@@images/image/large",
+          "caption": ""
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 69,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "August 5, 2006\r\nYoungstown, Ohio",
+      "dates_of_birth_used": [
+        "June 6, 1961"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman/download.pdf"
+        }
+      ],
+      "title": "LORI ANN BOFFMAN",
+      "coordinates": [],
+      "place_of_birth": "Youngstown, Ohio",
+      "race_raw": "Black",
+      "sex": "Female",
+      "height_min": 69,
+      "weight_max": 180,
+      "weight_min": 180,
+      "details": "<p>Lori Boffman was last seen on August 5, 2006, at 6:30 p.m., when she left her home and took a drive in her vehicle. She did not take her purse or identification with her. Additionally, Lori was taking medication for diabetes. Her vehicle was found the next morning at 5:30 a.m. in the next town over from her home. She resided in Liberty Township, Ohio, and the vehicle was found in Youngstown, Ohio. The vehicle appeared to have been in an accident and was abandoned. Lori Boffman has not been seen or heard from since this incident.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/lori-ann-boffman",
+      "status": "na",
+      "possible_states": [
+        "US-OH"
+      ],
+      "publication": "2010-09-10T09:25:00",
+      "eyes": "brown",
+      "hair": "black",
+      "legat_names": null,
+      "weight": "180 pounds (at time of disappearance)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "cleveland",
+        "dallas"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Lori Boffman wears her hair in dread locks. She wears glasses and has a scar on her abdomen. She may also go by the name of Lori Ann Stubbs.</p>",
+      "uid": "e3b085a4a4afa244f718df5dbe8f3106",
+      "url": "https://www.fbi.gov/wanted/kidnap/lori-ann-boffman",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Black",
+      "modified": "2022-12-21T00:01:52+00:00",
+      "race": "black",
+      "@id": "https://api.fbi.gov/@wanted-person/e3b085a4a4afa244f718df5dbe8f3106"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/@@images/image/large",
+          "caption": "Photograph taken in 1994"
+        },
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/tymich_ca2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/tymich_ca2.jpg",
+          "large": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/tymich_ca2.jpg/@@images/image/large",
+          "caption": "Photo age progressed to 18 years"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 48,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "June 30, 1994\r\nLos Angeles, California",
+      "dates_of_birth_used": [
+        "September 23, 1987"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich/download.pdf"
+        }
+      ],
+      "title": "CRYSTAL ANN TYMICH",
+      "coordinates": [],
+      "place_of_birth": "Los Angeles, California",
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 48,
+      "weight_max": 60,
+      "weight_min": 60,
+      "details": "<p>On June 30, 1994, six-year-old Crystal Ann Tymich was playing near her residence in South Los Angeles with her three older brothers. She was last seen picking peaches from a neighbor's tree, before disappearing sometime between 2 and 5 p.m. She was last seen wearing a pink T-shirt, shorts with a floral print, and tennis shoes with a picture of a mermaid.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/crystal-ann-tymich",
+      "status": "na",
+      "possible_states": [
+        "US-CA"
+      ],
+      "publication": "2010-09-10T09:20:00",
+      "eyes": "hazel",
+      "hair": "blond",
+      "legat_names": null,
+      "weight": "60 pounds (at time of disappearance)",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": null,
+      "uid": "166eeac0bc2b18d4e96b5c9885ac2e11",
+      "url": "https://www.fbi.gov/wanted/kidnap/crystal-ann-tymich",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Hazel",
+      "hair_raw": "Blonde",
+      "modified": "2022-12-21T00:01:52+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/166eeac0bc2b18d4e96b5c9885ac2e11"
+    },
+    {
+      "complexion": null,
+      "images": [
+        {
+          "thumb": "https://www.fbi.gov/wanted/kidnap/kristin-denise-smart/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/kristin-denise-smart/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/kristin-denise-smart/@@images/image/large",
+          "caption": "Photograph taken in March of 1995"
+        }
+      ],
+      "reward_text": null,
+      "locations": null,
+      "additional_information": null,
+      "caution": null,
+      "suspects": null,
+      "aliases": null,
+      "age_max": null,
+      "height_max": 73,
+      "reward_max": 0,
+      "ncic": null,
+      "occupations": null,
+      "description": "May 25, 1996\r\nCalifornia Polytechnic State University\r\nSan Luis Obispo, California",
+      "dates_of_birth_used": [
+        "February 20, 1977"
+      ],
+      "files": [
+        {
+          "name": "English",
+          "url": "https://www.fbi.gov/wanted/kidnap/kristin-denise-smart/download.pdf"
+        }
+      ],
+      "title": "KRISTIN DENISE SMART",
+      "coordinates": [],
+      "place_of_birth": null,
+      "race_raw": "White",
+      "sex": "Female",
+      "height_min": 73,
+      "weight_max": 145,
+      "weight_min": 145,
+      "details": "<p>Kristin Denise Smart was last seen at approximately 2:00 a.m., May 25, 1996, as she was walking back to her dorm room on the California Polytechnic campus, San Luis Obispo, California from an off-campus party. Kristin was accompanied by a fellow student who stated that he left her a block from her Muir Hall dorm to go to his dorm. Kristin did not return to her room and has not contacted family or friends since that time. She did not have any identification, money, or extra clothing when she disappeared.</p>",
+      "age_range": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "languages": null,
+      "path": "/wanted/kidnap/kristin-denise-smart",
+      "status": "na",
+      "possible_states": [
+        "US-CA"
+      ],
+      "publication": "2010-09-10T13:20:00",
+      "eyes": "brown",
+      "hair": "blond",
+      "legat_names": null,
+      "weight": "145 pounds",
+      "age_min": null,
+      "build": null,
+      "field_offices": [
+        "losangeles"
+      ],
+      "reward_min": 0,
+      "possible_countries": null,
+      "person_classification": "Main",
+      "remarks": "<p>Smart was last seen wearing a grey half T-shirt, black surfing shorts, and red \"Puma\" athletic shoes. Her hair is straight and shoulder length.</p>",
+      "uid": "5c15918e2be404a5c2262105745fa35b",
+      "url": "https://www.fbi.gov/wanted/kidnap/kristin-denise-smart",
+      "nationality": null,
+      "warning_message": null,
+      "scars_and_marks": null,
+      "eyes_raw": "Brown",
+      "hair_raw": "Dark Blonde",
+      "modified": "2022-12-21T00:01:51+00:00",
+      "race": "white",
+      "@id": "https://api.fbi.gov/@wanted-person/5c15918e2be404a5c2262105745fa35b"
+    }
+  ],
+  "page": 1
+}

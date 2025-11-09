@@ -541,7 +541,7 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
             )
         
         # Check daily reset limit
-        MAX_DAILY_RESETS = int(os.getenv('API_MAX_DAILY_KEY_RESETS'))
+        MAX_DAILY_RESETS = int(os.getenv('API_MAX_DAILY_KEY_RESETS', '1'))
         
         # Check if user has exceeded daily reset limit
         with get_db_connection() as conn:

@@ -3,7 +3,6 @@ Authentication Router (Production Version with Email Integration)
 Handles user registration, activation, and JWT token generation
 Includes Microsoft Graph API email functionality
 """
-import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime, timedelta, timezone
@@ -540,56 +539,16 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
                 detail="Account not activated. Please activate your account first."
             )
         
-        # Check daily reset limit
-        MAX_DAILY_RESETS = int(os.getenv('API_MAX_DAILY_KEY_RESETS'))
-        
-        # Check if user has exceeded daily reset limit
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(
-                    """
-                    SELECT key_reset_count, key_reset_date
-                    FROM tbl_users
-                    WHERE user_id = %s
-                    """,
-                    (user['user_id'],)
-                )
-                reset_data = cur.fetchone()
-                
-                today = datetime.now().date()
-                reset_count = reset_data.get('key_reset_count', 0) if reset_data else 0
-                reset_date = reset_data.get('key_reset_date') if reset_data else None
-                
-                # Convert reset_date to date if it's a datetime
-                if reset_date and hasattr(reset_date, 'date'):
-                    reset_date = reset_date.date()
-                
-                # Reset counter if it's a new day
-                if reset_date != today:
-                    reset_count = 0
-                
-                # Check if limit exceeded
-                if reset_count >= MAX_DAILY_RESETS:
-                    raise HTTPException(
-                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Daily key reset limit ({MAX_DAILY_RESETS}) reached. Try again tomorrow."
-                    )
-        
         # Generate new API key
         api_key, api_key_hash = generate_api_key_and_hash()
         
-        # Update in database with reset counter
+        # Update in database
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
                     UPDATE tbl_users
                     SET api_key_hash = %s,
-                        key_reset_count = CASE 
-                            WHEN key_reset_date = CURRENT_DATE THEN key_reset_count + 1
-                            ELSE 1
-                        END,
-                        key_reset_date = CURRENT_DATE,
                         updated_at = NOW()
                     WHERE user_id = %s
                     """,
