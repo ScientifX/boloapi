@@ -241,6 +241,67 @@ def test_key_reset(email, email_configured):
             print(f"Response: {e.response.text}")
         return False, None
 
+def test_key_reset_limit(email):
+    """Test daily key reset limit"""
+    print_section("7. Testing Key Reset Daily Limit")
+    
+    print("This test will attempt to reset the key multiple times to test the daily limit.")
+    print("⚠️  WARNING: This will invalidate your current API key multiple times!")
+    proceed = input("Proceed with limit test? (y/n): ").strip().lower()
+    
+    if proceed != 'y':
+        print("Skipping key reset limit test")
+        return False
+    
+    print("\nAttempting multiple key resets to test daily limit...")
+    
+    reset_count = 0
+    max_attempts = 5
+    
+    for attempt in range(1, max_attempts + 1):
+        print(f"\n--- Attempt {attempt} ---")
+        
+        try:
+            payload = {"email": email}
+            response = requests.post(f"{BASE_URL}/auth/key/reset", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                new_api_key = data.get('api_key')
+                print(f"✅ Reset #{attempt} succeeded")
+                print(f"   New API Key: {new_api_key[:20]}...")
+                reset_count += 1
+                
+            elif response.status_code == 429:
+                # Hit the limit!
+                data = response.json()
+                print(f"🛑 Reset #{attempt} blocked - Daily limit reached!")
+                print(f"   Response: {data.get('detail')}")
+                print(f"\n✅ Daily limit working correctly!")
+                print(f"   Allowed resets: {reset_count}")
+                print(f"   Blocked at attempt: {attempt}")
+                print_result(True, f"Daily limit enforced after {reset_count} reset(s)")
+                return True
+                
+            else:
+                print(f"❌ Unexpected status code: {response.status_code}")
+                print(f"   Response: {response.text}")
+                
+        except Exception as e:
+            print(f"❌ Error on attempt {attempt}: {str(e)}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"   Response: {e.response.text}")
+        
+        # Small delay between attempts
+        if attempt < max_attempts:
+            time.sleep(0.5)
+    
+    # If we got here, we didn't hit the limit
+    print(f"\n⚠️  Completed {reset_count} resets without hitting limit")
+    print(f"   Either limit is set higher than {max_attempts}, or limit is not configured")
+    print_result(False, "Did not encounter daily limit - may need investigation")
+    return False
+
 def run_full_test_suite(email):
     """Run the complete authentication test suite"""
     print("\n" + "█"*70)
@@ -256,7 +317,8 @@ def run_full_test_suite(email):
         "Activation": False,
         "Token Generation": False,
         "Authenticated Request": False,
-        "Key Reset": False
+        "Key Reset": False,
+        "Key Reset Limit": False
     }
     
     # Test 1: Auth Info
@@ -313,6 +375,14 @@ def run_full_test_suite(email):
     # Test 6: Key Reset (optional)
     success, new_api_key = test_key_reset(email, email_configured)
     results["Key Reset"] = success
+    
+    # Test 7: Key Reset Limit (optional)
+    if success:
+        # Only test limit if basic reset worked
+        success_limit = test_key_reset_limit(email)
+        results["Key Reset Limit"] = success_limit
+    else:
+        print("\n⚠️  Skipping key reset limit test (basic reset didn't run)")
     
     # Summary
     print_section("Test Summary")
