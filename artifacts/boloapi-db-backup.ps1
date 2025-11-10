@@ -13,4 +13,4 @@ Remove-Item Env:\PGPASSWORD
 
 Stop-Transcript
 
-Start-Sleep -s 5
+Start-Sleep -s 10

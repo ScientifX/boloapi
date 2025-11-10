@@ -581,7 +581,7 @@ def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date
     """Insert API pull metadata"""
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO api_pull_metadata (pull_date, total_records, page, pull_timestamp)
+            INSERT INTO tbl_bolo_control (pull_date, total_records, page, pull_timestamp)
             VALUES (%s, %s, %s, NOW())
             ON CONFLICT (pull_date) 
             DO UPDATE SET 
@@ -720,10 +720,10 @@ def update_record_status(conn: Connection, current_uids: List[str], pull_date: d
             """, (pull_date, current_uids, pull_date))
         
     with conn.cursor() as cur:
-        cur.execute("CALL prc_clean_text()")
-        cur.execute("CALL prc_clean_array()")
-        cur.execute("CALL prc_clean_jsonb()")
-        cur.execute("CALL prc_prune()")
+        cur.execute("CALL sp_clean_text()")
+        cur.execute("CALL sp_clean_array()")
+        cur.execute("CALL sp_clean_jsonb()")
+        cur.execute("CALL sp_prune()")
 
 def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     """
@@ -826,7 +826,7 @@ async def data_load(
     user_id = current_user["user_id"] 
     try:
         pull_date = date.today()
-        file_path = "data/fbi-wanted-api-data.json"
+        file_path = "data/bolo-api-data.json"
 
         # Perform import
         summary = import_data_set(file_path, pull_date)
@@ -897,7 +897,7 @@ async def get_wanted(
         
         # Save as JSON file
         if format == "json":
-            filename = "data/fbi-wanted-api-data.json"
+            filename = "data/bolo-api-data.json"
             try:
                 with open(filename, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
@@ -909,7 +909,7 @@ async def get_wanted(
         
         # Save as CSV file
         if format == "csv":
-            filename = "data/fbi-wanted-api-data.csv"
+            filename = "data/bolo-api-data.csv"
             try:
                 logger.info("Converting to CSV format")
                 # Load the schema and extract simple fields

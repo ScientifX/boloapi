@@ -76,7 +76,7 @@ def delete_data_for_date(conn: Connection, pull_date: date) -> int:
         
         # Also delete metadata
         cur.execute(
-            "DELETE FROM api_pull_metadata WHERE pull_date = %s",
+            "DELETE FROM tbl_bolo_control WHERE pull_date = %s",
             (pull_date,)
         )
         
@@ -158,7 +158,7 @@ def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date
     """Insert API pull metadata"""
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO api_pull_metadata (pull_date, total_records, page, pull_timestamp)
+            INSERT INTO tbl_bolo_control (pull_date, total_records, page, pull_timestamp)
             VALUES (%s, %s, %s, %s)
         """, (pull_date, total, page, datetime.combine(pull_date, datetime.min.time())))
 
