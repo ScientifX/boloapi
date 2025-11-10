@@ -6,8 +6,8 @@ Usage:
     python load_archive.py
 
 Requirements:
-    - JSON files named: wanted_yyyymmddhhmmss.json
-    - Files located in: C:\Clients\SD\boloapi\artifacts\fbi_wanted_snapshots
+    - JSON files named: bolo_yyyymmddhhmmss.json
+    - Files located in: C:\Clients\SD\boloapi\artifacts\fbi_bolo_snapshots
 """
 
 import os
@@ -40,8 +40,8 @@ from router_etl import (
 # CONFIGURATION
 # ============================================================================
 
-ARCHIVE_FOLDER = r"C:\Clients\SD\boloapi\artifacts\fbi_wanted_snapshots"
-FILENAME_PATTERN = re.compile(r'wanted_(\d{8})\d{6}\.json')
+ARCHIVE_FOLDER = r"C:\Clients\SD\boloapi\artifacts\fbi_bolo_snapshots"
+FILENAME_PATTERN = re.compile(r'bolo_(\d{8})\d{6}\.json')
 
 # ============================================================================
 # DATABASE HELPERS
@@ -82,7 +82,7 @@ def delete_data_for_date(conn: Connection, pull_date: date) -> int:
         
         return deleted_count
 
-def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
+def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single wanted person record into database-ready format.
     Returns None if the record should be skipped.
@@ -162,7 +162,7 @@ def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date
             VALUES (%s, %s, %s, %s)
         """, (pull_date, total, page, datetime.combine(pull_date, datetime.min.time())))
 
-def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> int:
+def bolo_insert(conn: Connection, records: List[Dict[str, Any]]) -> int:
     """
     Batch insert wanted persons records.
     Returns number of records inserted.
@@ -216,7 +216,7 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
 
 def extract_date_from_filename(filename: str) -> Optional[date]:
     """
-    Extract date from filename in format: wanted_yyyymmddhhmmss.json
+    Extract date from filename in format: bolo_yyyymmddhhmmss.json
     Returns date object or None if pattern doesn't match.
     """
     match = FILENAME_PATTERN.match(filename)
@@ -241,7 +241,7 @@ def find_archive_files(folder_path: str) -> List[Tuple[str, date]]:
     
     files_with_dates = []
     
-    for file_path in folder.glob("wanted_*.json"):
+    for file_path in folder.glob("bolo_*.json"):
         pull_date = extract_date_from_filename(file_path.name)
         if pull_date:
             files_with_dates.append((str(file_path), pull_date))
@@ -298,7 +298,7 @@ def process_archive_file(file_path: str, pull_date: date) -> Dict[str, Any]:
         skipped_count = 0
         
         for item in items:
-            processed = process_wanted_person(item, pull_date)
+            processed = bolo_process(item, pull_date)
             if processed:
                 processed_records.append(processed)
             else:
@@ -320,7 +320,7 @@ def process_archive_file(file_path: str, pull_date: date) -> Dict[str, Any]:
             
             # Insert wanted persons
             print(f"  💾 Inserting {len(processed_records)} records...")
-            inserted_count = insert_wanted_persons(conn, processed_records)
+            inserted_count = bolo_insert(conn, processed_records)
             result['records_inserted'] = inserted_count
             
             # Commit transaction

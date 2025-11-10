@@ -57,8 +57,8 @@ def load_simple_fields_from_schema(schema_path: str) -> list[str]:
         schema = json.load(f)
     
     # Get the WantedPerson definition
-    wanted_person = schema['definitions']['WantedPerson']
-    properties = wanted_person['properties']
+    bolo_person = schema['definitions']['WantedPerson']
+    properties = bolo_person['properties']
     
     simple_fields = []
     
@@ -498,7 +498,7 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
         return data
     
     
-def process_wanted_person(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
+def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single wanted person record into database-ready format
     Returns None if the record should be skipped
@@ -591,7 +591,7 @@ def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date
         """, (pull_date, total, page))
 
 
-def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> int:
+def bolo_insert(conn: Connection, records: List[Dict[str, Any]]) -> int:
     """
     Batch upsert wanted persons records using MERGE logic
     Returns number of records inserted or updated
@@ -764,7 +764,7 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     skipped_reasons = {"missing_uid": 0}
 
     for item in items:
-        processed = process_wanted_person(item, pull_date)
+        processed = bolo_process(item, pull_date)
         if processed:
             processed_records.append(processed)
         else:
@@ -778,7 +778,7 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
             insert_api_metadata(conn, total, page, pull_date)
             
             # Insert wanted persons
-            inserted_count = insert_wanted_persons(conn, processed_records)
+            inserted_count = bolo_insert(conn, processed_records)
             
             # Update inactive records
             current_uids = [r['uid'] for r in processed_records]

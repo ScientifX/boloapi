@@ -35,3 +35,40 @@ To https://github.com/ScientifX/boloapi.git
 Windows PowerShell transcript end
 End time: 20251110083801
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251110090001
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe C:\Clients\SD\boloapi\artifacts\boloapi-db-backup.ps1
+Process ID: 25604
+PSVersion: 5.1.26100.6899
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.6899
+BuildVersion: 10.0.26100.6899
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+
+[main cc97d74] Daily db backup plus collateral changes on 2025-11-10
+ 6 files changed, 25 insertions(+), 7 deletions(-)
+ rename boloapi.log => artifacts/boloapi.log (51%)
+Enumerating objects: 18, done.
+Counting objects: 100% (18/18), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (10/10), 3.29 KiB | 3.29 MiB/s, done.
+Total 10 (delta 7), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (7/7), completed with 7 local objects.
+To https://github.com/ScientifX/boloapi.git
+   6e2042b..cc97d74  main -> main
+**********************
+Windows PowerShell transcript end
+End time: 20251110090003
+**********************
