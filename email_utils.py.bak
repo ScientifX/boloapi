@@ -164,11 +164,11 @@ class GraphAPIEmailSender:
                         }
                     ],
                     # Explicitly disable TNEF/RTF format to prevent winmail.dat
-                    # This forces standard MIME/HTML format
+                    # This forces standard MIME/HTML format using MAPI property
                     "singleValueExtendedProperties": [
                         {
-                            "id": "Integer 0x3FEF",  # PidTagInternetMessageFormat
-                            "value": "1"  # 1 = Send as standard MIME (not TNEF)
+                            "id": "Integer {00020386-0000-0000-C000-000000000046} Id 0x3FEF",
+                            "value": "1"
                         }
                     ]
                 },
@@ -298,7 +298,7 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
             </p>
             
             <div class="warning">
-                <strong>âš ï¸ Important:</strong> This activation link will expire in 48 hours. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
+                <strong>⚠️ Important:</strong> This activation link will expire in 48 hours. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
             </div>
             
             <p><strong>What happens next?</strong></p>
@@ -391,7 +391,7 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
     </head>
     <body>
         <div class="header">
-            <h1>ðŸ”‘ {EmailConfig.FROM_NAME} Key Reset</h1>
+            <h1>🔑 {EmailConfig.FROM_NAME} Key Reset</h1>
         </div>
         <div class="content">
             <h2>Your New API Key</h2>
@@ -402,11 +402,11 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
             </div>
             
             <div class="warning">
-                <strong>âš ï¸ Security Notice:</strong><br>
-                â€¢ Your old API key and all tokens generated from it are now invalid<br>
-                â€¢ Save this key securely - you won't be able to retrieve it again<br>
-                â€¢ Never share your API key or commit it to version control<br>
-                â€¢ If compromised, reset your key immediately
+                <strong>⚠️ Security Notice:</strong><br>
+                • Your old API key and all tokens generated from it are now invalid<br>
+                • Save this key securely - you won't be able to retrieve it again<br>
+                • Never share your API key or commit it to version control<br>
+                • If compromised, reset your key immediately
             </div>
             
             <p><strong>How to use your API key:</strong></p>
@@ -505,7 +505,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
     </head>
     <body>
         <div class="header">
-            <h1>âœ… Account Activated!</h1>
+            <h1>✅ Account Activated!</h1>
         </div>
         <div class="content">
             <h2>Welcome to {EmailConfig.FROM_NAME}</h2>
@@ -516,7 +516,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
             </div>
             
             <div class="info-box">
-                <strong>ðŸ’¡ Getting Started:</strong><br>
+                <strong>💡 Getting Started:</strong><br>
                 1. Save your API key in a secure location<br>
                 2. Exchange it for access tokens using <code>/auth/token</code><br>
                 3. Use tokens to access FBI Wanted API data<br>
