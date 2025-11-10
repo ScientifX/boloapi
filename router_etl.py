@@ -15,7 +15,7 @@ from io import StringIO
 from contextlib import contextmanager 
 
 import psycopg2
-from psycopg2.extras import execute_values
+from psycopg2.extras import execute_values, RealDictCursor
 from psycopg2.extensions import connection as Connection
 from fastapi import APIRouter, HTTPException, status, Response, Request, Query, Depends
 from pydantic import BaseModel, Field
@@ -47,6 +47,21 @@ FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+@contextmanager
+def get_db_connection():
+    """Context manager for database connections"""
+    conn = None
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        yield conn
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise
+    finally:
+        if conn:
+            conn.close()
 
 def load_simple_fields_from_schema(schema_path: str) -> list[str]:
     """
@@ -98,7 +113,6 @@ def load_simple_fields_from_schema(schema_path: str) -> list[str]:
     
     return simple_fields
 
-
 def convert_to_csv(data: dict, simple_fields: list[str]) -> str:
     """
     Convert FBI API JSON response to CSV format using only simple fields.
@@ -135,98 +149,6 @@ def convert_to_csv(data: dict, simple_fields: list[str]) -> str:
     
     return output.getvalue()
 
-
-async def fetch_page_with_retry(client: httpx.AsyncClient, url: str, params: dict, page: int, max_retries: int = 3) -> dict:
-    """
-    Fetch a single page from the FBI API with retry logic.
-    Retries up to max_retries times on failure.
-    """
-    params_with_page = {**params, 'page': page}
-    
-    for attempt in range(1, max_retries + 1):
-        try:
-            logger.info(f"Fetching page {page} (attempt {attempt}/{max_retries})")
-            response = await client.get(url, params=params_with_page)
-            response.raise_for_status()
-            logger.info(f"Successfully fetched page {page}")
-            return response.json()
-        except (httpx.RequestError, httpx.HTTPStatusError) as e:
-            logger.warning(f"Error fetching page {page} on attempt {attempt}: {str(e)}")
-            if attempt == max_retries:
-                logger.error(f"Failed to fetch page {page} after {max_retries} attempts")
-                raise HTTPException(
-                    status_code=500, 
-                    detail=f"Failed to fetch page {page} after {max_retries} attempts: {str(e)}"
-                )
-            # Wait before retrying (exponential backoff)
-            await asyncio.sleep(2 ** attempt)
-
-
-async def fetch_all_pages(client: httpx.AsyncClient, url: str, params: dict) -> dict:
-    """
-    Fetch all pages from the FBI Wanted API.
-    Returns a combined response with all items.
-    """
-    logger.info("Starting to fetch all pages")
-    
-    # Fetch first page to determine total count
-    logger.info("Fetching first page to determine total records")
-    first_page = await fetch_page_with_retry(client, url, params, page=1)
-    
-    total = first_page.get('total', 0)
-    logger.info(f"Total records: {total}")
-    
-    if total == 0:
-        logger.info("No records found")
-        return first_page
-    
-    # Calculate number of pages (20 items per page)
-    items_per_page = 20
-    total_pages = total // items_per_page
-    if total % items_per_page > 0:
-        total_pages += 1
-    
-    logger.info(f"Total pages to fetch: {total_pages}")
-    
-    # Start with items from first page
-    all_items = first_page.get('items', [])
-    
-    # Fetch remaining pages
-    for page_num in range(2, total_pages + 1):
-        # Sleep between requests to avoid rate limiting
-        logger.info(f"Sleeping 3 seconds before fetching page {page_num}")
-        await asyncio.sleep(3)
-        
-        page_data = await fetch_page_with_retry(client, url, params, page=page_num)
-        page_items = page_data.get('items', [])
-        all_items.extend(page_items)
-        logger.info(f"Accumulated {len(all_items)} items so far")
-    
-    logger.info(f"Finished fetching all pages. Total items: {len(all_items)}")
-    
-    # Return combined response
-    return {
-        'total': total,
-        'items': all_items,
-        'page': 1  # Represent as single combined page
-    }
-
-@contextmanager
-def get_db_connection():
-    """Context manager for database connections"""
-    conn = None
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        yield conn
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        raise
-    finally:
-        if conn:
-            conn.close()
-
-
 def parse_date(date_str: Optional[str]) -> Optional[datetime]:
     """Parse date string to datetime, handling various formats"""
     if not date_str:
@@ -242,7 +164,6 @@ def parse_date(date_str: Optional[str]) -> Optional[datetime]:
         except ValueError:
             return None
 
-
 def extract_array_field(data: Dict, field: str) -> Optional[List[str]]:
     """Extract array field, converting None to empty list for PostgreSQL"""
     value = data.get(field)
@@ -252,13 +173,11 @@ def extract_array_field(data: Dict, field: str) -> Optional[List[str]]:
         return [str(item) for item in value if item is not None]
     return None
 
-
 def extract_poster_url(images: List[Dict]) -> Optional[str]:
     """Extract the first original image URL as the poster URL"""
     if images and len(images) > 0:
         return images[0].get('original')
     return None
-
 
 def clean_json_recursive(data: Any, field_name: str = '') -> Any:
     """
@@ -497,7 +416,6 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
         # Return other types unchanged (int, float, bool, None)
         return data
     
-    
 def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single wanted person record into database-ready format
@@ -576,28 +494,96 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'is_active': True
     }
 
-
-def insert_api_metadata(conn: Connection, total: int, page: int, pull_date: date):
-    """Insert API pull metadata"""
-    with conn.cursor() as cur:
-        cur.execute("""
-            INSERT INTO tbl_bolo_control (pull_date, total_records, page, pull_timestamp)
-            VALUES (%s, %s, %s, NOW())
-            ON CONFLICT (pull_date) 
-            DO UPDATE SET 
-                total_records = EXCLUDED.total_records,
-                page = EXCLUDED.page,
-                pull_timestamp = NOW()
-        """, (pull_date, total, page))
-
-
-def bolo_insert(conn: Connection, records: List[Dict[str, Any]]) -> int:
+def insert_api_metadata(
+    conn: Connection, 
+    total: int, 
+    page: int, 
+    pull_date: date,
+    etl_stats: Optional[Dict[str, Any]] = None
+):
     """
-    Batch upsert wanted persons records using MERGE logic
-    Returns number of records inserted or updated
+    Insert or update API pull metadata with ETL statistics.
+    
+    Args:
+        conn: Database connection
+        total: Total records reported by FBI API
+        page: Page number from API response
+        pull_date: Date of the data pull
+        etl_stats: Optional dict containing:
+            - records_inserted: Number of new records inserted
+            - records_updated: Number of existing records updated
+            - records_skipped: Number of records skipped
+            - active_count: Total active records after pull
+            - inactive_count: Total inactive records after pull
+            - processing_time_seconds: Total processing time
+    """
+    with conn.cursor() as cur:
+        if etl_stats:
+            # Full insert/update with ETL statistics
+            cur.execute("""
+                INSERT INTO tbl_bolo_control (
+                    pull_date, 
+                    total_records, 
+                    page, 
+                    pull_timestamp,
+                    records_inserted,
+                    records_updated,
+                    records_skipped,
+                    active_count,
+                    inactive_count,
+                    processing_time_seconds
+                )
+                VALUES (%s, %s, %s, NOW(), %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (pull_date) 
+                DO UPDATE SET 
+                    total_records = EXCLUDED.total_records,
+                    page = EXCLUDED.page,
+                    pull_timestamp = NOW(),
+                    records_inserted = EXCLUDED.records_inserted,
+                    records_updated = EXCLUDED.records_updated,
+                    records_skipped = EXCLUDED.records_skipped,
+                    active_count = EXCLUDED.active_count,
+                    inactive_count = EXCLUDED.inactive_count,
+                    processing_time_seconds = EXCLUDED.processing_time_seconds
+            """, (
+                pull_date, 
+                total, 
+                page,
+                etl_stats.get('records_inserted', 0),
+                etl_stats.get('records_updated', 0),
+                etl_stats.get('records_skipped', 0),
+                etl_stats.get('active_count', 0),
+                etl_stats.get('inactive_count', 0),
+                etl_stats.get('processing_time_seconds', 0)
+            ))
+            logger.info(f"Metadata updated with ETL stats for pull_date={pull_date}")
+        else:
+            # Basic insert (for backward compatibility)
+            cur.execute("""
+                INSERT INTO tbl_bolo_control (pull_date, total_records, page, pull_timestamp)
+                VALUES (%s, %s, %s, NOW())
+                ON CONFLICT (pull_date) 
+                DO UPDATE SET 
+                    total_records = EXCLUDED.total_records,
+                    page = EXCLUDED.page,
+                    pull_timestamp = NOW()
+            """, (pull_date, total, page))
+            logger.info(f"Basic metadata inserted for pull_date={pull_date}")
+
+def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, int]:
+    """
+    UPSERT wanted persons records using (uid, modified) as the primary key.
+    
+    Logic:
+    - If (uid, modified) doesn't exist: INSERT with first_seen_date = pull_date, last_seen_date = pull_date
+    - If (uid, modified) already exists: UPDATE only last_seen_date = pull_date
+    - is_active is set to NULL during insert/update, will be calculated afterward by update_active_status()
+    
+    Returns:
+        Dict with counts: {"inserted": int, "updated": int, "skipped": int}
     """
     if not records:
-        return 0
+        return {"inserted": 0, "updated": 0, "skipped": 0}
 
     columns = [
         'age_max', 'age_min', 'aliases', 'build', 'caution', 'complexion',
@@ -612,18 +598,22 @@ def bolo_insert(conn: Connection, records: List[Dict[str, Any]]) -> int:
         'scars_and_marks', 'sex', 'status', 'subjects', 'suspects', 'title', 'uid', 
         'url', 'warning_message', 'weight', 'weight_max', 'weight_min'
     ]
-    
-    # Non-key columns for UPDATE clause
-    non_key_columns = [col for col in columns if col not in ['uid', 'data_pull_date']]
 
     # Prepare values for batch insert
     values = []
     for record in records:
+        # Set tracking fields for new records
+        record['data_pull_date'] = pull_date  # When we first saw this version
+        record['first_seen_date'] = pull_date  # Will stay unchanged on conflict
+        record['last_seen_date'] = pull_date   # Will be updated on conflict
+        record['is_active'] = None  # Will be set by update_active_status()
+        
         row = tuple(record.get(col) for col in columns)
         values.append(row)
     
     with conn.cursor() as cur:
-        # UPSERT with ON CONFLICT DO UPDATE
+        # UPSERT with ON CONFLICT on the new PK (uid, modified)
+        # xmax = 0 means INSERT, xmax != 0 means UPDATE
         upsert_query = f"""
             INSERT INTO tbl_bolo (
                 age_max, age_min, aliases, build, caution, complexion,
@@ -639,69 +629,78 @@ def bolo_insert(conn: Connection, records: List[Dict[str, Any]]) -> int:
                 url, warning_message, weight, weight_max, weight_min
             )
             VALUES %s
-            ON CONFLICT (uid, data_pull_date) 
+            ON CONFLICT (uid, modified) 
             DO UPDATE SET
-                age_max = EXCLUDED.age_max,
-                age_min = EXCLUDED.age_min,
-                aliases = EXCLUDED.aliases,
-                build = EXCLUDED.build,
-                caution = EXCLUDED.caution,
-                complexion = EXCLUDED.complexion,
-                coordinates = EXCLUDED.coordinates,
-                dates_of_birth_used = EXCLUDED.dates_of_birth_used,
-                description = EXCLUDED.description,
-                details = EXCLUDED.details,
-                eyes = EXCLUDED.eyes,
-                eyes_raw = EXCLUDED.eyes_raw,
-                field_offices = EXCLUDED.field_offices,
-                first_seen_date = EXCLUDED.first_seen_date,
-                full_data = EXCLUDED.full_data,
-                full_data_clean = EXCLUDED.full_data_clean,
-                hair = EXCLUDED.hair,
-                hair_raw = EXCLUDED.hair_raw,
-                height_max = EXCLUDED.height_max,
-                height_min = EXCLUDED.height_min,
-                is_active = EXCLUDED.is_active,
-                languages = EXCLUDED.languages,
                 last_seen_date = EXCLUDED.last_seen_date,
-                legat_names = EXCLUDED.legat_names,
-                locations = EXCLUDED.locations,
-                modified = EXCLUDED.modified,
-                nationality = EXCLUDED.nationality,
-                ncic = EXCLUDED.ncic,
-                occupations = EXCLUDED.occupations,
-                path = EXCLUDED.path,
-                pathid = EXCLUDED.pathid,
-                person_classification = EXCLUDED.person_classification,
-                place_of_birth = EXCLUDED.place_of_birth,
-                possible_countries = EXCLUDED.possible_countries,
-                possible_states = EXCLUDED.possible_states,
-                poster_url = EXCLUDED.poster_url,
-                poster_classification = EXCLUDED.poster_classification,
-                publication = EXCLUDED.publication,
-                race = EXCLUDED.race,
-                race_raw = EXCLUDED.race_raw,
-                remarks = EXCLUDED.remarks,
-                reward_max = EXCLUDED.reward_max,
-                reward_min = EXCLUDED.reward_min,
-                reward_text = EXCLUDED.reward_text,
-                scars_and_marks = EXCLUDED.scars_and_marks,
-                sex = EXCLUDED.sex,
-                status = EXCLUDED.status,
-                subjects = EXCLUDED.subjects,
-                suspects = EXCLUDED.suspects,
-                title = EXCLUDED.title,
-                url = EXCLUDED.url,
-                warning_message = EXCLUDED.warning_message,
-                weight = EXCLUDED.weight,
-                weight_max = EXCLUDED.weight_max,
-                weight_min = EXCLUDED.weight_min,
                 updated_at = NOW()
+            RETURNING 
+                (xmax = 0) as is_insert
         """
-        execute_values(cur, upsert_query, values, page_size=100)
-        return cur.rowcount
+        
+        # Execute with execute_values and capture results
+        results = execute_values(
+            cur, 
+            upsert_query, 
+            values, 
+            page_size=100,
+            fetch=True
+        )
+        
+        # Count inserts vs updates
+        insert_count = sum(1 for r in results if r[0])  # is_insert = True
+        update_count = sum(1 for r in results if not r[0])  # is_insert = False
+        
+        logger.info(f"UPSERT complete: {insert_count} inserted, {update_count} updated")
+        
+        return {
+            "inserted": insert_count,
+            "updated": update_count,
+            "skipped": 0
+        }
 
-
+def update_active_status(conn: Connection) -> Dict[str, int]:
+    """
+    Update is_active flags based on business rules:
+    - is_active = TRUE for records with MAX(modified) per uid
+    - is_active = FALSE for all other records
+    
+    This handles the edge case where we insert an old 'modified' date
+    for a uid that already has a newer version - the old one will correctly
+    be set to FALSE.
+    
+    Returns:
+        Dict with counts: {"deactivated": int, "activated": int}
+    """
+    with conn.cursor() as cur:
+        # Step 1: Set ALL records to FALSE first
+        cur.execute("""
+            UPDATE tbl_bolo
+            SET is_active = FALSE,
+                updated_at = NOW()
+            WHERE is_active IS DISTINCT FROM FALSE
+        """)
+        rows_deactivated = cur.rowcount
+        logger.info(f"Set {rows_deactivated} records to is_active=FALSE")
+        
+        # Step 2: Set the most recent version per uid to TRUE
+        cur.execute("""
+            UPDATE tbl_bolo
+            SET is_active = TRUE,
+                updated_at = NOW()
+            WHERE (uid, modified) IN (
+                SELECT uid, MAX(modified) as latest_modified
+                FROM tbl_bolo
+                GROUP BY uid
+            )
+        """)
+        rows_activated = cur.rowcount
+        logger.info(f"Set {rows_activated} records to is_active=TRUE (most recent per uid)")
+        
+        return {
+            "deactivated": rows_deactivated,
+            "activated": rows_activated
+        }
+    
 def update_record_status(conn: Connection, current_uids: List[str], pull_date: date):
     """
     Mark records as inactive if they're not in the current pull
@@ -725,9 +724,50 @@ def update_record_status(conn: Connection, current_uids: List[str], pull_date: d
         cur.execute("CALL sp_clean_jsonb()")
         cur.execute("CALL sp_prune()")
 
+def mark_missing_uids_inactive(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, int]:
+    """
+    Mark ALL versions of UIDs that are NOT in the current pull as inactive.
+    This handles the case where someone is completely removed from the FBI list.
+    
+    Args:
+        current_uids: List of UIDs that appeared in today's pull
+        pull_date: The current pull date (for logging)
+    
+    Returns:
+        Dict with count: {"marked_inactive": int}
+    """
+    if not current_uids:
+        logger.warning("No current UIDs provided - skipping mark_missing_uids_inactive")
+        return {"marked_inactive": 0}
+    
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE tbl_bolo
+            SET is_active = FALSE,
+                updated_at = NOW()
+            WHERE uid NOT IN (
+                SELECT UNNEST(%s::text[])
+            )
+            AND is_active = TRUE
+        """, (current_uids,))
+        
+        rows_marked_inactive = cur.rowcount
+        logger.info(f"Marked {rows_marked_inactive} records inactive (UIDs not in current pull)")
+        
+        return {"marked_inactive": rows_marked_inactive}
+
 def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     """
-    Main import function - reads JSON file and imports to database
+    Main import function - reads JSON file and imports to database with new merge logic.
+    Now captures comprehensive ETL statistics in tbl_bolo_control.
+    
+    New flow:
+    1. Process records from FBI API
+    2. UPSERT records (insert new versions, update last_seen_date for existing)
+    3. Update is_active flags (TRUE for max(modified) per uid, FALSE for others)
+    4. Mark UIDs not in current pull as inactive
+    5. Run cleanup procedures
+    6. Capture final statistics and update metadata
     """
     start_time = datetime.now()
     
@@ -749,13 +789,35 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     items = data.get('items', [])
     
     if not items:
+        # Even for empty pulls, record metadata
+        processing_time = (datetime.now() - start_time).total_seconds()
+        
+        try:
+            with get_db_connection() as conn:
+                # Get current counts
+                counts = get_active_inactive_counts(conn)
+                
+                # Insert metadata with zero statistics
+                etl_stats = {
+                    'records_inserted': 0,
+                    'records_updated': 0,
+                    'records_skipped': 0,
+                    'active_count': counts['active_count'],
+                    'inactive_count': counts['inactive_count'],
+                    'processing_time_seconds': round(processing_time, 2)
+                }
+                insert_api_metadata(conn, total, page, pull_date, etl_stats)
+                conn.commit()
+        except Exception as e:
+            logger.error(f"Error recording metadata for empty pull: {str(e)}")
+        
         return ImportSummary(
             status="success",
             total_records_in_file=0,
             records_inserted=0,
             records_skipped=0,
             pull_date=str(pull_date),
-            processing_time_seconds=(datetime.now() - start_time).total_seconds()
+            processing_time_seconds=round(processing_time, 2)
         )
     
     # Process records
@@ -774,33 +836,156 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     # Database operations (atomic transaction)
     try:
         with get_db_connection() as conn:
-            # Insert metadata
-            insert_api_metadata(conn, total, page, pull_date)
+            # Step 1: UPSERT wanted persons (new merge logic)
+            upsert_results = bolo_insert(conn, processed_records, pull_date)
+            logger.info(f"UPSERT results: {upsert_results}")
             
-            # Insert wanted persons
-            inserted_count = bolo_insert(conn, processed_records)
+            # Step 2: Update is_active flags for all records
+            active_results = update_active_status(conn)
+            logger.info(f"Active status update: {active_results}")
             
-            # Update inactive records
+            # Step 3: Mark UIDs not in current pull as inactive
             current_uids = [r['uid'] for r in processed_records]
-            update_record_status(conn, current_uids, pull_date)
+            missing_results = mark_missing_uids_inactive(conn, current_uids, pull_date)
+            logger.info(f"Missing UIDs marked inactive: {missing_results}")
+            
+            # Step 4: Run cleanup procedures
+            with conn.cursor() as cur:
+                cur.execute("CALL sp_clean_text()")
+                cur.execute("CALL sp_clean_array()")
+                cur.execute("CALL sp_clean_jsonb()")
+                cur.execute("CALL sp_prune()")
+            
+            # Step 5: Get final active/inactive counts
+            final_counts = get_active_inactive_counts(conn)
+            logger.info(f"Final counts: {final_counts}")
+            
+            # Step 6: Calculate processing time
+            processing_time = (datetime.now() - start_time).total_seconds()
+            
+            # Step 7: Insert comprehensive metadata
+            etl_stats = {
+                'records_inserted': upsert_results['inserted'],
+                'records_updated': upsert_results['updated'],
+                'records_skipped': skipped_count,
+                'active_count': final_counts['active_count'],
+                'inactive_count': final_counts['inactive_count'],
+                'processing_time_seconds': round(processing_time, 2)
+            }
+            insert_api_metadata(conn, total, page, pull_date, etl_stats)
             
             # Commit transaction
             conn.commit()
+            logger.info("Transaction committed successfully with metadata")
             
     except Exception as e:
+        logger.error(f"Database error during import: {str(e)}")
         raise Exception(f"Database error: {str(e)}")
     
-    processing_time = (datetime.now() - start_time).total_seconds()
-    
+    # Return enhanced summary
     return ImportSummary(
         status="success",
         total_records_in_file=len(items),
-        records_inserted=inserted_count,
+        records_inserted=upsert_results["inserted"],
         records_skipped=skipped_count,
         skipped_reasons=skipped_reasons,
         pull_date=str(pull_date),
         processing_time_seconds=round(processing_time, 2)
     )
+
+def get_active_inactive_counts(conn: Connection) -> Dict[str, int]:
+    """
+    Get current counts of active and inactive records.
+    
+    Returns:
+        Dict with 'active_count' and 'inactive_count'
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 
+                COUNT(*) FILTER (WHERE is_active = TRUE) as active_count,
+                COUNT(*) FILTER (WHERE is_active = FALSE) as inactive_count
+            FROM tbl_bolo
+        """)
+        result = cur.fetchone()
+        return {
+            "active_count": result[0] or 0,
+            "inactive_count": result[1] or 0
+        }
+
+async def fetch_page_with_retry(client: httpx.AsyncClient, url: str, params: dict, page: int, max_retries: int = 3) -> dict:
+    """
+    Fetch a single page from the FBI API with retry logic.
+    Retries up to max_retries times on failure.
+    """
+    params_with_page = {**params, 'page': page}
+    
+    for attempt in range(1, max_retries + 1):
+        try:
+            logger.info(f"Fetching page {page} (attempt {attempt}/{max_retries})")
+            response = await client.get(url, params=params_with_page)
+            response.raise_for_status()
+            logger.info(f"Successfully fetched page {page}")
+            return response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as e:
+            logger.warning(f"Error fetching page {page} on attempt {attempt}: {str(e)}")
+            if attempt == max_retries:
+                logger.error(f"Failed to fetch page {page} after {max_retries} attempts")
+                raise HTTPException(
+                    status_code=500, 
+                    detail=f"Failed to fetch page {page} after {max_retries} attempts: {str(e)}"
+                )
+            # Wait before retrying (exponential backoff)
+            await asyncio.sleep(2 ** attempt)
+
+async def fetch_all_pages(client: httpx.AsyncClient, url: str, params: dict) -> dict:
+    """
+    Fetch all pages from the FBI Wanted API.
+    Returns a combined response with all items.
+    """
+    logger.info("Starting to fetch all pages")
+    
+    # Fetch first page to determine total count
+    logger.info("Fetching first page to determine total records")
+    first_page = await fetch_page_with_retry(client, url, params, page=1)
+    
+    total = first_page.get('total', 0)
+    logger.info(f"Total records: {total}")
+    
+    if total == 0:
+        logger.info("No records found")
+        return first_page
+    
+    # Calculate number of pages (20 items per page)
+    items_per_page = 20
+    total_pages = total // items_per_page
+    if total % items_per_page > 0:
+        total_pages += 1
+    
+    logger.info(f"Total pages to fetch: {total_pages}")
+    
+    # Start with items from first page
+    all_items = first_page.get('items', [])
+    
+    # Fetch remaining pages
+    for page_num in range(2, total_pages + 1):
+        # Sleep between requests to avoid rate limiting
+        logger.info(f"Sleeping 3 seconds before fetching page {page_num}")
+        await asyncio.sleep(3)
+        
+        page_data = await fetch_page_with_retry(client, url, params, page=page_num)
+        page_items = page_data.get('items', [])
+        all_items.extend(page_items)
+        logger.info(f"Accumulated {len(all_items)} items so far")
+    
+    logger.info(f"Finished fetching all pages. Total items: {len(all_items)}")
+    
+    # Return combined response
+    return {
+        'total': total,
+        'items': all_items,
+        'page': 1  # Represent as single combined page
+    }
 
 # FastAPI Router
 router = APIRouter(prefix="/api/etl", tags=["Data Import"], include_in_schema=True)
@@ -980,3 +1165,84 @@ async def full_refresh(
     except Exception as e:
         logger.error(f"Full refresh failed with unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Full refresh error: {str(e)}")
+
+@router.get(
+    "/metadata",
+    summary="ETL Metadata History",
+    description="View ETL run statistics and performance metrics. **ADMIN ONLY**"
+    )
+async def get_etl_metadata(
+    limit: int = Query(default=30, ge=1, le=365, description="Number of recent pulls to return"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get ETL metadata showing statistics from recent data pulls.
+    
+    **Access:** ADMIN role only
+    
+    Returns detailed statistics including:
+    - Records inserted, updated, skipped
+    - Active/inactive counts
+    - Processing time
+    - FBI API totals
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        pull_date,
+                        total_records as fbi_reported_total,
+                        page,
+                        pull_timestamp,
+                        records_inserted,
+                        records_updated,
+                        records_skipped,
+                        active_count,
+                        inactive_count,
+                        processing_time_seconds,
+                        ROUND(processing_time_seconds / 60.0, 2) as processing_time_minutes
+                    FROM tbl_bolo_control
+                    ORDER BY pull_date DESC
+                    LIMIT %s
+                """, (limit,))
+                
+                results = cur.fetchall()
+                
+                # Calculate some summary stats
+                if results:
+                    total_inserts = sum(r['records_inserted'] or 0 for r in results)
+                    total_updates = sum(r['records_updated'] or 0 for r in results)
+                    avg_processing = sum(r['processing_time_seconds'] or 0 for r in results) / len(results)
+                    
+                    summary = {
+                        "total_pulls": len(results),
+                        "date_range": {
+                            "earliest": str(results[-1]['pull_date']) if results else None,
+                            "latest": str(results[0]['pull_date']) if results else None
+                        },
+                        "totals": {
+                            "records_inserted": total_inserts,
+                            "records_updated": total_updates,
+                            "avg_processing_time_seconds": round(avg_processing, 2)
+                        },
+                        "current_state": {
+                            "active_count": results[0]['active_count'],
+                            "inactive_count": results[0]['inactive_count'],
+                            "total_records": results[0]['active_count'] + results[0]['inactive_count']
+                        }
+                    }
+                else:
+                    summary = {"message": "No metadata available"}
+                
+                return {
+                    "summary": summary,
+                    "pulls": [dict(r) for r in results]
+                }
+                
+    except Exception as e:
+        logger.error(f"Error retrieving ETL metadata: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve metadata: {str(e)}"
+        )

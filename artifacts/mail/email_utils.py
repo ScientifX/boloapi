@@ -90,7 +90,7 @@ class GraphAPIEmailSender:
             "client_secret": EmailConfig.CLIENT_SECRET,
             "scope": "https://graph.microsoft.com/.default",
             "grant_type": "client_credentials"
-        }
+            }
         
         try:
             response = requests.post(url, data=data, timeout=10)
@@ -137,7 +137,7 @@ class GraphAPIEmailSender:
             missing = EmailConfig.get_missing_config()
             logger.error(f"Email not configured. Missing: {', '.join(missing)}")
             return False
-        
+        print(EmailConfig.FROM_ADDRESS)
         try:
             access_token = self._get_access_token()
             
@@ -298,7 +298,7 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
             </p>
             
             <div class="warning">
-                <strong>âš ï¸ Important:</strong> This activation link will expire in 48 hours. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
+                <strong>âš ï¸ Important:</strong> This activation link will expire in 1 hour. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
             </div>
             
             <p><strong>What happens next?</strong></p>

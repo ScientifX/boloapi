@@ -1053,11 +1053,6 @@ async def simple_search(
     # Combine clauses with AND/OR
     where_clause = f" {search_request.logic.value} ".join(where_clauses)
 
-    print("")
-    print("WHERE clause:", where_clause)
-    print("Parameters:", query_params)
-    print("")
-
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -1228,12 +1223,6 @@ async def advanced_search(
         
         # Combine groups with group_logic (AND/OR)
         where_clause = f" {search_request.group_logic.value} ".join(group_clauses)
-        
-        # Debug logging
-        print("")
-        print("Advanced Search WHERE clause:", where_clause)
-        print("Parameters:", query_params)
-        print("")
         
         # Execute search using synchronous psycopg2 (same as simple search)
         with get_db_connection() as conn:

@@ -277,7 +277,7 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
             </p>
             
             <div class="warning">
-                <strong>⚠️ Important:</strong> This activation link will expire in 48 hours. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
+                <strong>⚠️ Important:</strong> This activation link will expire in 1 hour. After activation, you'll receive your API key - save it securely as you won't be able to retrieve it again.
             </div>
             
             <p><strong>What happens next?</strong></p>

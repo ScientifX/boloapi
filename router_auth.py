@@ -188,7 +188,7 @@ async def register(request: Request, register_req: RegisterRequest):
                 # User exists but not activated - resend activation
                 user_id = existing_user['user_id']
                 activation_token = generate_activation_token()
-                activation_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+                activation_expires = datetime.now(timezone.utc) + timedelta(hours=1)
                 
                 with get_db_connection() as conn:
                     with conn.cursor() as cur:
@@ -235,7 +235,7 @@ async def register(request: Request, register_req: RegisterRequest):
         # Create new user
         api_key, api_key_hash = generate_api_key_and_hash()
         activation_token = generate_activation_token()
-        activation_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+        activation_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -313,7 +313,7 @@ async def register(request: Request, register_req: RegisterRequest):
     
     **Important:** Save your API key securely. You'll need it to get access tokens.
     
-    **Note:** Activation tokens expire after 48 hours.
+    **Note:** Activation tokens expire after 1 hour.
     """
 )
 @limiter.limit(rate_max)

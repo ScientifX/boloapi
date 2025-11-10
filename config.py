@@ -28,7 +28,7 @@ except ImportError:
 # DATABASE CONFIGURATION
 # ============================================================================
 
-DB_CONFIG = {
+DB_CONFIG = { 
     "host": os.getenv('API_DB_HOST'),
     "port": os.getenv('API_DB_PORT'),
     "database": os.getenv('API_DB_DATABASE'),
