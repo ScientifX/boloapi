@@ -1063,7 +1063,7 @@ async def simple_search(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
                     SELECT {data_field}
-                    FROM vw_wanted_persons_active
+                    FROM vw_bolo
                     WHERE {where_clause}
                     LIMIT %s
                 """
@@ -1240,7 +1240,7 @@ async def advanced_search(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
                     SELECT {data_field}
-                    FROM vw_wanted_persons_active
+                    FROM vw_bolo
                     WHERE {where_clause}
                     LIMIT %s
                 """

@@ -625,7 +625,7 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
     with conn.cursor() as cur:
         # UPSERT with ON CONFLICT DO UPDATE
         upsert_query = f"""
-            INSERT INTO wanted_persons_v3 (
+            INSERT INTO tbl_bolo (
                 age_max, age_min, aliases, build, caution, complexion,
                 coordinates, data_pull_date, dates_of_birth_used, description,
                 details, eyes, eyes_raw, field_offices, first_seen_date,
@@ -711,7 +711,7 @@ def update_record_status(conn: Connection, current_uids: List[str], pull_date: d
         # Update last_seen_date for records in current pull
         if current_uids:
             cur.execute("""
-                UPDATE wanted_persons_v3
+                UPDATE tbl_bolo
                 SET last_seen_date = %s,
                     updated_at = NOW()
                 WHERE uid = ANY(%s)

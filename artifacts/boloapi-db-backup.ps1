@@ -1,6 +1,6 @@
 Set-Location C:\Clients\SD\boloapi
 
-Start-Transcript -Path "boloapi.log" -Append
+Start-Transcript -Path "artifacts\boloapi.log" -Append
 
 $env:PGPASSWORD = "Rxh1m3d3s!@#"
 & "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" -h localhost -p 5432 -U postgres -d postgres -F c -f "artifacts/boloapi_db_backup.dump"

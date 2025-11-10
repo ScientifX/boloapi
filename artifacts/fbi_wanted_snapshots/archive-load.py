@@ -69,7 +69,7 @@ def delete_data_for_date(conn: Connection, pull_date: date) -> int:
     """
     with conn.cursor() as cur:
         cur.execute(
-            "DELETE FROM wanted_persons_v3 WHERE data_pull_date = %s",
+            "DELETE FROM tbl_bolo WHERE data_pull_date = %s",
             (pull_date,)
         )
         deleted_count = cur.rowcount
@@ -192,7 +192,7 @@ def insert_wanted_persons(conn: Connection, records: List[Dict[str, Any]]) -> in
 
     with conn.cursor() as cur:
         insert_query = f"""
-            INSERT INTO wanted_persons_v3 (
+            INSERT INTO tbl_bolo (
                 age_max, age_min, aliases, build, caution, complexion,
                 coordinates, data_pull_date, dates_of_birth_used, description,
                 details, eyes, eyes_raw, field_offices, first_seen_date,
