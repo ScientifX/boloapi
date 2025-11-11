@@ -1,0 +1,85 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Activation Error - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="text-center">
+        <h1>❌ Activation Error</h1>
+    </div>
+    
+    <div class="alert alert-error">
+        <strong>Error:</strong> {{ error_message }}
+    </div>
+    
+    <h2>What went wrong?</h2>
+    
+    {% if error_type == "not_found" %}
+    <p>The activation token you used is invalid or has already been used. This could happen if:</p>
+    <ul>
+        <li>The activation link has already been clicked</li>
+        <li>The token in the URL is incorrect or incomplete</li>
+        <li>You've registered a new account since receiving this link</li>
+    </ul>
+    {% elif error_type == "expired" %}
+    <p>The activation token has expired. Activation links are only valid for 1 hour after registration.</p>
+    <ul>
+        <li>Tokens expire 1 hour after registration for security</li>
+        <li>You'll need to register again to get a new activation link</li>
+    </ul>
+    {% elif error_type == "already_active" %}
+    <p>This account is already activated! You can start using your API key immediately.</p>
+    <ul>
+        <li>If you've lost your API key, you can reset it</li>
+        <li>Use <code>/auth/token</code> to get an access token</li>
+    </ul>
+    {% else %}
+    <p>An unexpected error occurred during activation. Please try again or contact support.</p>
+    {% endif %}
+    
+    <h2>What can you do?</h2>
+    
+    {% if error_type == "not_found" or error_type == "expired" %}
+    <div class="form-group">
+        <h3>Register Again</h3>
+        <p>You can register for a new account to receive a fresh activation link:</p>
+        <div class="code-block">
+curl -X POST "{{ app_base_url }}/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "your.email@example.com"}'
+        </div>
+    </div>
+    {% elif error_type == "already_active" %}
+    <div class="form-group">
+        <h3>Reset Your API Key</h3>
+        <p>If you've lost your API key, you can request a reset:</p>
+        <div class="code-block">
+curl -X POST "{{ app_base_url }}/auth/key/reset" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "your.email@example.com"}'
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <h3>Get an Access Token</h3>
+        <p>If you have your API key, exchange it for an access token:</p>
+        <div class="code-block">
+curl -X POST "{{ app_base_url }}/auth/token" \
+  -H "Content-Type: application/json" \
+  -d '{"api_key": "YOUR_API_KEY"}'
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="/docs" class="btn btn-primary">View API Documentation</a>
+        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+    </div>
+    
+    <div class="mt-4">
+        <p class="text-muted text-center">
+            Need help? Contact support or check our <a href="/docs">documentation</a>.
+        </p>
+    </div>
+</div>
+{% endblock %}

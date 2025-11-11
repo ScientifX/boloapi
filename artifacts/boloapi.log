@@ -145,3 +145,52 @@ To https://github.com/ScientifX/boloapi.git
 Windows PowerShell transcript end
 End time: 20251110105434
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251110155253
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe C:\Clients\SD\boloapi\artifacts\boloapi-db-backup.ps1
+Process ID: 21256
+PSVersion: 5.1.26100.6899
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.6899
+BuildVersion: 10.0.26100.6899
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+warning: in the working copy of 'artifacts/auth_jwt/router_auth.py', LF will be replaced by CRLF the next time Git touch
+es it
+warning: in the working copy of 'artifacts/mail/email_utils.py', LF will be replaced by CRLF the next time Git touches i
+t
+warning: in the working copy of 'artifacts/mail/router_auth.py', LF will be replaced by CRLF the next time Git touches i
+t
+warning: in the working copy of 'artifacts/mail/router_auth_updated.py', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'artifacts/mail/test_auth_flow.py', LF will be replaced by CRLF the next time Git touche
+s it
+warning: in the working copy of 'email_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'router_auth.py', LF will be replaced by CRLF the next time Git touches it
+[main 7a38157] Daily db backup plus collateral changes on 2025-11-10
+ 19 files changed, 91225 insertions(+), 258 deletions(-)
+ delete mode 100644 .env_old
+ delete mode 100644 requirements.txt
+Enumerating objects: 40, done.
+Counting objects: 100% (40/40), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (23/23), done.
+Writing objects: 100% (23/23), 1.62 MiB | 1.40 MiB/s, done.
+Total 23 (delta 16), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (16/16), completed with 15 local objects.
+To https://github.com/ScientifX/boloapi.git
+   9b920b2..7a38157  main -> main
+**********************
+Windows PowerShell transcript end
+End time: 20251110155257
+**********************

@@ -1,0 +1,67 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Welcome to Scientifics.io - Your API Key{% endblock %}
+{% block header_title %}✅ Account Activated!{% endblock %}
+
+{% block content %}
+<h2 style="color: #28a745; margin: 0 0 20px 0; font-size: 20px;">Welcome to Scientifics.io</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Your account has been successfully activated! Here is your API key:
+</p>
+
+<div style="background-color: #f8f9fa; border: 2px solid #28a745; border-radius: 6px; 
+            padding: 20px; text-align: center; font-family: 'Courier New', monospace; 
+            font-size: 16px; font-weight: 600; color: #3d4461; word-break: break-all; margin: 25px 0;">
+    {{ api_key }}
+</div>
+
+<div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #0c5460; font-weight: 600;">💡 Getting Started:</p>
+    <ol style="margin: 0; padding-left: 20px; color: #0c5460; font-size: 14px; line-height: 1.6;">
+        <li>Save your API key in a secure location</li>
+        <li>Exchange it for access tokens using <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px;">/auth/token</code></li>
+        <li>Use tokens to access FBI Wanted API data</li>
+        <li>Your role: <strong>BASIC</strong> (25 records per request)</li>
+    </ol>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Quick Start Guide</h3>
+
+<p style="color: #212529; margin: 0 0 10px 0; font-weight: 600;">1. Get an access token:</p>
+<pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
+           padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.4; margin: 0 0 20px 0;">
+curl -X POST "{{ app_base_url }}/auth/token" \
+  -H "Content-Type: application/json" \
+  -d '{"api_key": "{{ api_key }}"}'
+</pre>
+
+<p style="color: #212529; margin: 0 0 10px 0; font-weight: 600;">2. Make your first search:</p>
+<pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
+           padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.4; margin: 0 0 20px 0;">
+curl "{{ app_base_url }}/api/search/simple?field=sex&value=Male" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+</pre>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Available Features (BASIC tier)</h3>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Simple search across all fields</li>
+    <li>Up to 25 records per request</li>
+    <li>Access to cleaned, normalized data</li>
+    <li>Full field documentation</li>
+</ul>
+
+<p style="color: #212529; line-height: 1.6; margin: 20px 0;">
+    <strong>Documentation:</strong> Visit 
+    <a href="{{ app_base_url }}/docs" style="color: #3d4461; text-decoration: none; font-weight: 600;">
+        {{ app_base_url }}/docs
+    </a> 
+    for complete API documentation.
+</p>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Need help? Check our documentation or contact support.
+</p>
+{% endblock %}
