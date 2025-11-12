@@ -1,0 +1,54 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Activate Your Scientifics.io Account{% endblock %}
+{% block header_title %}Welcome to Scientifics.io{% endblock %}
+
+{% block content %}
+<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Activate Your Account</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Thank you for registering with Scientifics.io. To complete your registration and receive your API key, 
+    please activate your account by clicking the button below:
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ activation_link }}" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Activate Account
+    </a>
+</div>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Or copy and paste this link into your browser:
+</p>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 12px; 
+            word-break: break-all; font-size: 14px; color: #3d4461; margin: 0 0 20px 0;">
+    {{ activation_link }}
+</div>
+
+<div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #856404; font-weight: 600;">⚠️ Important:</p>
+    <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.5;">
+        This activation link will expire in 1 hour. After activation, you'll receive your API key - 
+        save it securely as you won't be able to retrieve it again.
+    </p>
+</div>
+
+<p style="color: #212529; line-height: 1.6; margin: 20px 0 10px 0; font-weight: 600;">
+    What happens next?
+</p>
+
+<ol style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Click the activation link</li>
+    <li>Receive your API key</li>
+    <li>Use your API key to get access tokens</li>
+    <li>Start making API requests</li>
+</ol>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    If you didn't register for this account, you can safely ignore this email.
+</p>
+{% endblock %}

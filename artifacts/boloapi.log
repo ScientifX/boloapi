@@ -194,3 +194,30 @@ To https://github.com/ScientifX/boloapi.git
 Windows PowerShell transcript end
 End time: 20251110155257
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251112154013
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 15684
+PSVersion: 5.1.26100.6899
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.6899
+BuildVersion: 10.0.26100.6899
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+
+
+
+**********************
+Windows PowerShell transcript end
+End time: 20251112154015
+**********************

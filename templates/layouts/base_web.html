@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Scientifics.io{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header Component -->
+    {% block header %}
+        {% include 'components/web_header.html' %}
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Component -->
+    {% block footer %}
+        {% include 'components/web_footer.html' %}
+    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
