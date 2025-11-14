@@ -1,0 +1,112 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Registration Successful - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="text-center">
+        {% if is_resend %}
+            <h1>📧 Activation Email Resent</h1>
+        {% else %}
+            <h1>✅ Registration Successful!</h1>
+        {% endif %}
+    </div>
+    
+    {% if is_resend %}
+    <div class="alert alert-info">
+        <strong>Email Resent:</strong> We've sent you a new activation link since your account wasn't activated yet.
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        <strong>Welcome!</strong> Your account has been created successfully.
+    </div>
+    {% endif %}
+    
+    <h2>Your Registration Details</h2>
+    
+    <div class="form-group">
+        <strong>Email:</strong> {{ email }}
+    </div>
+    
+    <div class="form-group">
+        <strong>User ID:</strong> <code>{{ user_id }}</code>
+    </div>
+    
+    {% if email_sent %}
+    <div class="alert alert-info">
+        <h3 style="margin-top: 0;">📧 Next Steps - Check Your Email</h3>
+        <p><strong>Important:</strong> You will receive TWO emails:</p>
+        <ol style="margin: 10px 0; padding-left: 20px;">
+            <li><strong>ACTIVATION Email</strong> (arriving now)
+                <ul style="margin-top: 5px;">
+                    <li>Contains a link to activate your account</li>
+                    <li>Click the activation link in this email</li>
+                </ul>
+            </li>
+            <li><strong>WELCOME Email</strong> (arrives after you click activation)
+                <ul style="margin-top: 5px;">
+                    <li>Contains your API key</li>
+                    <li>Save the API key from this email securely</li>
+                    <li>Use this key to get access tokens</li>
+                </ul>
+            </li>
+        </ol>
+        <p style="margin-top: 15px;"><strong>⏱️ Time limit:</strong> The activation link expires in 1 hour.</p>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        <h3 style="margin-top: 0;">⚠️ Email Not Configured (Testing Mode)</h3>
+        <p>Email functionality is disabled. Click the link below to activate your account:</p>
+        <div style="margin: 15px 0;">
+            <a href="{{ app_base_url }}/auth/activate?token={{ activation_token }}" class="btn btn-primary">
+                Activate Account Now
+            </a>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.9em;">
+            Or copy this URL: <code style="word-break: break-all;">{{ app_base_url }}/auth/activate?token={{ activation_token }}</code>
+        </p>
+    </div>
+    {% endif %}
+    
+    <h2>What Happens After Activation?</h2>
+    
+    <div class="form-group">
+        <ol>
+            <li><strong>Receive API Key:</strong> You'll get your unique API key (either on the activation page or via email)</li>
+            <li><strong>Save It Securely:</strong> Store your API key safely - you won't be able to retrieve it again</li>
+            <li><strong>Get Access Tokens:</strong> Exchange your API key for JWT access tokens using <code>/auth/token</code></li>
+            <li><strong>Start Searching:</strong> Use access tokens to query the FBI Wanted database</li>
+        </ol>
+    </div>
+    
+    <h2>Your Account Tier</h2>
+    
+    <div class="form-group">
+        <ul>
+            <li><strong>Role:</strong> BASIC</li>
+            <li><strong>Max Results per Request:</strong> 25</li>
+            <li><strong>Data Access:</strong> Raw FBI data</li>
+            <li><strong>Token Expiration:</strong> 1 hour</li>
+        </ul>
+    </div>
+    
+    <div class="alert alert-info">
+        <strong>💡 Pro Tip:</strong> After activation, bookmark the <a href="/docs">API Documentation</a> 
+        for quick reference on all available endpoints and features.
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="/docs" class="btn btn-primary">View API Documentation</a>
+        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+    </div>
+    
+    {% if not email_sent %}
+    <div class="mt-4">
+        <p class="text-muted text-center" style="font-size: 0.9em;">
+            <strong>Note:</strong> Since email is not configured, your activation link is shown above. 
+            In production, this would be sent securely via email.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

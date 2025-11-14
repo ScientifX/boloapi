@@ -1,0 +1,307 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Terms of Service - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Terms of Service</h1>
+    <p class="text-muted">Last Updated: {{ last_updated }}</p>
+    
+    <div class="section">
+        <h2>Agreement to Terms</h2>
+        <p>
+            Welcome to Scientifics.io. By accessing or using our FBI Wanted Persons API service, you agree to be bound 
+            by these Terms of Service ("Terms"). If you don't agree with these Terms, please don't use our service. 
+            We've tried to keep this readable and fair — if something's unclear, <a href="/contact">ask us</a>.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>What We Provide</h2>
+        <p>
+            Scientifics.io provides API access to FBI Most Wanted data. We extract, clean, normalize, and structure 
+            publicly available FBI wanted persons information and deliver it via RESTful APIs. We handle the technical 
+            complexity so you can focus on building your application.
+        </p>
+        <p>
+            <strong>What We Are:</strong> A data API service that makes public information more accessible.
+        </p>
+        <p>
+            <strong>What We Are NOT:</strong> We are not law enforcement. We do not create, verify, or endorse the data. 
+            We are not responsible for the accuracy of FBI source data. We are data facilitators, not investigators.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Account Registration & Security</h2>
+        
+        <h3>Registration Requirements</h3>
+        <ul>
+            <li>You must provide a valid email address</li>
+            <li>You must be at least 18 years old</li>
+            <li>You must provide accurate and complete information</li>
+            <li>One person or organization per account (no sharing accounts)</li>
+        </ul>
+
+        <h3>Your Responsibilities</h3>
+        <ul>
+            <li><strong>Protect Your API Key:</strong> Your API key is like a password. Keep it secure. Don't share it. Don't commit it to public repositories.</li>
+            <li><strong>Authorized Use:</strong> Only use the service for lawful purposes and as described in these Terms</li>
+            <li><strong>Accurate Information:</strong> Keep your account information current and accurate</li>
+            <li><strong>Notify Us:</strong> Report suspected unauthorized access immediately to support@scientifics.io</li>
+        </ul>
+
+        <h3>We May Suspend or Terminate</h3>
+        <p>
+            We reserve the right to suspend or terminate your account if you violate these Terms, engage in abusive behavior, 
+            or use our service in ways that harm others or our platform.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Acceptable Use Policy</h2>
+        
+        <h3>You May Use Our Service For:</h3>
+        <ul>
+            <li>Law enforcement and public safety applications</li>
+            <li>Legitimate security and background screening</li>
+            <li>News, journalism, and media research</li>
+            <li>Academic and criminology research</li>
+            <li>Public interest technology applications</li>
+            <li>Community safety features in applications</li>
+        </ul>
+
+        <h3>You May NOT:</h3>
+        <ul>
+            <li><strong>Harassment or Stalking:</strong> Use data to harass, stalk, threaten, or harm individuals</li>
+            <li><strong>Discrimination:</strong> Use data to discriminate based on protected characteristics</li>
+            <li><strong>Unauthorized Disclosure:</strong> Publicly republish our entire database or substantial portions without permission</li>
+            <li><strong>Resale:</strong> Resell API access or data without an authorized reseller agreement</li>
+            <li><strong>Abuse:</strong> Attempt to overwhelm, hack, or compromise our systems</li>
+            <li><strong>Scraping:</strong> Use automated tools to scrape our website (use the API instead)</li>
+            <li><strong>Circumvention:</strong> Bypass rate limits, authentication, or other security measures</li>
+            <li><strong>Misrepresentation:</strong> Falsely claim affiliation with law enforcement or FBI</li>
+            <li><strong>Defamation:</strong> Use data to defame or harm individuals' reputations beyond what's already public</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Subscription Tiers & Billing</h2>
+        
+        <h3>Free Tier (BASIC)</h3>
+        <ul>
+            <li>Limited to 25 results per request</li>
+            <li>Access to current wanted persons data</li>
+            <li>Standard search features</li>
+            <li>No credit card required</li>
+        </ul>
+
+        <h3>Paid Tiers (PREMIUM & Custom)</h3>
+        <ul>
+            <li>Increased result limits (up to 5,000 per request)</li>
+            <li>Access to cleaned, normalized data</li>
+            <li>Advanced search with boolean logic</li>
+            <li>Historical data and change tracking</li>
+            <li>Priority support</li>
+        </ul>
+
+        <h3>Billing Terms</h3>
+        <ul>
+            <li><strong>Payment:</strong> Subscriptions billed monthly or annually</li>
+            <li><strong>Auto-Renewal:</strong> Subscriptions automatically renew unless cancelled</li>
+            <li><strong>Cancellation:</strong> Cancel anytime; access continues through end of billing period</li>
+            <li><strong>Refunds:</strong> Prorated refunds for annual plans cancelled within 30 days</li>
+            <li><strong>Price Changes:</strong> We'll notify you 30 days before any price increases</li>
+            <li><strong>Taxes:</strong> Prices exclude applicable taxes (added at checkout)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>API Usage & Rate Limits</h2>
+        <ul>
+            <li><strong>Rate Limits:</strong> Enforced to ensure fair access and system stability</li>
+            <li><strong>Result Limits:</strong> Based on your subscription tier</li>
+            <li><strong>Caching:</strong> We recommend caching responses to reduce API calls</li>
+            <li><strong>Abuse:</strong> Excessive usage may result in throttling or suspension</li>
+        </ul>
+        <p>
+            Need higher limits for enterprise use? <a href="/contact">Contact us</a> for custom plans.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Data Accuracy & Disclaimers</h2>
+        
+        <h3>Source Data</h3>
+        <p>
+            Our data comes from FBI public sources. While we apply extensive cleaning and validation, we cannot guarantee 
+            100% accuracy. The FBI updates their data periodically, and there may be delays between FBI updates and our system.
+        </p>
+
+        <h3>Your Responsibility to Verify</h3>
+        <p>
+            <strong>IMPORTANT:</strong> Do not rely solely on our API for critical decisions affecting individuals' rights, 
+            safety, or liberty. Always verify information with official law enforcement sources before taking action.
+        </p>
+
+        <h3>No Warranties</h3>
+        <p>
+            Our service is provided "AS IS" and "AS AVAILABLE" without warranties of any kind, either express or implied, 
+            including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Intellectual Property</h2>
+        
+        <h3>FBI Data</h3>
+        <p>
+            The underlying wanted persons data is public information from the FBI. We claim no ownership over this data.
+        </p>
+
+        <h3>Our Platform</h3>
+        <p>
+            Our API, documentation, code, processes, and cleaning algorithms are our intellectual property. 
+            You may not copy, modify, or create derivative works without permission.
+        </p>
+
+        <h3>Your Use Rights</h3>
+        <p>
+            You may use data accessed through our API in accordance with these Terms and your subscription level. 
+            You retain rights to applications you build using our API.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Limitation of Liability</h2>
+        <p>
+            To the maximum extent permitted by law, Scientifics.io shall not be liable for any indirect, incidental, 
+            special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly 
+            or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
+        </p>
+        <ul>
+            <li>Your use or inability to use the service</li>
+            <li>Any unauthorized access to or use of our servers and/or any personal information stored therein</li>
+            <li>Any interruption or cessation of transmission to or from our service</li>
+            <li>Any bugs, viruses, trojan horses, or similar that may be transmitted through our service</li>
+            <li>Any errors or omissions in any content or data</li>
+            <li>Any actions taken based on data from our service</li>
+        </ul>
+        <p>
+            <strong>In all cases, our maximum liability shall not exceed the amount you paid us in the 12 months prior to the claim.</strong>
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Indemnification</h2>
+        <p>
+            You agree to indemnify and hold harmless Scientifics.io, its contractors, and licensors from any claims, 
+            losses, damages, liabilities, including legal fees and expenses, arising out of your use or misuse of the service, 
+            violation of these Terms, or violation of any rights of a third party.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Service Changes & Availability</h2>
+        <ul>
+            <li><strong>Updates:</strong> We may modify or discontinue features with reasonable notice</li>
+            <li><strong>Downtime:</strong> We strive for 99.9% uptime but cannot guarantee uninterrupted access</li>
+            <li><strong>Maintenance:</strong> Scheduled maintenance will be announced in advance when possible</li>
+            <li><strong>Data Updates:</strong> FBI data refreshed daily; timing may vary</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Privacy</h2>
+        <p>
+            Your use of our service is also governed by our <a href="/privacy">Privacy Policy</a>. 
+            Please review it to understand how we collect, use, and protect your information.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Dispute Resolution & Governing Law</h2>
+        
+        <h3>Informal Resolution</h3>
+        <p>
+            If you have a concern, please contact us first at support@scientifics.io. We'll work with you in good faith 
+            to resolve the issue.
+        </p>
+
+        <h3>Governing Law</h3>
+        <p>
+            These Terms are governed by the laws of the United States and the state where Scientifics.io is incorporated, 
+            without regard to conflict of law provisions.
+        </p>
+
+        <h3>Arbitration</h3>
+        <p>
+            Any disputes that cannot be resolved informally shall be resolved through binding arbitration in accordance 
+            with the American Arbitration Association's rules, rather than in court, except you may assert claims in 
+            small claims court if they qualify.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Termination</h2>
+        
+        <h3>Your Rights</h3>
+        <p>
+            You may terminate your account at any time by contacting support@scientifics.io. Upon termination, 
+            your access will cease at the end of your current billing period.
+        </p>
+
+        <h3>Our Rights</h3>
+        <p>
+            We may suspend or terminate your access immediately if you violate these Terms, engage in fraudulent activity, 
+            or use the service in harmful ways. Serious violations may result in immediate termination without refund.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Changes to These Terms</h2>
+        <p>
+            We may update these Terms from time to time. Significant changes will be announced via email and/or prominent 
+            notice on our website at least 30 days before they take effect. Continued use after changes constitutes 
+            acceptance of the new Terms.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Severability</h2>
+        <p>
+            If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain 
+            in full force and effect.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Entire Agreement</h2>
+        <p>
+            These Terms, along with our Privacy Policy, constitute the entire agreement between you and Scientifics.io 
+            regarding use of our service, superseding any prior agreements.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Contact & Questions</h2>
+        <p>
+            Questions about these Terms? We're happy to clarify:
+        </p>
+        <ul>
+            <li><strong>Legal Questions:</strong> legal@scientifics.io</li>
+            <li><strong>General Support:</strong> support@scientifics.io</li>
+            <li><strong>Compliance Issues:</strong> compliance@scientifics.io</li>
+        </ul>
+        <p>
+            Or use our <a href="/contact">contact page</a>.
+        </p>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Quick Summary:</strong> Use our service lawfully and respectfully. We provide data as-is from FBI sources. 
+        Always verify critical information. We protect your privacy. Play fair, and we'll provide great service. 
+        Have questions? Ask us — we're here to help.
+    </div>
+</div>
+{% endblock %}

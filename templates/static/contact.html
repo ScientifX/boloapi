@@ -1,0 +1,183 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Contact Us - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Contact Us</h1>
+    
+    <div class="section">
+        <p>
+            We're here to help! Whether you have questions about our API, need technical support, or want to discuss 
+            enterprise solutions, we'd love to hear from you.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Get In Touch</h2>
+        
+        <div class="card">
+            <h3>📧 General Support</h3>
+            <p><strong>Email:</strong> <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+            <p>
+                For technical questions, API issues, billing inquiries, and general support. 
+                We typically respond within 24 hours on business days.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>💼 Business Inquiries</h3>
+            <p><strong>Email:</strong> <a href="mailto:{{ business_email }}">{{ business_email }}</a></p>
+            <p>
+                For enterprise plans, custom integrations, partnerships, reseller inquiries, and business development.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>🔒 Security & Privacy</h3>
+            <p><strong>Email:</strong> <a href="mailto:security@scientifics.io">security@scientifics.io</a></p>
+            <p>
+                Report security vulnerabilities, privacy concerns, or data protection questions. 
+                We take security seriously and respond to reports promptly.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>⚖️ Legal & Compliance</h3>
+            <p><strong>Email:</strong> <a href="mailto:legal@scientifics.io">legal@scientifics.io</a></p>
+            <p>
+                For legal matters, compliance questions, DMCA notices, and law enforcement requests.
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Common Questions</h2>
+        
+        <div class="accordion">
+            <div class="card">
+                <h3>How do I get started with the API?</h3>
+                <p>
+                    <a href="/auth/register">Register for an account</a> to receive your API key, 
+                    then check out our <a href="/docs">API documentation</a> for integration guides. 
+                    Our BASIC tier is free and gets you started immediately.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>I lost my API key. How do I get a new one?</h3>
+                <p>
+                    Use the <a href="/auth/key/reset">API key reset endpoint</a> to generate a new key. 
+                    You'll receive it via email. Your old key will be immediately invalidated for security.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Can I upgrade or downgrade my plan?</h3>
+                <p>
+                    Yes! Contact us at <a href="mailto:{{ support_email }}">{{ support_email }}</a> and we'll help you 
+                    change your subscription tier. Upgrades take effect immediately; downgrades at the next billing cycle.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Do you offer enterprise or custom plans?</h3>
+                <p>
+                    Absolutely. We work with organizations that need higher rate limits, dedicated support, custom SLAs, 
+                    or specialized data processing. Email <a href="mailto:{{ business_email }}">{{ business_email }}</a> 
+                    to discuss your needs.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>How often is the FBI data updated?</h3>
+                <p>
+                    We refresh data daily from FBI sources. Updates typically occur overnight. Historical data and change 
+                    tracking are available in PREMIUM tier and above.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Can I use this data for background checks?</h3>
+                <p>
+                    Our API can be part of a background screening process, but should not be the only source. 
+                    Always verify information through official channels. We're not FCRA-compliant consumer reporting agency.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>I'm getting rate limit errors. What should I do?</h3>
+                <p>
+                    Rate limits are based on your subscription tier. Consider implementing caching in your application 
+                    to reduce API calls. Need higher limits? <a href="mailto:{{ support_email }}">Contact support</a> 
+                    to discuss upgrading or custom rate limits.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Can I resell your API or data?</h3>
+                <p>
+                    Reselling requires an authorized reseller agreement. Contact 
+                    <a href="mailto:{{ business_email }}">{{ business_email }}</a> to discuss partnership opportunities.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Report an Issue</h2>
+        <p>
+            Found a bug? Data accuracy concern? System outage? Let us know:
+        </p>
+        <ul>
+            <li><strong>Technical Issues:</strong> <a href="mailto:{{ support_email }}">{{ support_email }}</a></li>
+            <li><strong>Data Quality:</strong> <a href="mailto:{{ support_email }}">{{ support_email }}</a></li>
+            <li><strong>Security Vulnerabilities:</strong> <a href="mailto:security@scientifics.io">security@scientifics.io</a></li>
+        </ul>
+        <p>
+            Include as much detail as possible: API endpoint, timestamp, error messages, request/response examples (remove API keys!).
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Documentation & Resources</h2>
+        <p>
+            Before reaching out, check if your question is answered in our resources:
+        </p>
+        <ul>
+            <li><a href="/docs">API Documentation</a> - Complete reference with examples</li>
+            <li><a href="/about">About Us</a> - Learn about our service and approach</li>
+            <li><a href="/privacy">Privacy Policy</a> - How we handle your data</li>
+            <li><a href="/terms">Terms of Service</a> - Usage guidelines and policies</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Office Hours & Response Times</h2>
+        <ul>
+            <li><strong>Support Hours:</strong> Monday-Friday, 9 AM - 6 PM EST</li>
+            <li><strong>Response Time:</strong> Typically within 24 hours on business days</li>
+            <li><strong>Critical Issues:</strong> Security and system outages addressed immediately</li>
+            <li><strong>Enterprise Support:</strong> Premium/enterprise customers receive priority support</li>
+        </ul>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>💡 Pro Tip:</strong> When contacting support, include your user ID (if registered), 
+        a clear description of the issue, and any error messages you're seeing. This helps us resolve 
+        your issue faster!
+    </div>
+
+    <div class="section">
+        <h2>Stay Updated</h2>
+        <p>
+            Want to stay informed about new features, system updates, and improvements?
+        </p>
+        <ul>
+            <li>Follow our API changelog (coming soon)</li>
+            <li>Subscribe to service status updates (coming soon)</li>
+            <li>Important updates sent via email to all registered users</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

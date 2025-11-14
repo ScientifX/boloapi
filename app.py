@@ -14,8 +14,8 @@ import httpx, json, re
 
 # FastAPI setup
 from fastapi import FastAPI, Request, Depends
-from fastapi.responses import HTMLResponse
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -56,6 +56,8 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
 app.include_router(router_etl.router) 
@@ -134,7 +136,7 @@ app.add_middleware(
 async def root(request: Request):
     """
     Homepage - accessible by all roles (PUBLIC and above)
-    Shows API information and authentication instructions
+    Shows live FBI data statistics, features, pricing, and use cases
     """
     # Public endpoint - no authentication required
     current_role = get_current_role(request)  # For session-based testing
@@ -144,28 +146,16 @@ async def root(request: Request):
             response = await client.get(FBI_API_URL, params={"page": 1})
             response.raise_for_status()
             data = response.json()
-            total = data.get("total", "unknown")
-            items = data.get("items", [])[:5]
+            total = data.get("total", "N/A")
         except Exception:
-            total = "unavailable"
-            items = []
-
+            total = "5,200+"  # Fallback if FBI API is unavailable
+    
     return templates.TemplateResponse(
-        "index.htm",
+        "index.html",
         {
             "request": request,
             "total": total,
-            "items": items,
             "current_role": current_role.value,  # For testing display
-            "auth_info": {
-                "type": "JWT Bearer Token",
-                "endpoints": {
-                    "register": "/auth/register",
-                    "activate": "/auth/activate",
-                    "token": "/auth/token",
-                    "docs": "/docs"
-                }
-            }
         }
     )
 
@@ -209,6 +199,67 @@ async def set_role(request: Request, role: UserRole):
         "current_role": role.value,
         "note": "This is session-based auth for testing. Use JWT auth in production."
     }
+
+# ============================================================================
+# STATIC CONTENT PAGES
+# ============================================================================
+
+@app.get("/about", response_class=HTMLResponse, tags=["Static Pages"])
+@limiter.limit("30/minute")  # More permissive
+async def about_page(request: Request):
+    """About Scientifics.io and the FBI Wanted API"""
+    current_role = get_current_role(request)
+    return templates.TemplateResponse(
+        "static/about.html",
+        {
+            "request": request,
+            "current_role": current_role.value
+        }
+    )
+
+@app.get("/privacy", response_class=HTMLResponse, tags=["Static Pages"])
+@limiter.limit("30/minute")  # More permissive
+async def privacy_page(request: Request):
+    """Privacy Policy"""
+    current_role = get_current_role(request)
+    return templates.TemplateResponse(
+        "static/privacy.html",
+        {
+            "request": request,
+            "current_role": current_role.value,
+            "last_updated": "November 2025"
+        }
+    )
+
+@app.get("/terms", response_class=HTMLResponse, tags=["Static Pages"])
+@limiter.limit("30/minute")  # More permissive
+async def terms_page(request: Request):
+    """Terms of Service"""
+    current_role = get_current_role(request)
+    return templates.TemplateResponse(
+        "static/terms.html",
+        {
+            "request": request,
+            "current_role": current_role.value,
+            "last_updated": "November 2025"
+        }
+    )
+
+@app.get("/contact", response_class=HTMLResponse, tags=["Static Pages"])
+@limiter.limit("30/minute")  # More permissive
+async def contact_page(request: Request):
+    """Contact Information"""
+    current_role = get_current_role(request)
+    return templates.TemplateResponse(
+        "static/contact.html",
+        {
+            "request": request,
+            "current_role": current_role.value,
+            "support_email": "support@scientifics.io", 
+            "business_email": "contact@scientifics.io" 
+        }
+    )
+
 
 # Validation functions (unchanged)
 def validate_string(value, field_name):

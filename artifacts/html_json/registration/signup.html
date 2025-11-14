@@ -1,0 +1,515 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Sign Up - Scientifics.io{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #3d4461;
+    }
+    
+    .form-group input[type="email"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-group input[type="email"]:focus {
+        outline: none;
+        border-color: #3d4461;
+    }
+    
+    .form-group input.error {
+        border-color: #dc3545;
+    }
+    
+    .form-group input.valid {
+        border-color: #28a745;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        margin-right: 10px;
+        margin-top: 4px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    
+    .checkbox-group label {
+        font-size: 14px;
+        color: #212529;
+        line-height: 1.5;
+        cursor: pointer;
+    }
+    
+    .checkbox-group a {
+        color: #3d4461;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .checkbox-group a:hover {
+        text-decoration: underline;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background-color: #3d4461;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-submit:hover:not(:disabled) {
+        background-color: #2d3451;
+    }
+    
+    .btn-submit:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    .field-hint {
+        font-size: 13px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    .already-registered {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+        font-size: 14px;
+    }
+    
+    .already-registered a {
+        color: #3d4461;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .already-registered a:hover {
+        text-decoration: underline;
+    }
+    
+    /* jQuery UI Dialog customization */
+    .ui-dialog {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
+    }
+    
+    .ui-dialog-titlebar {
+        background-color: #3d4461 !important;
+        color: #ffffff !important;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 15px !important;
+    }
+    
+    .ui-dialog-title {
+        font-weight: 600 !important;
+    }
+    
+    .ui-dialog-titlebar-close {
+        background: none !important;
+        border: none !important;
+    }
+    
+    .ui-dialog-content {
+        padding: 20px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    .ui-button {
+        background-color: #3d4461 !important;
+        color: #ffffff !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+    }
+    
+    .ui-button:hover {
+        background-color: #2d3451 !important;
+    }
+    
+    /* Success message styling */
+    .success-message {
+        color: #28a745;
+        font-weight: 600;
+    }
+    
+    .error-message {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="form-container">
+        <div class="text-center">
+            <h1>Create Your Account</h1>
+            <p style="color: #6c757d; margin-top: 10px;">
+                Get started with FBI Wanted Persons API access
+            </p>
+        </div>
+        
+        <form id="signupForm" method="POST" action="/auth/register">
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    autocomplete="email"
+                    placeholder="your.email@example.com"
+                >
+                <div class="field-hint">We'll send your activation link to this email</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="emailConfirm">Confirm Email Address *</label>
+                <input 
+                    type="email" 
+                    id="emailConfirm" 
+                    name="emailConfirm" 
+                    required 
+                    autocomplete="email"
+                    placeholder="your.email@example.com"
+                >
+                <div class="field-hint">Please re-enter your email to confirm</div>
+            </div>
+            
+            <div class="checkbox-group">
+                <input 
+                    type="checkbox" 
+                    id="termsAccepted" 
+                    name="termsAccepted" 
+                    required
+                >
+                <label for="termsAccepted">
+                    I agree to the 
+                    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                    and 
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-submit" id="submitBtn">
+                Create Account
+            </button>
+        </form>
+        
+        <div class="already-registered">
+            Already have an account? 
+            <a href="/docs">Get Access Token</a> | 
+            <a href="/auth/key/reset">Reset API Key</a>
+        </div>
+    </div>
+    
+    <!-- Hidden dialog for messages -->
+    <div id="messageDialog" style="display:none;">
+        <p id="dialogMessage"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+$(document).ready(function() {
+    let formSubmitted = false;
+    
+    // Email validation pattern
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    // Real-time validation for email field
+    $('#email').on('blur', function() {
+        const email = $(this).val().trim();
+        if (email && emailPattern.test(email)) {
+            $(this).removeClass('error').addClass('valid');
+        } else if (email) {
+            $(this).removeClass('valid').addClass('error');
+        } else {
+            $(this).removeClass('error valid');
+        }
+    });
+    
+    // Real-time validation for email confirmation
+    $('#emailConfirm').on('blur keyup', function() {
+        const email = $('#email').val().trim();
+        const emailConfirm = $(this).val().trim();
+        
+        if (emailConfirm && email === emailConfirm) {
+            $(this).removeClass('error').addClass('valid');
+        } else if (emailConfirm) {
+            $(this).removeClass('valid').addClass('error');
+        } else {
+            $(this).removeClass('error valid');
+        }
+    });
+    
+    // Form validation function
+    function validateForm() {
+        const errors = [];
+        const email = $('#email').val().trim().toLowerCase();
+        const emailConfirm = $('#emailConfirm').val().trim().toLowerCase();
+        const termsAccepted = $('#termsAccepted').is(':checked');
+        
+        // Clear previous error states
+        $('input').removeClass('error');
+        
+        // Validate email format
+        if (!email) {
+            errors.push('Email address is required');
+            $('#email').addClass('error');
+        } else if (!emailPattern.test(email)) {
+            errors.push('Please enter a valid email address');
+            $('#email').addClass('error');
+        }
+        
+        // Validate email confirmation
+        if (!emailConfirm) {
+            errors.push('Please confirm your email address');
+            $('#emailConfirm').addClass('error');
+        } else if (email !== emailConfirm) {
+            errors.push('Email addresses do not match');
+            $('#emailConfirm').addClass('error');
+        }
+        
+        // Validate terms acceptance
+        if (!termsAccepted) {
+            errors.push('You must agree to the Terms of Service and Privacy Policy');
+        }
+        
+        return errors;
+    }
+    
+    // Show error dialog
+    function showErrorDialog(errors) {
+        let message = '<div class="error-message">Please correct the following errors:</div><ul style="margin: 10px 0; padding-left: 20px;">';
+        errors.forEach(function(error) {
+            message += '<li>' + error + '</li>';
+        });
+        message += '</ul>';
+        
+        $('#dialogMessage').html(message);
+        $('#messageDialog').dialog({
+            title: 'Validation Error',
+            modal: true,
+            width: 450,
+            buttons: {
+                "OK": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    
+    // Show success dialog with redirect option
+    function showSuccessDialog(html) {
+        // Extract key information from the response
+        const $response = $(html);
+        const email = $response.find('.form-group strong:contains("Email:")').parent().text().replace('Email:', '').trim() || 'your email';
+        const userId = $response.find('.form-group strong:contains("User ID:")').parent().text().replace('User ID:', '').trim();
+        
+        let message = '<div class="success-message">✅ Registration Successful!</div>';
+        message += '<p style="margin: 15px 0;">Your account has been created. Check <strong>' + email + '</strong> for your activation link.</p>';
+        message += '<p style="font-size: 13px; color: #6c757d;">You will receive two emails: an activation email (now) and a welcome email with your API key (after activation).</p>';
+        
+        $('#dialogMessage').html(message);
+        $('#messageDialog').dialog({
+            title: 'Success',
+            modal: true,
+            width: 500,
+            buttons: {
+                "View Details": function() {
+                    $(this).dialog("close");
+                    // Show the full response in the page
+                    $('.form-container').html($response.find('.content').html());
+                },
+                "Go to Documentation": function() {
+                    window.location.href = '/docs';
+                }
+            }
+        });
+    }
+    
+    // Show error from server
+    function showServerErrorDialog(html) {
+        const $response = $(html);
+        const errorMessage = $response.find('.alert-error strong').text() + ' ' + 
+                           $response.find('.alert-error').text().replace($response.find('.alert-error strong').text(), '').trim();
+        
+        let message = '<div class="error-message">' + errorMessage + '</div>';
+        
+        $('#dialogMessage').html(message);
+        $('#messageDialog').dialog({
+            title: 'Registration Error',
+            modal: true,
+            width: 500,
+            buttons: {
+                "View Details": function() {
+                    $(this).dialog("close");
+                    // Show the full error page
+                    $('.form-container').html($response.find('.content').html());
+                },
+                "Try Again": function() {
+                    $(this).dialog("close");
+                    formSubmitted = false;
+                    $('#submitBtn').prop('disabled', false).html('Create Account');
+                }
+            }
+        });
+    }
+    
+    // Handle form submission
+    $('#signupForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Prevent double submission
+        if (formSubmitted) {
+            return false;
+        }
+        
+        // Validate form
+        const errors = validateForm();
+        if (errors.length > 0) {
+            showErrorDialog(errors);
+            return false;
+        }
+        
+        // Mark as submitted and disable button
+        formSubmitted = true;
+        const $submitBtn = $('#submitBtn');
+        $submitBtn.prop('disabled', true).html('Creating Account<span class="spinner"></span>');
+        
+        // Prepare data
+        const email = $('#email').val().trim().toLowerCase();
+        
+        // Submit via AJAX
+        $.ajax({
+            url: '/auth/register',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: email }),
+            headers: {
+                'Accept': 'text/html'  // Request HTML response
+            },
+            success: function(response, textStatus, xhr) {
+                // Check if response is HTML
+                if (xhr.getResponseHeader('content-type').includes('text/html')) {
+                    // Check if it's a success or error page
+                    if (response.includes('Registration Successful') || response.includes('registration-success')) {
+                        showSuccessDialog(response);
+                        // Clear form
+                        $('#signupForm')[0].reset();
+                        $('input').removeClass('valid error');
+                    } else if (response.includes('Registration Error') || response.includes('register-error')) {
+                        showServerErrorDialog(response);
+                        formSubmitted = false;
+                        $submitBtn.prop('disabled', false).html('Create Account');
+                    } else {
+                        // Fallback: replace page content
+                        $('.form-container').html($(response).find('.content').html());
+                    }
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                formSubmitted = false;
+                $submitBtn.prop('disabled', false).html('Create Account');
+                
+                if (xhr.responseText && xhr.getResponseHeader('content-type').includes('text/html')) {
+                    showServerErrorDialog(xhr.responseText);
+                } else {
+                    // Fallback error message
+                    let errorMsg = 'Registration failed. ';
+                    if (xhr.responseJSON && xhr.responseJSON.detail) {
+                        errorMsg += xhr.responseJSON.detail;
+                    } else {
+                        errorMsg += 'Please try again or contact support.';
+                    }
+                    
+                    $('#dialogMessage').html('<div class="error-message">' + errorMsg + '</div>');
+                    $('#messageDialog').dialog({
+                        title: 'Error',
+                        modal: true,
+                        width: 450,
+                        buttons: {
+                            "OK": function() {
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        
+        return false;
+    });
+    
+    // Prevent form resubmission on browser back/forward
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+    
+    $(window).on('popstate', function() {
+        formSubmitted = false;
+        $('#submitBtn').prop('disabled', false).html('Create Account');
+    });
+});
+</script>
+{% endblock %}

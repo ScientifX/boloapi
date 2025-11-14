@@ -1,0 +1,179 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Privacy Policy - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Privacy Policy</h1>
+    <p class="text-muted">Last Updated: {{ last_updated }}</p>
+    
+    <div class="section">
+        <h2>Overview</h2>
+        <p>
+            At Scientifics.io, we take your privacy seriously. This Privacy Policy explains how we collect, use, protect, 
+            and share information when you use our FBI Wanted Persons API service. We believe in transparency, so we've 
+            written this in plain English — no legal jargon unless absolutely necessary.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>What Information We Collect</h2>
+        
+        <h3>Information You Provide Directly</h3>
+        <ul>
+            <li><strong>Email Address:</strong> Required for account registration and communication</li>
+            <li><strong>API Usage Data:</strong> The searches you run and data you access through our API</li>
+            <li><strong>Billing Information:</strong> Payment details when you upgrade to paid tiers (processed securely by our payment provider)</li>
+        </ul>
+
+        <h3>Information Collected Automatically</h3>
+        <ul>
+            <li><strong>API Requests:</strong> Endpoints accessed, request timestamps, response codes</li>
+            <li><strong>Technical Data:</strong> IP addresses, browser type, operating system (for security and troubleshooting)</li>
+            <li><strong>Authentication Logs:</strong> Login attempts, token generation, API key usage</li>
+            <li><strong>Performance Metrics:</strong> Response times, error rates, system health data</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>How We Use Your Information</h2>
+        <p>We use collected information to:</p>
+        <ul>
+            <li><strong>Provide the Service:</strong> Process your API requests and deliver FBI wanted persons data</li>
+            <li><strong>Account Management:</strong> Manage your account, authentication, and access controls</li>
+            <li><strong>Billing & Payments:</strong> Process subscription payments and generate invoices</li>
+            <li><strong>Service Improvement:</strong> Analyze usage patterns to improve API performance and features</li>
+            <li><strong>Security & Fraud Prevention:</strong> Detect suspicious activity, prevent abuse, and protect against threats</li>
+            <li><strong>Customer Support:</strong> Respond to your questions and troubleshoot technical issues</li>
+            <li><strong>Legal Compliance:</strong> Meet legal obligations and respond to lawful requests</li>
+            <li><strong>Communications:</strong> Send important service updates, security alerts, and optional newsletters (you can opt out)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Data About Wanted Persons</h2>
+        <p>
+            <strong>Important:</strong> The FBI wanted persons data we provide comes from public government sources. 
+            We do not collect or create this data — we only make it more accessible through our API. This data is 
+            already public information available on FBI websites.
+        </p>
+        <p>
+            When you search for or access wanted persons records through our API, we log that activity for security 
+            and service quality purposes, but we do not share information about your specific searches with third parties 
+            except as required by law.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>How We Protect Your Information</h2>
+        <ul>
+            <li><strong>Encryption:</strong> All data transmitted to/from our API uses TLS/SSL encryption</li>
+            <li><strong>Authentication:</strong> JWT token-based authentication with time-limited access</li>
+            <li><strong>Password Security:</strong> API keys are hashed using bcrypt (we never store plaintext keys)</li>
+            <li><strong>Access Controls:</strong> Role-based access limiting data exposure based on subscription tier</li>
+            <li><strong>Infrastructure Security:</strong> Hosted on secure cloud infrastructure with regular security updates</li>
+            <li><strong>Monitoring:</strong> Continuous monitoring for suspicious activity and unauthorized access attempts</li>
+            <li><strong>Data Minimization:</strong> We only collect information necessary for service operation</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Information Sharing & Disclosure</h2>
+        
+        <h3>We Do Not Sell Your Data</h3>
+        <p>
+            We do not sell, rent, or trade your personal information to third parties for marketing purposes. Period.
+        </p>
+
+        <h3>When We May Share Information</h3>
+        <ul>
+            <li><strong>Service Providers:</strong> We share data with trusted vendors who help us operate (hosting, payment processing, email delivery). They're contractually required to protect your data.</li>
+            <li><strong>Legal Requirements:</strong> We may disclose information when required by law, court order, or government request</li>
+            <li><strong>Law Enforcement:</strong> We cooperate with legitimate law enforcement investigations when legally required</li>
+            <li><strong>Security & Fraud:</strong> We may share information to investigate abuse, fraud, or security threats</li>
+            <li><strong>Business Transfers:</strong> If we're acquired or merge with another company, user data may transfer (you'll be notified)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Data Retention</h2>
+        <ul>
+            <li><strong>Active Accounts:</strong> We retain your data while your account is active</li>
+            <li><strong>API Logs:</strong> Request logs are retained for 90 days for security and troubleshooting</li>
+            <li><strong>Billing Records:</strong> Financial records retained for 7 years per legal requirements</li>
+            <li><strong>Deleted Accounts:</strong> Personal data deleted within 30 days of account closure (except records required for legal compliance)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Your Rights & Choices</h2>
+        <p>You have the right to:</p>
+        <ul>
+            <li><strong>Access Your Data:</strong> Request a copy of the personal information we have about you</li>
+            <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+            <li><strong>Deletion:</strong> Request deletion of your account and personal data</li>
+            <li><strong>Data Portability:</strong> Receive your data in a machine-readable format</li>
+            <li><strong>Opt-Out:</strong> Unsubscribe from marketing emails (service-related emails cannot be opted out)</li>
+            <li><strong>API Key Reset:</strong> Generate new API keys at any time to revoke old ones</li>
+        </ul>
+        <p>
+            To exercise these rights, email us at <strong>privacy@scientifics.io</strong>. 
+            We'll respond within 30 days.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Cookies & Tracking</h2>
+        <p>
+            Our API is primarily accessed programmatically and does not use tracking cookies. Our website uses minimal 
+            session cookies for authentication purposes only. We do not use third-party advertising or analytics cookies.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Children's Privacy</h2>
+        <p>
+            Our service is not intended for individuals under 18 years of age. We do not knowingly collect information 
+            from children. If you believe we've inadvertently collected data from a minor, contact us immediately and 
+            we'll delete it.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>International Users</h2>
+        <p>
+            Our services are hosted in the United States. If you access our API from outside the US, your data will be 
+            transferred to and processed in the United States. By using our service, you consent to this transfer.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Changes to This Policy</h2>
+        <p>
+            We may update this Privacy Policy to reflect changes in our practices or legal requirements. We'll notify 
+            you of significant changes via email or prominent notice on our website. Continued use of our service after 
+            changes constitutes acceptance of the updated policy.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Contact Us</h2>
+        <p>
+            Questions or concerns about your privacy? We're here to help:
+        </p>
+        <ul>
+            <li><strong>Privacy Issues:</strong> privacy@scientifics.io</li>
+            <li><strong>Data Requests:</strong> privacy@scientifics.io</li>
+            <li><strong>General Support:</strong> support@scientifics.io</li>
+        </ul>
+        <p>
+            You can also reach us through our <a href="/contact">contact page</a>.
+        </p>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Bottom Line:</strong> We collect only what we need to provide great service. We protect your data seriously. 
+        We don't sell your information. You have control over your data. We're transparent about our practices.
+    </div>
+</div>
+{% endblock %}

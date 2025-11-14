@@ -221,3 +221,110 @@ Transcript started, output file is artifacts\boloapi.log
 Windows PowerShell transcript end
 End time: 20251112154015
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251112154920
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe C:\Clients\SD\boloapi\artifacts\boloapi-db-backup.ps1
+Process ID: 20652
+PSVersion: 5.1.26100.6899
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.6899
+BuildVersion: 10.0.26100.6899
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+warning: in the working copy of '.claude/settings.local.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/mail/diagnose_python_env.py', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'artifacts/templates/COMPLETE_MANIFEST.md', LF will be replaced by CRLF the next time Gi
+t touches it
+warning: in the working copy of 'artifacts/templates/COMPONENTS_GUIDE.md', LF will be replaced by CRLF the next time Git
+ touches it
+warning: in the working copy of 'artifacts/templates/INSTALLATION_GUIDE.md', LF will be replaced by CRLF the next time G
+it touches it
+warning: in the working copy of 'artifacts/templates/email_footer.html', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'artifacts/templates/email_header.html', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'artifacts/templates/test_azure_config.py', LF will be replaced by CRLF the next time Gi
+t touches it
+warning: in the working copy of 'artifacts/templates/test_simple_email.py', LF will be replaced by CRLF the next time Gi
+t touches it
+warning: in the working copy of 'artifacts/templates/web_footer.html', LF will be replaced by CRLF the next time Git tou
+ches it
+warning: in the working copy of 'artifacts/templates/web_header.html', LF will be replaced by CRLF the next time Git tou
+ches it
+warning: in the working copy of 'response_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/css/main.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/auth/activate_error.html', LF will be replaced by CRLF the next time Git touc
+hes it
+warning: in the working copy of 'templates/auth/activate_success.html', LF will be replaced by CRLF the next time Git to
+uches it
+warning: in the working copy of 'templates/components/email_footer.html', LF will be replaced by CRLF the next time Git
+touches it
+warning: in the working copy of 'templates/components/email_header.html', LF will be replaced by CRLF the next time Git
+touches it
+warning: in the working copy of 'templates/components/web_footer.html', LF will be replaced by CRLF the next time Git to
+uches it
+warning: in the working copy of 'templates/components/web_header.html', LF will be replaced by CRLF the next time Git to
+uches it
+warning: in the working copy of 'templates/emails/activation.html', LF will be replaced by CRLF the next time Git touche
+s it
+warning: in the working copy of 'templates/emails/api_key_reset.html', LF will be replaced by CRLF the next time Git tou
+ches it
+warning: in the working copy of 'templates/emails/welcome.html', LF will be replaced by CRLF the next time Git touches i
+t
+warning: in the working copy of 'templates/layouts/base_email.html', LF will be replaced by CRLF the next time Git touch
+es it
+warning: in the working copy of 'templates/layouts/base_web.html', LF will be replaced by CRLF the next time Git touches
+ it
+[main ba48df0] Daily db backup plus collateral changes on 2025-11-12
+ 35 files changed, 2496 insertions(+)
+ create mode 100644 .claude/settings.local.json
+ create mode 100644 .gitignore
+ create mode 100644 artifacts/mail/diagnose_python_env.py
+ create mode 100644 artifacts/mail/test_email_config.py
+ create mode 100644 artifacts/templates/COMPLETE_MANIFEST.md
+ create mode 100644 artifacts/templates/COMPONENTS_GUIDE.md
+ create mode 100644 artifacts/templates/INSTALLATION_GUIDE.md
+ create mode 100644 artifacts/templates/email_footer.html
+ create mode 100644 artifacts/templates/email_header.html
+ create mode 100644 artifacts/templates/test_azure_config.py
+ create mode 100644 artifacts/templates/test_simple_email.py
+ create mode 100644 artifacts/templates/web_footer.html
+ create mode 100644 artifacts/templates/web_header.html
+ create mode 100644 response_utils.py
+ create mode 100644 static/css/main.css
+ create mode 100644 static/images/logo-scientifx.png
+ create mode 100644 templates/auth/activate_error.html
+ create mode 100644 templates/auth/activate_success.html
+ create mode 100644 templates/components/email_footer.html
+ create mode 100644 templates/components/email_header.html
+ create mode 100644 templates/components/web_footer.html
+ create mode 100644 templates/components/web_header.html
+ create mode 100644 templates/emails/activation.html
+ create mode 100644 templates/emails/api_key_reset.html
+ create mode 100644 templates/emails/welcome.html
+ create mode 100644 templates/layouts/base_email.html
+ create mode 100644 templates/layouts/base_web.html
+Enumerating objects: 48, done.
+Counting objects: 100% (48/48), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (36/36), done.
+Writing objects: 100% (39/39), 1016.85 KiB | 1.08 MiB/s, done.
+Total 39 (delta 7), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (7/7), completed with 7 local objects.
+To https://github.com/ScientifX/boloapi.git
+   1e91c8c..ba48df0  main -> main
+**********************
+Windows PowerShell transcript end
+End time: 20251112154923
+**********************

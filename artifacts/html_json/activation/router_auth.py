@@ -13,7 +13,6 @@ import logging
 
 from fastapi import APIRouter, HTTPException, Request, status, Query
 from fastapi.responses import Response
-from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -34,8 +33,6 @@ from email_utils import (
     EmailConfig
 )
 from response_utils import render_or_json, render_error
-
-templates = Jinja2Templates(directory="templates")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -152,6 +149,8 @@ def get_user_by_activation_token(token: str) -> Optional[dict]:
 
 @router.post(
     "/register",
+    response_model=RegisterResponse,
+    status_code=status.HTTP_201_CREATED,
     summary="Register New User",
     description="""
     Register a new user account with email.
@@ -167,18 +166,13 @@ def get_user_by_activation_token(token: str) -> Optional[dict]:
     
     **Email:** Activation email will be sent if email is configured. Otherwise, activation token 
     will be provided in response for testing purposes.
-    
-    **Content Negotiation:**
-    - Browser requests: Returns HTML page with success/error message
-    - API requests (Accept: application/json): Returns JSON response
     """
 )
 @limiter.limit(rate_max)
-async def register(request: Request, register_req: RegisterRequest) -> Response:
+async def register(request: Request, register_req: RegisterRequest):
     """
     Register a new user account.
     Sends activation email with secure token if email is configured.
-    Returns HTML for browsers, JSON for API clients (content negotiation).
     """
     try:
         email = register_req.email
@@ -188,13 +182,9 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
         
         if existing_user:
             if existing_user['is_active']:
-                return render_error(
-                    request=request,
-                    template_name="auth/register_error.html",
-                    error_message="Email already registered and active. Use /auth/token to get access token or /auth/key/reset to reset your API key.",
-                    error_type="already_registered",
-                    context={"email": email, "app_base_url": EmailConfig.APP_BASE_URL},
-                    status_code=status.HTTP_400_BAD_REQUEST
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email already registered and active. Use /auth/token to get access token or /auth/key/reset to reset your API key."
                 )
             else:
                 # User exists but not activated - resend activation
@@ -230,31 +220,18 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
                 else:
                     logger.warning("Email not configured - activation email not sent")
                 
-                # Prepare response with content negotiation
-                template_context = {
-                    "request": request,
-                    "user_id": str(user_id),
-                    "email": email,
-                    "email_sent": email_sent,
-                    "activation_token": activation_token if not email_sent else None,
-                    "app_base_url": EmailConfig.APP_BASE_URL,
-                    "is_resend": True
-                }
+                # Prepare response
+                if email_sent:
+                    note = "Check your email for the activation link."
+                else:
+                    note = f"Email not configured. For testing, activate at: /auth/activate?token={activation_token}"
                 
-                json_data = {
-                    "message": "Activation email resent" if email_sent else "Registration record updated (email disabled)",
-                    "user_id": str(user_id),
-                    "email": email,
-                    "note": "Check your email for the activation link." if email_sent else f"Email not configured. For testing, activate at: /auth/activate?token={activation_token}",
-                    "email_sent": email_sent
-                }
-                
-                return render_or_json(
-                    request=request,
-                    template_name="auth/register_success.html",
-                    context=template_context,
-                    json_data=json_data,
-                    status_code=status.HTTP_200_OK
+                return RegisterResponse(
+                    message="Activation email resent" if email_sent else "Registration record updated (email disabled)",
+                    user_id=str(user_id),
+                    email=email,
+                    note=note,
+                    email_sent=email_sent
                 )
         
         # Create new user
@@ -294,58 +271,35 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
         else:
             logger.warning("Email not configured - activation email not sent")
         
-        # Prepare response with content negotiation
-        template_context = {
-            "request": request,
-            "user_id": str(user_id),
-            "email": email,
-            "email_sent": email_sent,
-            "activation_token": activation_token if not email_sent else None,
-            "app_base_url": EmailConfig.APP_BASE_URL,
-            "is_resend": False
-        }
-        
-        json_data = {
-            "message": "Registration successful. Check your email for activation link." if email_sent else "Registration successful (email disabled)",
-            "user_id": str(user_id),
-            "email": email,
-            "note": (
+        # Prepare response
+        if email_sent:
+            message = "Registration successful. Check your email for activation link."
+            note = (
                 "📧 STEP 1: Check your email for the ACTIVATION link and click it. "
                 "📧 STEP 2: After clicking, you'll receive a WELCOME email with your API key. "
                 "Use the API key from the WELCOME email (not the activation email)."
-            ) if email_sent else f"For testing, activate at: /auth/activate?token={activation_token}",
-            "email_sent": email_sent
-        }
+            )
+        else:
+            message = "Registration successful (email disabled)"
+            note = f"For testing, activate at: /auth/activate?token={activation_token}"
         
-        return render_or_json(
-            request=request,
-            template_name="auth/register_success.html",
-            context=template_context,
-            json_data=json_data,
-            status_code=status.HTTP_201_CREATED
+        return RegisterResponse(
+            message=message,
+            user_id=str(user_id),
+            email=email,
+            note=note,
+            email_sent=email_sent
         )
         
-    except HTTPException as e:
-        # Convert HTTPException to rendered error
-        return render_error(
-            request=request,
-            template_name="auth/register_error.html",
-            error_message=e.detail,
-            error_type="Registration Error",
-            context={"app_base_url": EmailConfig.APP_BASE_URL},
-            status_code=e.status_code
-        )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Registration error: {str(e)}")
-        return render_error(
-            request=request,
-            template_name="auth/register_error.html",
-            error_message=f"Registration failed: {str(e)}",
-            error_type="Server Error",
-            context={"app_base_url": EmailConfig.APP_BASE_URL},
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Registration failed: {str(e)}"
         )
-        
+
 @router.get(
     "/activate",
     summary="Activate Account",
@@ -792,37 +746,3 @@ async def auth_health():
         health_status["missing_config"] = missing
     
     return health_status
-
-@router.get(
-    "/signup",
-    summary="Sign Up Page",
-    description="""
-    Display the registration form for new users.
-    
-    **For Human Users:**
-    - Visit this page in a browser to see the registration form
-    - Fill in your email address (twice for confirmation)
-    - Accept the terms of service
-    - Submit to create your account
-    
-    **Form Features:**
-    - Client-side validation
-    - Real-time feedback
-    - AJAX submission with jQuery modal dialogs
-    - Prevents double submission
-    
-    **API Clients:**
-    Use POST /auth/register directly with JSON
-    """
-    )
-@limiter.limit(rate_max)
-async def signup_page(request: Request):
-    """
-    Render the signup form page for browser users.
-    This is a GET endpoint that shows the HTML form.
-    The form submits to POST /auth/register.
-    """
-    return templates.TemplateResponse(
-        "auth/signup.html",
-        {"request": request}
-    )
