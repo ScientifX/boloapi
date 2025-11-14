@@ -328,3 +328,251 @@ To https://github.com/ScientifX/boloapi.git
 Windows PowerShell transcript end
 End time: 20251112154923
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251113213948
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe C:\Clients\SD\boloapi\artifacts\boloapi-db-backup.ps1
+Process ID: 23332
+PSVersion: 5.1.26100.7019
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7019
+BuildVersion: 10.0.26100.7019
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+warning: in the working copy of 'app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'email_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'router_auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/css/main.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/IMPLEMENTATION_CHECKLIST.md', LF will be replaced by CRL
+F the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/IMPLEMENTATION_SUMMARY.md', LF will be replaced by CRLF
+the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/TEMPLATE_VARIABLES_REFERENCE.md', LF will be replaced by
+ CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/email_utils.py', LF will be replaced by CRLF the next ti
+me Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/main.css', LF will be replaced by CRLF the next time Git
+ touches it
+warning: in the working copy of 'artifacts/html_json/activation/router_auth.py', LF will be replaced by CRLF the next ti
+me Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/DELIVERABLES_SUMMARY.md', LF will be replaced by CRLF
+the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/FILE_PLACEMENT.md', LF will be replaced by CRLF the ne
+xt time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/IMPLEMENTATION_GUIDE.md', LF will be replaced by CRLF
+the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/QUICK_REFERENCE.md', LF will be replaced by CRLF the n
+ext time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/SIGNUP_IMPLEMENTATION_GUIDE.md', LF will be replaced b
+y CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/legal_endpoints.py', LF will be replaced by CRLF the n
+ext time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/privacy.html', LF will be replaced by CRLF the next ti
+me Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_endpoint_updated.py', LF will be replaced by
+CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_error.html', LF will be replaced by CRLF the
+next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_success.html', LF will be replaced by CRLF th
+e next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/signup.html', LF will be replaced by CRLF the next tim
+e Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/signup_endpoint.py', LF will be replaced by CRLF the n
+ext time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/terms.html', LF will be replaced by CRLF the next time
+ Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/test_signup_system.py', LF will be replaced by CRLF th
+e next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/README.md', LF will be replaced by CRLF the next time Git to
+uches it
+warning: in the working copy of 'artifacts/html_json/static/app_routes_to_add.py', LF will be replaced by CRLF the next
+time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/static/css/static_pages.css', LF will be replaced by CRLF th
+e next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/about.html', LF will be replaced by CRLF th
+e next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/contact.html', LF will be replaced by CRLF
+the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/privacy.html', LF will be replaced by CRLF
+the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/terms.html', LF will be replaced by CRLF th
+e next time Git touches it
+warning: in the working copy of 'templates/auth/register_error.html', LF will be replaced by CRLF the next time Git touc
+hes it
+warning: in the working copy of 'templates/auth/register_success.html', LF will be replaced by CRLF the next time Git to
+uches it
+warning: in the working copy of 'templates/auth/signup.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/legal/privacy.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/legal/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/PAGE_STRUCTURE.md', LF will be replaced by CRLF the next time Git touc
+hes it
+warning: in the working copy of 'templates/static/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/about.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/contact.html', LF will be replaced by CRLF the next time Git touches i
+t
+warning: in the working copy of 'templates/static/privacy.html', LF will be replaced by CRLF the next time Git touches i
+t
+warning: in the working copy of 'templates/static/templates/index.html', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'templates/static/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/updated_route.py', LF will be replaced by CRLF the next time Git touch
+es it
+[main 948b84f] Daily db backup plus collateral changes on 2025-11-13
+ 52 files changed, 12339 insertions(+), 1090 deletions(-)
+ create mode 100644 artifacts/html_json/activation/IMPLEMENTATION_CHECKLIST.md
+ create mode 100644 artifacts/html_json/activation/IMPLEMENTATION_SUMMARY.md
+ create mode 100644 artifacts/html_json/activation/TEMPLATE_VARIABLES_REFERENCE.md
+ create mode 100644 artifacts/html_json/activation/email_utils.py
+ create mode 100644 artifacts/html_json/activation/main.css
+ create mode 100644 artifacts/html_json/activation/router_auth.py
+ create mode 100644 artifacts/html_json/registration/DELIVERABLES_SUMMARY.md
+ create mode 100644 artifacts/html_json/registration/FILE_PLACEMENT.md
+ create mode 100644 artifacts/html_json/registration/IMPLEMENTATION_GUIDE.md
+ create mode 100644 artifacts/html_json/registration/QUICK_REFERENCE.md
+ create mode 100644 artifacts/html_json/registration/SIGNUP_IMPLEMENTATION_GUIDE.md
+ create mode 100644 artifacts/html_json/registration/legal_endpoints.py
+ create mode 100644 artifacts/html_json/registration/privacy.html
+ create mode 100644 artifacts/html_json/registration/register_endpoint_updated.py
+ create mode 100644 artifacts/html_json/registration/register_error.html
+ create mode 100644 artifacts/html_json/registration/register_success.html
+ create mode 100644 artifacts/html_json/registration/router_auth_register.py
+ create mode 100644 artifacts/html_json/registration/signup.html
+ create mode 100644 artifacts/html_json/registration/signup_endpoint.py
+ create mode 100644 artifacts/html_json/registration/terms.html
+ create mode 100644 artifacts/html_json/registration/test_signup_system.py
+ create mode 100644 artifacts/html_json/static/README.md
+ create mode 100644 artifacts/html_json/static/app_routes_to_add.py
+ create mode 100644 artifacts/html_json/static/static/css/static_pages.css
+ create mode 100644 artifacts/html_json/static/templates/static/about.html
+ create mode 100644 artifacts/html_json/static/templates/static/contact.html
+ create mode 100644 artifacts/html_json/static/templates/static/privacy.html
+ create mode 100644 artifacts/html_json/static/templates/static/terms.html
+ delete mode 100644 email_utils.py.bak
+ create mode 100644 templates/auth/register_error.html
+ create mode 100644 templates/auth/register_success.html
+ create mode 100644 templates/auth/signup.html
+ create mode 100644 templates/index.html
+ create mode 100644 templates/legal/privacy.html
+ create mode 100644 templates/legal/terms.html
+ create mode 100644 templates/static/PAGE_STRUCTURE.md
+ create mode 100644 templates/static/README.md
+ create mode 100644 templates/static/about.html
+ create mode 100644 templates/static/contact.html
+ create mode 100644 templates/static/privacy.html
+ create mode 100644 templates/static/templates/index.html
+ create mode 100644 templates/static/terms.html
+ create mode 100644 templates/static/updated_route.py
+Transcript started, output file is artifacts\boloapi.log
+warning: in the working copy of 'app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'email_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'router_auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'static/css/main.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/IMPLEMENTATION_CHECKLIST.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/IMPLEMENTATION_SUMMARY.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/TEMPLATE_VARIABLES_REFERENCE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/email_utils.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/main.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/activation/router_auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/DELIVERABLES_SUMMARY.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/FILE_PLACEMENT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/IMPLEMENTATION_GUIDE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/QUICK_REFERENCE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/SIGNUP_IMPLEMENTATION_GUIDE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/legal_endpoints.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/privacy.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_endpoint_updated.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_error.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/register_success.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/signup.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/signup_endpoint.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/registration/test_signup_system.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/app_routes_to_add.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/static/css/static_pages.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/about.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/contact.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/privacy.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'artifacts/html_json/static/templates/static/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/auth/register_error.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/auth/register_success.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/auth/signup.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/legal/privacy.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/legal/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/PAGE_STRUCTURE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/about.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/contact.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/privacy.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/templates/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/terms.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'templates/static/updated_route.py', LF will be replaced by CRLF the next time Git touches it
+[main 948b84f] Daily db backup plus collateral changes on 2025-11-13
+ 52 files changed, 12339 insertions(+), 1090 deletions(-)
+ create mode 100644 artifacts/html_json/activation/IMPLEMENTATION_CHECKLIST.md
+ create mode 100644 artifacts/html_json/activation/IMPLEMENTATION_SUMMARY.md
+ create mode 100644 artifacts/html_json/activation/TEMPLATE_VARIABLES_REFERENCE.md
+ create mode 100644 artifacts/html_json/activation/email_utils.py
+ create mode 100644 artifacts/html_json/activation/main.css
+ create mode 100644 artifacts/html_json/activation/router_auth.py
+ create mode 100644 artifacts/html_json/registration/DELIVERABLES_SUMMARY.md
+ create mode 100644 artifacts/html_json/registration/FILE_PLACEMENT.md
+ create mode 100644 artifacts/html_json/registration/IMPLEMENTATION_GUIDE.md
+ create mode 100644 artifacts/html_json/registration/QUICK_REFERENCE.md
+ create mode 100644 artifacts/html_json/registration/SIGNUP_IMPLEMENTATION_GUIDE.md
+ create mode 100644 artifacts/html_json/registration/legal_endpoints.py
+ create mode 100644 artifacts/html_json/registration/privacy.html
+ create mode 100644 artifacts/html_json/registration/register_endpoint_updated.py
+ create mode 100644 artifacts/html_json/registration/register_error.html
+ create mode 100644 artifacts/html_json/registration/register_success.html
+ create mode 100644 artifacts/html_json/registration/router_auth_register.py
+ create mode 100644 artifacts/html_json/registration/signup.html
+ create mode 100644 artifacts/html_json/registration/signup_endpoint.py
+ create mode 100644 artifacts/html_json/registration/terms.html
+ create mode 100644 artifacts/html_json/registration/test_signup_system.py
+ create mode 100644 artifacts/html_json/static/README.md
+ create mode 100644 artifacts/html_json/static/app_routes_to_add.py
+ create mode 100644 artifacts/html_json/static/static/css/static_pages.css
+ create mode 100644 artifacts/html_json/static/templates/static/about.html
+ create mode 100644 artifacts/html_json/static/templates/static/contact.html
+ create mode 100644 artifacts/html_json/static/templates/static/privacy.html
+ create mode 100644 artifacts/html_json/static/templates/static/terms.html
+ delete mode 100644 email_utils.py.bak
+ create mode 100644 templates/auth/register_error.html
+ create mode 100644 templates/auth/register_success.html
+ create mode 100644 templates/auth/signup.html
+ create mode 100644 templates/index.html
+ create mode 100644 templates/legal/privacy.html
+ create mode 100644 templates/legal/terms.html
+ create mode 100644 templates/static/PAGE_STRUCTURE.md
+ create mode 100644 templates/static/README.md
+ create mode 100644 templates/static/about.html
+ create mode 100644 templates/static/contact.html
+ create mode 100644 templates/static/privacy.html
+ create mode 100644 templates/static/templates/index.html
+ create mode 100644 templates/static/terms.html
+ create mode 100644 templates/static/updated_route.py
+Enumerating objects: 72, done.
+Counting objects: 100% (72/72), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (54/54), done.
+Writing objects: 100% (59/59), 1021.86 KiB | 1.05 MiB/s, done.
+Total 59 (delta 13), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (13/13), completed with 6 local objects.
+To https://github.com/ScientifX/boloapi.git
+   ba48df0..948b84f  main -> main
+**********************
+Windows PowerShell transcript end
+End time: 20251113213952
+**********************
