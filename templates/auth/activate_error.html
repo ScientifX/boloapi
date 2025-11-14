@@ -31,7 +31,7 @@
     <p>This account is already activated! You can start using your API key immediately.</p>
     <ul>
         <li>If you've lost your API key, you can reset it</li>
-        <li>Use <code>/auth/token</code> to get an access token</li>
+        <li>Use <code>/v1/auth/token</code> to get an access token</li>
     </ul>
     {% else %}
     <p>An unexpected error occurred during activation. Please try again or contact support.</p>
@@ -44,7 +44,7 @@
         <h3>Register Again</h3>
         <p>You can register for a new account to receive a fresh activation link:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/register" \
+curl -X POST "{{ app_base_url }}/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>
@@ -54,7 +54,7 @@ curl -X POST "{{ app_base_url }}/auth/register" \
         <h3>Reset Your API Key</h3>
         <p>If you've lost your API key, you can request a reset:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/key/reset" \
+curl -X POST "{{ app_base_url }}/v1/auth/reset" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>
@@ -64,7 +64,7 @@ curl -X POST "{{ app_base_url }}/auth/key/reset" \
         <h3>Get an Access Token</h3>
         <p>If you have your API key, exchange it for an access token:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/token" \
+curl -X POST "{{ app_base_url }}/v1/auth/token" \
   -H "Content-Type: application/json" \
   -d '{"api_key": "YOUR_API_KEY"}'
         </div>

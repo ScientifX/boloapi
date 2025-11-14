@@ -21,7 +21,7 @@
     <p style="margin: 0 0 10px 0; color: #0c5460; font-weight: 600;">💡 Getting Started:</p>
     <ol style="margin: 0; padding-left: 20px; color: #0c5460; font-size: 14px; line-height: 1.6;">
         <li>Save your API key in a secure location</li>
-        <li>Exchange it for access tokens using <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px;">/auth/token</code></li>
+        <li>Exchange it for access tokens using <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px;">/v1/auth/token</code></li>
         <li>Use tokens to access FBI Wanted API data</li>
         <li>Your role: <strong>BASIC</strong> (25 records per request)</li>
     </ol>
@@ -32,7 +32,7 @@
 <p style="color: #212529; margin: 0 0 10px 0; font-weight: 600;">1. Get an access token:</p>
 <pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
            padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.4; margin: 0 0 20px 0;">
-curl -X POST "{{ app_base_url }}/auth/token" \
+curl -X POST "{{ app_base_url }}/v1/auth/token" \
   -H "Content-Type: application/json" \
   -d '{"api_key": "{{ api_key }}"}'
 </pre>
@@ -40,7 +40,7 @@ curl -X POST "{{ app_base_url }}/auth/token" \
 <p style="color: #212529; margin: 0 0 10px 0; font-weight: 600;">2. Make your first search:</p>
 <pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
            padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.4; margin: 0 0 20px 0;">
-curl "{{ app_base_url }}/api/search/simple?field=sex&value=Male" \
+curl "{{ app_base_url }}/v1/search/simple?field=sex&value=Male" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 </pre>
 

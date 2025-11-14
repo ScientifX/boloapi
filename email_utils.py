@@ -212,7 +212,7 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    activation_link = f"{EmailConfig.APP_BASE_URL}/auth/activate?token={activation_token}"
+    activation_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/activate?token={activation_token}"
     
     subject = f"Activate Your {EmailConfig.FROM_NAME} Account"
     

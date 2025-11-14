@@ -58,12 +58,12 @@
         <h3 style="margin-top: 0;">⚠️ Email Not Configured (Testing Mode)</h3>
         <p>Email functionality is disabled. Click the link below to activate your account:</p>
         <div style="margin: 15px 0;">
-            <a href="{{ app_base_url }}/auth/activate?token={{ activation_token }}" class="btn btn-primary">
+            <a href="{{ app_base_url }}/v1/auth/activate?token={{ activation_token }}" class="btn btn-primary">
                 Activate Account Now
             </a>
         </div>
         <p style="margin-top: 10px; font-size: 0.9em;">
-            Or copy this URL: <code style="word-break: break-all;">{{ app_base_url }}/auth/activate?token={{ activation_token }}</code>
+            Or copy this URL: <code style="word-break: break-all;">{{ app_base_url }}/v1/auth/activate?token={{ activation_token }}</code>
         </p>
     </div>
     {% endif %}
@@ -74,7 +74,7 @@
         <ol>
             <li><strong>Receive API Key:</strong> You'll get your unique API key (either on the activation page or via email)</li>
             <li><strong>Save It Securely:</strong> Store your API key safely - you won't be able to retrieve it again</li>
-            <li><strong>Get Access Tokens:</strong> Exchange your API key for JWT access tokens using <code>/auth/token</code></li>
+            <li><strong>Get Access Tokens:</strong> Exchange your API key for JWT access tokens using <code>/v1/auth/token</code></li>
             <li><strong>Start Searching:</strong> Use access tokens to query the FBI Wanted database</li>
         </ol>
     </div>

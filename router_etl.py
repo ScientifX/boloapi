@@ -988,7 +988,7 @@ async def fetch_all_pages(client: httpx.AsyncClient, url: str, params: dict) -> 
     }
 
 # FastAPI Router
-router = APIRouter(prefix="/api/etl", tags=["Data Import"], include_in_schema=True)
+router = APIRouter(prefix="/v1/etl", tags=["Data Import"], include_in_schema=True)
 
 @router.get(
     "/load", 

@@ -46,7 +46,7 @@ rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # Router
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix="/v1/auth", tags=["Authentication"])
 
 # ============================================================================
 # REQUEST/RESPONSE MODELS
@@ -191,7 +191,7 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
                 return render_error(
                     request=request,
                     template_name="auth/register_error.html",
-                    error_message="Email already registered and active. Use /auth/token to get access token or /auth/key/reset to reset your API key.",
+                    error_message="Email already registered and active. Use /v1/auth/token to get access token or /v1/auth/reset to reset your API key.",
                     error_type="already_registered",
                     context={"email": email, "app_base_url": EmailConfig.APP_BASE_URL},
                     status_code=status.HTTP_400_BAD_REQUEST
@@ -245,7 +245,7 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
                     "message": "Activation email resent" if email_sent else "Registration record updated (email disabled)",
                     "user_id": str(user_id),
                     "email": email,
-                    "note": "Check your email for the activation link." if email_sent else f"Email not configured. For testing, activate at: /auth/activate?token={activation_token}",
+                    "note": "Check your email for the activation link." if email_sent else f"Email not configured. For testing, activate at: /v1/auth/activate?token={activation_token}",
                     "email_sent": email_sent
                 }
                 
@@ -313,7 +313,7 @@ async def register(request: Request, register_req: RegisterRequest) -> Response:
                 "📧 STEP 1: Check your email for the ACTIVATION link and click it. "
                 "📧 STEP 2: After clicking, you'll receive a WELCOME email with your API key. "
                 "Use the API key from the WELCOME email (not the activation email)."
-            ) if email_sent else f"For testing, activate at: /auth/activate?token={activation_token}",
+            ) if email_sent else f"For testing, activate at: /v1/auth/activate?token={activation_token}",
             "email_sent": email_sent
         }
         
@@ -392,7 +392,7 @@ async def activate(request: Request, token: str = Query(..., description="Activa
             return render_error(
                 request=request,
                 template_name="auth/activate_error.html",
-                error_message="Account already activated. Use /auth/token to get access token.",
+                error_message="Account already activated. Use /v1/auth/token to get access token.",
                 error_type="already_active",
                 context={"app_base_url": EmailConfig.APP_BASE_URL},
                 status_code=status.HTTP_400_BAD_REQUEST
@@ -468,10 +468,10 @@ async def activate(request: Request, token: str = Query(..., description="Activa
                 "✅ Account activated! Your API key has been sent to your email. "
                 "IMPORTANT: Use the API key from the WELCOME email (not the activation email). "
                 "Save it securely - you won't be able to retrieve it again. "
-                "Use it with /auth/token to get access tokens."
+                "Use it with /v1/auth/token to get access tokens."
             ) if email_sent else (
                 "Save this API key securely - you won't be able to see it again. "
-                "Use it with /auth/token to get access tokens. "
+                "Use it with /v1/auth/token to get access tokens. "
                 "(Email disabled - no welcome email sent)"
             ),
             "email_sent": email_sent
@@ -577,7 +577,7 @@ async def get_token(request: Request, token_req: TokenRequest):
         )
 
 @router.post(
-    "/key/reset",
+    "/reset",
     response_model=ResetKeyResponse,
     summary="Reset API Key",
     description="""
@@ -699,7 +699,7 @@ async def reset_api_key(request: Request, register_req: RegisterRequest):
             message = "API key reset successful (email disabled)"
             instructions = (
                 "Your old API key and all tokens generated from it are now invalid. "
-                "Save this new key securely. Use it with /auth/token to get access tokens. "
+                "Save this new key securely. Use it with /v1/auth/token to get access tokens. "
                 "(Email disabled - no notification sent)"
             )
         
@@ -733,16 +733,16 @@ async def auth_info():
         "version": "2.0.0",
         "email_configured": email_status,
         "flow": {
-            "1_register": "POST /auth/register with email",
-            "2_activate": "GET /auth/activate?token={token} from email" if email_status else "GET /auth/activate?token={token} from registration response",
-            "3_get_token": "POST /auth/token with API key",
+            "1_register": "POST /v1/auth/register with email",
+            "2_activate": "GET /v1/auth/activate?token={token} from email" if email_status else "GET /v1/auth/activate?token={token} from registration response",
+            "3_get_token": "POST /v1/auth/token with API key",
             "4_use_token": "Include 'Authorization: Bearer {token}' header in requests"
         },
         "endpoints": {
             "/register": "Register new user account",
             "/activate": "Activate account with email token",
             "/token": "Get JWT access token from API key",
-            "/key/reset": "Reset API key for existing user"
+            "/reset": "Reset API key for existing user"
         },
         "token_info": {
             "type": "JWT Bearer",
@@ -812,7 +812,7 @@ async def auth_health():
     - Prevents double submission
     
     **API Clients:**
-    Use POST /auth/register directly with JSON
+    Use POST /v1/auth/register directly with JSON
     """
     )
 @limiter.limit(rate_max)
@@ -820,7 +820,7 @@ async def signup_page(request: Request):
     """
     Render the signup form page for browser users.
     This is a GET endpoint that shows the HTML form.
-    The form submits to POST /auth/register.
+    The form submits to POST /v1/auth/register.
     """
     return templates.TemplateResponse(
         "auth/signup.html",

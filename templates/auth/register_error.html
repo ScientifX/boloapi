@@ -23,7 +23,7 @@
         <h4>Option 1: Use Your Existing API Key</h4>
         <p>If you have your API key, get an access token:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/token" \
+curl -X POST "{{ app_base_url }}/v1/auth/token" \
   -H "Content-Type: application/json" \
   -d '{"api_key": "YOUR_API_KEY"}'
         </div>
@@ -33,11 +33,11 @@ curl -X POST "{{ app_base_url }}/auth/token" \
         <h4>Option 2: Reset Your API Key</h4>
         <p>If you've lost your API key, request a reset:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/key/reset" \
+curl -X POST "{{ app_base_url }}/v1/auth/reset" \
   -H "Content-Type: application/json" \
   -d '{"email": "{{ email if email else 'your.email@example.com' }}"}'
         </div>
-        <p style="margin-top: 10px;">Or visit: <a href="{{ app_base_url }}/auth/key/reset">{{ app_base_url }}/auth/key/reset</a></p>
+        <p style="margin-top: 10px;">Or visit: <a href="{{ app_base_url }}/v1/auth/reset">{{ app_base_url }}/v1/auth/reset</a></p>
     </div>
     
     {% elif "validation" in error_message.lower() or "invalid email" in error_message.lower() %}
@@ -54,7 +54,7 @@ curl -X POST "{{ app_base_url }}/auth/key/reset" \
         <h4>Try Again</h4>
         <p>Register with a valid email address:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/register" \
+curl -X POST "{{ app_base_url }}/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>
@@ -73,7 +73,7 @@ curl -X POST "{{ app_base_url }}/auth/register" \
     <div class="form-group">
         <h4>Retry Registration</h4>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/register" \
+curl -X POST "{{ app_base_url }}/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>
@@ -93,7 +93,7 @@ curl -X POST "{{ app_base_url }}/auth/register" \
     <div class="form-group">
         <h4>Try Registration Again</h4>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/auth/register" \
+curl -X POST "{{ app_base_url }}/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>

@@ -51,7 +51,8 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 app = FastAPI(
     title="Bolo API",
     description="Bolo API",
-    version="2.0.0"
+    version="1.0.0", 
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1} # Hides the schemas in /docs
     )
 
 app.state.limiter = limiter
@@ -182,7 +183,7 @@ async def get_role(request: Request):
         "current_role": current_role.value,
         "role_level": ROLE_HIERARCHY[current_role],
         "test_mode": True,
-        "note": "For JWT authentication, use /auth/token endpoint",
+        "note": "For JWT authentication, use /v1/auth/token endpoint",
         "migration_note": "This endpoint uses session-based auth and will be deprecated"
     }
 
@@ -191,7 +192,7 @@ async def get_role(request: Request):
 async def set_role(request: Request, role: UserRole):
     """
     Manually set user role - for testing purposes only (session-based)
-    In production, use JWT authentication via /auth/token
+    In production, use JWT authentication via /v1/auth/token
     """
     set_user_role(request, role)
     return {

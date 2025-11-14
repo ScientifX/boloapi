@@ -11,7 +11,7 @@ from jwt_utils import decode_access_token, JWTError
 # HTTP Bearer token scheme
 security = HTTPBearer(
     scheme_name="JWT Bearer Token",
-    description="Enter your JWT access token (get from /auth/token)",
+    description="Enter your JWT access token (get from /v1/auth/token)",
     auto_error=False  # Don't auto-error, we'll handle it ourselves
 )
 

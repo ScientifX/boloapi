@@ -30,7 +30,7 @@ rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # FastAPI Router
-router = APIRouter(prefix="/api/search", tags=["Search features"])
+router = APIRouter(prefix="/v1/search", tags=["Search features"])
 
 # ============================================================================
 # VALIDATION HELPER FUNCTIONS

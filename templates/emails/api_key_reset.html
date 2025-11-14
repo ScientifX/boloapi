@@ -30,7 +30,7 @@
 <h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">How to use your API key:</h3>
 
 <ol style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
-    <li>Exchange your API key for an access token: <code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px;">POST /auth/token</code></li>
+    <li>Exchange your API key for an access token: <code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px;">POST /v1/auth/token</code></li>
     <li>Use the access token in your requests: <code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px;">Authorization: Bearer {token}</code></li>
     <li>Tokens expire after 1 hour - request new ones as needed</li>
 </ol>
@@ -38,7 +38,7 @@
 <p style="color: #212529; margin: 20px 0 10px 0; font-weight: 600;">Example request:</p>
 <pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
            padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.4; margin: 0 0 20px 0;">
-curl -X POST "{{ app_base_url }}/auth/token" \
+curl -X POST "{{ app_base_url }}/v1/auth/token" \
   -H "Content-Type: application/json" \
   -d '{"api_key": "{{ api_key }}"}'
 </pre>

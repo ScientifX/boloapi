@@ -576,3 +576,39 @@ To https://github.com/ScientifX/boloapi.git
 Windows PowerShell transcript end
 End time: 20251113213952
 **********************
+**********************
+Windows PowerShell transcript start
+Start time: 20251114013638
+Username: DESKTOP-34TA07M\Owner
+RunAs User: DESKTOP-34TA07M\Owner
+Configuration Name: 
+Machine: DESKTOP-34TA07M (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe C:\Clients\SD\boloapi\artifacts\boloapi-db-backup.ps1
+Process ID: 9596
+PSVersion: 5.1.26100.7019
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7019
+BuildVersion: 10.0.26100.7019
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is artifacts\boloapi.log
+
+warning: in the working copy of 'templates/components/web_header.html', LF will be replaced by CRLF the next time Git to
+uches it
+[main 8182a0f] Daily db backup plus collateral changes on 2025-11-14
+ 5 files changed, 614 insertions(+), 6 deletions(-)
+Counting objects: 100% (21/21), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (11/11), 13.59 KiB | 1.04 MiB/s, done.
+Total 11 (delta 9), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (9/9), completed with 9 local objects.
+To https://github.com/ScientifX/boloapi.git
+   948b84f..8182a0f  main -> main
+**********************
+Windows PowerShell transcript end
+End time: 20251114013641
+**********************

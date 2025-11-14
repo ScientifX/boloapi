@@ -205,7 +205,7 @@
             </p>
         </div>
         
-        <form id="signupForm" method="POST" action="/auth/register">
+        <form id="signupForm" method="POST" action="/v1/auth/register">
             <div class="form-group">
                 <label for="email">Email Address *</label>
                 <input 
@@ -255,7 +255,7 @@
         <div class="already-registered">
             Already have an account? 
             <a href="/docs">Get Access Token</a> | 
-            <a href="/auth/key/reset">Reset API Key</a>
+            <a href="/v1/auth/reset">Reset API Key</a>
         </div>
     </div>
     
@@ -442,7 +442,7 @@ $(document).ready(function() {
         
         // Submit via AJAX
         $.ajax({
-            url: '/auth/register',
+            url: '/v1/auth/register',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ email: email }),
