@@ -1,7 +1,11 @@
 """
-Email Utility Module
+Email Utility Module - UPDATED with Password Management Emails
 Sends emails via Microsoft Graph API (Microsoft 365)
 Uses Jinja2 templates for email content
+
+NEW FUNCTIONS:
+- send_password_reset_email()
+- send_password_changed_email()
 """
 
 import os
@@ -299,4 +303,75 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
         
     except Exception as e:
         logger.error(f"Error rendering welcome email template: {str(e)}")
+        return False
+
+
+# ============================================================================
+# NEW: PASSWORD MANAGEMENT EMAIL FUNCTIONS
+# ============================================================================
+
+def send_password_reset_email(to_email: str, reset_token: str) -> bool:
+    """
+    Send password reset email with reset link using Jinja2 template
+    
+    Args:
+        to_email: Recipient email address
+        reset_token: Unique password reset token
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    reset_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/reset-password?token={reset_token}"
+    
+    subject = f"Reset Your {EmailConfig.FROM_NAME} Password"
+    
+    # Render template
+    try:
+        context = {
+            "reset_link": reset_link,
+            "header_title": "🔒 Password Reset Request",
+            "year": datetime.now().year,
+            "expires_in": "1 hour"
+        }
+        
+        # Render the template
+        html_body = templates.get_template("emails/password_reset.html").render(context)
+        
+        sender = get_email_sender()
+        return sender.send_email(to_email, subject, html_body)
+        
+    except Exception as e:
+        logger.error(f"Error rendering password reset email template: {str(e)}")
+        return False
+
+
+def send_password_changed_email(to_email: str) -> bool:
+    """
+    Send notification email when password has been changed
+    
+    Args:
+        to_email: Recipient email address
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Password Changed"
+    
+    # Render template
+    try:
+        context = {
+            "header_title": "🔐 Password Changed",
+            "year": datetime.now().year,
+            "changed_at": datetime.now().strftime("%B %d, %Y at %I:%M %p UTC"),
+            "support_email": "support@scientifics.io"
+        }
+        
+        # Render the template
+        html_body = templates.get_template("emails/password_changed.html").render(context)
+        
+        sender = get_email_sender()
+        return sender.send_email(to_email, subject, html_body)
+        
+    except Exception as e:
+        logger.error(f"Error rendering password changed email template: {str(e)}")
         return False

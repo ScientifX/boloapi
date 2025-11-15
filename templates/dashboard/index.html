@@ -1,0 +1,493 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Dashboard - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="dashboard-header">
+        <h2>Dashboard</h2>
+        <p class="text-muted">Welcome back, <span id="userEmail">loading...</span></p>
+    </div>
+    
+    <!-- Subscription Status Card -->
+    <div class="card">
+        <h2>Subscription Status</h2>
+        <div id="subscriptionInfo" style="display: none;">
+            <div class="status-badge" id="planBadge"></div>
+            <div class="subscription-details">
+                <p><strong>Plan:</strong> <span id="planName"></span></p>
+                <p><strong>Status:</strong> <span id="subscriptionStatus"></span></p>
+                <p id="renewalInfo" style="display: none;">
+                    <strong>Next Billing:</strong> <span id="renewsAt"></span>
+                </p>
+                <p id="expiryInfo" style="display: none;">
+                    <strong>Access Until:</strong> <span id="endsAt"></span>
+                </p>
+                <p id="billingCycleInfo" style="display: none;">
+                    <strong>Billing Cycle:</strong> <span id="billingCycle"></span>
+                </p>
+            </div>
+            
+            <div class="button-group mt-3">
+                <button id="upgradeBtn" class="btn btn-primary" style="display: none;">
+                    Upgrade to Premium
+                </button>
+                <a href="/billing" class="btn btn-secondary">View Billing Details</a>
+                <button id="portalBtn" class="btn btn-secondary" style="display: none;">
+                    Manage Subscription
+                </button>
+            </div>
+        </div>
+        
+        <div id="loadingSubscription">
+            <p class="text-muted">Loading subscription information...</p>
+        </div>
+    </div>
+    
+    <!-- API Access Card -->
+    <div class="card mt-4">
+        <h2>API Access</h2>
+        <div class="api-info">
+            <p><strong>Your Role:</strong> <span id="userRole" class="badge"></span></p>
+            
+            <div class="feature-list" id="featureList"></div>
+            
+            <div class="quick-links mt-3">
+                <a href="/docs" class="btn btn-secondary">API Documentation</a>
+                <a href="/profile" class="btn btn-secondary">View API Key</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats (if premium) -->
+    <div id="statsCard" class="card mt-4" style="display: none;">
+        <h2>Usage Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>API Calls</h3>
+                <p class="stat-value">Coming Soon</p>
+            </div>
+            <div class="stat-item">
+                <h3>Records Retrieved</h3>
+                <p class="stat-value">Coming Soon</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeCheckoutModal()">&times;</span>
+        <h2>Choose Your Plan</h2>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Monthly</h3>
+                <p class="price">$29<span>/month</span></p>
+                <button onclick="createCheckout('monthly')" class="btn btn-primary">
+                    Subscribe Monthly
+                </button>
+            </div>
+            
+            <div class="pricing-card popular">
+                <span class="badge-popular">Best Value</span>
+                <h3>Quarterly</h3>
+                <p class="price">$79<span>/quarter</span></p>
+                <p class="savings">Save $8</p>
+                <button onclick="createCheckout('quarterly')" class="btn btn-primary">
+                    Subscribe Quarterly
+                </button>
+            </div>
+            
+            <div class="pricing-card">
+                <h3>Annual</h3>
+                <p class="price">$290<span>/year</span></p>
+                <p class="savings">Save $58</p>
+                <button onclick="createCheckout('annual')" class="btn btn-primary">
+                    Subscribe Annually
+                </button>
+            </div>
+        </div>
+        
+        <div class="features-list mt-4">
+            <h3>Premium Features Include:</h3>
+            <ul>
+                <li>✅ 5,000 results per request (vs 25 for Basic)</li>
+                <li>✅ Cleaned & normalized data</li>
+                <li>✅ Advanced Boolean search</li>
+                <li>✅ 6 months historical data</li>
+                <li>✅ Priority support</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+<script>
+let userToken = localStorage.getItem('access_token');
+
+if (!userToken) {
+    window.location.href = '/login';
+}
+
+async function fetchWithAuth(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${userToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    if (response.status === 401) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        return null;
+    }
+    
+    return response;
+}
+
+async function loadDashboard() {
+    try {
+        // Load subscription info
+        const subResponse = await fetchWithAuth('/billing/subscription');
+        if (!subResponse) return;
+        
+        const subData = await subResponse.json();
+        
+        document.getElementById('loadingSubscription').style.display = 'none';
+        document.getElementById('subscriptionInfo').style.display = 'block';
+        
+        // Update plan info
+        const isPremium = subData.plan === 'premium';
+        document.getElementById('planName').textContent = isPremium ? 'Premium' : 'Basic';
+        document.getElementById('subscriptionStatus').textContent = subData.status || 'Active';
+        
+        const planBadge = document.getElementById('planBadge');
+        planBadge.textContent = isPremium ? 'PREMIUM' : 'BASIC';
+        planBadge.className = 'status-badge ' + (isPremium ? 'premium' : 'basic');
+        
+        // Show/hide upgrade button
+        if (!isPremium) {
+            document.getElementById('upgradeBtn').style.display = 'inline-block';
+        } else {
+            document.getElementById('portalBtn').style.display = 'inline-block';
+            
+            if (subData.renews_at) {
+                document.getElementById('renewalInfo').style.display = 'block';
+                document.getElementById('renewsAt').textContent = 
+                    new Date(subData.renews_at).toLocaleDateString();
+            }
+            
+            if (subData.ends_at) {
+                document.getElementById('expiryInfo').style.display = 'block';
+                document.getElementById('endsAt').textContent = 
+                    new Date(subData.ends_at).toLocaleDateString();
+            }
+            
+            if (subData.billing_cycle) {
+                document.getElementById('billingCycleInfo').style.display = 'block';
+                document.getElementById('billingCycle').textContent = 
+                    subData.billing_cycle.charAt(0).toUpperCase() + subData.billing_cycle.slice(1);
+            }
+        }
+        
+        // Update role badge
+        const roleBadge = document.getElementById('userRole');
+        roleBadge.textContent = isPremium ? 'PREMIUM' : 'BASIC';
+        roleBadge.className = 'badge ' + (isPremium ? 'badge-premium' : 'badge-basic');
+        
+        // Update features list
+        const features = isPremium ? [
+            '5,000 results per request',
+            'Cleaned & normalized data',
+            'Advanced Boolean search',
+            '6 months historical data',
+            'Priority support'
+        ] : [
+            '25 results per request',
+            'Raw data access',
+            'Simple search',
+            'Current month data'
+        ];
+        
+        document.getElementById('featureList').innerHTML = 
+            '<ul>' + features.map(f => `<li>${f}</li>`).join('') + '</ul>';
+        
+        // Show stats for premium users
+        if (isPremium) {
+            document.getElementById('statsCard').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+function openCheckoutModal() {
+    document.getElementById('checkoutModal').style.display = 'block';
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkoutModal').style.display = 'none';
+}
+
+async function createCheckout(billingCycle) {
+    try {
+        const response = await fetchWithAuth('/billing/create-checkout', {
+            method: 'POST',
+            body: JSON.stringify({ billing_cycle: billingCycle })
+        });
+        
+        if (!response) return;
+        const data = await response.json();
+        
+        // Open LemonSqueezy checkout in overlay
+        window.createLemonSqueezy();
+        window.LemonSqueezy.Url.Open(data.checkout_url);
+        
+        closeCheckoutModal();
+        
+    } catch (error) {
+        alert('Failed to create checkout. Please try again.');
+        console.error(error);
+    }
+}
+
+async function openCustomerPortal() {
+    try {
+        const response = await fetchWithAuth('/billing/portal');
+        if (!response) return;
+        
+        const data = await response.json();
+        window.open(data.portal_url, '_blank');
+        
+    } catch (error) {
+        alert('Failed to open customer portal.');
+        console.error(error);
+    }
+}
+
+// Event listeners
+document.getElementById('upgradeBtn')?.addEventListener('click', openCheckoutModal);
+document.getElementById('portalBtn')?.addEventListener('click', openCustomerPortal);
+
+// Close modal on outside click
+window.onclick = function(event) {
+    const modal = document.getElementById('checkoutModal');
+    if (event.target === modal) {
+        closeCheckoutModal();
+    }
+}
+
+// Load dashboard on page load
+loadDashboard();
+</script>
+
+<style>
+.dashboard-header {
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.status-badge.premium {
+    background: #28a745;
+    color: white;
+}
+
+.status-badge.basic {
+    background: #6c757d;
+    color: white;
+}
+
+.subscription-details p {
+    margin: 10px 0;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.badge-premium {
+    background: #28a745;
+    color: white;
+}
+
+.badge-basic {
+    background: #6c757d;
+    color: white;
+}
+
+.feature-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: 600;
+    color: #3d4461;
+    margin: 10px 0 0 0;
+}
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.pricing-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.pricing-card.popular {
+    border-color: #3d4461;
+    box-shadow: 0 4px 12px rgba(61, 68, 97, 0.15);
+}
+
+.badge-popular {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3d4461;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.pricing-card h3 {
+    margin: 0 0 15px 0;
+    color: #3d4461;
+}
+
+.price {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #3d4461;
+    margin: 15px 0;
+}
+
+.price span {
+    font-size: 0.4em;
+    color: #6c757d;
+}
+
+.savings {
+    color: #28a745;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+.features-list {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.features-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+}
+
+.features-list li {
+    padding: 8px 0;
+    text-align: left;
+}
+</style>
+{% endblock %}

@@ -5,6 +5,7 @@
 
 # Python
 __pycache__/
+artifacts/
 *.py[cod]
 *$py.class
 *.so

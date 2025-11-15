@@ -1,7 +1,8 @@
 """
-Authentication Router (Production Version with Content Negotiation)
-Handles user registration, activation, and JWT token generation
-Supports both JSON API responses and HTML web pages
+Authentication Router - COMPLETE LOGIN & PASSWORD MANAGEMENT SYSTEM
+Handles: registration, activation, login, password setting, forgot password, 
+password reset, password change
+Supports: Content negotiation (JSON + HTML), email notifications, JWT tokens
 """
 import os
 import psycopg2
@@ -11,8 +12,8 @@ from contextlib import contextmanager
 from typing import Optional
 import logging
 
-from fastapi import APIRouter, HTTPException, Request, status, Query
-from fastapi.responses import Response
+from fastapi import APIRouter, HTTPException, Request, status, Query, Depends
+from fastapi.responses import Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
@@ -20,19 +21,25 @@ from slowapi.util import get_remote_address
 
 from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 from auth import UserRole
+from jwt_auth import require_jwt_role
 from security_utils import (
     generate_api_key_and_hash,
     generate_activation_token,
     verify_api_key,
-    is_valid_email
-)
+    is_valid_email,
+    hash_password,
+    verify_password,
+    validate_password_strength
+    )
 from jwt_utils import create_access_token
 from email_utils import (
     send_activation_email,
     send_api_key_email,
     send_welcome_email,
+    send_password_reset_email,
+    send_password_changed_email,
     EmailConfig
-)
+    )
 from response_utils import render_or_json, render_error
 
 templates = Jinja2Templates(directory="templates")
@@ -48,62 +55,117 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 # Router
 router = APIRouter(prefix="/v1/auth", tags=["Authentication"])
 
-# ============================================================================
+# ====================================================================
 # REQUEST/RESPONSE MODELS
-# ============================================================================
+# ====================================================================
 
 class RegisterRequest(BaseModel):
-    """Request model for user registration"""
     email: str = Field(..., description="Valid email address", max_length=255)
     
     @field_validator('email')
     @classmethod
     def validate_email(cls, v):
-        """Validate email format"""
         if not is_valid_email(v):
             raise ValueError("Invalid email format")
         return v.lower().strip()
 
-class RegisterResponse(BaseModel):
-    """Response after successful registration"""
-    message: str
-    user_id: str
-    email: str
-    note: str
-    email_sent: bool
+class LoginRequest(BaseModel):
+    email: str = Field(..., description="Email address")
+    password: str = Field(..., description="Password")
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if not is_valid_email(v):
+            raise ValueError("Invalid email format")
+        return v.lower().strip()
 
-class ActivateResponse(BaseModel):
-    """Response after successful activation"""
-    message: str
-    api_key: str
-    instructions: str
-    email_sent: bool
+class SetPasswordRequest(BaseModel):
+    user_id: str
+    password: str = Field(..., min_length=8)
+    password_confirm: str = Field(..., min_length=8)
+    
+    @field_validator('password')
+    @classmethod
+    def validate_password_strength_field(cls, v):
+        is_valid, error = validate_password_strength(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
+    
+    @field_validator('password_confirm')
+    @classmethod
+    def passwords_match(cls, v, info):
+        if 'password' in info.data and v != info.data['password']:
+            raise ValueError("Passwords do not match")
+        return v
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
+    new_password_confirm: str = Field(..., min_length=8)
+    
+    @field_validator('new_password')
+    @classmethod
+    def validate_password_strength_field(cls, v):
+        is_valid, error = validate_password_strength(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
+    
+    @field_validator('new_password_confirm')
+    @classmethod
+    def passwords_match(cls, v, info):
+        if 'new_password' in info.data and v != info.data['new_password']:
+            raise ValueError("Passwords do not match")
+        return v
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if not is_valid_email(v):
+            raise ValueError("Invalid email format")
+        return v.lower().strip()
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str = Field(..., min_length=8)
+    password_confirm: str = Field(..., min_length=8)
+    
+    @field_validator('password')
+    @classmethod
+    def validate_password_strength_field(cls, v):
+        is_valid, error = validate_password_strength(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
+    
+    @field_validator('password_confirm')
+    @classmethod
+    def passwords_match(cls, v, info):
+        if 'password' in info.data and v != info.data['password']:
+            raise ValueError("Passwords do not match")
+        return v
 
 class TokenRequest(BaseModel):
     """Request model for token generation"""
     api_key: str = Field(..., description="Your API key", min_length=32, max_length=64)
-
+    
 class TokenResponse(BaseModel):
-    """Response containing JWT access token"""
     access_token: str
     token_type: str = "bearer"
-    expires_in: int  # seconds
+    expires_in: int
     role: str
 
-class ResetKeyResponse(BaseModel):
-    """Response after API key reset"""
-    message: str
-    api_key: str
-    instructions: str
-    email_sent: bool
-
-# ============================================================================
+# ====================================================================
 # DATABASE HELPERS
-# ============================================================================
+# ====================================================================
 
 @contextmanager
 def get_db_connection():
-    """Context manager for database connections"""
     conn = None
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -117,448 +179,442 @@ def get_db_connection():
             conn.close()
 
 def get_user_by_email(email: str) -> Optional[dict]:
-    """Get user by email address"""
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                "SELECT * FROM tbl_users WHERE email = %s",
-                (email,)
-            )
+            cur.execute("SELECT * FROM tbl_users WHERE email = %s", (email,))
             return cur.fetchone()
 
 def get_user_by_id(user_id: str) -> Optional[dict]:
-    """Get user by user_id"""
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                "SELECT * FROM tbl_users WHERE user_id = %s",
-                (user_id,)
-            )
+            cur.execute("SELECT * FROM tbl_users WHERE user_id = %s", (user_id,))
             return cur.fetchone()
 
 def get_user_by_activation_token(token: str) -> Optional[dict]:
-    """Get user by activation token"""
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT * FROM tbl_users WHERE activation_token = %s", (token,))
+            return cur.fetchone()
+
+def get_user_by_reset_token(token: str) -> Optional[dict]:
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
-                "SELECT * FROM tbl_users WHERE activation_token = %s",
+                """SELECT * FROM tbl_users 
+                   WHERE password_reset_token = %s 
+                   AND password_reset_expires_at > NOW()""",
                 (token,)
             )
             return cur.fetchone()
 
-# ============================================================================
-# ENDPOINTS
-# ============================================================================
+# ====================================================================
+# WEB PAGE ROUTES (Serve HTML)
+# ====================================================================
 
-@router.post(
-    "/register",
-    summary="Register New User",
-    description="""
-    Register a new user account with email.
-    
-    **Process:**
-    1. Submit a valid email address
-    2. Receive confirmation with user_id
-    3. Check your email for activation link
-    4. Click link to activate and receive API key
-    
-    **Note:** If email already exists and is inactive, a new activation email will be sent.
-    If already active, you'll be informed to use the existing account.
-    
-    **Email:** Activation email will be sent if email is configured. Otherwise, activation token 
-    will be provided in response for testing purposes.
-    
-    **Content Negotiation:**
-    - Browser requests: Returns HTML page with success/error message
-    - API requests (Accept: application/json): Returns JSON response
-    """
-)
+@router.get("/login")
 @limiter.limit(rate_max)
-async def register(request: Request, register_req: RegisterRequest) -> Response:
-    """
-    Register a new user account.
-    Sends activation email with secure token if email is configured.
-    Returns HTML for browsers, JSON for API clients (content negotiation).
-    """
+async def login_page(request: Request):
+    """Display login form"""
+    return templates.TemplateResponse("auth/login.html", {"request": request})
+
+@router.get("/signup")
+@limiter.limit(rate_max)
+async def signup_page(request: Request):
+    """Display signup form"""
+    return templates.TemplateResponse("auth/signup.html", {"request": request})
+
+@router.get("/set-password")
+@limiter.limit(rate_max)
+async def set_password_page(
+    request: Request,
+    user_id: str = Query(...),
+    token: str = Query(None)
+):
+    """Display set password form after activation"""
+    user = get_user_by_id(user_id)
+    
+    if not user or not user['is_active'] or user['password_hash']:
+        return templates.TemplateResponse(
+            "auth/set_password_error.html",
+            {"request": request, "error": "Invalid request"}
+        )
+    
+    return templates.TemplateResponse(
+        "auth/set_password.html",
+        {"request": request, "user_id": user_id, "email": user['email']}
+    )
+
+@router.get("/forgot-password")
+@limiter.limit(rate_max)
+async def forgot_password_page(request: Request):
+    """Display forgot password form"""
+    return templates.TemplateResponse("auth/forgot_password.html", {"request": request})
+
+@router.get("/reset-password")
+@limiter.limit(rate_max)
+async def reset_password_page(request: Request, token: str = Query(...)):
+    """Display reset password form with token"""
+    user = get_user_by_reset_token(token)
+    
+    if not user:
+        return templates.TemplateResponse(
+            "auth/reset_password_error.html",
+            {"request": request, "error": "Invalid or expired token"}
+        )
+    
+    return templates.TemplateResponse(
+        "auth/reset_password.html",
+        {"request": request, "token": token, "email": user['email']}
+    )
+
+@router.get("/change-password")
+@limiter.limit(rate_max)
+async def change_password_page(request: Request):
+    """Display change password form (dashboard)"""
+    return templates.TemplateResponse("auth/change_password.html", {"request": request})
+
+# ====================================================================
+# AUTHENTICATION ENDPOINTS
+# ====================================================================
+
+@router.post("/register")
+@limiter.limit(rate_max)
+async def register(request: Request, register_req: RegisterRequest):
+    """Register new user - sends activation email"""
     try:
         email = register_req.email
-        
-        # Check if user already exists
         existing_user = get_user_by_email(email)
         
+        if existing_user and existing_user['is_active']:
+            return await render_error(
+                request, "auth/register_error.html",
+                status.HTTP_400_BAD_REQUEST,
+                "Email already registered"
+            )
+        
         if existing_user:
-            if existing_user['is_active']:
-                return render_error(
-                    request=request,
-                    template_name="auth/register_error.html",
-                    error_message="Email already registered and active. Use /v1/auth/token to get access token or /v1/auth/reset to reset your API key.",
-                    error_type="already_registered",
-                    context={"email": email, "app_base_url": EmailConfig.APP_BASE_URL},
-                    status_code=status.HTTP_400_BAD_REQUEST
-                )
-            else:
-                # User exists but not activated - resend activation
-                user_id = existing_user['user_id']
-                activation_token = generate_activation_token()
-                activation_expires = datetime.now(timezone.utc) + timedelta(hours=1)
-                
-                with get_db_connection() as conn:
-                    with conn.cursor() as cur:
-                        cur.execute(
-                            """
-                            UPDATE tbl_users 
-                            SET activation_token = %s,
-                                activation_expires_at = %s,
-                                updated_at = NOW()
-                            WHERE user_id = %s
-                            """,
-                            (activation_token, activation_expires.replace(tzinfo=None), user_id)
-                        )
-                        conn.commit()
-                
-                # Send activation email if configured
-                email_sent = False
-                if EmailConfig.is_configured():
-                    try:
-                        email_sent = send_activation_email(email, activation_token)
-                        if email_sent:
-                            logger.info(f"Activation email resent to {email}")
-                        else:
-                            logger.warning(f"Failed to send activation email to {email}")
-                    except Exception as e:
-                        logger.error(f"Error sending activation email to {email}: {str(e)}")
-                else:
-                    logger.warning("Email not configured - activation email not sent")
-                
-                # Prepare response with content negotiation
-                template_context = {
-                    "request": request,
-                    "user_id": str(user_id),
-                    "email": email,
-                    "email_sent": email_sent,
-                    "activation_token": activation_token if not email_sent else None,
-                    "app_base_url": EmailConfig.APP_BASE_URL,
-                    "is_resend": True
-                }
-                
-                json_data = {
-                    "message": "Activation email resent" if email_sent else "Registration record updated (email disabled)",
-                    "user_id": str(user_id),
-                    "email": email,
-                    "note": "Check your email for the activation link." if email_sent else f"Email not configured. For testing, activate at: /v1/auth/activate?token={activation_token}",
-                    "email_sent": email_sent
-                }
-                
-                return render_or_json(
-                    request=request,
-                    template_name="auth/register_success.html",
-                    context=template_context,
-                    json_data=json_data,
-                    status_code=status.HTTP_200_OK
-                )
+            # Resend activation
+            send_activation_email(email, existing_user['activation_token'])
+            return await render_or_json(
+                request, "auth/register_success.html",
+                {"message": "Activation email resent", "email": email}
+            )
         
         # Create new user
-        api_key, api_key_hash = generate_api_key_and_hash()
         activation_token = generate_activation_token()
-        activation_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(
-                    """
-                    INSERT INTO tbl_users (
-                        email, role, api_key_hash, activation_token, activation_expires_at
-                    )
-                    VALUES (%s, %s, %s, %s, %s)
-                    RETURNING user_id
-                    """,
-                    (email, UserRole.BASIC.value, api_key_hash, activation_token, activation_expires.replace(tzinfo=None))
-                )
-                result = cur.fetchone()
-                user_id = result['user_id']
-                conn.commit()
-        
-        logger.info(f"New user registered: {email} (user_id: {user_id})")
-        
-        # Send activation email if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_activation_email(email, activation_token)
-                if email_sent:
-                    logger.info(f"Activation email sent to {email}")
-                else:
-                    logger.warning(f"Failed to send activation email to {email}")
-            except Exception as e:
-                logger.error(f"Error sending activation email to {email}: {str(e)}")
-        else:
-            logger.warning("Email not configured - activation email not sent")
-        
-        # Prepare response with content negotiation
-        template_context = {
-            "request": request,
-            "user_id": str(user_id),
-            "email": email,
-            "email_sent": email_sent,
-            "activation_token": activation_token if not email_sent else None,
-            "app_base_url": EmailConfig.APP_BASE_URL,
-            "is_resend": False
-        }
-        
-        json_data = {
-            "message": "Registration successful. Check your email for activation link." if email_sent else "Registration successful (email disabled)",
-            "user_id": str(user_id),
-            "email": email,
-            "note": (
-                "📧 STEP 1: Check your email for the ACTIVATION link and click it. "
-                "📧 STEP 2: After clicking, you'll receive a WELCOME email with your API key. "
-                "Use the API key from the WELCOME email (not the activation email)."
-            ) if email_sent else f"For testing, activate at: /v1/auth/activate?token={activation_token}",
-            "email_sent": email_sent
-        }
-        
-        return render_or_json(
-            request=request,
-            template_name="auth/register_success.html",
-            context=template_context,
-            json_data=json_data,
-            status_code=status.HTTP_201_CREATED
-        )
-        
-    except HTTPException as e:
-        # Convert HTTPException to rendered error
-        return render_error(
-            request=request,
-            template_name="auth/register_error.html",
-            error_message=e.detail,
-            error_type="Registration Error",
-            context={"app_base_url": EmailConfig.APP_BASE_URL},
-            status_code=e.status_code
-        )
-    except Exception as e:
-        logger.error(f"Registration error: {str(e)}")
-        return render_error(
-            request=request,
-            template_name="auth/register_error.html",
-            error_message=f"Registration failed: {str(e)}",
-            error_type="Server Error",
-            context={"app_base_url": EmailConfig.APP_BASE_URL},
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-        
-@router.get(
-    "/activate",
-    summary="Activate Account",
-    description="""
-    Activate your account using the token sent to your email.
-    
-    **Process:**
-    1. Click the activation link in your email (or use token from registration response if email disabled)
-    2. Account is activated
-    3. Receive your API key
-    4. Welcome email sent with API key copy (if email configured)
-    
-    **Content Negotiation:**
-    - Browser requests: Returns HTML page with success/error message
-    - API requests (Accept: application/json): Returns JSON response
-    
-    **Important:** Save your API key securely. You'll need it to get access tokens.
-    
-    **Note:** Activation tokens expire after 1 hour.
-    """
-)
-@limiter.limit(rate_max)
-async def activate(request: Request, token: str = Query(..., description="Activation token from email")) -> Response:
-    """
-    Activate user account with token from email.
-    Returns HTML for browsers, JSON for API clients (content negotiation).
-    """
-    try:
-        # Find user by activation token
-        user = get_user_by_activation_token(token)
-        
-        if not user:
-            return render_error(
-                request=request,
-                template_name="auth/activate_error.html",
-                error_message="Invalid or expired activation token",
-                error_type="not_found",
-                context={"app_base_url": EmailConfig.APP_BASE_URL},
-                status_code=status.HTTP_404_NOT_FOUND
-            )
-        
-        # Check if already activated
-        if user['is_active']:
-            return render_error(
-                request=request,
-                template_name="auth/activate_error.html",
-                error_message="Account already activated. Use /v1/auth/token to get access token.",
-                error_type="already_active",
-                context={"app_base_url": EmailConfig.APP_BASE_URL},
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-        
-        # Check if token expired
-        if user['activation_expires_at']:
-            expiry_time = user['activation_expires_at']
-            current_time = datetime.now(timezone.utc)
-            
-            # If expiry_time is naive (no timezone), make current_time naive too
-            if expiry_time.tzinfo is None:
-                current_time = datetime.now()
-            
-            if expiry_time < current_time:
-                return render_error(
-                    request=request,
-                    template_name="auth/activate_error.html",
-                    error_message="Activation token expired. Please register again.",
-                    error_type="expired",
-                    context={"app_base_url": EmailConfig.APP_BASE_URL},
-                    status_code=status.HTTP_400_BAD_REQUEST
-                )
-        
-        # Generate new API key for activation
-        api_key, api_key_hash = generate_api_key_and_hash()
-        
-        # Activate account
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    """
-                    UPDATE tbl_users
-                    SET is_active = TRUE,
-                        activation_token = NULL,
-                        activation_expires_at = NULL,
-                        api_key_hash = %s,
-                        updated_at = NOW()
-                    WHERE user_id = %s
-                    """,
+                    """INSERT INTO tbl_users (email, activation_token, role, is_active)
+                       VALUES (%s, %s, %s, %s) RETURNING user_id""",
+                    (email, activation_token, UserRole.BASIC.value, False)
+                )
+                user_id = cur.fetchone()[0]
+                conn.commit()
+        
+        logger.info(f"New user registered: {email}")
+        send_activation_email(email, activation_token)
+        
+        return await render_or_json(
+            request, "auth/register_success.html",
+            {"message": "Registration successful", "email": email, "user_id": str(user_id)}
+        )
+        
+    except Exception as e:
+        logger.error(f"Registration error: {str(e)}")
+        return await render_error(
+            request, "auth/register_error.html",
+            status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        )
+
+@router.get("/activate")
+@limiter.limit(rate_max)
+async def activate(request: Request, token: str = Query(...)):
+    """Activate account and redirect to set password"""
+    try:
+        user = get_user_by_activation_token(token)
+        
+        if not user:
+            return await render_error(
+                request, "auth/activate_error.html",
+                status.HTTP_404_NOT_FOUND, "Invalid token"
+            )
+        
+        if user['is_active']:
+            return RedirectResponse("/v1/auth/login", status_code=status.HTTP_303_SEE_OTHER)
+        
+        # Generate API key and activate
+        api_key, api_key_hash = generate_api_key_and_hash()
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE tbl_users
+                       SET is_active = TRUE, api_key_hash = %s, 
+                           activated_at = NOW(), updated_at = NOW()
+                       WHERE user_id = %s""",
                     (api_key_hash, user['user_id'])
                 )
                 conn.commit()
         
-        logger.info(f"Account activated: {user['email']} (user_id: {user['user_id']})")
+        logger.info(f"User activated: {user['email']}")
+        send_welcome_email(user['email'], api_key)
         
-        # Send welcome email with API key if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_welcome_email(user['email'], api_key)
-                if email_sent:
-                    logger.info(f"Welcome email sent to {user['email']}")
-                else:
-                    logger.warning(f"Failed to send welcome email to {user['email']}")
-            except Exception as e:
-                logger.error(f"Error sending welcome email to {user['email']}: {str(e)}")
-        else:
-            logger.warning("Email not configured - welcome email not sent")
+        # Redirect to set password
+        return RedirectResponse(
+            f"/v1/auth/set-password?user_id={user['user_id']}",
+            status_code=status.HTTP_303_SEE_OTHER
+        )
         
-        # Prepare response with content negotiation
-        template_context = {
-            "request": request,
-            "api_key": api_key,
-            "email_sent": email_sent,
-            "app_base_url": EmailConfig.APP_BASE_URL
-        }
+    except Exception as e:
+        logger.error(f"Activation error: {str(e)}")
+        return await render_error(
+            request, "auth/activate_error.html",
+            status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        )
+
+# ====================================================================
+# PASSWORD MANAGEMENT ENDPOINTS
+# ====================================================================
+
+@router.post("/set-password")
+@limiter.limit(rate_max)
+async def set_password(request: Request, password_req: SetPasswordRequest):
+    """Set password after activation"""
+    try:
+        user = get_user_by_id(password_req.user_id)
         
-        json_data = {
-            "message": "Account activated successfully!",
-            "api_key": api_key,
-            "instructions": (
-                "✅ Account activated! Your API key has been sent to your email. "
-                "IMPORTANT: Use the API key from the WELCOME email (not the activation email). "
-                "Save it securely - you won't be able to retrieve it again. "
-                "Use it with /v1/auth/token to get access tokens."
-            ) if email_sent else (
-                "Save this API key securely - you won't be able to see it again. "
-                "Use it with /v1/auth/token to get access tokens. "
-                "(Email disabled - no welcome email sent)"
-            ),
-            "email_sent": email_sent
-        }
+        if not user or not user['is_active'] or user['password_hash']:
+            return await render_error(
+                request, "auth/set_password_error.html",
+                status.HTTP_400_BAD_REQUEST, "Invalid request"
+            )
         
-        return render_or_json(
-            request=request,
-            template_name="auth/activate_success.html",
-            context=template_context,
-            json_data=json_data,
-            status_code=status.HTTP_200_OK
+        password_hash = hash_password(password_req.password)
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE tbl_users
+                       SET password_hash = %s, password_set_at = NOW(), updated_at = NOW()
+                       WHERE user_id = %s""",
+                    (password_hash, password_req.user_id)
+                )
+                conn.commit()
+        
+        logger.info(f"Password set for: {user['email']}")
+        
+        return await render_or_json(
+            request, "auth/set_password_success.html",
+            {"message": "Password set successfully", "login_link": "/v1/auth/login"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Set password error: {str(e)}")
+        return await render_error(
+            request, "auth/set_password_error.html",
+            status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        )
+
+@router.post("/login", response_model=TokenResponse)
+@limiter.limit(rate_max)
+async def login(request: Request, login_req: LoginRequest):
+    """Login with email/password"""
+    try:
+        user = get_user_by_email(login_req.email)
+        
+        if not user or not user['is_active'] or not user['password_hash']:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+        
+        if not verify_password(login_req.password, user['password_hash']):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+        
+        # Update last login
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE tbl_users SET last_login_at = NOW() WHERE user_id = %s",
+                    (user['user_id'],)
+                )
+                conn.commit()
+        
+        logger.info(f"User logged in: {user['email']}")
+        
+        # Create JWT
+        user_role = UserRole(user['role'])
+        access_token = create_access_token(user_id=str(user['user_id']), role=user_role)
+        
+        return TokenResponse(
+            access_token=access_token,
+            token_type="bearer",
+            expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
+            role=user_role.value
         )
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Activation error: {str(e)}")
-        return render_error(
-            request=request,
-            template_name="auth/activate_error.html",
-            error_message=f"Activation failed: {str(e)}",
-            error_type="error",
-            context={"app_base_url": EmailConfig.APP_BASE_URL},
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        logger.error(f"Login error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Login failed")
 
-@router.post(
-    "/token",
-    response_model=TokenResponse,
-    summary="Get Access Token",
-    description="""
-    Exchange your API key for a JWT access token.
-    
-    **Process:**
-    1. Submit your API key
-    2. Receive a JWT access token (valid for 1 hour)
-    3. Include token in Authorization header for API requests: `Authorization: Bearer {token}`
-    
-    **Note:** Tokens expire after 1 hour. Request a new token when needed.
-    """
-)
-@limiter.limit(rate_max)
-async def get_token(request: Request, token_req: TokenRequest):
-    """
-    Generate JWT access token from API key.
-    """
+@router.post("/forgot-password")
+@limiter.limit("3/hour")
+async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
+    """Request password reset"""
     try:
-        api_key = token_req.api_key
+        user = get_user_by_email(forgot_req.email)
         
-        # Find user by verifying API key against all active users
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(
-                    "SELECT user_id, api_key_hash, role, is_active, email FROM tbl_users WHERE is_active = TRUE"
-                )
-                users = cur.fetchall()
-        
-        # Verify API key against each user's hash
-        authenticated_user = None
-        for user in users:
-            if verify_api_key(api_key, user['api_key_hash']):
-                authenticated_user = user
-                break
-        
-        if not authenticated_user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API key or account not activated"
+        # Always return success (prevent enumeration)
+        if not user or not user['is_active']:
+            return await render_or_json(
+                request, "auth/forgot_password_success.html",
+                {"message": "If account exists, reset email sent"}
             )
         
-        # Update last login timestamp
+        # Generate reset token (valid 1 hour)
+        reset_token = generate_activation_token()
+        reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "UPDATE tbl_users SET last_login_at = NOW() WHERE user_id = %s",
-                    (authenticated_user['user_id'],)
+                    """UPDATE tbl_users
+                       SET password_reset_token = %s, password_reset_expires_at = %s,
+                           updated_at = NOW()
+                       WHERE user_id = %s""",
+                    (reset_token, reset_expires, user['user_id'])
                 )
                 conn.commit()
         
-        logger.info(f"Token generated for user: {authenticated_user['email']} (user_id: {authenticated_user['user_id']})")
+        logger.info(f"Password reset requested: {user['email']}")
+        send_password_reset_email(user['email'], reset_token)
         
-        # Create JWT token
-        user_role = UserRole(authenticated_user['role'])
-        access_token = create_access_token(
-            user_id=str(authenticated_user['user_id']),
-            role=user_role
+        return await render_or_json(
+            request, "auth/forgot_password_success.html",
+            {"message": "Reset email sent", "email": forgot_req.email}
         )
+        
+    except Exception as e:
+        logger.error(f"Forgot password error: {str(e)}")
+        return await render_error(
+            request, "auth/forgot_password_error.html",
+            status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        )
+
+@router.post("/reset-password")
+@limiter.limit(rate_max)
+async def reset_password(request: Request, reset_req: ResetPasswordRequest):
+    """Reset password with token"""
+    try:
+        user = get_user_by_reset_token(reset_req.token)
+        
+        if not user:
+            return await render_error(
+                request, "auth/reset_password_error.html",
+                status.HTTP_400_BAD_REQUEST, "Invalid or expired token"
+            )
+        
+        password_hash = hash_password(reset_req.password)
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE tbl_users
+                       SET password_hash = %s, password_reset_token = NULL,
+                           password_reset_expires_at = NULL,
+                           last_password_change_at = NOW(), updated_at = NOW()
+                       WHERE user_id = %s""",
+                    (password_hash, user['user_id'])
+                )
+                conn.commit()
+        
+        logger.info(f"Password reset: {user['email']}")
+        send_password_changed_email(user['email'])
+        
+        return await render_or_json(
+            request, "auth/reset_password_success.html",
+            {"message": "Password reset successful", "login_link": "/v1/auth/login"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Reset password error: {str(e)}")
+        return await render_error(
+            request, "auth/reset_password_error.html",
+            status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        )
+
+@router.post("/change-password")
+@limiter.limit(rate_max)
+async def change_password(
+    request: Request,
+    password_req: ChangePasswordRequest,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Change password (authenticated)"""
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user['password_hash']:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "No password set")
+        
+        if not verify_password(password_req.current_password, user['password_hash']):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Current password incorrect")
+        
+        new_password_hash = hash_password(password_req.new_password)
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE tbl_users
+                       SET password_hash = %s, last_password_change_at = NOW(),
+                           updated_at = NOW()
+                       WHERE user_id = %s""",
+                    (new_password_hash, user['user_id'])
+                )
+                conn.commit()
+        
+        logger.info(f"Password changed: {user['email']}")
+        send_password_changed_email(user['email'])
+        
+        return await render_or_json(
+            request, "auth/change_password_success.html",
+            {"message": "Password changed successfully"}
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Change password error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to change password")
+
+# ====================================================================
+# API KEY ENDPOINTS
+# ====================================================================
+
+@router.post("/token", response_model=TokenResponse)
+@limiter.limit(rate_max)
+async def get_token(request: Request, token_req: TokenRequest):
+    """Generate JWT from API key"""
+    try:
+        api_key = token_req.get('api_key')
+        
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("SELECT * FROM tbl_users WHERE is_active = TRUE")
+                users = cur.fetchall()
+        
+        user = None
+        for u in users:
+            if verify_api_key(api_key, u['api_key_hash']):
+                user = u
+                break
+        
+        if not user:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid API key")
+        
+        user_role = UserRole(user['role'])
+        access_token = create_access_token(user_id=str(user['user_id']), role=user_role)
         
         return TokenResponse(
             access_token=access_token,
@@ -571,258 +627,5 @@ async def get_token(request: Request, token_req: TokenRequest):
         raise
     except Exception as e:
         logger.error(f"Token generation error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Token generation failed: {str(e)}"
-        )
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate token")
 
-@router.post(
-    "/reset",
-    response_model=ResetKeyResponse,
-    summary="Reset API Key",
-    description="""
-    Reset your API key (for lost keys or security reasons).
-    
-    **Process:**
-    1. Submit your email address
-    2. A new API key will be generated
-    3. Check your email for the new key (or see response if email disabled)
-    
-    **Security Note:** This will invalidate your old API key and all tokens generated from it.
-    """
-)
-@limiter.limit("3/hour")  # Stricter rate limit for security
-async def reset_api_key(request: Request, register_req: RegisterRequest):
-    """
-    Reset API key for an existing active user.
-    Sends new API key via email if email is configured.
-    """
-    try:
-        email = register_req.email
-        
-        # Get user
-        user = get_user_by_email(email)
-        
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Email not found. Please register first."
-            )
-        
-        if not user['is_active']:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Account not activated. Please activate your account first."
-            )
-        
-        # Check daily reset limit
-        MAX_DAILY_RESETS = int(os.getenv('API_MAX_DAILY_KEY_RESETS', '3'))
-        
-        # Check if user has exceeded daily reset limit
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(
-                    """
-                    SELECT key_reset_count, key_reset_date
-                    FROM tbl_users
-                    WHERE user_id = %s
-                    """,
-                    (user['user_id'],)
-                )
-                reset_data = cur.fetchone()
-                
-                today = datetime.now().date()
-                reset_count = reset_data.get('key_reset_count', 0) if reset_data else 0
-                reset_date = reset_data.get('key_reset_date') if reset_data else None
-                
-                # Convert reset_date to date if it's a datetime
-                if reset_date and hasattr(reset_date, 'date'):
-                    reset_date = reset_date.date()
-                
-                # Reset counter if it's a new day
-                if reset_date != today:
-                    reset_count = 0
-                
-                # Check if limit exceeded
-                if reset_count >= MAX_DAILY_RESETS:
-                    raise HTTPException(
-                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                        detail=f"Daily key reset limit ({MAX_DAILY_RESETS}) reached. Try again tomorrow."
-                    )
-        
-        # Generate new API key
-        api_key, api_key_hash = generate_api_key_and_hash()
-        
-        # Update in database with reset counter
-        with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE tbl_users
-                    SET api_key_hash = %s,
-                        key_reset_count = CASE 
-                            WHEN key_reset_date = CURRENT_DATE THEN key_reset_count + 1
-                            ELSE 1
-                        END,
-                        key_reset_date = CURRENT_DATE,
-                        updated_at = NOW()
-                    WHERE user_id = %s
-                    """,
-                    (api_key_hash, user['user_id'])
-                )
-                conn.commit()
-        
-        logger.info(f"API key reset for user: {email} (user_id: {user['user_id']})")
-        
-        # Send new API key via email if configured
-        email_sent = False
-        if EmailConfig.is_configured():
-            try:
-                email_sent = send_api_key_email(email, api_key)
-                if email_sent:
-                    logger.info(f"API key reset email sent to {email}")
-                else:
-                    logger.warning(f"Failed to send API key reset email to {email}")
-            except Exception as e:
-                logger.error(f"Error sending API key reset email to {email}: {str(e)}")
-        else:
-            logger.warning("Email not configured - API key not sent via email")
-        
-        # Prepare response
-        if email_sent:
-            message = "API key reset successful - check your email"
-            instructions = (
-                "Your old API key and all tokens generated from it are now invalid. "
-                "The new key has been sent to your email. Save it securely."
-            )
-        else:
-            message = "API key reset successful (email disabled)"
-            instructions = (
-                "Your old API key and all tokens generated from it are now invalid. "
-                "Save this new key securely. Use it with /v1/auth/token to get access tokens. "
-                "(Email disabled - no notification sent)"
-            )
-        
-        return ResetKeyResponse(
-            message=message,
-            api_key=api_key,
-            instructions=instructions,
-            email_sent=email_sent
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Key reset error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Key reset failed: {str(e)}"
-        )
-
-@router.get(
-    "/",
-    summary="Authentication Information",
-    description="Get information about authentication endpoints and flow"
-)
-async def auth_info():
-    """Return authentication information"""
-    email_status = EmailConfig.is_configured()
-    
-    base_info = {
-        "name": "Authentication API",
-        "version": "2.0.0",
-        "email_configured": email_status,
-        "flow": {
-            "1_register": "POST /v1/auth/register with email",
-            "2_activate": "GET /v1/auth/activate?token={token} from email" if email_status else "GET /v1/auth/activate?token={token} from registration response",
-            "3_get_token": "POST /v1/auth/token with API key",
-            "4_use_token": "Include 'Authorization: Bearer {token}' header in requests"
-        },
-        "endpoints": {
-            "/register": "Register new user account",
-            "/activate": "Activate account with email token",
-            "/token": "Get JWT access token from API key",
-            "/reset": "Reset API key for existing user"
-        },
-        "token_info": {
-            "type": "JWT Bearer",
-            "expiration": f"{API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES} minutes",
-            "usage": "Authorization: Bearer {access_token}"
-        }
-    }
-    
-    if email_status:
-        base_info["email_info"] = {
-            "provider": "Microsoft Graph API",
-            "from_address": EmailConfig.FROM_ADDRESS,
-            "from_name": EmailConfig.FROM_NAME
-        }
-    else:
-        base_info["email_info"] = {
-            "status": "not configured",
-            "note": "Email notifications disabled. Activation tokens and API keys will be shown in API responses for testing."
-        }
-    
-    return base_info
-
-@router.get(
-    "/health",
-    summary="Authentication Health Check",
-    description="Check authentication system health including email configuration"
-)
-async def auth_health():
-    """Check authentication system health"""
-    email_configured = EmailConfig.is_configured()
-    
-    health_status = {
-        "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "components": {
-            "database": "operational",
-            "jwt": "operational",
-            "email": "configured" if email_configured else "not configured"
-        }
-    }
-    
-    if not email_configured:
-        health_status["warnings"] = [
-            "Email not configured - activation tokens and API keys will be shown in responses"
-        ]
-        missing = EmailConfig.get_missing_config()
-        health_status["missing_config"] = missing
-    
-    return health_status
-
-@router.get(
-    "/signup",
-    summary="Sign Up Page",
-    description="""
-    Display the registration form for new users.
-    
-    **For Human Users:**
-    - Visit this page in a browser to see the registration form
-    - Fill in your email address (twice for confirmation)
-    - Accept the terms of service
-    - Submit to create your account
-    
-    **Form Features:**
-    - Client-side validation
-    - Real-time feedback
-    - AJAX submission with jQuery modal dialogs
-    - Prevents double submission
-    
-    **API Clients:**
-    Use POST /v1/auth/register directly with JSON
-    """
-    )
-@limiter.limit(rate_max)
-async def signup_page(request: Request):
-    """
-    Render the signup form page for browser users.
-    This is a GET endpoint that shows the HTML form.
-    The form submits to POST /v1/auth/register.
-    """
-    return templates.TemplateResponse(
-        "auth/signup.html",
-        {"request": request}
-    )

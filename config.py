@@ -72,6 +72,46 @@ API_DESCRIPTION = "A Comprehensive FBI Wanted Persons Search API"
 RATE_LIMIT_DEFAULT = "10/minute"
 
 # ============================================================================
+# LEMONSQUEEZY CONFIGURATION
+# ============================================================================
+
+API_LEMONSQUEEZY_API_KEY = os.getenv('API_LEMONSQUEEZY_API_KEY')
+API_LEMONSQUEEZY_STORE_ID = os.getenv('API_LEMONSQUEEZY_STORE_ID')
+API_LEMONSQUEEZY_WEBHOOK_SECRET = os.getenv('API_LEMONSQUEEZY_WEBHOOK_SECRET')
+
+# Product variant IDs
+API_LEMONSQUEEZY_VARIANT_MONTHLY = os.getenv('API_LEMONSQUEEZY_VARIANT_MONTHLY')
+API_LEMONSQUEEZY_VARIANT_QUARTERLY = os.getenv('API_LEMONSQUEEZY_VARIANT_QUARTERLY')
+API_LEMONSQUEEZY_VARIANT_ANNUAL = os.getenv('API_LEMONSQUEEZY_VARIANT_ANNUAL')
+
+# ============================================================================
+# PRICING CONFIGURATION
+# ============================================================================
+
+PRICING = {
+    'monthly': {
+        'price': 29,
+        'currency': 'USD',
+        'interval': 'month',
+        'variant_id': API_LEMONSQUEEZY_VARIANT_MONTHLY
+    },
+    'quarterly': {
+        'price': 79,
+        'currency': 'USD',
+        'interval': 'quarter',
+        'variant_id': API_LEMONSQUEEZY_VARIANT_QUARTERLY,
+        'savings': 8  # vs 3 months
+    },
+    'annual': {
+        'price': 290,
+        'currency': 'USD',
+        'interval': 'year',
+        'variant_id': API_LEMONSQUEEZY_VARIANT_ANNUAL,
+        'savings': 58  # vs 12 months
+    }
+}
+
+# ============================================================================
 # VALIDATION HELPERS
 # ============================================================================
 
@@ -99,7 +139,13 @@ def validate_config() -> list[str]:
         # Security (required)
         'API_JWT_SECRET_KEY': API_JWT_SECRET_KEY,
         'API_JWT_ALGORITHM': API_JWT_ALGORITHM,
-        'API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES': int(os.getenv('API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES'))
+        'API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES': int(os.getenv('API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES')),
+
+        # LemonSqueezy (required for billing)
+        'API_LEMONSQUEEZY_API_KEY': API_LEMONSQUEEZY_API_KEY,
+        'API_LEMONSQUEEZY_STORE_ID': API_LEMONSQUEEZY_STORE_ID,
+        'API_LEMONSQUEEZY_WEBHOOK_SECRET': API_LEMONSQUEEZY_WEBHOOK_SECRET
+
         }
     
     missing = []

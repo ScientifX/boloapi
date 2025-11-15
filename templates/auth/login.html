@@ -1,0 +1,111 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Login - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="text-center">
+        <h2>Log In</h2>
+    </div>
+    
+    <div class="card" style="max-width: 500px; margin: 40px auto;">
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-control" 
+                    required 
+                    placeholder="you@example.com"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-control" 
+                    required 
+                    minlength="8"
+                    placeholder="Enter your password"
+                >
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        
+        <div id="errorMessage" class="alert alert-error" style="display: none; margin-top: 20px;"></div>
+        
+        <div class="text-center mt-3">
+            <p class="text-muted">
+                Don't have an account? 
+                <a href="/v1/auth/signup">Sign Up!</a>
+            </p>
+            <p class="text-muted">
+                <a href="/v1/auth/forgot-password">Forgot password?</a>
+            </p>
+        </div>
+        
+        <hr style="margin:20px;">
+        
+        <div class="text-center">
+            <p class="text-muted" style="font-size: 0.9em;">
+                <strong>API Developers:</strong> Use your API key with 
+                <code>POST /auth/token</code> to get access tokens
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('errorMessage');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Logging in...';
+    errorDiv.style.display = 'none';
+    
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Store JWT token
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('user_role', data.role);
+            
+            // Redirect to dashboard
+            window.location.href = '/dashboard';
+        } else {
+            // Show error
+            errorDiv.textContent = data.detail || 'Login failed';
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Login';
+        }
+    } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
+    }
+});
+</script>
+{% endblock %}

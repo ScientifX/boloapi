@@ -101,3 +101,71 @@ def is_valid_email(email: str) -> bool:
         return False
     
     return re.match(pattern, email) is not None
+
+def hash_password(password: str) -> str:
+    """
+    Hash a password using bcrypt.
+    
+    Args:
+        password: The plaintext password to hash
+        
+    Returns:
+        Bcrypt hash of the password as string
+    """
+    salt = bcrypt.gensalt(rounds=12)
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
+
+def verify_password(plaintext_password: str, hashed_password: str) -> bool:
+    """
+    Verify a plaintext password against its hash.
+    
+    Args:
+        plaintext_password: The plaintext password to verify
+        hashed_password: The stored bcrypt hash
+        
+    Returns:
+        True if the password matches, False otherwise
+    """
+    try:
+        return bcrypt.checkpw(
+            plaintext_password.encode('utf-8'),
+            hashed_password.encode('utf-8')
+        )
+    except Exception:
+        return False
+
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password meets security requirements.
+    
+    Requirements:
+    - At least 8 characters
+    - Contains at least one uppercase letter
+    - Contains at least one lowercase letter
+    - Contains at least one number
+    
+    Args:
+        password: Password to validate
+        
+    Returns:
+        Tuple of (is_valid, error_message)
+    """
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long"
+    
+    if not any(c.isupper() for c in password):
+        return False, "Password must contain at least one uppercase letter"
+    
+    if not any(c.islower() for c in password):
+        return False, "Password must contain at least one lowercase letter"
+    
+    if not any(c.isdigit() for c in password):
+        return False, "Password must contain at least one number"
+    
+    # Optional: Check for common passwords
+    common_passwords = ['password', '12345678', 'password123', 'qwerty123']
+    if password.lower() in common_passwords:
+        return False, "Password is too common. Please choose a stronger password"
+    
+    return True, ""

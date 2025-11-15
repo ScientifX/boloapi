@@ -1,0 +1,289 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Billing - Scientifics.io{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>Billing & Subscription</h2>
+    
+    <!-- Current Subscription -->
+    <div class="card">
+        <h2>Current Plan</h2>
+        <div id="subscriptionInfo">
+            <div class="plan-summary">
+                <div class="plan-header">
+                    <span id="planBadge" class="status-badge"></span>
+                    <span id="statusBadge" class="status-indicator"></span>
+                </div>
+                
+                <div class="plan-details" id="planDetails"></div>
+                
+                <div class="button-group mt-3">
+                    <button id="upgradeBtn" class="btn btn-primary" style="display: none;">
+                        Upgrade to Premium
+                    </button>
+                    <button id="portalBtn" class="btn btn-secondary" style="display: none;">
+                        Manage Subscription
+                    </button>
+                    <a href="/billing/pricing" class="btn btn-secondary">View All Plans</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment History -->
+    <div class="card mt-4">
+        <h2>Payment History</h2>
+        <div id="paymentHistory">
+            <p class="text-muted">Loading payment history...</p>
+        </div>
+        
+        <table id="paymentTable" class="table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Billing Cycle</th>
+                    <th>Status</th>
+                    <th>Invoice</th>
+                </tr>
+            </thead>
+            <tbody id="paymentTableBody"></tbody>
+        </table>
+        
+        <p id="noPayments" class="text-muted" style="display: none;">
+            No payment history yet. Subscribe to Premium to see payments here.
+        </p>
+    </div>
+</div>
+
+<script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+<script>
+let userToken = localStorage.getItem('access_token');
+
+if (!userToken) {
+    window.location.href = '/login';
+}
+
+async function fetchWithAuth(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${userToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    if (response.status === 401) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        return null;
+    }
+    
+    return response;
+}
+
+async function loadBillingInfo() {
+    try {
+        const response = await fetchWithAuth('/billing/info');
+        if (!response) return;
+        
+        const data = await response.json();
+        
+        // Update subscription info
+        const sub = data.subscription;
+        const isPremium = sub.plan === 'premium';
+        
+        document.getElementById('planBadge').textContent = 
+            isPremium ? 'PREMIUM' : 'BASIC';
+        document.getElementById('planBadge').className = 
+            'status-badge ' + (isPremium ? 'premium' : 'basic');
+        
+        document.getElementById('statusBadge').textContent = sub.status;
+        document.getElementById('statusBadge').className = 
+            'status-indicator ' + sub.status.toLowerCase();
+        
+        // Build plan details
+        let detailsHtml = '<div class="detail-grid">';
+        
+        if (isPremium) {
+            if (sub.billing_cycle) {
+                const cycle = sub.billing_cycle.charAt(0).toUpperCase() + 
+                             sub.billing_cycle.slice(1);
+                detailsHtml += `<div class="detail-item">
+                    <strong>Billing Cycle:</strong> ${cycle}
+                </div>`;
+            }
+            
+            if (sub.renews_at && sub.status === 'active') {
+                const renewDate = new Date(sub.renews_at).toLocaleDateString();
+                detailsHtml += `<div class="detail-item">
+                    <strong>Next Billing:</strong> ${renewDate}
+                </div>`;
+            }
+            
+            if (sub.ends_at && sub.status === 'cancelled') {
+                const endDate = new Date(sub.ends_at).toLocaleDateString();
+                detailsHtml += `<div class="detail-item">
+                    <strong>Access Until:</strong> ${endDate}
+                </div>`;
+            }
+            
+            document.getElementById('portalBtn').style.display = 'inline-block';
+        } else {
+            detailsHtml += `<div class="detail-item">
+                <strong>Features:</strong> 25 results/request, Raw data, Simple search
+            </div>`;
+            document.getElementById('upgradeBtn').style.display = 'inline-block';
+        }
+        
+        detailsHtml += '</div>';
+        document.getElementById('planDetails').innerHTML = detailsHtml;
+        
+        // Load payment history
+        const payments = data.payment_history;
+        
+        if (payments && payments.length > 0) {
+            const tbody = document.getElementById('paymentTableBody');
+            tbody.innerHTML = '';
+            
+            payments.forEach(payment => {
+                const row = tbody.insertRow();
+                
+                const date = new Date(payment.payment_date).toLocaleDateString();
+                const amount = `$${payment.amount.toFixed(2)}`;
+                const cycle = payment.billing_cycle ? 
+                    payment.billing_cycle.charAt(0).toUpperCase() + 
+                    payment.billing_cycle.slice(1) : 
+                    'N/A';
+                
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${amount}</td>
+                    <td>${cycle}</td>
+                    <td><span class="status-badge ${payment.status}">${payment.status}</span></td>
+                    <td>${payment.invoice_url ? 
+                        `<a href="${payment.invoice_url}" target="_blank">View Invoice</a>` : 
+                        'N/A'}</td>
+                `;
+            });
+            
+            document.getElementById('paymentHistory').style.display = 'none';
+            document.getElementById('paymentTable').style.display = 'table';
+        } else {
+            document.getElementById('paymentHistory').style.display = 'none';
+            document.getElementById('noPayments').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Error loading billing info:', error);
+    }
+}
+
+async function openCustomerPortal() {
+    try {
+        const response = await fetchWithAuth('/billing/portal');
+        if (!response) return;
+        
+        const data = await response.json();
+        window.open(data.portal_url, '_blank');
+        
+    } catch (error) {
+        alert('Failed to open customer portal.');
+        console.error(error);
+    }
+}
+
+function openUpgradeModal() {
+    // Redirect to dashboard which has the modal
+    window.location.href = '/dashboard?action=upgrade';
+}
+
+document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeModal);
+document.getElementById('portalBtn')?.addEventListener('click', openCustomerPortal);
+
+loadBillingInfo();
+</script>
+
+<style>
+.plan-summary {
+    padding: 20px 0;
+}
+
+.plan-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.status-indicator {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-indicator.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-indicator.cancelled {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-indicator.expired {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.detail-grid {
+    display: grid;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.detail-item {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.table .status-badge {
+    font-size: 0.85em;
+    padding: 4px 10px;
+}
+
+.table .status-badge.paid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.table .status-badge.refunded {
+    background: #f8d7da;
+    color: #721c24;
+}
+</style>
+{% endblock %}
