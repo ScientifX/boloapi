@@ -134,7 +134,7 @@ app.add_middleware(
     https_only=False
 )
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 @limiter.limit(rate_max)
 async def root(request: Request):
     """
@@ -162,9 +162,7 @@ async def root(request: Request):
         }
     )
 
-# Session-based role endpoints (for testing/migration)
-# These can be removed once fully migrated to JWT
-@app.get("/role", include_in_schema=True, tags=["Testing"])
+@app.get("/role", include_in_schema=False, tags=["Testing"])
 @limiter.limit(rate_max)
 async def get_role(request: Request):
     """Get current user role - for testing purposes (session-based)"""
@@ -177,7 +175,7 @@ async def get_role(request: Request):
         "migration_note": "This endpoint uses session-based auth and will be deprecated"
     }
 
-@app.post("/role/set", include_in_schema=True, tags=["Testing"])
+@app.post("/role/set", include_in_schema=False, tags=["Testing"])
 @limiter.limit(rate_max)
 async def set_role(request: Request, role: UserRole):
     """
@@ -195,7 +193,7 @@ async def set_role(request: Request, role: UserRole):
 # STATIC CONTENT PAGES
 # ============================================================================
 
-@app.get("/about", response_class=HTMLResponse, tags=["Static Pages"])
+@app.get("/about", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def about_page(request: Request):
     """About Scientifics.io and the FBI Wanted API"""
@@ -208,7 +206,7 @@ async def about_page(request: Request):
         }
     )
 
-@app.get("/privacy", response_class=HTMLResponse, tags=["Static Pages"])
+@app.get("/privacy", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def privacy_page(request: Request):
     """Privacy Policy"""
@@ -222,7 +220,7 @@ async def privacy_page(request: Request):
         }
     )
 
-@app.get("/terms", response_class=HTMLResponse, tags=["Static Pages"])
+@app.get("/terms", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def terms_page(request: Request):
     """Terms of Service"""
@@ -236,7 +234,7 @@ async def terms_page(request: Request):
         }
     )
 
-@app.get("/contact", response_class=HTMLResponse, tags=["Static Pages"])
+@app.get("/contact", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def contact_page(request: Request):
     """Contact Information"""
