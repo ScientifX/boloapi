@@ -321,7 +321,7 @@ def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    reset_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/reset-password?token={reset_token}"
+    reset_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/reset_password?token={reset_token}"
     
     subject = f"Reset Your {EmailConfig.FROM_NAME} Password"
     

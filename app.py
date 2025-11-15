@@ -162,18 +162,6 @@ async def root(request: Request):
         }
     )
 
-@app.get("/health", include_in_schema=False)
-@limiter.limit(rate_max)
-async def health_check(request: Request):
-    """Health check endpoint - accessible by all roles"""
-    current_role = get_current_role(request)
-    return {
-        "status": "healthy",
-        "role": current_role.value,
-        "authentication": "JWT Bearer Token",
-        "docs": "/docs"
-    }
-
 # Session-based role endpoints (for testing/migration)
 # These can be removed once fully migrated to JWT
 @app.get("/role", include_in_schema=True, tags=["Testing"])

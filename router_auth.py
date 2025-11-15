@@ -153,7 +153,7 @@ class ResetPasswordRequest(BaseModel):
 class TokenRequest(BaseModel):
     """Request model for token generation"""
     api_key: str = Field(..., description="Your API key", min_length=32, max_length=64)
-    
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -223,7 +223,7 @@ async def signup_page(request: Request):
     """Display signup form"""
     return templates.TemplateResponse("auth/signup.html", {"request": request})
 
-@router.get("/set-password")
+@router.get("/set_password")
 @limiter.limit(rate_max)
 async def set_password_page(
     request: Request,
@@ -244,13 +244,13 @@ async def set_password_page(
         {"request": request, "user_id": user_id, "email": user['email']}
     )
 
-@router.get("/forgot-password")
+@router.get("/forgot_password")
 @limiter.limit(rate_max)
 async def forgot_password_page(request: Request):
     """Display forgot password form"""
     return templates.TemplateResponse("auth/forgot_password.html", {"request": request})
 
-@router.get("/reset-password")
+@router.get("/reset_password")
 @limiter.limit(rate_max)
 async def reset_password_page(request: Request, token: str = Query(...)):
     """Display reset password form with token"""
@@ -267,7 +267,7 @@ async def reset_password_page(request: Request, token: str = Query(...)):
         {"request": request, "token": token, "email": user['email']}
     )
 
-@router.get("/change-password")
+@router.get("/change_password")
 @limiter.limit(rate_max)
 async def change_password_page(request: Request):
     """Display change password form (dashboard)"""
@@ -363,7 +363,7 @@ async def activate(request: Request, token: str = Query(...)):
         
         # Redirect to set password
         return RedirectResponse(
-            f"/v1/auth/set-password?user_id={user['user_id']}",
+            f"/v1/auth/set_password?user_id={user['user_id']}",
             status_code=status.HTTP_303_SEE_OTHER
         )
         
@@ -378,7 +378,7 @@ async def activate(request: Request, token: str = Query(...)):
 # PASSWORD MANAGEMENT ENDPOINTS
 # ====================================================================
 
-@router.post("/set-password")
+@router.post("/set_password")
 @limiter.limit(rate_max)
 async def set_password(request: Request, password_req: SetPasswordRequest):
     """Set password after activation"""
@@ -458,7 +458,7 @@ async def login(request: Request, login_req: LoginRequest):
         logger.error(f"Login error: {str(e)}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Login failed")
 
-@router.post("/forgot-password")
+@router.post("/forgot_password")
 @limiter.limit("3/hour")
 async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
     """Request password reset"""
@@ -502,7 +502,7 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
 
-@router.post("/reset-password")
+@router.post("/reset_password")
 @limiter.limit(rate_max)
 async def reset_password(request: Request, reset_req: ResetPasswordRequest):
     """Reset password with token"""
@@ -544,7 +544,7 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
 
-@router.post("/change-password")
+@router.post("/change_password")
 @limiter.limit(rate_max)
 async def change_password(
     request: Request,

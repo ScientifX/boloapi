@@ -206,7 +206,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
     }
     
     try {
-        const response = await fetchWithAuth('/auth/change-password', {
+        const response = await fetchWithAuth('/auth/change_password', {
             method: 'POST',
             body: JSON.stringify({
                 current_password: currentPassword,

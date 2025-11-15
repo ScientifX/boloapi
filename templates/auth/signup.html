@@ -199,7 +199,7 @@
 <div class="content">
     <div class="form-container">
         <div class="text-center">
-            <h2>Create Your BoloAPI Account</h2>
+            <h2>Sign Up For BoloAPI</h2>
         </div>
         
         <form id="signupForm" method="POST" action="/v1/auth/register">
@@ -245,7 +245,7 @@
             </div>
             
             <button type="submit" class="btn-submit" id="submitBtn">
-                Create Account
+                Sign Up!
             </button>
         </form>
         
@@ -407,7 +407,7 @@ $(document).ready(function() {
                 "Try Again": function() {
                     $(this).dialog("close");
                     formSubmitted = false;
-                    $('#submitBtn').prop('disabled', false).html('Create Account');
+                    $('#submitBtn').prop('disabled', false).html('Sign Up!');
                 }
             }
         });
@@ -458,7 +458,7 @@ $(document).ready(function() {
                     } else if (response.includes('Registration Error') || response.includes('register-error')) {
                         showServerErrorDialog(response);
                         formSubmitted = false;
-                        $submitBtn.prop('disabled', false).html('Create Account');
+                        $submitBtn.prop('disabled', false).html('Sign Up!');
                     } else {
                         // Fallback: replace page content
                         $('.form-container').html($(response).find('.content').html());
@@ -467,7 +467,7 @@ $(document).ready(function() {
             },
             error: function(xhr, textStatus, errorThrown) {
                 formSubmitted = false;
-                $submitBtn.prop('disabled', false).html('Create Account');
+                $submitBtn.prop('disabled', false).html('Sign Up!');
                 
                 if (xhr.responseText && xhr.getResponseHeader('content-type').includes('text/html')) {
                     showServerErrorDialog(xhr.responseText);
@@ -505,7 +505,7 @@ $(document).ready(function() {
     
     $(window).on('popstate', function() {
         formSubmitted = false;
-        $('#submitBtn').prop('disabled', false).html('Create Account');
+        $('#submitBtn').prop('disabled', false).html('Sign Up!');
     });
 });
 </script>
