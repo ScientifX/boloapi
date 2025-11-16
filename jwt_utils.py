@@ -13,13 +13,15 @@ class JWTError(Exception):
     """Custom exception for JWT-related errors"""
     pass
 
-def create_access_token(user_id: str, role: UserRole, expires_delta: Optional[timedelta] = None) -> str:
+
+def create_access_token(user_id: str, role: UserRole, email: str = None,  expires_delta: Optional[timedelta] = None) -> str:
     """
     Create a JWT access token with user claims.
     
     Args:
         user_id: The user's UUID as string
         role: The user's role (from UserRole enum)
+        email: user email address
         expires_delta: Optional custom expiration time
         
     Returns:
@@ -38,7 +40,7 @@ def create_access_token(user_id: str, role: UserRole, expires_delta: Optional[ti
         "exp": expire,  # Expiration time
         "iat": datetime.now(timezone.utc),  # Issued at
         "type": "access"  # Token type
-    }
+        }
     
     encoded_jwt = jwt.encode(to_encode, API_JWT_SECRET_KEY, algorithm=API_JWT_ALGORITHM)
     return encoded_jwt

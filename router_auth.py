@@ -452,8 +452,12 @@ async def login(request: Request, login_req: LoginRequest):
         
         # Create JWT
         user_role = UserRole(user['role'])
-        access_token = create_access_token(user_id=str(user['user_id']), role=user_role)
-        
+        access_token = create_access_token(
+            user_id=str(user['user_id']), 
+            role=user_role,
+            email=user['email'] 
+            )
+
         # Create response with cookie
         response_data = {
             "access_token": access_token,

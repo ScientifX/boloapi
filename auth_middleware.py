@@ -32,13 +32,13 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
                 # Extract user information from token
                 user_id = payload.get("sub")
                 role = payload.get("role")
+                email = payload.get("email") 
                 
                 if user_id and role:
                     request.state.user_authenticated = True
                     request.state.user_id = user_id
                     request.state.user_role = role
-                    # Try to extract email from user_id if it's an email format
-                    request.state.user_email = user_id if '@' in user_id else None
+                    request.state.user_email = email
                     
             except JWTError:
                 # Token is invalid or expired - remain unauthenticated

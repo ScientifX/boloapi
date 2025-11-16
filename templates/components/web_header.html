@@ -5,18 +5,16 @@
             <a href="/">
                 <img src="{{ url_for('static', path='/images/logo-scientifx.png') }}" alt="Scientifics.io" class="logo">
             </a>
-            
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 20px;">
             {% if user_authenticated %}
                 <!-- Logged-in Indicator 1: Status Dot -->
                 <div class="status-dot" title="Logged In"></div>
                 
                 <!-- Logged-in Indicator 2: Status Bar -->
                 <div class="status-bar"></div>
-            {% endif %}
-        </div>
-        
-        <div style="display: flex; align-items: center; gap: 20px;">
-            {% if user_authenticated and user_email %}
+                
                 <!-- Logged-in Indicator 3: User Email Display -->
                 <div class="user-email-display">{{ user_email }}</div>
             {% endif %}
