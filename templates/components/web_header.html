@@ -1,23 +1,102 @@
 {# Web Header Component - Uses external CSS from main.css #}
 <header class="header">
     <div class="header-container">
-        <div>
+        <div style="display: flex; align-items: center; gap: 15px;">
             <a href="/">
                 <img src="{{ url_for('static', path='/images/logo-scientifx.png') }}" alt="Scientifics.io" class="logo">
             </a>
-        </div>
-        <nav class="nav">
-            <a href="/">Home</a>
-            <a href="/docs">API Docs</a>
+            
             {% if user_authenticated %}
-                <a href="/dashboard">Dashboard</a>
-                <a href="/profile">Profile</a>
-                <a href="/billing">Billing</a>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/v1/auth/login">Log In</a>
-                <a href="/v1/auth/signup">Sign Up</a>
+                <!-- Logged-in Indicator 1: Status Dot -->
+                <div class="status-dot" title="Logged In"></div>
+                
+                <!-- Logged-in Indicator 2: Status Bar -->
+                <div class="status-bar"></div>
             {% endif %}
-        </nav>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 20px;">
+            {% if user_authenticated and user_email %}
+                <!-- Logged-in Indicator 3: User Email Display -->
+                <div class="user-email-display">{{ user_email }}</div>
+            {% endif %}
+            
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/docs">API Docs</a>
+                
+                {% if user_authenticated %}
+                    <!-- Authenticated User Links -->
+                    <a href="/v1/auth/dashboard">Dashboard</a>
+                    <a href="/v1/auth/profile">Profile</a>
+                    <a href="/v1/auth/billing">Billing</a>
+                    <a href="/v1/auth/logout" onclick="localStorage.clear();">Log Out</a>
+                {% else %}
+                    <!-- Guest Links -->
+                    <a href="/v1/auth/login">Log In</a>
+                    <a href="/v1/auth/signup">Sign Up</a>
+                {% endif %}
+            </nav>
+        </div>
     </div>
 </header>
+
+<style>
+/* Status Dot Indicator */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #28a745;
+    box-shadow: 0 0 6px rgba(40, 167, 69, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Status Bar Indicator */
+.status-bar {
+    width: 3px;
+    height: 24px;
+    background: linear-gradient(180deg, #28a745 0%, #20c997 100%);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.4);
+}
+
+/* User Email Display */
+.user-email-display {
+    font-size: 0.85em;
+    color: #6c757d;
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    white-space: nowrap;
+}
+
+.user-email-display::before {
+    content: "Logged in: ";
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .user-email-display {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #a0aec0;
+    }
+    
+    .user-email-display::before {
+        color: #cbd5e0;
+    }
+}
+</style>

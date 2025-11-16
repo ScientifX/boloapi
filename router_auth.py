@@ -13,7 +13,7 @@ from typing import Optional
 import logging
 
 from fastapi import APIRouter, HTTPException, Request, status, Query, Depends
-from fastapi.responses import Response, RedirectResponse
+from fastapi.responses import Response, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
@@ -159,6 +159,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int
     role: str
+    redirect_url: str
 
 # ====================================================================
 # DATABASE HELPERS
@@ -215,13 +216,21 @@ def get_user_by_reset_token(token: str) -> Optional[dict]:
 @limiter.limit(rate_max)
 async def login_page(request: Request):
     """Display login form"""
-    return templates.TemplateResponse("auth/login.html", {"request": request})
+    return templates.TemplateResponse("auth/login.html", {
+        "request": request,
+        "user_authenticated": request.state.user_authenticated,
+        "user_email": request.state.user_email,
+    })
 
 @router.get("/signup")
 @limiter.limit(rate_max)
 async def signup_page(request: Request):
     """Display signup form"""
-    return templates.TemplateResponse("auth/signup.html", {"request": request})
+    return templates.TemplateResponse("auth/signup.html", {
+        "request": request,
+        "user_authenticated": request.state.user_authenticated,
+        "user_email": request.state.user_email,
+    })
 
 @router.get("/set_password")
 @limiter.limit(rate_max)
@@ -417,7 +426,7 @@ async def set_password(request: Request, password_req: SetPasswordRequest):
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login")
 @limiter.limit(rate_max)
 async def login(request: Request, login_req: LoginRequest):
     """Login with email/password"""
@@ -445,12 +454,28 @@ async def login(request: Request, login_req: LoginRequest):
         user_role = UserRole(user['role'])
         access_token = create_access_token(user_id=str(user['user_id']), role=user_role)
         
-        return TokenResponse(
-            access_token=access_token,
-            token_type="bearer",
-            expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
-            role=user_role.value
+        # Create response with cookie
+        response_data = {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "expires_in": int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
+            "role": user_role.value,
+            "redirect_url": request.url.scheme + "://" + request.client.host + ":8000" + "/about"
+        }
+        
+        response = JSONResponse(content=response_data)
+        
+        # Set httpOnly cookie for server-side authentication
+        response.set_cookie(
+            key="auth_token",
+            value=access_token,
+            httponly=True,  # Prevents JavaScript access for security
+            max_age=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
+            secure=False,  # Set to True in production with HTTPS
+            samesite="lax"
         )
+        
+        return response
         
     except HTTPException:
         raise
@@ -587,6 +612,22 @@ async def change_password(
     except Exception as e:
         logger.error(f"Change password error: {str(e)}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to change password")
+
+@router.get("/logout")
+@limiter.limit(rate_max)
+async def logout_page(request: Request):
+    """Logout - clears authentication cookie and redirects to home"""
+    # Create redirect response to home page
+    response = RedirectResponse(url="/", status_code=303)
+    
+    # Clear the auth_token cookie
+    response.delete_cookie(
+        key="auth_token",
+        path="/",
+        samesite="lax"
+    )
+    
+    return response
 
 # ====================================================================
 # API KEY ENDPOINTS

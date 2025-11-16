@@ -40,6 +40,7 @@ import router_etl
 import router_search
 import router_auth 
 # import router_billing
+from auth_middleware import TemplateAuthMiddleware
 
 templates = Jinja2Templates(directory="templates")
 
@@ -123,6 +124,9 @@ class RoleAndTrimMiddleware(BaseHTTPMiddleware):
 # Add custom middleware FIRST (executes LAST due to reverse order)
 app.add_middleware(RoleAndTrimMiddleware)
 
+# Add template auth middleware to check JWT cookies and set user_authenticated
+app.add_middleware(TemplateAuthMiddleware)
+
 # Add session middleware LAST (executes FIRST due to reverse order)
 # NOTE: Can be removed once fully migrated to JWT, but keeping for backward compatibility
 app.add_middleware(
@@ -159,6 +163,8 @@ async def root(request: Request):
             "request": request,
             "total": total,
             "current_role": current_role.value,  # For testing display
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
         }
     )
 
@@ -202,7 +208,9 @@ async def about_page(request: Request):
         "static/about.html",
         {
             "request": request,
-            "current_role": current_role.value
+            "current_role": current_role.value,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
         }
     )
 
@@ -216,7 +224,9 @@ async def privacy_page(request: Request):
         {
             "request": request,
             "current_role": current_role.value,
-            "last_updated": "November 2025"
+            "last_updated": "November 2025",
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
         }
     )
 
@@ -230,7 +240,9 @@ async def terms_page(request: Request):
         {
             "request": request,
             "current_role": current_role.value,
-            "last_updated": "November 2025"
+            "last_updated": "November 2025",
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
         }
     )
 
@@ -245,7 +257,9 @@ async def contact_page(request: Request):
             "request": request,
             "current_role": current_role.value,
             "support_email": "support@scientifics.io", 
-            "business_email": "contact@scientifics.io" 
+            "business_email": "contact@scientifics.io",
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
         }
     )
 

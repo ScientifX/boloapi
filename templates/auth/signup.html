@@ -202,7 +202,7 @@
             <h2>Sign Up For BoloAPI</h2>
         </div>
         
-        <form id="signupForm" method="POST" action="/v1/auth/register">
+        <form id="signupForm" method="POST" action="/v1/auth/signup">
             <div class="form-group">
                 <label for="email">Email Address *</label>
                 <input 
@@ -438,7 +438,7 @@ $(document).ready(function() {
         
         // Submit via AJAX
         $.ajax({
-            url: '/v1/auth/register',
+            url: '/v1/auth/signup',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ email: email }),
