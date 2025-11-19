@@ -1275,14 +1275,14 @@ async def advanced_search(
 @limiter.limit(rate_max)
 async def get_top_ten(
     request: Request,
-    # limit: int = Query(default=10, ge=1, le=5000, description="Maximum results to return"),
+    limit: int = Query(default=10, ge=1, le=5000, description="Maximum results to return"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI Ten Most Wanted Fugitives using database function"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
-    actual_limit = validate_limit_for_role(current_role)
+    actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
     
     try:
@@ -1292,7 +1292,7 @@ async def get_top_ten(
                 query = f"""
                     SELECT {data_field}
                     FROM ftn_bolo_top('ten')
-                    LIMIT 100
+                    LIMIT %s
                 """
                 cur.execute(query, (actual_limit,))
                 results = cur.fetchall()
@@ -1328,21 +1328,41 @@ async def get_top_ten(
 
 @router.get(
     "/top_missing",
-    summary="FBI's Missing Persons",
-    description="""[keep existing description]""",
-    response_description="Cyber Most Wanted with data_type and data fields"
+    summary="FBI Missing Persons",
+    description="""
+    Get the FBI's missing persons and kidnapping cases.
+    
+    **Access:** BASIC role or higher
+    **Result limits by role:**
+    - BASIC: Maximum 25 results, returns raw data
+    - PREMIUM: Maximum 5000 results, returns cleaned data
+    - ADMIN: Maximum 5000 results, returns cleaned data
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    
+    **Note:** Results are ordered by most recently modified first.
+    
+    **Returns:** Query parameters, result count, and array of matching records
+    """,
+    response_description="Missing persons with data_type and data fields"
     )
 @limiter.limit(rate_max)
 async def get_top_missing(
     request: Request,
-    # limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
     ):
-    """Get FBI's Missing Persons using database function"""
+    """
+    Get FBI Missing Persons using database function.
+    Returns clean or raw data based on user role.
+    """
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
-    actual_limit = validate_limit_for_role(current_role)
+    actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
     
     try:
@@ -1351,7 +1371,7 @@ async def get_top_missing(
                 query = f"""
                     SELECT {data_field}
                     FROM ftn_bolo_top('missing')
-                    LIMIT 100
+                    LIMIT %s
                 """
                 cur.execute(query, (actual_limit,))
                 results = cur.fetchall()
@@ -1394,14 +1414,14 @@ async def get_top_missing(
 @limiter.limit(rate_max)
 async def get_top_terrorist(
     request: Request,
-    # limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
+    limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI Most Wanted Terrorists using database function"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
-    actual_limit = validate_limit_for_role(current_role)
+    actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
     
     try:
@@ -1410,7 +1430,7 @@ async def get_top_terrorist(
                 query = f"""
                     SELECT {data_field}
                     FROM ftn_bolo_top('terrorist')
-                    LIMIT 100 
+                    LIMIT %s
                 """
                 cur.execute(query, (actual_limit,))
                 results = cur.fetchall()
@@ -1520,86 +1540,7 @@ async def get_top_reward(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Search error: {str(e)}"
         )
-
-
-@router.get(
-    "/top_missing",
-    summary="FBI Missing Persons",
-    description="""
-    Get the FBI's missing persons and kidnapping cases.
-    
-    **Access:** BASIC role or higher
-    **Result limits by role:**
-    - BASIC: Maximum 25 results, returns raw data
-    - PREMIUM: Maximum 5000 results, returns cleaned data
-    - ADMIN: Maximum 5000 results, returns cleaned data
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Note:** Results are ordered by most recently modified first.
-    
-    **Returns:** Query parameters, result count, and array of matching records
-    """,
-    response_description="Missing persons with data_type and data fields"
-)
-@limiter.limit(rate_max)
-async def get_top_missing(
-    request: Request,
-    limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
-    """
-    Get FBI Missing Persons using database function.
-    Returns clean or raw data based on user role.
-    """
-    current_role = current_user["role"]
-    user_id = current_user["user_id"]
-    
-    actual_limit = validate_limit_for_role(current_role, limit)
-    data_field = get_data_field_for_role(current_role)
-    
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                query = f"""
-                    SELECT {data_field}
-                    FROM ftn_bolo_top('missing')
-                    LIMIT %s
-                """
-                cur.execute(query, (actual_limit,))
-                results = cur.fetchall()
-        
-        items = []
-        data_type = "clean" if data_field == "full_data_clean" else "raw"
-        
-        for row in results:
-            item_data = row[data_field]
-            items.append({
-                "data_type": data_type,
-                "data": item_data
-            })
-        
-        return {
-            "query": {
-                "endpoint": "top_missing",
-                "poster_classification": "missing",
-                "limit": actual_limit
-            },
-            "role": current_role.value,
-            "resultcount": len(items),
-            "items": items
-        }
-    
-    except Exception as e:
-        logger.error(f"Top Missing search error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search error: {str(e)}"
-        )
-    
+ 
 @router.get(
     "/",
     summary="API Information",

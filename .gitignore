@@ -48,6 +48,7 @@ __pycache__/
 
 # Backup files
 *_og.py
+*.bak
 
 # Windows reserved names
 NUL

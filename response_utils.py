@@ -45,7 +45,6 @@ def render_or_json(
     request: Request,
     template_name: str,
     context: Dict[str, Any],
-    json_data: Dict[str, Any],
     status_code: int = 200
 ) -> Union[HTMLResponse, JSONResponse]:
     """
@@ -54,8 +53,7 @@ def render_or_json(
     Args:
         request: FastAPI Request object
         template_name: Path to Jinja2 template (e.g., "auth/activate_success.html")
-        context: Context dict for template rendering
-        json_data: Data dict for JSON response
+        context: Context dict for template rendering (also used for JSON response)
         status_code: HTTP status code (default: 200)
     
     Returns:
@@ -65,12 +63,11 @@ def render_or_json(
         return render_or_json(
             request=request,
             template_name="auth/activate_success.html",
-            context={"request": request, "api_key": api_key},
-            json_data={"message": "Success", "api_key": api_key}
+            context={"message": "Success", "api_key": api_key}
         )
     """
     if wants_json(request):
-        return JSONResponse(content=json_data, status_code=status_code)
+        return JSONResponse(content=context, status_code=status_code)
     else:
         # Ensure request is in context for Jinja2
         if 'request' not in context:
@@ -81,10 +78,10 @@ def render_or_json(
 def render_error(
     request: Request,
     template_name: str,
+    status_code: int,
     error_message: str,
     error_type: str = "Error",
-    context: Dict[str, Any] = None,
-    status_code: int = 400
+    context: Dict[str, Any] = None
 ) -> Union[HTMLResponse, JSONResponse]:
     """
     Return error response as either HTML template or JSON based on Accept header.
@@ -92,10 +89,10 @@ def render_error(
     Args:
         request: FastAPI Request object
         template_name: Path to error template (e.g., "auth/activate_error.html")
+        status_code: HTTP status code (e.g., 400, 404, 500)
         error_message: Error message to display
-        error_type: Error type/title for the error page
+        error_type: Error type/title for the error page (optional)
         context: Additional context for template (optional)
-        status_code: HTTP status code (default: 400)
     
     Returns:
         HTMLResponse or JSONResponse based on content negotiation
@@ -104,9 +101,9 @@ def render_error(
         return render_error(
             request=request,
             template_name="auth/activate_error.html",
+            status_code=404,
             error_message="Token has expired",
-            error_type="Invalid or expired activation token",
-            status_code=404
+            error_type="expired"
         )
     """
     # Build JSON response
@@ -121,6 +118,7 @@ def render_error(
         "request": request,
         "error_message": error_message,
         "error_type": error_type,
+        "app_base_url": str(request.base_url).rstrip('/'),
         **(context or {})
     }
     

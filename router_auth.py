@@ -295,7 +295,7 @@ async def register(request: Request, register_req: RegisterRequest):
         existing_user = get_user_by_email(email)
         
         if existing_user and existing_user['is_active']:
-            return await render_error(
+            return render_error(
                 request, "auth/register_error.html",
                 status.HTTP_400_BAD_REQUEST,
                 "Email already registered"
@@ -304,7 +304,7 @@ async def register(request: Request, register_req: RegisterRequest):
         if existing_user:
             # Resend activation
             send_activation_email(email, existing_user['activation_token'])
-            return await render_or_json(
+            return render_or_json(
                 request, "auth/register_success.html",
                 {"message": "Activation email resent", "email": email}
             )
@@ -325,14 +325,14 @@ async def register(request: Request, register_req: RegisterRequest):
         logger.info(f"New user registered: {email}")
         send_activation_email(email, activation_token)
         
-        return await render_or_json(
+        return render_or_json(
             request, "auth/register_success.html",
             {"message": "Registration successful", "email": email, "user_id": str(user_id)}
         )
         
     except Exception as e:
         logger.error(f"Registration error: {str(e)}")
-        return await render_error(
+        return render_error(
             request, "auth/register_error.html",
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
@@ -345,7 +345,7 @@ async def activate(request: Request, token: str = Query(...)):
         user = get_user_by_activation_token(token)
         
         if not user:
-            return await render_error(
+            return render_error(
                 request, "auth/activate_error.html",
                 status.HTTP_404_NOT_FOUND, "Invalid token"
             )
@@ -378,7 +378,7 @@ async def activate(request: Request, token: str = Query(...)):
         
     except Exception as e:
         logger.error(f"Activation error: {str(e)}")
-        return await render_error(
+        return render_error(
             request, "auth/activate_error.html",
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
@@ -395,7 +395,7 @@ async def set_password(request: Request, password_req: SetPasswordRequest):
         user = get_user_by_id(password_req.user_id)
         
         if not user or not user['is_active'] or user['password_hash']:
-            return await render_error(
+            return render_error(
                 request, "auth/set_password_error.html",
                 status.HTTP_400_BAD_REQUEST, "Invalid request"
             )
@@ -414,14 +414,14 @@ async def set_password(request: Request, password_req: SetPasswordRequest):
         
         logger.info(f"Password set for: {user['email']}")
         
-        return await render_or_json(
+        return render_or_json(
             request, "auth/set_password_success.html",
             {"message": "Password set successfully", "login_link": "/v1/auth/login"}
         )
         
     except Exception as e:
         logger.error(f"Set password error: {str(e)}")
-        return await render_error(
+        return render_error(
             request, "auth/set_password_error.html",
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
@@ -496,7 +496,7 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
         
         # Always return success (prevent enumeration)
         if not user or not user['is_active']:
-            return await render_or_json(
+            return render_or_json(
                 request, "auth/forgot_password_success.html",
                 {"message": "If account exists, reset email sent"}
             )
@@ -519,14 +519,14 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
         logger.info(f"Password reset requested: {user['email']}")
         send_password_reset_email(user['email'], reset_token)
         
-        return await render_or_json(
+        return render_or_json(
             request, "auth/forgot_password_success.html",
             {"message": "Reset email sent", "email": forgot_req.email}
         )
         
     except Exception as e:
         logger.error(f"Forgot password error: {str(e)}")
-        return await render_error(
+        return render_error(
             request, "auth/forgot_password_error.html",
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
@@ -539,7 +539,7 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
         user = get_user_by_reset_token(reset_req.token)
         
         if not user:
-            return await render_error(
+            return render_error(
                 request, "auth/reset_password_error.html",
                 status.HTTP_400_BAD_REQUEST, "Invalid or expired token"
             )
@@ -561,14 +561,14 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
         logger.info(f"Password reset: {user['email']}")
         send_password_changed_email(user['email'])
         
-        return await render_or_json(
+        return render_or_json(
             request, "auth/reset_password_success.html",
             {"message": "Password reset successful", "login_link": "/v1/auth/login"}
         )
         
     except Exception as e:
         logger.error(f"Reset password error: {str(e)}")
-        return await render_error(
+        return render_error(
             request, "auth/reset_password_error.html",
             status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)
         )
@@ -606,7 +606,7 @@ async def change_password(
         logger.info(f"Password changed: {user['email']}")
         send_password_changed_email(user['email'])
         
-        return await render_or_json(
+        return render_or_json(
             request, "auth/change_password_success.html",
             {"message": "Password changed successfully"}
         )
@@ -642,7 +642,8 @@ async def logout_page(request: Request):
 async def get_token(request: Request, token_req: TokenRequest):
     """Generate JWT from API key"""
     try:
-        api_key = token_req.get('api_key')
+        # api_key = token_req.get('api_key')
+        api_key = token_req.api_key
         
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -665,7 +666,8 @@ async def get_token(request: Request, token_req: TokenRequest):
             access_token=access_token,
             token_type="bearer",
             expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
-            role=user_role.value
+            role=user_role.value,
+            redirect_url="/about"
         )
         
     except HTTPException:
