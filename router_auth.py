@@ -41,6 +41,12 @@ from email_utils import (
     EmailConfig
     )
 from response_utils import render_or_json, render_error
+from captcha_utils import (
+    generate_captcha_token,
+    set_captcha_cookie,
+    validate_captcha,
+    clear_captcha_cookie
+)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -61,6 +67,8 @@ router = APIRouter(prefix="/v1/auth", tags=["Authentication"])
 
 class RegisterRequest(BaseModel):
     email: str = Field(..., description="Valid email address", max_length=255)
+    captcha_token: str = Field(..., description="CAPTCHA token")
+    captcha_checked: bool = Field(..., description="CAPTCHA checkbox status")
     
     @field_validator('email')
     @classmethod
@@ -72,6 +80,8 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: str = Field(..., description="Email address")
     password: str = Field(..., description="Password")
+    captcha_token: str = Field(..., description="CAPTCHA token")
+    captcha_checked: bool = Field(..., description="CAPTCHA checkbox status")
     
     @field_validator('email')
     @classmethod
@@ -122,6 +132,8 @@ class ChangePasswordRequest(BaseModel):
 
 class ForgotPasswordRequest(BaseModel):
     email: str
+    captcha_token: str = Field(..., description="CAPTCHA token")
+    captcha_checked: bool = Field(..., description="CAPTCHA checkbox status")
     
     @field_validator('email')
     @classmethod
@@ -134,6 +146,8 @@ class ResetPasswordRequest(BaseModel):
     token: str
     password: str = Field(..., min_length=8)
     password_confirm: str = Field(..., min_length=8)
+    captcha_token: str = Field(..., description="CAPTCHA token")
+    captcha_checked: bool = Field(..., description="CAPTCHA checkbox status")
     
     @field_validator('password')
     @classmethod
@@ -160,6 +174,51 @@ class TokenResponse(BaseModel):
     expires_in: int
     role: str
     redirect_url: str
+
+class ProfileUpdateRequest(BaseModel):
+    email: Optional[str] = None
+    first_name: Optional[str] = Field(None, max_length=100)
+    last_name: Optional[str] = Field(None, max_length=100)
+    company: Optional[str] = Field(None, max_length=200)
+    job_role: Optional[str] = Field(None, max_length=100)
+    data_usage: Optional[list[str]] = None
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email_field(cls, v):
+        if v and not is_valid_email(v):
+            raise ValueError("Invalid email format")
+        return v.lower().strip() if v else None
+    
+    @field_validator('first_name', 'last_name', 'company', 'job_role')
+    @classmethod
+    def validate_string_fields(cls, v):
+        if v:
+            v = v.strip()
+            if len(v) == 0:
+                return None
+        return v
+    
+    @field_validator('data_usage')
+    @classmethod
+    def validate_data_usage(cls, v):
+        if v is not None and not isinstance(v, list):
+            raise ValueError("data_usage must be a list")
+        return v
+
+class ProfileResponse(BaseModel):
+    user_id: str
+    email: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    company: Optional[str]
+    job_role: Optional[str]
+    data_usage: Optional[list[str]]
+    role: str
+    is_active: bool
+    created_at: str
+    last_login_at: Optional[str]
+    api_key_preview: str
 
 # ====================================================================
 # DATABASE HELPERS
@@ -216,21 +275,39 @@ def get_user_by_reset_token(token: str) -> Optional[dict]:
 @limiter.limit(rate_max)
 async def login_page(request: Request):
     """Display login form"""
-    return templates.TemplateResponse("auth/login.html", {
+    # Generate CAPTCHA token
+    captcha_token, captcha_hash = generate_captcha_token()
+    
+    response = templates.TemplateResponse("auth/login.html", {
         "request": request,
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
+        "captcha_token": captcha_token
     })
+    
+    # Set CAPTCHA cookie
+    set_captcha_cookie(response, captcha_hash)
+    
+    return response
 
 @router.get("/signup")
 @limiter.limit(rate_max)
 async def signup_page(request: Request):
     """Display signup form"""
-    return templates.TemplateResponse("auth/signup.html", {
+    # Generate CAPTCHA token
+    captcha_token, captcha_hash = generate_captcha_token()
+    
+    response = templates.TemplateResponse("auth/signup.html", {
         "request": request,
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
+        "captcha_token": captcha_token
     })
+    
+    # Set CAPTCHA cookie
+    set_captcha_cookie(response, captcha_hash)
+    
+    return response
 
 @router.get("/set_password")
 @limiter.limit(rate_max)
@@ -257,7 +334,18 @@ async def set_password_page(
 @limiter.limit(rate_max)
 async def forgot_password_page(request: Request):
     """Display forgot password form"""
-    return templates.TemplateResponse("auth/forgot_password.html", {"request": request})
+    # Generate CAPTCHA token
+    captcha_token, captcha_hash = generate_captcha_token()
+    
+    response = templates.TemplateResponse("auth/forgot_password.html", {
+        "request": request,
+        "captcha_token": captcha_token
+    })
+    
+    # Set CAPTCHA cookie
+    set_captcha_cookie(response, captcha_hash)
+    
+    return response
 
 @router.get("/reset_password")
 @limiter.limit(rate_max)
@@ -271,10 +359,23 @@ async def reset_password_page(request: Request, token: str = Query(...)):
             {"request": request, "error": "Invalid or expired token"}
         )
     
-    return templates.TemplateResponse(
+    # Generate CAPTCHA token
+    captcha_token, captcha_hash = generate_captcha_token()
+    
+    response = templates.TemplateResponse(
         "auth/reset_password.html",
-        {"request": request, "token": token, "email": user['email']}
+        {
+            "request": request,
+            "token": token,
+            "email": user['email'],
+            "captcha_token": captcha_token
+        }
     )
+    
+    # Set CAPTCHA cookie
+    set_captcha_cookie(response, captcha_hash)
+    
+    return response
 
 @router.get("/change_password")
 @limiter.limit(rate_max)
@@ -291,6 +392,20 @@ async def change_password_page(request: Request):
 async def register(request: Request, register_req: RegisterRequest):
     """Register new user - sends activation email"""
     try:
+        # Validate CAPTCHA first
+        is_valid, error_message = validate_captcha(
+            request,
+            register_req.captcha_token,
+            register_req.captcha_checked
+        )
+        
+        if not is_valid:
+            return render_error(
+                request, "auth/register_error.html",
+                status.HTTP_400_BAD_REQUEST,
+                error_message
+            )
+        
         email = register_req.email
         existing_user = get_user_by_email(email)
         
@@ -431,6 +546,16 @@ async def set_password(request: Request, password_req: SetPasswordRequest):
 async def login(request: Request, login_req: LoginRequest):
     """Login with email/password"""
     try:
+        # Validate CAPTCHA first
+        is_valid, error_message = validate_captcha(
+            request,
+            login_req.captcha_token,
+            login_req.captcha_checked
+        )
+        
+        if not is_valid:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, error_message)
+        
         user = get_user_by_email(login_req.email)
         
         if not user or not user['is_active'] or not user['password_hash']:
@@ -464,7 +589,7 @@ async def login(request: Request, login_req: LoginRequest):
             "token_type": "bearer",
             "expires_in": int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             "role": user_role.value,
-            "redirect_url": request.url.scheme + "://" + request.client.host + ":8000" + "/about"
+            "redirect_url": request.url.scheme + "://" + request.client.host + ":8000" + "/v1/auth/profile"
         }
         
         response = JSONResponse(content=response_data)
@@ -479,6 +604,9 @@ async def login(request: Request, login_req: LoginRequest):
             samesite="lax"
         )
         
+        # Clear CAPTCHA cookie after successful login
+        clear_captcha_cookie(response)
+        
         return response
         
     except HTTPException:
@@ -492,6 +620,20 @@ async def login(request: Request, login_req: LoginRequest):
 async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
     """Request password reset"""
     try:
+        # Validate CAPTCHA first
+        is_valid, error_message = validate_captcha(
+            request,
+            forgot_req.captcha_token,
+            forgot_req.captcha_checked
+        )
+        
+        if not is_valid:
+            return render_error(
+                request, "auth/forgot_password_error.html",
+                status.HTTP_400_BAD_REQUEST,
+                error_message
+            )
+        
         user = get_user_by_email(forgot_req.email)
         
         # Always return success (prevent enumeration)
@@ -536,6 +678,20 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
 async def reset_password(request: Request, reset_req: ResetPasswordRequest):
     """Reset password with token"""
     try:
+        # Validate CAPTCHA first
+        is_valid, error_message = validate_captcha(
+            request,
+            reset_req.captcha_token,
+            reset_req.captcha_checked
+        )
+        
+        if not is_valid:
+            return render_error(
+                request, "auth/reset_password_error.html",
+                status.HTTP_400_BAD_REQUEST,
+                error_message
+            )
+        
         user = get_user_by_reset_token(reset_req.token)
         
         if not user:
@@ -634,8 +790,263 @@ async def logout_page(request: Request):
     return response
 
 # ====================================================================
+# PROFILE ENDPOINTS
+# ====================================================================
+
+@router.get("/profile")
+@limiter.limit(rate_max)
+async def profile_page(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Display user profile page with current data"""
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user:
+            return RedirectResponse(url="/v1/auth/login", status_code=303)
+        
+        # Parse data_usage JSON if exists
+        data_usage = []
+        if user.get('data_usage'):
+            import json
+            try:
+                data_usage = json.loads(user['data_usage'])
+            except:
+                data_usage = []
+        
+        # Create API key preview (first 8 and last 4 chars)
+        api_key_preview = "No API key set"
+        if user.get('api_key_hash'):
+            api_key_preview = "sk_..." + "x" * 24 + "..."
+        
+        # Job roles list
+        job_roles = [
+            "Background Check Specialist",
+            "Compliance Officer",
+            "Data Analyst/Scientist",
+            "Human Resources Professional",
+            "Journalist/Reporter",
+            "Law Enforcement Officer",
+            "Legal Professional/Attorney",
+            "Private Investigator",
+            "Public Safety Official",
+            "Researcher/Academic",
+            "Risk Analyst",
+            "Security Professional",
+            "Software Developer",
+            "Other"
+            ]
+        
+        # Data usage options
+        data_usage_options = [
+            "Analytics/Data Science",
+            "Background Screening",
+            "Compliance/Regulatory",
+            "Due Diligence",
+            "Journalism/Reporting",
+            "Law Enforcement",
+            "Public Safety Awareness",
+            "Research/Academic Study",
+            "Security/Risk Assessment",
+            "Software Development/Integration",
+            "Other"
+            ]
+        
+        return templates.TemplateResponse("auth/profile.html", {
+            "request": request,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
+            "user": user,
+            "data_usage": data_usage,
+            "job_roles": job_roles,
+            "data_usage_options": data_usage_options,
+            "api_key_preview": api_key_preview
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Profile page error: {str(e)}")
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+
+@router.get("/profile/data", response_model=ProfileResponse)
+@limiter.limit(rate_max)
+async def get_profile_data(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get user profile data as JSON"""
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+        
+        # Parse data_usage JSON
+        data_usage = []
+        if user.get('data_usage'):
+            import json
+            try:
+                data_usage = json.loads(user['data_usage'])
+            except:
+                data_usage = []
+        
+        # Create API key preview
+        api_key_preview = "No API key"
+        if user.get('api_key_hash'):
+            api_key_preview = "sk_...xxxx" 
+        
+        return ProfileResponse(
+            user_id=str(user['user_id']),
+            email=user['email'],
+            first_name=user.get('first_name'),
+            last_name=user.get('last_name'),
+            company=user.get('company'),
+            job_role=user.get('job_role'),
+            data_usage=data_usage,
+            role=user['role'],
+            is_active=user['is_active'],
+            created_at=user['created_at'].isoformat() if user.get('created_at') else None,
+            last_login_at=user['last_login_at'].isoformat() if user.get('last_login_at') else None,
+            api_key_preview=api_key_preview
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get profile data error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to get profile")
+
+@router.put("/profile")
+@limiter.limit(rate_max)
+async def update_profile(
+    request: Request,
+    profile_update: ProfileUpdateRequest,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Update user profile"""
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+        
+        # Check if email is being changed and if it's already taken
+        if profile_update.email and profile_update.email != user['email']:
+            existing_user = get_user_by_email(profile_update.email)
+            if existing_user:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email already in use")
+        
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        update_values = []
+        
+        if profile_update.email is not None:
+            update_fields.append("email = %s")
+            update_values.append(profile_update.email)
+        
+        if profile_update.first_name is not None:
+            update_fields.append("first_name = %s")
+            update_values.append(profile_update.first_name if profile_update.first_name else None)
+        
+        if profile_update.last_name is not None:
+            update_fields.append("last_name = %s")
+            update_values.append(profile_update.last_name if profile_update.last_name else None)
+        
+        if profile_update.company is not None:
+            update_fields.append("company = %s")
+            update_values.append(profile_update.company if profile_update.company else None)
+        
+        if profile_update.job_role is not None:
+            update_fields.append("job_role = %s")
+            update_values.append(profile_update.job_role if profile_update.job_role else None)
+        
+        if profile_update.data_usage is not None:
+            import json
+            update_fields.append("data_usage = %s")
+            update_values.append(json.dumps(profile_update.data_usage) if profile_update.data_usage else None)
+        
+        if not update_fields:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "No fields to update")
+        
+        # Always update updated_at
+        update_fields.append("updated_at = NOW()")
+        update_values.append(user['user_id'])
+        
+        # Execute update
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                query = f"""
+                    UPDATE tbl_users
+                    SET {', '.join(update_fields)}
+                    WHERE user_id = %s
+                """
+                cur.execute(query, update_values)
+                conn.commit()
+        
+        logger.info(f"Profile updated: {user['email']}")
+        
+        return {
+            "message": "Profile updated successfully",
+            "updated_fields": [field.split(' = ')[0] for field in update_fields if field != "updated_at = NOW()"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Update profile error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update profile")
+
+# ====================================================================
 # API KEY ENDPOINTS
 # ====================================================================
+
+@router.post("/reset_key")
+@limiter.limit("3/hour")  # Rate limit to prevent abuse
+async def reset_api_key(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """
+    Reset user's API key - generates new key and emails it to user.
+    Invalidates all existing tokens generated from old API key.
+    """
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+        
+        # Generate new API key
+        api_key, api_key_hash = generate_api_key_and_hash()
+        
+        # Update database with new API key hash
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE tbl_users
+                       SET api_key_hash = %s, updated_at = NOW()
+                       WHERE user_id = %s""",
+                    (api_key_hash, user['user_id'])
+                )
+                conn.commit()
+        
+        logger.info(f"API key reset: {user['email']}")
+        
+        # Email new API key to user
+        send_api_key_email(user['email'], api_key)
+        
+        return {
+            "message": "API key reset successfully. Check your email for the new key.",
+            "email": user['email']
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Reset API key error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to reset API key")
 
 @router.post("/token", response_model=TokenResponse)
 @limiter.limit(rate_max)
@@ -667,7 +1078,7 @@ async def get_token(request: Request, token_req: TokenRequest):
             token_type="bearer",
             expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             role=user_role.value,
-            redirect_url="/about"
+            redirect_url="/v1/auth/profile"
         )
         
     except HTTPException:

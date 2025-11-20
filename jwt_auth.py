@@ -1,9 +1,10 @@
 """
 JWT Authentication Dependencies
 Provides FastAPI dependencies for protecting endpoints with JWT tokens
+Supports both Authorization header (API) and httpOnly cookie (web pages)
 """
 from typing import Optional
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from auth import UserRole, has_role
 from jwt_utils import decode_access_token, JWTError
@@ -15,24 +16,52 @@ security = HTTPBearer(
     auto_error=False  # Don't auto-error, we'll handle it ourselves
 )
 
+def get_token_from_cookie_or_header(
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+) -> Optional[str]:
+    """
+    Extract JWT token from either:
+    1. httpOnly cookie (for web pages) - checked first
+    2. Authorization header (for API calls)
+    
+    Returns token string or None if not found
+    """
+    # First, check for httpOnly cookie (web page authentication)
+    token = request.cookies.get("auth_token")
+    if token:
+        return token
+    
+    # Second, check Authorization header (API authentication)
+    if credentials:
+        return credentials.credentials
+    
+    return None
+
 def get_current_user_from_token(
+    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ) -> dict:
     """
-    Extract and validate JWT token from Authorization header.
+    Extract and validate JWT token from either httpOnly cookie or Authorization header.
     Returns user claims (user_id, role) from valid token.
+    
+    Checks in order:
+    1. httpOnly cookie named 'auth_token' (for web pages)
+    2. Authorization: Bearer header (for API calls)
     
     Raises:
         HTTPException 401: If token is missing, invalid, or expired
     """
-    if not credentials:
+    # Get token from cookie or header
+    token = get_token_from_cookie_or_header(request, credentials)
+    
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authentication token. Include 'Authorization: Bearer {token}' header.",
+            detail="Missing authentication token. Please log in or include 'Authorization: Bearer {token}' header.",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    
-    token = credentials.credentials
     
     try:
         payload = decode_access_token(token)
@@ -111,17 +140,37 @@ def require_jwt_role(required_role: UserRole):
 
 # Optional: Dependency for endpoints that work with or without authentication
 def get_optional_user(
+    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ) -> Optional[dict]:
     """
     Optional authentication - returns user info if token provided and valid,
     None otherwise. Useful for endpoints that provide different features
     based on authentication status.
+    
+    Checks both httpOnly cookie and Authorization header.
     """
-    if not credentials:
+    token = get_token_from_cookie_or_header(request, credentials)
+    
+    if not token:
         return None
     
     try:
-        return get_current_user_from_token(credentials)
-    except HTTPException:
+        payload = decode_access_token(token)
+        user_id = payload.get("sub")
+        role_str = payload.get("role")
+        
+        if not user_id or not role_str:
+            return None
+        
+        try:
+            role = UserRole(role_str)
+        except ValueError:
+            return None
+        
+        return {
+            "user_id": user_id,
+            "role": role
+        }
+    except (JWTError, Exception):
         return None

@@ -2,6 +2,72 @@
 
 {% block title %}Login - Scientifics.io{% endblock %}
 
+{% block extra_css %}
+<style>
+    .captcha-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 2px solid #e1e4e8;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .captcha-box:hover {
+        border-color: #3d4461;
+        box-shadow: 0 4px 8px rgba(61,68,97,0.1);
+    }
+    
+    .captcha-content {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .captcha-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #3d4461 0%, #2d3451 100%);
+        border-radius: 6px;
+        margin-right: 14px;
+        font-size: 20px;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+    
+    .captcha-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+    
+    .captcha-checkbox-wrapper input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+        cursor: pointer;
+        accent-color: #3d4461;
+    }
+    
+    .captcha-label {
+        font-size: 15px;
+        font-weight: 500;
+        color: #212529;
+        user-select: none;
+    }
+    
+    .captcha-sublabel {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="content">
     <div class="text-center">
@@ -33,6 +99,26 @@
                     minlength="8"
                     placeholder=""
                 >
+            </div>
+            
+            <input type="hidden" id="captchaToken" value="{{ captcha_token }}">
+            
+            <div class="captcha-box">
+                <label class="captcha-content" for="captchaCheck">
+                    <div class="captcha-icon">&#128274;</div>
+                    <div class="captcha-checkbox-wrapper">
+                        <input 
+                            type="checkbox" 
+                            id="captchaCheck" 
+                            name="captchaCheck" 
+                            required
+                        >
+                        <div>
+                            <div class="captcha-label">I ain't no robot</div>
+                            <div class="captcha-sublabel">Verify you're human</div>
+                        </div>
+                    </div>
+                </label>
             </div>
             
             <button type="submit" class="btn btn-primary btn-block">Login</button>
@@ -67,8 +153,17 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const captchaToken = document.getElementById('captchaToken').value;
+    const captchaChecked = document.getElementById('captchaCheck').checked;
     const errorDiv = document.getElementById('errorMessage');
     const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // Validate CAPTCHA checkbox
+    if (!captchaChecked) {
+        errorDiv.textContent = 'Please check the verification box';
+        errorDiv.style.display = 'block';
+        return;
+    }
     
     // Disable button and show loading
     submitBtn.disabled = true;
@@ -81,20 +176,21 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ 
+                email, 
+                password, 
+                captcha_token: captchaToken,
+                captcha_checked: captchaChecked
+            })
         });
         
         const data = await response.json();
         
         // Login success
         if (response.ok) {
-            // Store authentication data
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('user_role', data.role);
-            localStorage.setItem('user_email', email);
-            
-            // Redirect to dashboard or specified URL
-            window.location.href = data.redirect_url || '/v1/auth/dashboard';
+            window.location.href = data.redirect_url;
         } else {
             // Show error
             errorDiv.textContent = data.detail || 'Login failed';
