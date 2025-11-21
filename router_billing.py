@@ -14,8 +14,9 @@ from contextlib import contextmanager
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from fastapi import APIRouter, HTTPException, Request, status, Depends, Header
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi import BackgroundTasks
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -39,7 +40,10 @@ rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # Router
-router = APIRouter(prefix="/billing", tags=["Billing"])
+router = APIRouter(prefix="/v1/billing", tags=["Billing"])
+
+# Templates
+templates = Jinja2Templates(directory="templates")
 
 # ============================================================================
 # DATABASE HELPERS
@@ -842,6 +846,32 @@ async def get_billing_info(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get billing information"
         )
+
+# ============================================================================
+# BILLING DASHBOARD PAGE
+# ============================================================================
+
+@router.get(
+    "/",
+    response_class=HTMLResponse,
+    summary="Billing Dashboard Page",
+    description="Serve the billing dashboard HTML page",
+    include_in_schema=False  # Hide from API docs since it's a web page
+)
+@limiter.limit(rate_max)
+async def billing_dashboard_page(request: Request):
+    """
+    Billing Dashboard - View subscription and payment history.
+    Authentication handled by JavaScript on frontend (checks for JWT token).
+    """
+    return templates.TemplateResponse(
+        "billing/billing.html",
+        {
+            "request": request,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email
+        }
+    )
 
 @router.get(
     "/pricing",

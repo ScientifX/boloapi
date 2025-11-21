@@ -25,9 +25,8 @@
                 
                 {% if user_authenticated %}
                     <!-- Authenticated User Links -->
-                    <a href="/v1/auth/dashboard">Dashboard</a>
                     <a href="/v1/auth/profile">Profile</a>
-                    <a href="/v1/auth/billing">Billing</a>
+                    <a href="/v1/billing">Billing</a>
                     <a href="/v1/auth/logout" onclick="localStorage.clear();">Log Out</a>
                 {% else %}
                     <!-- Guest Links -->

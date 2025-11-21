@@ -38,8 +38,8 @@ from auth import (
 
 import router_etl
 import router_search
-import router_auth 
-# import router_billing
+import router_auth
+import router_billing
 from auth_middleware import TemplateAuthMiddleware
 
 templates = Jinja2Templates(directory="templates")
@@ -63,7 +63,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
-# app.include_router(router_billing.router)
+app.include_router(router_billing.router)
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
 app.include_router(router_auth.router) 

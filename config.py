@@ -33,7 +33,8 @@ DB_CONFIG = {
     "port": os.getenv('API_DB_PORT'),
     "database": os.getenv('API_DB_DATABASE'),
     "user": os.getenv('API_DB_USER'),
-    "password": os.getenv('API_DB_PASSWORD')
+    "password": os.getenv('API_DB_PASSWORD'),
+    "options": "-c search_path=base,public"  # Look in base schema first, then public
 }
 
 # ============================================================================
