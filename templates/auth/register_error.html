@@ -33,11 +33,11 @@ curl -X POST "{{ app_base_url }}/v1/auth/token" \
         <h4>Option 2: Reset Your API Key</h4>
         <p>If you've lost your API key, request a reset:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/v1/auth/reset" \
+curl -X POST "{{ app_base_url }}/v1/auth/reset_key" \
   -H "Content-Type: application/json" \
   -d '{"email": "{{ email if email else 'your.email@example.com' }}"}'
         </div>
-        <p style="margin-top: 10px;">Or visit: <a href="{{ app_base_url }}/v1/auth/reset">{{ app_base_url }}/v1/auth/reset</a></p>
+        <p style="margin-top: 10px;">Or visit: <a href="{{ app_base_url }}/v1/auth/reset_key">{{ app_base_url }}/v1/auth/reset</a></p>
     </div>
     
     {% elif "validation" in error_message.lower() or "invalid email" in error_message.lower() %}

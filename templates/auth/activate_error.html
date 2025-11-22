@@ -54,7 +54,7 @@ curl -X POST "{{ app_base_url }}/v1/auth/signup" \
         <h3>Reset Your API Key</h3>
         <p>If you've lost your API key, you can request a reset:</p>
         <div class="code-block">
-curl -X POST "{{ app_base_url }}/v1/auth/reset" \
+curl -X POST "{{ app_base_url }}/v1/auth/reset_key" \
   -H "Content-Type: application/json" \
   -d '{"email": "your.email@example.com"}'
         </div>
