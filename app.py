@@ -202,7 +202,7 @@ async def set_role(request: Request, role: UserRole):
 @app.get("/about", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def about_page(request: Request):
-    """About Scientifics.io and the FBI Wanted API"""
+    """About BoloAPI and the FBI Wanted API"""
     current_role = get_current_role(request)
     return templates.TemplateResponse(
         "static/about.html",

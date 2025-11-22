@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Scientifics.io - BoloAPI{% endblock %}
+{% block title %}BoloAPI - BoloAPI{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -98,7 +98,7 @@
 
 /* Section Styles */
 .section {
-    padding: 60px 20px;
+    /* padding: 60px 20px; */
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -443,30 +443,15 @@
 <!-- Hero Section with Live Stats -->
 <div class="hero-stats">
     <h2>BoloAPI</h2>
-    <p class="tagline">Clean, structured data from FBI Most Wanted lists delivered through simple REST APIs</p>
-    
-    <div class="stat-boxes">
-        <div class="stat-box">
-            <div class="stat-number">{{ total }}</div>
-            <div class="stat-label">Active Records</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number">99.9%</div>
-            <div class="stat-label">Uptime SLA</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number">Daily</div>
-            <div class="stat-label">Data Updates</div>
-        </div>
-    </div>
+    <p class="tagline">Clean, structured data from the FBI's Wanted API delivered through simple REST calls.</p>
     
     <div class="cta-buttons">
-        <a href="/v1/auth/signup" class="btn btn-primary">Get Started Free</a>
-        <a href="/docs" class="btn btn-secondary">View Documentation</a>
+        <a href="/v1/auth/signup" class="btn btn-primary" style="width:75%;display:block;margin: 0 auto;">Get Started Free</a>
+        <a href="/docs" class="btn btn-secondary" style="width:75%;display:block;margin: 0 auto;">View API Docs</a>
     </div>
 </div>
 
-<!-- Use Cases Section -->
+<!-- Use Cases Section 
 <div class="section">
     <h2 class="section-title">Built For Your Use Case</h2>
     <p class="section-subtitle">Trusted by law enforcement, researchers, media organizations, and developers building public safety applications</p>
@@ -497,20 +482,20 @@
         </div>
     </div>
 </div>
-
+-->
 <!-- Features Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Why Choose Scientifics.io</h2>
+    <h2 class="section-title">Why Choose BoloAPI?</h2>
     <p class="section-subtitle">We handle the complexity so you can focus on building great applications</p>
     
-    <div class="features-grid">
+    <div class="features-grid"><!--
         <div class="feature-item">
             <div class="feature-icon">🔄</div>
             <div class="feature-content">
                 <h4>Automated Data Pipeline</h4>
                 <p>Daily pulls from FBI sources with validation and quality checks</p>
             </div>
-        </div>
+        </div>-->
         
         <div class="feature-item">
             <div class="feature-icon">✨</div>
@@ -528,13 +513,14 @@
             </div>
         </div>
         
+        <!--
         <div class="feature-item">
             <div class="feature-icon">📈</div>
             <div class="feature-content">
                 <h4>Historical Tracking</h4>
                 <p>Change history, trend analysis, and longitudinal data access</p>
             </div>
-        </div>
+        </div>-->
         
         <div class="feature-item">
             <div class="feature-icon">🔐</div>
@@ -551,81 +537,12 @@
                 <p>Interactive API docs with code examples and integration guides</p>
             </div>
         </div>
-        
-        <div class="feature-item">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-content">
-                <h4>Fast & Reliable</h4>
-                <p>Sub-100ms response times with 99.9% uptime guarantee</p>
-            </div>
-        </div>
-        
-        <div class="feature-item">
-            <div class="feature-icon">💬</div>
-            <div class="feature-content">
-                <h4>Responsive Support</h4>
-                <p>Real humans who understand your integration challenges</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Pricing Section -->
-<div class="section">
-    <h2 class="section-title">Simple, Transparent Pricing</h2>
-    <p class="section-subtitle">Choose the plan that fits your needs. Upgrade or downgrade anytime.</p>
-    
-    <div class="pricing-grid">
-        <div class="pricing-card">
-            <div class="pricing-tier">BASIC</div>
-            <div class="pricing-price">Free</div>
-            <div class="pricing-period">Forever</div>
-            <ul class="pricing-features">
-                <li>25 results per request</li>
-                <li>Simple search</li>
-                <li>Current data access</li>
-                <li>API documentation</li>
-                <li>Community support</li>
-            </ul>
-            <a href="/v1/auth/signup" class="pricing-cta">Get Started</a>
-        </div>
-        
-        <div class="pricing-card featured">
-            <span class="pricing-badge">MOST POPULAR</span>
-            <div class="pricing-tier">PREMIUM</div>
-            <div class="pricing-price">$99</div>
-            <div class="pricing-period">per month</div>
-            <ul class="pricing-features">
-                <li>5,000 results per request</li>
-                <li>Advanced boolean search</li>
-                <li>Cleaned, normalized data</li>
-                <li>Historical data access</li>
-                <li>Change tracking</li>
-                <li>Priority support</li>
-            </ul>
-            <a href="/contact" class="pricing-cta">Contact Sales</a>
-        </div>
-        
-        <div class="pricing-card">
-            <div class="pricing-tier">ENTERPRISE</div>
-            <div class="pricing-price">Custom</div>
-            <div class="pricing-period">Tailored to your needs</div>
-            <ul class="pricing-features">
-                <li>Unlimited requests</li>
-                <li>Custom rate limits</li>
-                <li>Dedicated support</li>
-                <li>SLA guarantees</li>
-                <li>Custom integrations</li>
-                <li>Bulk data exports</li>
-            </ul>
-            <a href="/contact" class="pricing-cta">Contact Sales</a>
-        </div>
     </div>
 </div>
 
 <!-- Quick Start Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Get Started in Minutes</h2>
+    <h2 class="section-title">Get Started FREE in Minutes</h2>
     <p class="section-subtitle">From registration to your first API call in under 5 minutes</p>
     
     <div class="steps-container">
@@ -652,43 +569,6 @@
             <h3>Search</h3>
             <p>Start querying FBI wanted persons data with our simple or advanced search endpoints</p>
         </div>
-    </div>
-</div>
-
-<!-- Stats/Social Proof Section -->
-<div class="section stats-section">
-    <h2 class="section-title">Trusted & Reliable</h2>
-    
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-value">99.9%</div>
-            <div class="stat-description">Uptime Guarantee</div>
-        </div>
-        
-        <div class="stat-item">
-            <div class="stat-value">&lt;100ms</div>
-            <div class="stat-description">Avg Response Time</div>
-        </div>
-        
-        <div class="stat-item">
-            <div class="stat-value">Daily</div>
-            <div class="stat-description">Data Refreshes</div>
-        </div>
-        
-        <div class="stat-item">
-            <div class="stat-value">24/7</div>
-            <div class="stat-description">Monitoring</div>
-        </div>
-    </div>
-</div>
-
-<!-- Final CTA Section -->
-<div class="cta-section">
-    <h2>Ready to Get Started?</h2>
-    <p>Join law enforcement agencies, researchers, and developers using our API to access FBI wanted persons data</p>
-    <div class="cta-buttons">
-        <a href="/v1/auth/signup" class="btn btn-primary">Start Free Today</a>
-        <a href="/docs" class="btn btn-secondary">Explore API Docs</a>
     </div>
 </div>
 {% endblock %}

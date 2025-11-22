@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Billing - Scientifics.io{% endblock %}
+{% block title %}Billing - BoloAPI{% endblock %}
 
 {% block content %}
 <div class="content">
@@ -25,7 +25,7 @@
                     <button id="portalBtn" class="btn btn-secondary" style="display: none;">
                         Manage Subscription
                     </button>
-                    <a href="/v1/billing/pricing" class="btn btn-secondary">View All Plans</a>
+                    <a href="/v1/billing/plans" class="btn btn-secondary">View All Plans</a>
                 </div>
             </div>
         </div>
@@ -183,7 +183,7 @@ async function loadBillingInfo() {
 
 async function openCustomerPortal() {
     try {
-        const response = await fetchWithAuth('/billing/portal');
+        const response = await fetchWithAuth('/v1/billing/portal');
         if (!response) return;
         
         const data = await response.json();

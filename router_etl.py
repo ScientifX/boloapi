@@ -970,8 +970,8 @@ async def fetch_all_pages(client: httpx.AsyncClient, url: str, params: dict) -> 
     # Fetch remaining pages
     for page_num in range(2, total_pages + 1):
         # Sleep between requests to avoid rate limiting
-        logger.info(f"Sleeping 3 seconds before fetching page {page_num}")
-        await asyncio.sleep(3)
+        logger.info(f"Sleeping 2 seconds before fetching page {page_num}")
+        await asyncio.sleep(2)
         
         page_data = await fetch_page_with_retry(client, url, params, page=page_num)
         page_items = page_data.get('items', [])

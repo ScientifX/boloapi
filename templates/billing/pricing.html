@@ -1,0 +1,338 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Pricing Plans - BoloAPI{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>Subscription Plans</h2>
+    <p class="subtitle">Choose the plan that fits your needs</p>
+    
+    <div class="pricing-container">
+        <!-- Basic Plan -->
+        <div class="pricing-card">
+            <div class="plan-header basic">
+                <h3>Basic</h3>
+                <div class="price">
+                    <span class="amount">$0</span>
+                    <span class="period">/month</span>
+                </div>
+            </div>
+            <div class="plan-body">
+                <h4>Features:</h4>
+                <ul class="feature-list">
+                    <li>25 results per request</li>
+                    <li>Raw data access</li>
+                    <li>Simple search</li>
+                    <li>Current month data only</li>
+                </ul>
+                {% if current_plan == 'basic' %}
+                    <button class="btn btn-secondary btn-block" disabled>Current Plan</button>
+                {% elif user_authenticated %}
+                    <a href="/v1/billing" class="btn btn-outline btn-block">Downgrade to Basic</a>
+                {% else %}
+                    <a href="/v1/auth/signup" class="btn btn-secondary btn-block">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Premium Monthly -->
+        <div class="pricing-card premium-highlight">
+            <div class="plan-header premium">
+                <span class="badge-popular">Most Popular</span>
+                <h3>Premium - Monthly</h3>
+                <div class="price">
+                    <span class="amount">${{ pricing.monthly.price }}</span>
+                    <span class="period">/month</span>
+                </div>
+            </div>
+            <div class="plan-body">
+                <h4>Everything in Basic, plus:</h4>
+                <ul class="feature-list">
+                    <li>No search result limit per request</li>
+                    <li>Cleaned & normalized data</li>
+                    <li>Advanced search with Boolean logic</li>
+                    <li>6 months historical data</li>
+                </ul>
+                {% if current_plan == 'premium' and current_cycle == 'monthly' %}
+                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
+                {% elif user_authenticated %}
+                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Monthly</a>
+                {% else %}
+                    <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Premium Quarterly -->
+        <div class="pricing-card">
+            <div class="plan-header premium">
+                <span class="badge-save">Save ${{ pricing.quarterly.savings }}</span>
+                <h3>Premium - Quarterly</h3>
+                <div class="price">
+                    <span class="amount">${{ pricing.quarterly.price }}</span>
+                    <span class="period">/3 months</span>
+                </div>
+                <p class="price-note">(${{ "%.2f"|format(pricing.quarterly.price / 3) }}/month)</p>
+            </div>
+            <div class="plan-body">
+                <h4>Everything in Premium Monthly</h4>
+                <ul class="feature-list">
+                    <li>Save ${{ pricing.quarterly.savings }} vs monthly</li>
+                    <li>All Premium features included</li>
+                    <li>Billed every 3 months</li>
+                </ul>
+                {% if current_plan == 'premium' and current_cycle == 'quarterly' %}
+                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
+                {% elif user_authenticated %}
+                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Quarterly</a>
+                {% else %}
+                    <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Premium Annual -->
+        <div class="pricing-card">
+            <div class="plan-header premium">
+                <span class="badge-save">Best Value - Save ${{ pricing.annual.savings }}</span>
+                <h3>Premium - Annual</h3>
+                <div class="price">
+                    <span class="amount">${{ pricing.annual.price }}</span>
+                    <span class="period">/year</span>
+                </div>
+                <p class="price-note">(${{ "%.2f"|format(pricing.annual.price / 12) }}/month)</p>
+            </div>
+            <div class="plan-body">
+                <h4>Everything in Premium Monthly</h4>
+                <ul class="feature-list">
+                    <li>Save ${{ pricing.annual.savings }} vs monthly</li>
+                    <li>All Premium features included</li>
+                    <li>Billed annually</li>
+                </ul>
+                {% if current_plan == 'premium' and current_cycle == 'annual' %}
+                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
+                {% elif user_authenticated %}
+                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Annual</a>
+                {% else %}
+                    <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="pricing-faq">
+        <h3>Frequently Asked Questions</h3>
+        
+        <div class="faq-item">
+            <h4>Can I switch plans later?</h4>
+            <p>Yes, you can upgrade or downgrade your plan at any time from your billing dashboard.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h4>What payment methods do you accept?</h4>
+            <p>We accept all major credit cards through our secure payment processor, LemonSqueezy.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h4>Can I cancel anytime?</h4>
+            <p>Yes, you can cancel your subscription at any time. You'll continue to have access until the end of your billing period.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h4>Is there a free trial?</h4>
+            <p>The Basic plan is free forever. You can upgrade to Premium at any time to access advanced features.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 1.1em;
+}
+
+.pricing-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.pricing-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.premium-highlight {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.plan-header {
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+}
+
+.plan-header.basic {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.plan-header.premium {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.plan-header h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.5em;
+}
+
+.price {
+    margin: 15px 0;
+}
+
+.price .amount {
+    font-size: 3em;
+    font-weight: bold;
+    display: block;
+}
+
+.price .period {
+    font-size: 1em;
+    opacity: 0.9;
+}
+
+.price-note {
+    margin: 10px 0 0 0;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.badge-popular, .badge-save {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.plan-body {
+    padding: 30px 20px;
+}
+
+.plan-body h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+}
+
+.feature-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    padding-left: 25px;
+}
+
+.feature-list li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-outline {
+    background: white;
+    color: #666;
+    border: 2px solid #e0e0e0;
+}
+
+.btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+}
+
+button.btn:disabled,
+button.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #6c757d;
+    border-color: #6c757d;
+}
+
+button.btn:disabled:hover,
+button.btn[disabled]:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: none;
+}
+
+.pricing-faq {
+    max-width: 800px;
+    margin: 60px auto 0;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.pricing-faq h3 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.faq-item {
+    margin-bottom: 25px;
+}
+
+.faq-item h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    color: #666;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .pricing-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .price .amount {
+        font-size: 2.5em;
+    }
+}
+</style>
+{% endblock %}

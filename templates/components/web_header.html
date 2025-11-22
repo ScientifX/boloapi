@@ -3,7 +3,7 @@
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 15px;">
             <a href="/">
-                <img src="{{ url_for('static', path='/images/logo-scientifx.png') }}" alt="Scientifics.io" class="logo">
+                <img src="{{ url_for('static', path='/images/logo-scientifx.png') }}" alt="BoloAPI" class="logo">
             </a>
         </div>
         
@@ -22,7 +22,7 @@
             <nav class="nav">
                 <!-- <a href="/">Home</a> -->
                 <a href="/docs">API Docs</a>
-                
+                <a href="/v1/billing/plans">Pricing</a> 
                 {% if user_authenticated %}
                     <!-- Authenticated User Links -->
                     <a href="/v1/auth/profile">Profile</a>
