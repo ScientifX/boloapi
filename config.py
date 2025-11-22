@@ -89,26 +89,35 @@ API_LEMONSQUEEZY_VARIANT_ANNUAL = os.getenv('API_LEMONSQUEEZY_VARIANT_ANNUAL')
 # PRICING CONFIGURATION
 # ============================================================================
 
+# Define your prices here (easier to update)
+PRICE_MONTHLY = 9.99
+PRICE_QUARTERLY = 19.99
+PRICE_ANNUAL = 39.99
+
+# Calculate savings automatically
+SAVINGS_QUARTERLY = round((PRICE_MONTHLY * 3) - PRICE_QUARTERLY, 2)
+SAVINGS_ANNUAL = round((PRICE_MONTHLY * 12) - PRICE_ANNUAL, 2)
+
 PRICING = {
     'monthly': {
-        'price': 29,
+        'price': PRICE_MONTHLY,
         'currency': 'USD',
         'interval': 'month',
         'variant_id': API_LEMONSQUEEZY_VARIANT_MONTHLY
     },
     'quarterly': {
-        'price': 79,
+        'price': PRICE_QUARTERLY,
         'currency': 'USD',
         'interval': 'quarter',
         'variant_id': API_LEMONSQUEEZY_VARIANT_QUARTERLY,
-        'savings': 8  # vs 3 months
+        'savings': SAVINGS_QUARTERLY
     },
     'annual': {
-        'price': 290,
+        'price': PRICE_ANNUAL,
         'currency': 'USD',
         'interval': 'year',
         'variant_id': API_LEMONSQUEEZY_VARIANT_ANNUAL,
-        'savings': 58  # vs 12 months
+        'savings': SAVINGS_ANNUAL
     }
 }
 

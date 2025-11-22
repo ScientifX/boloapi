@@ -37,7 +37,7 @@
         
         <!-- Premium Monthly -->
         <div class="pricing-card premium-highlight">
-            <div class="plan-header premium">
+            <div class="plan-header premium-monthly">
                 <span class="badge-popular">Most Popular</span>
                 <h3>Premium - Monthly</h3>
                 <div class="price">
@@ -49,7 +49,7 @@
                 <h4>Everything in Basic, plus:</h4>
                 <ul class="feature-list">
                     <li>No search result limit per request</li>
-                    <li>Cleaned & normalized data</li>
+                    <li>Cleaned & standardized data</li>
                     <li>Advanced search with Boolean logic</li>
                     <li>6 months historical data</li>
                 </ul>
@@ -65,7 +65,7 @@
         
         <!-- Premium Quarterly -->
         <div class="pricing-card">
-            <div class="plan-header premium">
+            <div class="plan-header premium-quarterly">
                 <span class="badge-save">Save ${{ pricing.quarterly.savings }}</span>
                 <h3>Premium - Quarterly</h3>
                 <div class="price">
@@ -93,7 +93,7 @@
         
         <!-- Premium Annual -->
         <div class="pricing-card">
-            <div class="plan-header premium">
+            <div class="plan-header premium-yearly">
                 <span class="badge-save">Best Value - Save ${{ pricing.annual.savings }}</span>
                 <h3>Premium - Annual</h3>
                 <div class="price">
@@ -185,12 +185,20 @@
 }
 
 .plan-header.basic {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6B8DD6 0%, #8E37D7 100%);
     color: white;
 }
 
-.plan-header.premium {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.plan-header.premium-monthly {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+.plan-header.premium-quarterly {
+    background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%);
+    color: white;
+}
+.plan-header.premium-yearly {
+    background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
     color: white;
 }
 
