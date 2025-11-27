@@ -65,9 +65,19 @@ API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')  # Default for dev
 # API CONFIGURATION
 # ============================================================================
 
-API_TITLE = "BoloAPI"
-API_VERSION = "2.0.0"
-API_DESCRIPTION = "A Comprehensive FBI Wanted Persons Search API"
+APP_GLOBALS = {
+    "app_name": "BoloDoc",
+    "company_name": "Scientifics.io",
+    "business_email": "contact@scientifics.io",
+    "legal_email": "legal@scientifics.io",
+    "privacy_email": "privacy@scientifics.io",
+    "security_email": "security@scientifics.io",
+    "support_email": "engage@scientifics.io",
+    "api_version" : "2.0.0", 
+    "api_description" : "A Comprehensive FBI Wanted Persons Search API", 
+    "year": 2025
+    }
+
 
 # Rate limiting
 RATE_LIMIT_DEFAULT = "10/minute"

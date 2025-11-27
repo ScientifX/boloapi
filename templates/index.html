@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}BoloAPI by Scientifics.io{% endblock %}
+{% block title %}{{ app_name }} by {{ company_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -442,7 +442,7 @@
 {% block content %}
 <!-- Hero Section with Live Stats -->
 <div class="hero-stats">
-    <h2>BoloAPI for Developers and Data Professionals</h2>
+    <h2>{{ app_name }} for Developers and Data Professionals</h2>
     <p class="tagline">Clean, structured data from the FBI's Wanted API delivered through simple REST calls.</p>
     
     <div class="cta-buttons">
@@ -484,7 +484,7 @@
 -->
 <!-- Features Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Why Choose BoloAPI?</h2>
+    <h2 class="section-title">Why Choose {{ app_name }}?</h2>
     <p class="section-subtitle">We handle the complexity so you can focus on building great applications</p>
     
     <div class="features-grid">        

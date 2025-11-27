@@ -35,7 +35,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-
+from config import APP_GLOBALS 
 import router_etl
 import router_search
 import router_auth
@@ -43,6 +43,8 @@ import router_billing
 from auth_middleware import TemplateAuthMiddleware
 
 templates = Jinja2Templates(directory="templates")
+
+templates.env.globals.update(APP_GLOBALS)
 
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
@@ -137,6 +139,244 @@ app.add_middleware(
     same_site="lax",
     https_only=False
 )
+
+@app.get("/routes", response_class=HTMLResponse, include_in_schema=False)
+async def list_routes(request: Request):
+    """
+    List all API routes with their router, endpoint name, auth requirements, and rate limits.
+    No authentication required.
+    """
+    routes_info = []
+    
+    for route in app.routes:
+        # Skip non-API routes (static files, etc.)
+        if not hasattr(route, 'methods') or not hasattr(route, 'endpoint'):
+            continue
+        
+        path = getattr(route, 'path', '')
+        endpoint = route.endpoint
+        endpoint_name = endpoint.__name__ if endpoint else 'N/A'
+        methods = ', '.join(sorted(route.methods - {'HEAD', 'OPTIONS'})) if route.methods else 'N/A'
+        
+        # Determine router name from path prefix
+        if path.startswith('/v1/auth'):
+            router_name = 'router_auth'
+        elif path.startswith('/v1/search'):
+            router_name = 'router_search'
+        elif path.startswith('/v1/etl'):
+            router_name = 'router_etl'
+        elif path.startswith('/v1/billing'):
+            router_name = 'router_billing'
+        else:
+            router_name = 'app (root)'
+        
+        # Check for auth requirements by examining dependencies
+        auth_required = 'No'
+        required_role = None
+        
+        # Check route dependencies
+        if hasattr(route, 'dependant') and route.dependant:
+            for dep in route.dependant.dependencies:
+                dep_call = dep.call
+                # Check if it's a require_jwt_role dependency
+                if hasattr(dep_call, '__name__') and dep_call.__name__ == 'role_checker':
+                    auth_required = 'Yes'
+                    # Try to extract the required role from closure
+                    if hasattr(dep_call, '__closure__') and dep_call.__closure__:
+                        for cell in dep_call.__closure__:
+                            cell_contents = cell.cell_contents
+                            if hasattr(cell_contents, 'value'):
+                                required_role = cell_contents.value
+                                break
+                elif hasattr(dep_call, '__name__') and 'jwt' in dep_call.__name__.lower():
+                    auth_required = 'Yes'
+                elif hasattr(dep_call, '__name__') and 'auth' in dep_call.__name__.lower():
+                    auth_required = 'Yes'
+        
+        if required_role:
+            auth_required = f'Yes ({required_role})'
+        
+        # Extract rate limits from endpoint function decorators
+        rate_limits = []
+        if hasattr(endpoint, '__wrapped__'):
+            # Check for slowapi limit decorator info
+            current = endpoint
+            while current:
+                if hasattr(current, '_rate_limit'):
+                    rate_limits.append(current._rate_limit)
+                if hasattr(current, '__wrapped__'):
+                    current = current.__wrapped__
+                else:
+                    break
+        
+        # Also check the endpoint's __self__ for limiter decorators
+        # SlowAPI stores limits differently - check for _limits attribute
+        if hasattr(endpoint, '__self__') and hasattr(endpoint.__self__, '_limits'):
+            rate_limits.extend(endpoint.__self__._limits)
+        
+        # Check limiter's limit_map for this endpoint
+        if hasattr(app.state, 'limiter') and hasattr(app.state.limiter, '_route_limits'):
+            route_key = f"{endpoint.__module__}.{endpoint.__name__}"
+            if route_key in app.state.limiter._route_limits:
+                rate_limits.extend(app.state.limiter._route_limits[route_key])
+        
+        # Fallback: check for decorated limits in various places
+        limit_str = 'Default (10/min)'
+        if rate_limits:
+            limit_str = ', '.join(str(r) for r in rate_limits)
+        else:
+            # Check the source for @limiter.limit decorator
+            import inspect
+            try:
+                source = inspect.getsource(endpoint)
+                if '@limiter.limit' in source:
+                    # Extract limit value from source
+                    import re as regex
+                    match = regex.search(r'@limiter\.limit\(["\']([^"\']+)["\']', source)
+                    if match:
+                        limit_str = match.group(1)
+            except (OSError, TypeError):
+                pass
+        
+        routes_info.append({
+            'router': router_name,
+            'method': methods,
+            'path': path,
+            'endpoint': endpoint_name,
+            'auth_required': auth_required,
+            'rate_limit': limit_str
+        })
+    
+    # Sort by router, then by path
+    routes_info.sort(key=lambda x: (x['router'], x['path']))
+    
+    # Generate HTML table
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>BoloAPI Routes</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                margin: 40px;
+                background: #f5f5f5;
+            }
+            h1 {
+                color: #1a1a2e;
+                margin-bottom: 20px;
+            }
+            .subtitle {
+                color: #666;
+                margin-bottom: 30px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: white;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th {
+                background: #1a1a2e;
+                color: white;
+                padding: 12px 16px;
+                text-align: left;
+                font-weight: 600;
+            }
+            td {
+                padding: 10px 16px;
+                border-bottom: 1px solid #eee;
+            }
+            tr:hover {
+                background: #f9f9f9;
+            }
+            tr:last-child td {
+                border-bottom: none;
+            }
+            .router-auth { color: #e74c3c; }
+            .router-search { color: #3498db; }
+            .router-etl { color: #9b59b6; }
+            .router-billing { color: #27ae60; }
+            .router-root { color: #f39c12; }
+            .method { 
+                font-family: monospace;
+                font-weight: bold;
+            }
+            .method-get { color: #27ae60; }
+            .method-post { color: #3498db; }
+            .method-put { color: #f39c12; }
+            .method-delete { color: #e74c3c; }
+            .path {
+                font-family: monospace;
+                color: #555;
+            }
+            .auth-yes { color: #e74c3c; font-weight: 600; }
+            .auth-no { color: #27ae60; }
+            .count {
+                color: #888;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>BoloAPI Routes</h1>
+        <p class="subtitle">All registered API endpoints <span class="count">(""" + str(len(routes_info)) + """ routes)</span></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Router</th>
+                    <th>Method</th>
+                    <th>Path</th>
+                    <th>Endpoint</th>
+                    <th>Auth Required</th>
+                    <th>Rate Limit</th>
+                </tr>
+            </thead>
+            <tbody>
+    """
+    
+    for route in routes_info:
+        router_class = 'router-root'
+        if 'auth' in route['router']:
+            router_class = 'router-auth'
+        elif 'search' in route['router']:
+            router_class = 'router-search'
+        elif 'etl' in route['router']:
+            router_class = 'router-etl'
+        elif 'billing' in route['router']:
+            router_class = 'router-billing'
+        
+        method_class = 'method-get'
+        if 'POST' in route['method']:
+            method_class = 'method-post'
+        elif 'PUT' in route['method']:
+            method_class = 'method-put'
+        elif 'DELETE' in route['method']:
+            method_class = 'method-delete'
+        
+        auth_class = 'auth-yes' if route['auth_required'].startswith('Yes') else 'auth-no'
+        
+        html += f"""
+                <tr>
+                    <td class="{router_class}">{route['router']}</td>
+                    <td class="method {method_class}">{route['method']}</td>
+                    <td class="path">{route['path']}</td>
+                    <td>{route['endpoint']}</td>
+                    <td class="{auth_class}">{route['auth_required']}</td>
+                    <td>{route['rate_limit']}</td>
+                </tr>
+        """
+    
+    html += """
+            </tbody>
+        </table>
+    </body>
+    </html>
+    """
+    
+    return HTMLResponse(content=html)
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 @limiter.limit(rate_max)
@@ -256,8 +496,6 @@ async def contact_page(request: Request):
         {
             "request": request,
             "current_role": current_role.value,
-            "support_email": "support@scientifics.io", 
-            "business_email": "contact@scientifics.io",
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
         }

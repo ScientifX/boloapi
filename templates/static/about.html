@@ -1,15 +1,15 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}About Us - BoloAPI{% endblock %}
+{% block title %}About Us - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="content">
-    <h2>About Scientifics.io</h2>
+    <h2>About {{ company_name }}</h2>
     
     <div class="section">
         <h2>Who We Are</h2>
         <p>
-            Scientifics.io provides BoloAPI, a comprehensive, developer-friendly enhancement to the FBI's <a href="https://www.fbi.gov/wanted/api" target="_new">Wanted API</a>, 
+            {{ company_name }} provides {{ app_name }}, a comprehensive, developer-friendly enhancement to the FBI's <a href="https://www.fbi.gov/wanted/api" target="_new">Wanted API</a>, 
             the programming interface to the FBI's data source of most wanted fugitives and missing persons. Access to the FBI's data is free and available to the public both 
             by web browser and a REST API. However, the data can be sparse and incomplete, and the search options are limited. 
         </p>
@@ -18,7 +18,7 @@
             conducting research, or working in law enforcement, you need reliable, structured data delivered through modern APIs.
         </p>
         <p>
-            We transform raw Wanted API data into cleaner, more searchable records that you can access via BoloAPI. 
+            We transform raw Wanted API data into cleaner, more searchable records that you can access via {{ app_name }}. 
             Our platform handles the complex work of:
         </p>
         <ul>
@@ -91,7 +91,7 @@
     <div class="section">
         <h2>Get Started</h2>
         <p>
-            Ready to integrate BoloAPI data into your application? 
+            Ready to integrate {{ app_name }} data into your application? 
             <a href="/v1/auth/signup">Sign up</a> to receive your API key and start building immediately. 
             Check out our <a href="/docs" target="_new">API Docs</a> for integration code examples.
         </p>

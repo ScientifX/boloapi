@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Contact Us - BoloAPI{% endblock %}
+{% block title %}Contact Us - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="content">
@@ -35,7 +35,7 @@
 
         <div class="card">
             <h3>🔒 Security & Privacy</h3>
-            <p><strong>Email:</strong> <a href="mailto:security@scientifics.io">security@scientifics.io</a></p>
+            <p><strong>Email:</strong> <a href="mailto:{{ security_email }}">{{ security_email }}</a></p>
             <p>
                 Report security vulnerabilities, privacy concerns, or data protection questions. 
                 We take security seriously and respond to reports promptly.
@@ -44,7 +44,7 @@
 
         <div class="card">
             <h3>⚖️ Legal & Compliance</h3>
-            <p><strong>Email:</strong> <a href="mailto:legal@scientifics.io">legal@scientifics.io</a></p>
+            <p><strong>Email:</strong> <a href="mailto:{{ legal_email }}">{{ legal_email }}</a></p>
             <p>
                 For legal matters, compliance questions, DMCA notices, and law enforcement requests.
             </p>
@@ -132,7 +132,7 @@
         <ul>
             <li><strong>Technical Issues:</strong> <a href="mailto:{{ support_email }}">{{ support_email }}</a></li>
             <li><strong>Data Quality:</strong> <a href="mailto:{{ support_email }}">{{ support_email }}</a></li>
-            <li><strong>Security Vulnerabilities:</strong> <a href="mailto:security@scientifics.io">security@scientifics.io</a></li>
+            <li><strong>Security Vulnerabilities:</strong> <a href="mailto:{{ security_email }}">{{ security_email }}</a></li>
         </ul>
         <p>
             Include as much detail as possible: API endpoint, timestamp, error messages, request/response examples (remove API keys!).

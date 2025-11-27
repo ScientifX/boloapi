@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Sign Up - BoloAPI{% endblock %}
+{% block title %}Sign Up - {{ app_name }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -261,7 +261,7 @@
 <div class="content">
     <div class="form-container">
         <div class="text-center">
-            <h2>Sign Up For BoloAPI</h2>
+            <h2>Sign Up For {{ app_name }}</h2>
         </div>
         
         <form id="signupForm" method="POST" action="/v1/auth/register">

@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Terms of Service - BoloAPI{% endblock %}
+{% block title %}Terms of Service - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="content">
@@ -10,7 +10,7 @@
     <div class="section">
         <h2>Agreement to Terms</h2>
         <p>
-            Welcome to BoloAPI. By accessing or using our BoloAPI service, you agree to be bound 
+            Welcome to {{ app_name }}. By accessing or using our {{ app_name }} service, you agree to be bound 
             by these Terms of Service ("Terms"). If you don't agree with these Terms, please don't use our service. 
             We've tried to keep this readable and fair — if something's unclear, <a href="/contact">ask us</a>.
         </p>
@@ -19,7 +19,7 @@
     <div class="section">
         <h2>What We Provide</h2>
         <p>
-            BoloAPI provides API access to FBI Most Wanted data. We extract, clean, normalize, and structure 
+            {{ app_name }} provides API access to FBI Most Wanted data. We extract, clean, normalize, and structure 
             publicly available FBI wanted persons information and deliver it via RESTful APIs. 
         </p>
         <p>
@@ -47,7 +47,7 @@
             <li><strong>Protect Your API Key:</strong> Your API key is like a password. Keep it secure. Don't share it. Don't commit it to public repositories.</li>
             <li><strong>Authorized Use:</strong> Only use the service for lawful purposes and as described in these Terms</li>
             <li><strong>Accurate Information:</strong> Keep your account information current and accurate</li>
-            <li><strong>Notify Us:</strong> Report suspected unauthorized access immediately to support@scientifics.io</li>
+            <li><strong>Notify Us:</strong> Report suspected unauthorized access immediately to {{ support_email }}</li>
         </ul>
 
         <h3>We May Suspend or Terminate</h3>
@@ -173,7 +173,7 @@
     <div class="section">
         <h2>Limitation of Liability</h2>
         <p>
-            To the maximum extent permitted by law, BoloAPI shall not be liable for any indirect, incidental, 
+            To the maximum extent permitted by law, {{ app_name }} shall not be liable for any indirect, incidental, 
             special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly 
             or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
         </p>
@@ -193,7 +193,7 @@
     <div class="section">
         <h2>Indemnification</h2>
         <p>
-            You agree to indemnify and hold harmless Scientifics.io, its contractors, and licensors from any claims, 
+            You agree to indemnify and hold harmless {{ company_name }}, its contractors, and licensors from any claims, 
             losses, damages, liabilities, including legal fees and expenses, arising out of your use or misuse of the service, 
             violation of these Terms, or violation of any rights of a third party.
         </p>
@@ -222,13 +222,13 @@
         
         <h3>Informal Resolution</h3>
         <p>
-            If you have a concern, please contact us first at support@scientifics.io. We'll work with you in good faith 
+            If you have a concern, please contact us first at {{ support_email }}. We'll work with you in good faith 
             to resolve the issue.
         </p>
 
         <h3>Governing Law</h3>
         <p>
-            These Terms are governed by the laws of the United States and the state where Scientifics.io is incorporated, 
+            These Terms are governed by the laws of the United States and the state where {{ company_name }} is incorporated, 
             without regard to conflict of law provisions.
         </p>
 
@@ -245,7 +245,7 @@
         
         <h3>Your Rights</h3>
         <p>
-            You may terminate your account at any time by contacting support@scientifics.io. Upon termination, 
+            You may terminate your account at any time by contacting {{ support_email }}. Upon termination, 
             your access will cease at the end of your current billing period.
         </p>
 
@@ -276,7 +276,7 @@
     <div class="section">
         <h2>Entire Agreement</h2>
         <p>
-            These Terms, along with our Privacy Policy, constitute the entire agreement between you and Scientifics.io 
+            These Terms, along with our Privacy Policy, constitute the entire agreement between you and {{ company_name }} 
             regarding use of our service, superseding any prior agreements.
         </p>
     </div>

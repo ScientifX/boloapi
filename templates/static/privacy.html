@@ -1,6 +1,6 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}Privacy Policy - BoloAPI{% endblock %}
+{% block title %}Privacy Policy - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="content">
@@ -9,8 +9,8 @@
     
     <div class="section">
         <p>
-            At Scientifics.io, we take your privacy seriously. This Privacy Policy explains how we collect, use, protect, 
-            and share information when you use our BoloAPI service. We believe in transparency, so we've 
+            At {{ company_name }}, we take your privacy seriously. This Privacy Policy explains how we collect, use, protect, 
+            and share information when you use our {{ app_name }} service. We believe in transparency, so we've 
             written this in plain English — no legal jargon unless absolutely necessary.
         </p>
     </div>
@@ -115,7 +115,7 @@
             <li><strong>API Key Reset:</strong> Generate new API keys at any time to revoke old ones</li>
         </ul>
         <p>
-            To exercise these rights, email us at <strong>privacy@scientifics.io</strong>. 
+            To exercise these rights, email us at <strong>{{ privacy_email }}</strong>. 
             We'll respond within 30 days.
         </p>
     </div>
