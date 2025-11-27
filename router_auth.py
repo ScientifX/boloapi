@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, APP_GLOBALS
 from auth import UserRole
 from jwt_auth import require_jwt_role, get_current_user_from_token
 from security_utils import (
@@ -49,6 +49,7 @@ from captcha_utils import (
 )
 
 templates = Jinja2Templates(directory="templates")
+templates.env.globals.update(APP_GLOBALS)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -878,7 +879,7 @@ async def profile_page(request: Request):
 async def get_profile_data(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
+    ):
     """Get user profile data as JSON"""
     try:
         user = get_user_by_id(current_user["user_id"])
@@ -1089,4 +1090,5 @@ async def get_token(request: Request, token_req: TokenRequest):
     except Exception as e:
         logger.error(f"Token generation error: {str(e)}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate token")
+
 

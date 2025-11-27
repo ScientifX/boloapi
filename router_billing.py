@@ -22,6 +22,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from config import (
+    APP_GLOBALS,
     DB_CONFIG,
     API_LEMONSQUEEZY_API_KEY,
     API_LEMONSQUEEZY_STORE_ID,
@@ -44,6 +45,7 @@ router = APIRouter(prefix="/v1/billing", tags=["Billing"])
 
 # Templates
 templates = Jinja2Templates(directory="templates")
+templates.env.globals.update(APP_GLOBALS)
 
 # ============================================================================
 # DATABASE HELPERS
@@ -872,105 +874,6 @@ async def billing_dashboard_page(request: Request):
             "user_email": request.state.user_email
         }
     )
-
-@router.get(
-    "/plans",
-    response_class=HTMLResponse,
-    summary="Pricing Plans Page",
-    description="Display pricing plans in HTML format",
-    include_in_schema=False  # Hide from API docs
-)
-@limiter.limit(rate_max)
-async def pricing_plans_page(request: Request):
-    """
-    Pricing plans page - displays all subscription options.
-    Public page - no authentication required.
-    """
-    # Get current user's subscription info if logged in
-    current_plan = None
-    current_cycle = None
-    
-    if request.state.user_authenticated and request.state.user_email:
-        try:
-            with get_db_connection() as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    cur.execute(
-                        "SELECT role, billing_cycle FROM tbl_users WHERE email = %s",
-                        (request.state.user_email,)
-                    )
-                    user = cur.fetchone()
-                    if user:
-                        # Determine plan: basic or premium
-                        current_plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
-                        current_cycle = user['billing_cycle']  # 'monthly', 'quarterly', 'annual', or None
-        except Exception as e:
-            logger.error(f"Error getting user subscription: {str(e)}")
-            # Continue without subscription info
-    
-    return templates.TemplateResponse(
-        "billing/pricing.html",
-        {
-            "request": request,
-            "user_authenticated": request.state.user_authenticated,
-            "user_email": request.state.user_email,
-            "pricing": PRICING,
-            "current_plan": current_plan,
-            "current_cycle": current_cycle
-        }
-    )
-
-@router.get(
-    "/pricing",
-    summary="Get Pricing Information",
-    description="Get current pricing for all plans"
-)
-async def get_pricing():
-    """
-    Get pricing information for all plans.
-    Public endpoint - no authentication required.
-    """
-    return {
-        "plans": {
-            "basic": {
-                "price": 0,
-                "currency": "USD",
-                "features": [
-                    "25 results per request",
-                    "Raw data access",
-                    "Simple search",
-                    "Current month data only"
-                ]
-            },
-            "premium": {
-                "monthly": {
-                    "price": PRICING['monthly']['price'],
-                    "currency": PRICING['monthly']['currency'],
-                    "interval": "month"
-                },
-                "quarterly": {
-                    "price": PRICING['quarterly']['price'],
-                    "currency": PRICING['quarterly']['currency'],
-                    "interval": "quarter",
-                    "savings": PRICING['quarterly']['savings'],
-                    "savings_text": f"Save ${PRICING['quarterly']['savings']} vs monthly"
-                },
-                "annual": {
-                    "price": PRICING['annual']['price'],
-                    "currency": PRICING['annual']['currency'],
-                    "interval": "year",
-                    "savings": PRICING['annual']['savings'],
-                    "savings_text": f"Save ${PRICING['annual']['savings']} vs monthly"
-                },
-                "features": [
-                    "No search results limit per request",
-                    "Cleaned & normalized data",
-                    "Advanced search with Boolean logic",
-                    "6 months historical data",
-                    "Priority support"
-                ]
-            }
-        }
-    }
 
 # ============================================================================
 # WEBHOOK ENDPOINT

@@ -17,6 +17,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -35,12 +36,17 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS 
+from config import APP_GLOBALS, PRICING
 import router_etl
 import router_search
 import router_auth
 import router_billing
 from auth_middleware import TemplateAuthMiddleware
+from docs_config import (
+    get_role_filtered_openapi,
+    get_viewer_role_from_request,
+    register_visibility_override,
+)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -52,12 +58,19 @@ FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 rate_max = "10/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
+# ============================================================================
+# FASTAPI APP WITH CUSTOM DOCS
+# ============================================================================
+
 app = FastAPI(
     title="Bolo API",
-    description="Bolo API",
-    version="1.0.0", 
-    swagger_ui_parameters={"defaultModelsExpandDepth": -1} # Hides the schemas in /docs 
-    )
+    description="Bolo API - FBI Wanted Persons Data",
+    version="1.0.0",
+    # Disable default docs - we'll serve custom role-filtered versions
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -69,6 +82,75 @@ app.include_router(router_billing.router)
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
 app.include_router(router_auth.router) 
+
+
+# ============================================================================
+# CUSTOM ROLE-FILTERED DOCUMENTATION ENDPOINTS
+# ============================================================================
+
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi_schema(request: Request):
+    """
+    Serve OpenAPI schema filtered by the viewer's role.
+    
+    Visibility:
+    - Not logged in: PUBLIC + BASIC endpoints
+    - BASIC: PUBLIC + BASIC + PREMIUM endpoints
+    - PREMIUM: PUBLIC + BASIC + PREMIUM endpoints
+    - ADMIN: All endpoints
+    """
+    filtered_schema = get_role_filtered_openapi(app, request)
+    return JSONResponse(content=filtered_schema)
+
+
+@app.get("/docs", include_in_schema=False)
+async def get_docs(request: Request):
+    """
+    Serve Swagger UI with role-filtered endpoints.
+    Shows different endpoints based on viewer's authentication level.
+    """
+    viewer_role = get_viewer_role_from_request(request)
+    
+    # Customize title based on role
+    role_labels = {
+        UserRole.PUBLIC: "Guest",
+        UserRole.BASIC: "Basic",
+        UserRole.PREMIUM: "Premium", 
+        UserRole.ADMIN: "Admin",
+    }
+    role_label = role_labels.get(viewer_role, "Guest")
+    
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title=f"API Docs - BoloDoc",
+        swagger_ui_parameters={"defaultModelsExpandDepth": -1}
+    )
+
+
+@app.get("/redoc", include_in_schema=False)
+async def get_redoc(request: Request):
+    """
+    Serve ReDoc with role-filtered endpoints.
+    """
+    viewer_role = get_viewer_role_from_request(request)
+    
+    role_labels = {
+        UserRole.PUBLIC: "Guest",
+        UserRole.BASIC: "Basic",
+        UserRole.PREMIUM: "Premium",
+        UserRole.ADMIN: "Admin",
+    }
+    role_label = role_labels.get(viewer_role, "Guest")
+    
+    return get_redoc_html(
+        openapi_url="/openapi.json",
+        title=f"Bolo API - {role_label} View",
+    )
+
+
+# ============================================================================
+# MIDDLEWARE
+# ============================================================================
 
 # Custom middleware class for role and trimming
 class RoleAndTrimMiddleware(BaseHTTPMiddleware):
@@ -139,6 +221,11 @@ app.add_middleware(
     same_site="lax",
     https_only=False
 )
+
+
+# ============================================================================
+# ROUTES AND TESTING ENDPOINTS
+# ============================================================================
 
 @app.get("/routes", response_class=HTMLResponse, include_in_schema=False)
 async def list_routes(request: Request):
@@ -214,29 +301,8 @@ async def list_routes(request: Request):
         if hasattr(endpoint, '__self__') and hasattr(endpoint.__self__, '_limits'):
             rate_limits.extend(endpoint.__self__._limits)
         
-        # Check limiter's limit_map for this endpoint
-        if hasattr(app.state, 'limiter') and hasattr(app.state.limiter, '_route_limits'):
-            route_key = f"{endpoint.__module__}.{endpoint.__name__}"
-            if route_key in app.state.limiter._route_limits:
-                rate_limits.extend(app.state.limiter._route_limits[route_key])
-        
-        # Fallback: check for decorated limits in various places
-        limit_str = 'Default (10/min)'
-        if rate_limits:
-            limit_str = ', '.join(str(r) for r in rate_limits)
-        else:
-            # Check the source for @limiter.limit decorator
-            import inspect
-            try:
-                source = inspect.getsource(endpoint)
-                if '@limiter.limit' in source:
-                    # Extract limit value from source
-                    import re as regex
-                    match = regex.search(r'@limiter\.limit\(["\']([^"\']+)["\']', source)
-                    if match:
-                        limit_str = match.group(1)
-            except (OSError, TypeError):
-                pass
+        # Default rate limit if none found on endpoint
+        rate_limit_display = ', '.join(rate_limits) if rate_limits else rate_max
         
         routes_info.append({
             'router': router_name,
@@ -244,10 +310,10 @@ async def list_routes(request: Request):
             'path': path,
             'endpoint': endpoint_name,
             'auth_required': auth_required,
-            'rate_limit': limit_str
+            'rate_limit': rate_limit_display
         })
     
-    # Sort by router, then by path
+    # Sort routes by router, then by path
     routes_info.sort(key=lambda x: (x['router'], x['path']))
     
     # Generate HTML table
@@ -255,74 +321,66 @@ async def list_routes(request: Request):
     <!DOCTYPE html>
     <html>
     <head>
-        <title>BoloAPI Routes</title>
+        <title>API Routes</title>
         <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
                 margin: 40px;
                 background: #f5f5f5;
             }
-            h1 {
-                color: #1a1a2e;
-                margin-bottom: 20px;
+            h1 { 
+                color: #333;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 10px;
             }
-            .subtitle {
-                color: #666;
-                margin-bottom: 30px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
+            table { 
+                border-collapse: collapse; 
+                width: 100%; 
                 background: white;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                border-radius: 8px;
-                overflow: hidden;
             }
-            th {
-                background: #1a1a2e;
+            th, td { 
+                border: 1px solid #ddd; 
+                padding: 12px 15px; 
+                text-align: left; 
+            }
+            th { 
+                background: #007bff; 
                 color: white;
-                padding: 12px 16px;
-                text-align: left;
                 font-weight: 600;
             }
-            td {
-                padding: 10px 16px;
-                border-bottom: 1px solid #eee;
-            }
-            tr:hover {
-                background: #f9f9f9;
-            }
-            tr:last-child td {
-                border-bottom: none;
-            }
-            .router-auth { color: #e74c3c; }
-            .router-search { color: #3498db; }
-            .router-etl { color: #9b59b6; }
-            .router-billing { color: #27ae60; }
-            .router-root { color: #f39c12; }
+            tr:nth-child(even) { background: #f8f9fa; }
+            tr:hover { background: #e9ecef; }
             .method { 
+                font-weight: bold; 
                 font-family: monospace;
-                font-weight: bold;
             }
-            .method-get { color: #27ae60; }
-            .method-post { color: #3498db; }
-            .method-put { color: #f39c12; }
-            .method-delete { color: #e74c3c; }
-            .path {
-                font-family: monospace;
-                color: #555;
+            .method.GET { color: #28a745; }
+            .method.POST { color: #007bff; }
+            .method.PUT { color: #ffc107; }
+            .method.DELETE { color: #dc3545; }
+            .path { 
+                font-family: monospace; 
+                color: #6c757d;
             }
-            .auth-yes { color: #e74c3c; font-weight: 600; }
-            .auth-no { color: #27ae60; }
-            .count {
-                color: #888;
-                font-size: 14px;
+            .auth-yes { color: #dc3545; font-weight: 500; }
+            .auth-no { color: #28a745; }
+            .router-tag {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.85em;
+                font-weight: 500;
             }
+            .router-auth { background: #e7f1ff; color: #0056b3; }
+            .router-search { background: #d4edda; color: #155724; }
+            .router-etl { background: #fff3cd; color: #856404; }
+            .router-billing { background: #f8d7da; color: #721c24; }
+            .router-root { background: #e2e3e5; color: #383d41; }
         </style>
     </head>
     <body>
-        <h1>BoloAPI Routes</h1>
-        <p class="subtitle">All registered API endpoints <span class="count">(""" + str(len(routes_info)) + """ routes)</span></p>
+        <h1>API Routes</h1>
         <table>
             <thead>
                 <tr>
@@ -338,6 +396,13 @@ async def list_routes(request: Request):
     """
     
     for route in routes_info:
+        # Determine method class for styling
+        method_class = route['method'].split(',')[0].strip()
+        
+        # Determine auth class
+        auth_class = 'auth-yes' if route['auth_required'].startswith('Yes') else 'auth-no'
+        
+        # Determine router class
         router_class = 'router-root'
         if 'auth' in route['router']:
             router_class = 'router-auth'
@@ -348,19 +413,9 @@ async def list_routes(request: Request):
         elif 'billing' in route['router']:
             router_class = 'router-billing'
         
-        method_class = 'method-get'
-        if 'POST' in route['method']:
-            method_class = 'method-post'
-        elif 'PUT' in route['method']:
-            method_class = 'method-put'
-        elif 'DELETE' in route['method']:
-            method_class = 'method-delete'
-        
-        auth_class = 'auth-yes' if route['auth_required'].startswith('Yes') else 'auth-no'
-        
         html += f"""
                 <tr>
-                    <td class="{router_class}">{route['router']}</td>
+                    <td><span class="router-tag {router_class}">{route['router']}</span></td>
                     <td class="method {method_class}">{route['method']}</td>
                     <td class="path">{route['path']}</td>
                     <td>{route['endpoint']}</td>
@@ -408,33 +463,6 @@ async def root(request: Request):
         }
     )
 
-@app.get("/role", include_in_schema=False, tags=["Testing"])
-@limiter.limit(rate_max)
-async def get_role(request: Request):
-    """Get current user role - for testing purposes (session-based)"""
-    current_role = get_current_role(request)
-    return {
-        "current_role": current_role.value,
-        "role_level": ROLE_HIERARCHY[current_role],
-        "test_mode": True,
-        "note": "For JWT authentication, use /v1/auth/token endpoint",
-        "migration_note": "This endpoint uses session-based auth and will be deprecated"
-    }
-
-@app.post("/role/set", include_in_schema=False, tags=["Testing"])
-@limiter.limit(rate_max)
-async def set_role(request: Request, role: UserRole):
-    """
-    Manually set user role - for testing purposes only (session-based)
-    In production, use JWT authentication via /v1/auth/token
-    """
-    set_user_role(request, role)
-    return {
-        "message": f"Role set to {role.value}",
-        "current_role": role.value,
-        "note": "This is session-based auth for testing. Use JWT auth in production."
-    }
-
 # ============================================================================
 # STATIC CONTENT PAGES
 # ============================================================================
@@ -442,7 +470,7 @@ async def set_role(request: Request, role: UserRole):
 @app.get("/about", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive
 async def about_page(request: Request):
-    """About BoloAPI and the FBI Wanted API"""
+    """About BoloDoc and the FBI Wanted API"""
     current_role = get_current_role(request)
     return templates.TemplateResponse(
         "static/about.html",
@@ -501,8 +529,56 @@ async def contact_page(request: Request):
         }
     )
 
+@app.get(
+    "/plans",
+    response_class=HTMLResponse,
+    summary="Pricing Plans Page",
+    description="Display pricing plans in HTML format",
+    include_in_schema=False  # Hide from API docs
+    )
+@limiter.limit(rate_max)
+async def pricing_plans_page(request: Request):
+    """
+    Pricing plans page - displays all subscription options.
+    Public page - no authentication required.
+    """
+    # Get current user's subscription info if logged in
+    current_plan = None
+    current_cycle = None
+    
+    if request.state.user_authenticated and request.state.user_email:
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(
+                        "SELECT role, billing_cycle FROM tbl_users WHERE email = %s",
+                        (request.state.user_email,)
+                    )
+                    user = cur.fetchone()
+                    if user:
+                        # Determine plan: basic or premium
+                        current_plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
+                        current_cycle = user['billing_cycle']  # 'monthly', 'quarterly', 'annual', or None
+        except Exception as e:
+            logger.error(f"Error getting user subscription: {str(e)}")
+            # Continue without subscription info
+    
+    return templates.TemplateResponse(
+        "static/plans.html",
+        {
+            "request": request,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
+            "pricing": PRICING,
+            "current_plan": current_plan,
+            "current_cycle": current_cycle
+        }
+    )
 
-# Validation functions (unchanged)
+# ============================================================================
+# VALIDATION FUNCTIONS
+# ============================================================================
+
 def validate_string(value, field_name):
     """
     Validate string is not empty, not wildcard-only, not exceeding 100 characters,
