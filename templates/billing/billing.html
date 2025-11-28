@@ -197,7 +197,7 @@ async function openCustomerPortal() {
 
 function openUpgradeModal() {
     // Redirect to dashboard which has the modal
-    window.location.href = '/v1/dashboard?action=upgrade';
+    window.location.href = '/v1/billing?action=upgrade';
 }
 
 document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeModal);

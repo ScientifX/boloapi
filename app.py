@@ -180,6 +180,11 @@ class RoleAndTrimMiddleware(BaseHTTPMiddleware):
         
         # Trim body data (POST data)
         if request.method in ["POST", "PUT", "PATCH"]:
+            # Don't process webhook - it needs raw body for signature verification
+            if request.url.path == "/v1/billing/webhook":
+                response = await call_next(request)
+                return response
+            
             body = await request.body()
             if body:
                 try:

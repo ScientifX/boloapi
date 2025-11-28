@@ -95,6 +95,10 @@ API_LEMONSQUEEZY_VARIANT_MONTHLY = os.getenv('API_LEMONSQUEEZY_VARIANT_MONTHLY')
 API_LEMONSQUEEZY_VARIANT_QUARTERLY = os.getenv('API_LEMONSQUEEZY_VARIANT_QUARTERLY')
 API_LEMONSQUEEZY_VARIANT_ANNUAL = os.getenv('API_LEMONSQUEEZY_VARIANT_ANNUAL')
 
+# Test mode - enables simulated webhook endpoints for local testing
+# Set to 'true' to enable, remove or set to 'false' for production
+BILLING_TEST_MODE = os.getenv('API_BILLING_TEST_MODE', 'false').lower() == 'true'
+
 # ============================================================================
 # PRICING CONFIGURATION
 # ============================================================================
@@ -195,5 +199,13 @@ def get_config_summary() -> dict:
         "app": {
             "base_url": API_APP_BASE_URL,
             "jwt_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        },
+        "billing": {
+            "test_mode": BILLING_TEST_MODE,
+            "variants_configured": bool(
+                API_LEMONSQUEEZY_VARIANT_MONTHLY and 
+                API_LEMONSQUEEZY_VARIANT_QUARTERLY and 
+                API_LEMONSQUEEZY_VARIANT_ANNUAL
+            )
         }
     }

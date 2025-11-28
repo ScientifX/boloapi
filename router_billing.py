@@ -7,7 +7,8 @@ import hmac
 import hashlib
 import requests
 import logging
-from datetime import datetime, timezone
+import json
+from datetime import datetime, timezone, timedelta
 from typing import Literal, Optional, Dict, Any
 from contextlib import contextmanager
 
@@ -27,7 +28,8 @@ from config import (
     API_LEMONSQUEEZY_API_KEY,
     API_LEMONSQUEEZY_STORE_ID,
     API_LEMONSQUEEZY_WEBHOOK_SECRET,
-    PRICING
+    PRICING,
+    BILLING_TEST_MODE
 )
 from auth import UserRole
 from jwt_auth import require_jwt_role
@@ -35,6 +37,13 @@ from jwt_auth import require_jwt_role
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Log test mode status at startup
+if BILLING_TEST_MODE:
+    logger.warning("=" * 60)
+    logger.warning("BILLING TEST MODE ENABLED - Test endpoints are active")
+    logger.warning("Set BILLING_TEST_MODE=false in production!")
+    logger.warning("=" * 60)
 
 # Rate limiter
 rate_max = "10/minute"
@@ -73,6 +82,16 @@ def get_user_by_id(user_id: str) -> Optional[dict]:
             cur.execute(
                 "SELECT * FROM tbl_users WHERE user_id = %s",
                 (user_id,)
+            )
+            return cur.fetchone()
+
+def get_user_by_email(email: str) -> Optional[dict]:
+    """Get user by email"""
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM tbl_users WHERE email = %s",
+                (email.lower(),)
             )
             return cur.fetchone()
 
@@ -179,19 +198,21 @@ def create_lemonsqueezy_checkout(
     }
     
     try:
+        logger.info(f"Creating LemonSqueezy checkout for user {user_id}, variant {variant_id}")
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
         
         data = response.json()
         checkout_url = data["data"]["attributes"]["url"]
         
-        logger.info(f"Created checkout for user {user_id}: {checkout_url}")
+        logger.info(f"Checkout created successfully: {checkout_url[:50]}...")
         return checkout_url
         
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to create LemonSqueezy checkout: {str(e)}")
         if hasattr(e, 'response') and e.response is not None:
-            logger.error(f"Response: {e.response.text}")
+            logger.error(f"Response status: {e.response.status_code}")
+            logger.error(f"Response body: {e.response.text}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create checkout session"
@@ -212,13 +233,22 @@ def verify_webhook_signature(payload: bytes, signature: str) -> bool:
         logger.warning("Webhook secret not configured - signature verification skipped")
         return True  # For development only
     
+    if not signature:
+        logger.warning("No signature provided in webhook request")
+        return False
+    
     expected_signature = hmac.new(
         API_LEMONSQUEEZY_WEBHOOK_SECRET.encode('utf-8'),
         payload,
         hashlib.sha256
     ).hexdigest()
     
-    return hmac.compare_digest(expected_signature, signature)
+    is_valid = hmac.compare_digest(expected_signature, signature)
+    
+    if not is_valid:
+        logger.warning(f"Signature mismatch. Expected: {expected_signature[:16]}..., Got: {signature[:16]}...")
+    
+    return is_valid
 
 # ============================================================================
 # WEBHOOK HANDLERS
@@ -240,8 +270,10 @@ def handle_subscription_created(data: Dict[str, Any]) -> None:
         customer_id = attributes.get('customer_id')
         renews_at = attributes.get('renews_at')
         
+        logger.info(f"[subscription_created] Processing: user_id={user_id}, subscription_id={subscription_id}")
+        
         if not user_id:
-            logger.error("No user_id in subscription_created webhook")
+            logger.error("[subscription_created] No user_id in webhook custom_data")
             return
         
         # Parse renews_at datetime
@@ -273,12 +305,16 @@ def handle_subscription_created(data: Dict[str, Any]) -> None:
                         user_id
                     )
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Subscription created: user={user_id}, subscription={subscription_id}, cycle={billing_cycle}")
+        if rows_updated > 0:
+            logger.info(f"[subscription_created] SUCCESS: user={user_id} upgraded to PREMIUM, cycle={billing_cycle}")
+        else:
+            logger.warning(f"[subscription_created] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_created: {str(e)}")
+        logger.error(f"[subscription_created] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_updated(data: Dict[str, Any]) -> None:
     """
@@ -294,8 +330,10 @@ def handle_subscription_updated(data: Dict[str, Any]) -> None:
         status_name = attributes.get('status')
         renews_at = attributes.get('renews_at')
         
+        logger.info(f"[subscription_updated] Processing: user_id={user_id}, status={status_name}")
+        
         if not user_id:
-            logger.error("No user_id in subscription_updated webhook")
+            logger.error("[subscription_updated] No user_id in webhook custom_data")
             return
         
         # Parse renews_at datetime
@@ -313,12 +351,16 @@ def handle_subscription_updated(data: Dict[str, Any]) -> None:
                     """,
                     (status_name, renews_at_dt, user_id)
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Subscription updated: user={user_id}, status={status_name}")
+        if rows_updated > 0:
+            logger.info(f"[subscription_updated] SUCCESS: user={user_id}, new_status={status_name}")
+        else:
+            logger.warning(f"[subscription_updated] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_updated: {str(e)}")
+        logger.error(f"[subscription_updated] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_cancelled(data: Dict[str, Any]) -> None:
     """
@@ -333,8 +375,10 @@ def handle_subscription_cancelled(data: Dict[str, Any]) -> None:
         subscription_id = data['id']
         ends_at = attributes.get('ends_at')  # When subscription access ends
         
+        logger.info(f"[subscription_cancelled] Processing: user_id={user_id}, ends_at={ends_at}")
+        
         if not user_id:
-            logger.error("No user_id in subscription_cancelled webhook")
+            logger.error("[subscription_cancelled] No user_id in webhook custom_data")
             return
         
         # Parse ends_at datetime
@@ -354,12 +398,16 @@ def handle_subscription_cancelled(data: Dict[str, Any]) -> None:
                     (ends_at_dt, user_id)
                 )
                 # NOTE: role stays PREMIUM until subscription_expired event
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Subscription cancelled: user={user_id}, ends_at={ends_at}")
+        if rows_updated > 0:
+            logger.info(f"[subscription_cancelled] SUCCESS: user={user_id}, access until={ends_at}")
+        else:
+            logger.warning(f"[subscription_cancelled] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_cancelled: {str(e)}")
+        logger.error(f"[subscription_cancelled] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_expired(data: Dict[str, Any]) -> None:
     """
@@ -372,8 +420,10 @@ def handle_subscription_expired(data: Dict[str, Any]) -> None:
         
         user_id = custom_data.get('user_id')
         
+        logger.info(f"[subscription_expired] Processing: user_id={user_id}")
+        
         if not user_id:
-            logger.error("No user_id in subscription_expired webhook")
+            logger.error("[subscription_expired] No user_id in webhook custom_data")
             return
         
         with get_db_connection() as conn:
@@ -393,12 +443,16 @@ def handle_subscription_expired(data: Dict[str, Any]) -> None:
                     """,
                     (UserRole.BASIC.value, user_id)
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Subscription expired: user={user_id}, downgraded to BASIC")
+        if rows_updated > 0:
+            logger.info(f"[subscription_expired] SUCCESS: user={user_id} downgraded to BASIC")
+        else:
+            logger.warning(f"[subscription_expired] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_expired: {str(e)}")
+        logger.error(f"[subscription_expired] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
     """
@@ -417,8 +471,10 @@ def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
         currency = attributes.get('currency', 'USD')
         invoice_url = attributes.get('urls', {}).get('customer_portal')
         
+        logger.info(f"[payment_success] Processing: user_id={user_id}, order_id={order_id}, amount={amount}")
+        
         if not user_id or not order_id:
-            logger.error("Missing user_id or order_id in payment_success webhook")
+            logger.error("[payment_success] Missing user_id or order_id in webhook")
             return
         
         # Convert amount from cents to dollars
@@ -437,12 +493,16 @@ def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
                     """,
                     (user_id, order_id, amount_decimal, currency, billing_cycle, invoice_url)
                 )
+                rows_inserted = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Payment recorded: user={user_id}, amount={amount_decimal} {currency}")
+        if rows_inserted > 0:
+            logger.info(f"[payment_success] SUCCESS: user={user_id}, amount=${amount_decimal} {currency}")
+        else:
+            logger.info(f"[payment_success] Payment already recorded for order_id={order_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_payment_success: {str(e)}")
+        logger.error(f"[payment_success] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_payment_failed(data: Dict[str, Any]) -> None:
     """
@@ -455,8 +515,10 @@ def handle_subscription_payment_failed(data: Dict[str, Any]) -> None:
         
         user_id = custom_data.get('user_id')
         
+        logger.info(f"[payment_failed] Processing: user_id={user_id}")
+        
         if not user_id:
-            logger.error("No user_id in payment_failed webhook")
+            logger.error("[payment_failed] No user_id in webhook custom_data")
             return
         
         with get_db_connection() as conn:
@@ -470,12 +532,16 @@ def handle_subscription_payment_failed(data: Dict[str, Any]) -> None:
                     """,
                     (user_id,)
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.warning(f"Payment failed: user={user_id}, status=past_due")
+        if rows_updated > 0:
+            logger.warning(f"[payment_failed] User {user_id} marked as past_due")
+        else:
+            logger.warning(f"[payment_failed] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_payment_failed: {str(e)}")
+        logger.error(f"[payment_failed] Error: {str(e)}", exc_info=True)
 
 def handle_subscription_payment_recovered(data: Dict[str, Any]) -> None:
     """
@@ -488,8 +554,10 @@ def handle_subscription_payment_recovered(data: Dict[str, Any]) -> None:
         
         user_id = custom_data.get('user_id')
         
+        logger.info(f"[payment_recovered] Processing: user_id={user_id}")
+        
         if not user_id:
-            logger.error("No user_id in payment_recovered webhook")
+            logger.error("[payment_recovered] No user_id in webhook custom_data")
             return
         
         with get_db_connection() as conn:
@@ -503,28 +571,35 @@ def handle_subscription_payment_recovered(data: Dict[str, Any]) -> None:
                     """,
                     (user_id,)
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Payment recovered: user={user_id}, status=active")
+        if rows_updated > 0:
+            logger.info(f"[payment_recovered] SUCCESS: user={user_id} restored to active")
+        else:
+            logger.warning(f"[payment_recovered] No user found with user_id={user_id}")
         
     except Exception as e:
-        logger.error(f"Error handling subscription_payment_recovered: {str(e)}")
+        logger.error(f"[payment_recovered] Error: {str(e)}", exc_info=True)
 
-def handle_order_refunded(data: Dict[str, Any]) -> None:
+def handle_subscription_payment_refunded(data: Dict[str, Any]) -> None:
     """
-    Handle order_refunded webhook event.
-    Record refund in payment history.
+    Handle subscription_payment_refunded webhook event.
+    Record refund for a recurring subscription payment.
+    This differs from order_refunded which handles initial order refunds.
     """
     try:
         attributes = data['attributes']
         custom_data = attributes.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
-        order_id = data['id']
-        refunded_amount = attributes.get('refunded_amount')
+        order_id = attributes.get('order_id') or data.get('id')
+        refunded_amount = attributes.get('refunded_amount') or attributes.get('total')
+        
+        logger.info(f"[subscription_payment_refunded] Processing: user_id={user_id}, order_id={order_id}")
         
         if not user_id or not order_id:
-            logger.error("Missing user_id or order_id in order_refunded webhook")
+            logger.error("[subscription_payment_refunded] Missing user_id or order_id")
             return
         
         # Convert amount from cents to dollars
@@ -544,19 +619,71 @@ def handle_order_refunded(data: Dict[str, Any]) -> None:
                     """,
                     (refunded_decimal, order_id)
                 )
+                rows_updated = cur.rowcount
                 conn.commit()
         
-        logger.info(f"Refund recorded: user={user_id}, amount={refunded_decimal}")
+        if rows_updated > 0:
+            logger.info(f"[subscription_payment_refunded] SUCCESS: order={order_id}, refund=${refunded_decimal}")
+        else:
+            logger.warning(f"[subscription_payment_refunded] No payment found for order_id={order_id}")
         
     except Exception as e:
-        logger.error(f"Error handling order_refunded: {str(e)}")
+        logger.error(f"[subscription_payment_refunded] Error: {str(e)}", exc_info=True)
+
+def handle_order_refunded(data: Dict[str, Any]) -> None:
+    """
+    Handle order_refunded webhook event.
+    Record refund for the initial order (first purchase).
+    This typically means a full cancellation + refund scenario.
+    """
+    try:
+        attributes = data['attributes']
+        custom_data = attributes.get('custom_data', {})
+        
+        user_id = custom_data.get('user_id')
+        order_id = data['id']
+        refunded_amount = attributes.get('refunded_amount')
+        
+        logger.info(f"[order_refunded] Processing: user_id={user_id}, order_id={order_id}")
+        
+        if not user_id or not order_id:
+            logger.error("[order_refunded] Missing user_id or order_id")
+            return
+        
+        # Convert amount from cents to dollars
+        refunded_decimal = float(refunded_amount) / 100 if refunded_amount else 0
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                # Update existing payment record
+                cur.execute(
+                    """
+                    UPDATE tbl_payment_history
+                    SET status = 'refunded',
+                        refunded_at = NOW(),
+                        refund_amount = %s,
+                        updated_at = NOW()
+                    WHERE lemonsqueezy_order_id = %s
+                    """,
+                    (refunded_decimal, order_id)
+                )
+                rows_updated = cur.rowcount
+                conn.commit()
+        
+        if rows_updated > 0:
+            logger.info(f"[order_refunded] SUCCESS: order={order_id}, refund=${refunded_decimal}")
+        else:
+            logger.warning(f"[order_refunded] No payment found for order_id={order_id}")
+        
+    except Exception as e:
+        logger.error(f"[order_refunded] Error: {str(e)}", exc_info=True)
 
 # ============================================================================
 # BILLING ENDPOINTS
 # ============================================================================
 
 @router.post(
-    "/create-checkout",
+    "/create_checkout",
     response_model=CheckoutResponse,
     summary="Create Checkout Session",
     description="Create a LemonSqueezy checkout session to upgrade to Premium"
@@ -618,7 +745,7 @@ async def create_checkout(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Create checkout error: {str(e)}")
+        logger.error(f"Create checkout error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create checkout: {str(e)}"
@@ -662,7 +789,7 @@ async def get_subscription_status(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Get subscription error: {str(e)}")
+        logger.error(f"Get subscription error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get subscription status"
@@ -719,7 +846,7 @@ async def get_payment_history(
         ]
         
     except Exception as e:
-        logger.error(f"Get payment history error: {str(e)}")
+        logger.error(f"Get payment history error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get payment history"
@@ -760,7 +887,7 @@ async def get_customer_portal(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Get portal error: {str(e)}")
+        logger.error(f"Get portal error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get customer portal"
@@ -843,7 +970,7 @@ async def get_billing_info(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Get billing info error: {str(e)}")
+        logger.error(f"Get billing info error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get billing information"
@@ -884,23 +1011,28 @@ async def billing_dashboard_page(request: Request):
     summary="LemonSqueezy Webhook",
     description="Handle webhook events from LemonSqueezy",
     include_in_schema=False  # Hide from public docs
-)
+    )
 async def handle_webhook(
     request: Request,
     background_tasks: BackgroundTasks,
     x_signature: str = Header(None)
-):
+    ):
     """
     Handle incoming webhooks from LemonSqueezy.
     Verifies signature and processes subscription events.
     """
     try:
+        # DEBUG: Log all headers
+        logger.info(f"[webhook] Headers: {dict(request.headers)}")
+        
         # Get raw body for signature verification
         body = await request.body()
         
+        logger.info(f"[webhook] Received webhook, body size: {len(body)} bytes")
+        
         # Verify signature
         if not verify_webhook_signature(body, x_signature):
-            logger.warning("Invalid webhook signature")
+            logger.warning("[webhook] Invalid signature - rejecting request")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid signature"
@@ -913,10 +1045,14 @@ async def handle_webhook(
         data = payload.get('data', {})
         
         if not event_name:
-            logger.error("No event_name in webhook payload")
+            logger.error("[webhook] No event_name in payload")
             return JSONResponse(content={"status": "error", "message": "No event_name"})
         
-        logger.info(f"Received webhook: {event_name}")
+        logger.info(f"[webhook] Event: {event_name}, data_id: {data.get('id', 'N/A')}")
+        
+        # Log full payload in test mode for debugging
+        if BILLING_TEST_MODE:
+            logger.debug(f"[webhook] Full payload: {json.dumps(payload, indent=2)}")
         
         # Route to appropriate handler
         event_handlers = {
@@ -927,6 +1063,7 @@ async def handle_webhook(
             'subscription_payment_success': handle_subscription_payment_success,
             'subscription_payment_failed': handle_subscription_payment_failed,
             'subscription_payment_recovered': handle_subscription_payment_recovered,
+            'subscription_payment_refunded': handle_subscription_payment_refunded,
             'order_refunded': handle_order_refunded,
         }
         
@@ -935,13 +1072,16 @@ async def handle_webhook(
         if handler:
             # Process in background to return 200 quickly
             background_tasks.add_task(handler, data)
+            logger.info(f"[webhook] Queued handler for: {event_name}")
         else:
-            logger.warning(f"No handler for webhook event: {event_name}")
+            logger.warning(f"[webhook] No handler for event: {event_name}")
         
         return JSONResponse(content={"status": "ok"})
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Webhook error: {str(e)}")
+        logger.error(f"[webhook] Error: {str(e)}", exc_info=True)
         # Still return 200 to prevent LemonSqueezy from retrying
         return JSONResponse(content={"status": "error", "message": str(e)})
 
@@ -955,8 +1095,9 @@ async def test_webhook():
     Test endpoint to verify webhook configuration.
     """
     return {
-        "webhook_endpoint": "/billing/webhook",
+        "webhook_endpoint": "/v1/billing/webhook",
         "webhook_secret_configured": bool(API_LEMONSQUEEZY_WEBHOOK_SECRET),
+        "test_mode_enabled": BILLING_TEST_MODE,
         "supported_events": [
             "subscription_created",
             "subscription_updated",
@@ -965,7 +1106,264 @@ async def test_webhook():
             "subscription_payment_success",
             "subscription_payment_failed",
             "subscription_payment_recovered",
+            "subscription_payment_refunded",
             "order_refunded"
         ],
         "note": "Configure this URL in your LemonSqueezy dashboard under Settings > Webhooks"
     }
+
+# ============================================================================
+# TEST MODE ENDPOINTS
+# Only available when BILLING_TEST_MODE=true
+# ============================================================================
+
+if BILLING_TEST_MODE:
+    
+    class SimulateWebhookRequest(BaseModel):
+        """Request to simulate a webhook event"""
+        event_name: Literal[
+            "subscription_created",
+            "subscription_updated",
+            "subscription_cancelled",
+            "subscription_expired",
+            "subscription_payment_success",
+            "subscription_payment_failed",
+            "subscription_payment_recovered",
+            "subscription_payment_refunded",
+            "order_refunded"
+        ] = Field(..., description="Webhook event to simulate")
+        user_email: str = Field(..., description="Email of user to affect")
+        billing_cycle: Literal["monthly", "quarterly", "annual"] = Field(
+            default="monthly",
+            description="Billing cycle for the subscription"
+        )
+        amount_cents: int = Field(
+            default=999,
+            description="Amount in cents (e.g., 999 = $9.99)"
+        )
+    
+    @router.post(
+        "/test/simulate-webhook",
+        summary="[TEST] Simulate Webhook Event",
+        description="Simulate a LemonSqueezy webhook event for testing. Only available in test mode.",
+        tags=["Testing"]
+    )
+    async def simulate_webhook(
+        request: Request,
+        sim_req: SimulateWebhookRequest,
+        background_tasks: BackgroundTasks
+    ):
+        """
+        Simulate a webhook event for testing purposes.
+        This bypasses signature verification and creates fake webhook data.
+        """
+        # Find user by email
+        user = get_user_by_email(sim_req.user_email)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User not found: {sim_req.user_email}"
+            )
+        
+        user_id = str(user['user_id'])
+        
+        # Generate fake IDs for the simulation
+        fake_subscription_id = f"test_sub_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        fake_order_id = f"test_order_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        fake_customer_id = f"test_cust_{user_id[:8]}"
+        
+        # Calculate renewal date based on billing cycle
+        now = datetime.now(timezone.utc)
+        if sim_req.billing_cycle == "monthly":
+            renews_at = now + timedelta(days=30)
+        elif sim_req.billing_cycle == "quarterly":
+            renews_at = now + timedelta(days=90)
+        else:  # annual
+            renews_at = now + timedelta(days=365)
+        
+        # Build simulated webhook data based on event type
+        simulated_data = {
+            "id": fake_subscription_id,
+            "attributes": {
+                "custom_data": {
+                    "user_id": user_id,
+                    "billing_cycle": sim_req.billing_cycle
+                },
+                "customer_id": fake_customer_id,
+                "status": "active",
+                "renews_at": renews_at.isoformat(),
+                "ends_at": renews_at.isoformat(),
+                "total": sim_req.amount_cents,
+                "currency": "USD",
+                "first_order_id": fake_order_id,
+                "order_id": fake_order_id,
+                "refunded_amount": sim_req.amount_cents,
+                "urls": {
+                    "customer_portal": "https://app.lemonsqueezy.com/my-orders"
+                }
+            }
+        }
+        
+        # Route to appropriate handler
+        event_handlers = {
+            'subscription_created': handle_subscription_created,
+            'subscription_updated': handle_subscription_updated,
+            'subscription_cancelled': handle_subscription_cancelled,
+            'subscription_expired': handle_subscription_expired,
+            'subscription_payment_success': handle_subscription_payment_success,
+            'subscription_payment_failed': handle_subscription_payment_failed,
+            'subscription_payment_recovered': handle_subscription_payment_recovered,
+            'subscription_payment_refunded': handle_subscription_payment_refunded,
+            'order_refunded': handle_order_refunded,
+        }
+        
+        handler = event_handlers.get(sim_req.event_name)
+        
+        if handler:
+            # Execute handler directly (not in background for immediate feedback)
+            handler(simulated_data)
+            
+            logger.info(f"[TEST] Simulated {sim_req.event_name} for user {sim_req.user_email}")
+            
+            return {
+                "status": "success",
+                "message": f"Simulated {sim_req.event_name} event",
+                "event_name": sim_req.event_name,
+                "user_email": sim_req.user_email,
+                "user_id": user_id,
+                "simulated_data": {
+                    "subscription_id": fake_subscription_id,
+                    "order_id": fake_order_id,
+                    "billing_cycle": sim_req.billing_cycle,
+                    "amount": f"${sim_req.amount_cents / 100:.2f}"
+                }
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown event: {sim_req.event_name}"
+            )
+    
+    @router.get(
+        "/test/user-status/{email}",
+        summary="[TEST] Get User Subscription Status",
+        description="Get detailed subscription status for a user by email. Only available in test mode.",
+        tags=["Testing"]
+    )
+    async def test_get_user_status(email: str):
+        """
+        Get detailed subscription info for testing purposes.
+        """
+        user = get_user_by_email(email)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User not found: {email}"
+            )
+        
+        # Get payment history
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    """
+                    SELECT * FROM tbl_payment_history
+                    WHERE user_id = %s
+                    ORDER BY payment_date DESC
+                    LIMIT 5
+                    """,
+                    (str(user['user_id']),)
+                )
+                payments = cur.fetchall()
+        
+        return {
+            "user": {
+                "user_id": str(user['user_id']),
+                "email": user['email'],
+                "role": user['role'],
+                "is_active": user['is_active']
+            },
+            "subscription": {
+                "subscription_id": user['subscription_id'],
+                "subscription_status": user['subscription_status'],
+                "subscription_plan": user['subscription_plan'],
+                "billing_cycle": user['billing_cycle'],
+                "renews_at": user['subscription_renews_at'].isoformat() if user['subscription_renews_at'] else None,
+                "ends_at": user['subscription_ends_at'].isoformat() if user['subscription_ends_at'] else None,
+                "cancelled_at": user['subscription_cancelled_at'].isoformat() if user['subscription_cancelled_at'] else None,
+                "lemonsqueezy_customer_id": user['lemonsqueezy_customer_id'],
+                "lemonsqueezy_subscription_id": user['lemonsqueezy_subscription_id']
+            },
+            "recent_payments": [
+                {
+                    "payment_id": str(p['payment_id']),
+                    "amount": float(p['amount']),
+                    "currency": p['currency'],
+                    "status": p['status'],
+                    "billing_cycle": p['billing_cycle'],
+                    "payment_date": p['payment_date'].isoformat() if p['payment_date'] else None,
+                    "refund_amount": float(p['refund_amount']) if p['refund_amount'] else None,
+                    "refunded_at": p['refunded_at'].isoformat() if p['refunded_at'] else None
+                }
+                for p in payments
+            ]
+        }
+    
+    @router.post(
+        "/test/reset-user/{email}",
+        summary="[TEST] Reset User to Basic",
+        description="Reset a user's subscription back to Basic for testing. Only available in test mode.",
+        tags=["Testing"]
+    )
+    async def test_reset_user(email: str):
+        """
+        Reset a user back to BASIC role with no subscription.
+        Useful for re-testing the subscription flow.
+        """
+        user = get_user_by_email(email)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User not found: {email}"
+            )
+        
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                # Reset user subscription fields
+                cur.execute(
+                    """
+                    UPDATE tbl_users
+                    SET role = %s,
+                        subscription_id = NULL,
+                        subscription_status = NULL,
+                        subscription_plan = NULL,
+                        subscription_renews_at = NULL,
+                        subscription_ends_at = NULL,
+                        subscription_cancelled_at = NULL,
+                        billing_cycle = NULL,
+                        lemonsqueezy_customer_id = NULL,
+                        lemonsqueezy_subscription_id = NULL,
+                        updated_at = NOW()
+                    WHERE email = %s
+                    """,
+                    (UserRole.BASIC.value, email.lower())
+                )
+                
+                # Optionally clear payment history for this user
+                cur.execute(
+                    """
+                    DELETE FROM tbl_payment_history
+                    WHERE user_id = %s
+                    """,
+                    (str(user['user_id']),)
+                )
+                deleted_payments = cur.rowcount
+                
+                conn.commit()
+        
+        logger.info(f"[TEST] Reset user {email} to BASIC, deleted {deleted_payments} payment records")
+        
+        return {
+            "status": "success",
+            "message": f"User {email} reset to BASIC",
+            "payments_deleted": deleted_payments
+        }
