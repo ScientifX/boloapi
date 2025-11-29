@@ -1,0 +1,86 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Subscription Expired - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Your Premium Subscription Has Ended</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Your {{ app_name }} Premium subscription has expired and your account has been downgraded to the Basic plan.
+</p>
+
+<div style="background-color: #f8f9fa; border-left: 4px solid #6c757d; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #495057; font-size: 14px; line-height: 1.5;">
+        <strong>Account Status:</strong> Your account is now on the Basic plan. 
+        Your API keys and account data remain intact.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">What's Changed</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 0 0 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid #e9ecef;">
+            <td style="padding: 12px 8px; color: #6c757d; font-weight: 600;">Feature</td>
+            <td style="padding: 12px 8px; color: #dc3545; font-weight: 600; text-align: center;">Was (Premium)</td>
+            <td style="padding: 12px 8px; color: #6c757d; font-weight: 600; text-align: center;">Now (Basic)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e9ecef;">
+            <td style="padding: 12px 8px; color: #212529;">Results per request</td>
+            <td style="padding: 12px 8px; color: #dc3545; text-align: center; text-decoration: line-through;">100</td>
+            <td style="padding: 12px 8px; color: #212529; text-align: center;">25</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e9ecef;">
+            <td style="padding: 12px 8px; color: #212529;">Advanced search</td>
+            <td style="padding: 12px 8px; color: #dc3545; text-align: center; text-decoration: line-through;">Yes</td>
+            <td style="padding: 12px 8px; color: #212529; text-align: center;">No</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px 8px; color: #212529;">Priority support</td>
+            <td style="padding: 12px 8px; color: #dc3545; text-align: center; text-decoration: line-through;">Yes</td>
+            <td style="padding: 12px 8px; color: #212529; text-align: center;">Standard</td>
+        </tr>
+    </table>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Reactivate Premium</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Miss your Premium features? Resubscribe now to instantly restore full access to all Premium capabilities.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/plans" 
+       style="display: inline-block; padding: 14px 30px; background-color: #28a745; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Reactivate Premium
+    </a>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Basic Plan Features</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    You can continue using {{ app_name }} with these Basic features:
+</p>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Simple search across all FBI wanted records</li>
+    <li>Up to 25 results per request</li>
+    <li>Access to cleaned, standardized data</li>
+    <li>Full API documentation</li>
+</ul>
+
+<div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
+        <strong>Your Data Is Safe:</strong> All your account settings, API keys, and historical data 
+        are preserved. You can upgrade back to Premium anytime without losing anything.
+    </p>
+</div>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Questions? Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}

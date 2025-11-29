@@ -1,0 +1,90 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Refund Processed - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Refund Confirmation</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Your refund has been processed. The funds will be returned to your original payment method.
+</p>
+
+<div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
+        <strong>Refund Processed:</strong> A refund of ${{ refund_amount }} USD has been initiated to your payment method.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Refund Details</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 0 0 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d; width: 40%;">Refund Amount:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">${{ refund_amount }} USD</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Original Payment:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">${{ original_amount }} USD</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Refund Date:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ refund_date }}</td>
+        </tr>
+        {% if order_id %}
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Reference:</td>
+            <td style="padding: 8px 0; color: #212529; font-family: 'Courier New', monospace; font-size: 13px;">{{ order_id }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<div style="border-top: 2px solid #17a2b8; border-bottom: 2px solid #17a2b8; padding: 15px 0; margin: 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600; font-size: 16px;">Total Refunded:</td>
+            <td style="padding: 8px 0; color: #17a2b8; font-weight: 700; font-size: 18px; text-align: right;">${{ refund_amount }} USD</td>
+        </tr>
+    </table>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">When Will I Receive My Refund?</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Refunds typically appear on your statement within 5-10 business days, depending on your financial institution. 
+    The exact timing depends on your bank or card issuer's processing schedule.
+</p>
+
+<div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #856404; font-weight: 600;">Account Status</p>
+    <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.5;">
+        {% if subscription_cancelled %}
+        Your subscription has been cancelled. You will retain Premium access until the end of your current billing period.
+        {% else %}
+        This refund does not affect your current subscription status. Your Premium access remains active.
+        {% endif %}
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Questions About This Refund?</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    If you have any questions about this refund or need further assistance, please don't hesitate to reach out.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/billing" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        View Billing History
+    </a>
+</div>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}

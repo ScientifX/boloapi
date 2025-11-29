@@ -1,0 +1,75 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Payment Recovered - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #28a745; margin: 0 0 20px 0; font-size: 20px;">Payment Successful - Account Restored</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Great news! Your subscription payment has been successfully processed and your {{ app_name }} Premium account is fully restored.
+</p>
+
+<div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #155724; font-size: 14px; line-height: 1.5;">
+        <strong>Payment Recovered:</strong> Your payment of ${{ amount }} USD has been processed successfully. 
+        Your Premium subscription is now active.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Account Status</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 0 0 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d; width: 40%;">Plan:</td>
+            <td style="padding: 8px 0; color: #28a745; font-weight: 600;">Premium (Active)</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Billing Cycle:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ billing_cycle|capitalize }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Amount Charged:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">${{ amount }} USD</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Next Billing Date:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ next_billing_date }}</td>
+        </tr>
+    </table>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Your Premium Features Are Back</h3>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Up to 100 records per request</li>
+    <li>Advanced multi-field search queries</li>
+    <li>Full data access including images and documents</li>
+    <li>Priority support</li>
+    <li>Higher API rate limits</li>
+</ul>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/billing" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        View Billing Dashboard
+    </a>
+</div>
+
+<div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #0c5460; font-weight: 600;">Tip</p>
+    <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
+        To avoid future payment issues, ensure your payment method stays up to date. 
+        You can update your card details anytime from your 
+        <a href="{{ app_base_url }}/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
+    </p>
+</div>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Thank you for continuing with {{ app_name }} Premium. Questions? Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}

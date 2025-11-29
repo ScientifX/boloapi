@@ -1,11 +1,23 @@
 """
-Email Utility Module - UPDATED with Password Management Emails
+Email Utility Module - Extended with Billing Notification Emails
 Sends emails via Microsoft Graph API (Microsoft 365)
 Uses Jinja2 templates for email content
 
-NEW FUNCTIONS:
+ACCOUNT EMAILS:
+- send_activation_email()
+- send_welcome_email()
+- send_api_key_email()
 - send_password_reset_email()
 - send_password_changed_email()
+
+BILLING EMAILS:
+- send_subscription_welcome_email()
+- send_payment_receipt_email()
+- send_payment_failed_email()
+- send_subscription_cancelled_email()
+- send_subscription_expired_email()
+- send_payment_recovered_email()
+- send_refund_confirmation_email()
 """
 
 import os
@@ -20,7 +32,9 @@ from config import (
     API_AZURE_TENANT_ID,
     API_EMAIL_FROM_ADDRESS,
     API_EMAIL_FROM_NAME,
-    API_APP_BASE_URL
+    API_APP_BASE_URL,
+    APP_GLOBALS,
+    PRICING
 )
 
 # Configure logging 
@@ -40,6 +54,7 @@ class EmailConfig:
     FROM_ADDRESS = API_EMAIL_FROM_ADDRESS
     FROM_NAME = API_EMAIL_FROM_NAME or "BoloDoc"
     APP_BASE_URL = API_APP_BASE_URL or "http://127.0.0.1:8000"
+    SUPPORT_EMAIL = APP_GLOBALS.get('support_email', 'support@scientifics.io')
     
     @classmethod
     def is_configured(cls) -> bool:
@@ -202,7 +217,39 @@ def get_email_sender() -> GraphAPIEmailSender:
 
 
 # ============================================================================
-# EMAIL TEMPLATE FUNCTIONS
+# HELPER FUNCTIONS
+# ============================================================================
+
+def format_date(dt: datetime) -> str:
+    """Format datetime for display in emails"""
+    if dt is None:
+        return "N/A"
+    if isinstance(dt, str):
+        try:
+            dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
+        except:
+            return dt
+    return dt.strftime("%B %d, %Y")
+
+def format_datetime(dt: datetime) -> str:
+    """Format datetime with time for display in emails"""
+    if dt is None:
+        return "N/A"
+    if isinstance(dt, str):
+        try:
+            dt = datetime.fromisoformat(dt.replace('Z', '+00:00'))
+        except:
+            return dt
+    return dt.strftime("%B %d, %Y at %I:%M %p UTC")
+
+def get_price_for_cycle(billing_cycle: str) -> float:
+    """Get price for a billing cycle from config"""
+    cycle_info = PRICING.get(billing_cycle, PRICING.get('monthly'))
+    return cycle_info.get('price', 9.99)
+
+
+# ============================================================================
+# ACCOUNT EMAIL TEMPLATE FUNCTIONS
 # ============================================================================
 
 def send_activation_email(to_email: str, activation_token: str) -> bool:
@@ -258,7 +305,7 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
         context = {
             "api_key": api_key,
             "app_base_url": EmailConfig.APP_BASE_URL,
-            "header_title": "🔑 API Key Reset",
+            "header_title": "API Key Reset",
             "year": datetime.now().year
         }
         
@@ -291,7 +338,7 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
         context = {
             "api_key": api_key,
             "app_base_url": EmailConfig.APP_BASE_URL,
-            "header_title": "✅ Account Activated!",
+            "header_title": "Account Activated!",
             "year": datetime.now().year
         }
         
@@ -305,10 +352,6 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
         logger.error(f"Error rendering welcome email template: {str(e)}")
         return False
 
-
-# ============================================================================
-# NEW: PASSWORD MANAGEMENT EMAIL FUNCTIONS
-# ============================================================================
 
 def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     """
@@ -329,7 +372,7 @@ def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     try:
         context = {
             "reset_link": reset_link,
-            "header_title": "🔒 Password Reset Request",
+            "header_title": "Password Reset Request",
             "year": datetime.now().year,
             "expires_in": "1 hour"
         }
@@ -360,10 +403,10 @@ def send_password_changed_email(to_email: str) -> bool:
     # Render template
     try:
         context = {
-            "header_title": "🔐 Password Changed",
+            "header_title": "Password Changed",
             "year": datetime.now().year,
             "changed_at": datetime.now().strftime("%B %d, %Y at %I:%M %p UTC"),
-            "support_email": "support@scientifics.io"
+            "support_email": EmailConfig.SUPPORT_EMAIL
         }
         
         # Render the template
@@ -374,4 +417,319 @@ def send_password_changed_email(to_email: str) -> bool:
         
     except Exception as e:
         logger.error(f"Error rendering password changed email template: {str(e)}")
+        return False
+
+
+# ============================================================================
+# BILLING EMAIL TEMPLATE FUNCTIONS
+# ============================================================================
+
+def send_subscription_welcome_email(
+    to_email: str,
+    billing_cycle: str,
+    renews_at: datetime = None
+) -> bool:
+    """
+    Send welcome email to new Premium subscribers
+    
+    Args:
+        to_email: Recipient email address
+        billing_cycle: 'monthly', 'quarterly', or 'annual'
+        renews_at: Next renewal date
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"Welcome to {EmailConfig.FROM_NAME} Premium!"
+    
+    try:
+        amount = get_price_for_cycle(billing_cycle)
+        
+        context = {
+            "header_title": "Welcome to Premium!",
+            "year": datetime.now().year,
+            "billing_cycle": billing_cycle,
+            "amount": f"{amount:.2f}",
+            "renews_at": format_date(renews_at),
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/subscription_welcome.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Subscription welcome email sent to {to_email}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending subscription welcome email: {str(e)}")
+        return False
+
+
+def send_payment_receipt_email(
+    to_email: str,
+    amount: float,
+    billing_cycle: str,
+    order_id: str = None,
+    invoice_url: str = None,
+    next_billing_date: datetime = None
+) -> bool:
+    """
+    Send payment receipt email after successful payment
+    
+    Args:
+        to_email: Recipient email address
+        amount: Payment amount in dollars
+        billing_cycle: 'monthly', 'quarterly', or 'annual'
+        order_id: LemonSqueezy order/invoice ID
+        invoice_url: URL to view full invoice
+        next_billing_date: Next billing date
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Payment Receipt"
+    
+    try:
+        context = {
+            "header_title": "Payment Receipt",
+            "year": datetime.now().year,
+            "amount": f"{amount:.2f}",
+            "billing_cycle": billing_cycle,
+            "payment_date": format_date(datetime.now(timezone.utc)),
+            "order_id": order_id,
+            "invoice_url": invoice_url,
+            "next_billing_date": format_date(next_billing_date),
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/payment_receipt.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Payment receipt email sent to {to_email}, amount=${amount:.2f}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending payment receipt email: {str(e)}")
+        return False
+
+
+def send_payment_failed_email(
+    to_email: str,
+    amount: float = None,
+    billing_cycle: str = None
+) -> bool:
+    """
+    Send payment failed warning email
+    
+    Args:
+        to_email: Recipient email address
+        amount: Failed payment amount (optional)
+        billing_cycle: Billing cycle (optional)
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Payment Failed - Action Required"
+    
+    try:
+        # Get amount from pricing if not provided
+        if amount is None and billing_cycle:
+            amount = get_price_for_cycle(billing_cycle)
+        elif amount is None:
+            amount = get_price_for_cycle('monthly')
+        
+        context = {
+            "header_title": "Payment Failed",
+            "year": datetime.now().year,
+            "amount": f"{amount:.2f}",
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/payment_failed.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Payment failed email sent to {to_email}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending payment failed email: {str(e)}")
+        return False
+
+
+def send_subscription_cancelled_email(
+    to_email: str,
+    ends_at: datetime = None
+) -> bool:
+    """
+    Send subscription cancellation confirmation email
+    
+    Args:
+        to_email: Recipient email address
+        ends_at: Date when Premium access ends
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Subscription Cancelled"
+    
+    try:
+        context = {
+            "header_title": "Subscription Cancelled",
+            "year": datetime.now().year,
+            "ends_at": format_date(ends_at),
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/subscription_cancelled.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Subscription cancelled email sent to {to_email}, ends_at={ends_at}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending subscription cancelled email: {str(e)}")
+        return False
+
+
+def send_subscription_expired_email(to_email: str) -> bool:
+    """
+    Send subscription expired notification email
+    
+    Args:
+        to_email: Recipient email address
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Your Premium Subscription Has Ended"
+    
+    try:
+        context = {
+            "header_title": "Subscription Ended",
+            "year": datetime.now().year,
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/subscription_expired.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Subscription expired email sent to {to_email}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending subscription expired email: {str(e)}")
+        return False
+
+
+def send_payment_recovered_email(
+    to_email: str,
+    amount: float,
+    billing_cycle: str = None,
+    next_billing_date: datetime = None
+) -> bool:
+    """
+    Send payment recovered notification email
+    
+    Args:
+        to_email: Recipient email address
+        amount: Recovered payment amount
+        billing_cycle: Billing cycle
+        next_billing_date: Next billing date
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Payment Successful - Account Restored"
+    
+    try:
+        context = {
+            "header_title": "Payment Recovered",
+            "year": datetime.now().year,
+            "amount": f"{amount:.2f}",
+            "billing_cycle": billing_cycle or "monthly",
+            "next_billing_date": format_date(next_billing_date),
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/payment_recovered.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Payment recovered email sent to {to_email}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending payment recovered email: {str(e)}")
+        return False
+
+
+def send_refund_confirmation_email(
+    to_email: str,
+    refund_amount: float,
+    original_amount: float = None,
+    order_id: str = None,
+    subscription_cancelled: bool = False
+) -> bool:
+    """
+    Send refund confirmation email
+    
+    Args:
+        to_email: Recipient email address
+        refund_amount: Refund amount in dollars
+        original_amount: Original payment amount (optional)
+        order_id: Order/invoice reference
+        subscription_cancelled: Whether subscription was cancelled with refund
+    
+    Returns:
+        bool: True if email sent successfully
+    """
+    subject = f"{EmailConfig.FROM_NAME} - Refund Confirmation"
+    
+    try:
+        context = {
+            "header_title": "Refund Processed",
+            "year": datetime.now().year,
+            "refund_amount": f"{refund_amount:.2f}",
+            "original_amount": f"{original_amount:.2f}" if original_amount else f"{refund_amount:.2f}",
+            "refund_date": format_date(datetime.now(timezone.utc)),
+            "order_id": order_id,
+            "subscription_cancelled": subscription_cancelled,
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/refund_confirmation.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            logger.info(f"[email] Refund confirmation email sent to {to_email}, amount=${refund_amount:.2f}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending refund confirmation email: {str(e)}")
         return False

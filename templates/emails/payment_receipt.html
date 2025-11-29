@@ -1,0 +1,86 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Payment Receipt - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Payment Receipt</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Thank you for your payment. This email confirms that your subscription payment has been processed successfully.
+</p>
+
+<div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #155724; font-size: 14px; line-height: 1.5;">
+        <strong>Payment Successful:</strong> Your payment of ${{ amount }} USD has been received.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Payment Details</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 0 0 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d; width: 40%;">Date:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ payment_date }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Description:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ app_name }} Premium ({{ billing_cycle|capitalize }})</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Amount:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">${{ amount }} USD</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Payment Method:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ payment_method|default('Card') }}</td>
+        </tr>
+        {% if order_id %}
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Reference:</td>
+            <td style="padding: 8px 0; color: #212529; font-family: 'Courier New', monospace; font-size: 13px;">{{ order_id }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<div style="border-top: 2px solid #3d4461; border-bottom: 2px solid #3d4461; padding: 15px 0; margin: 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600; font-size: 16px;">Total Paid:</td>
+            <td style="padding: 8px 0; color: #28a745; font-weight: 700; font-size: 18px; text-align: right;">${{ amount }} USD</td>
+        </tr>
+    </table>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Next Billing</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Your subscription will automatically renew on <strong>{{ next_billing_date }}</strong>. 
+    You will be charged ${{ amount }} USD for another {{ billing_cycle }} of Premium access.
+</p>
+
+{% if invoice_url %}
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ invoice_url }}" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        View Full Invoice
+    </a>
+</div>
+{% endif %}
+
+<div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
+        <strong>Tip:</strong> You can view all your payment history and manage your subscription from your 
+        <a href="{{ app_base_url }}/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
+    </p>
+</div>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Questions about this payment? Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}

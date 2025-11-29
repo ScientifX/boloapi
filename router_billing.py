@@ -33,6 +33,15 @@ from config import (
 )
 from auth import UserRole
 from jwt_auth import require_jwt_role
+from email_utils import (
+    send_subscription_welcome_email,
+    send_payment_receipt_email,
+    send_payment_failed_email,
+    send_subscription_cancelled_email,
+    send_subscription_expired_email,
+    send_payment_recovered_email,
+    send_refund_confirmation_email
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -94,6 +103,21 @@ def get_user_by_email(email: str) -> Optional[dict]:
                 (email.lower(),)
             )
             return cur.fetchone()
+
+def get_user_email_by_id(user_id: str) -> Optional[str]:
+    """Get user email by user_id for sending notifications"""
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT email FROM tbl_users WHERE user_id = %s",
+                    (user_id,)
+                )
+                result = cur.fetchone()
+                return result['email'] if result else None
+    except Exception as e:
+        logger.error(f"Error getting user email: {str(e)}")
+        return None
 
 # ============================================================================
 # REQUEST/RESPONSE MODELS
@@ -197,6 +221,9 @@ def create_lemonsqueezy_checkout(
         }
     }
     
+    # Log the payload for debugging
+    logger.info(f"[checkout] Payload: {json.dumps(payload, indent=2)}")
+    
     try:
         logger.info(f"Creating LemonSqueezy checkout for user {user_id}, variant {variant_id}")
         response = requests.post(url, json=payload, headers=headers, timeout=10)
@@ -251,22 +278,24 @@ def verify_webhook_signature(payload: bytes, signature: str) -> bool:
     return is_valid
 
 # ============================================================================
-# WEBHOOK HANDLERS
+# WEBHOOK EVENT HANDLERS - With Email Notifications
 # ============================================================================
 
-def handle_subscription_created(data: Dict[str, Any]) -> None:
+def handle_subscription_created(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_created webhook event.
-    Upgrade user to PREMIUM role.
+    Upgrade user to PREMIUM role and send welcome email.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
         billing_cycle = custom_data.get('billing_cycle', 'monthly')
-        
-        subscription_id = data['id']
+        subscription_id = data.get('id')
         customer_id = attributes.get('customer_id')
         renews_at = attributes.get('renews_at')
         
@@ -310,23 +339,40 @@ def handle_subscription_created(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[subscription_created] SUCCESS: user={user_id} upgraded to PREMIUM, cycle={billing_cycle}")
+            
+            # Send welcome email
+            user_email = get_user_email_by_id(user_id)
+            if user_email:
+                try:
+                    send_subscription_welcome_email(
+                        to_email=user_email,
+                        billing_cycle=billing_cycle,
+                        renews_at=renews_at_dt
+                    )
+                except Exception as email_err:
+                    logger.error(f"[subscription_created] Failed to send welcome email: {str(email_err)}")
         else:
             logger.warning(f"[subscription_created] No user found with user_id={user_id}")
         
     except Exception as e:
         logger.error(f"[subscription_created] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_updated(data: Dict[str, Any]) -> None:
+
+def handle_subscription_updated(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_updated webhook event.
     Update subscription details (renewal date, status, etc.)
+    Note: No email for updates - these are typically background renewals
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
-        subscription_id = data['id']
+        subscription_id = data.get('id')
         status_name = attributes.get('status')
         renews_at = attributes.get('renews_at')
         
@@ -362,17 +408,22 @@ def handle_subscription_updated(data: Dict[str, Any]) -> None:
     except Exception as e:
         logger.error(f"[subscription_updated] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_cancelled(data: Dict[str, Any]) -> None:
+
+def handle_subscription_cancelled(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_cancelled webhook event.
     Mark as cancelled but keep PREMIUM until end of billing period.
+    Send cancellation confirmation email.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
-        subscription_id = data['id']
+        subscription_id = data.get('id')
         ends_at = attributes.get('ends_at')  # When subscription access ends
         
         logger.info(f"[subscription_cancelled] Processing: user_id={user_id}, ends_at={ends_at}")
@@ -403,20 +454,35 @@ def handle_subscription_cancelled(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[subscription_cancelled] SUCCESS: user={user_id}, access until={ends_at}")
+            
+            # Send cancellation confirmation email
+            user_email = get_user_email_by_id(user_id)
+            if user_email:
+                try:
+                    send_subscription_cancelled_email(
+                        to_email=user_email,
+                        ends_at=ends_at_dt
+                    )
+                except Exception as email_err:
+                    logger.error(f"[subscription_cancelled] Failed to send email: {str(email_err)}")
         else:
             logger.warning(f"[subscription_cancelled] No user found with user_id={user_id}")
         
     except Exception as e:
         logger.error(f"[subscription_cancelled] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_expired(data: Dict[str, Any]) -> None:
+
+def handle_subscription_expired(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_expired webhook event.
-    Downgrade user to BASIC role.
+    Downgrade user to BASIC role and send expiration notification.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
         
@@ -425,6 +491,9 @@ def handle_subscription_expired(data: Dict[str, Any]) -> None:
         if not user_id:
             logger.error("[subscription_expired] No user_id in webhook custom_data")
             return
+        
+        # Get user email before updating (for notification)
+        user_email = get_user_email_by_id(user_id)
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -448,30 +517,44 @@ def handle_subscription_expired(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[subscription_expired] SUCCESS: user={user_id} downgraded to BASIC")
+            
+            # Send expiration notification email
+            if user_email:
+                try:
+                    send_subscription_expired_email(to_email=user_email)
+                except Exception as email_err:
+                    logger.error(f"[subscription_expired] Failed to send email: {str(email_err)}")
         else:
             logger.warning(f"[subscription_expired] No user found with user_id={user_id}")
         
     except Exception as e:
         logger.error(f"[subscription_expired] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
+
+def handle_subscription_payment_success(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_payment_success webhook event.
-    Record payment in payment history.
+    Record payment in payment history and send receipt email.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
         billing_cycle = custom_data.get('billing_cycle', 'monthly')
         
-        order_id = attributes.get('first_order_id') or attributes.get('order_id')
+        # For subscription invoices, the ID is the invoice ID, subscription_id is in attributes
+        subscription_id = attributes.get('subscription_id')
+        order_id = str(data.get('id'))  # Use invoice ID as the order reference
         amount = attributes.get('total')
         currency = attributes.get('currency', 'USD')
-        invoice_url = attributes.get('urls', {}).get('customer_portal')
+        invoice_url = attributes.get('urls', {}).get('invoice_url')
+        renews_at = attributes.get('renews_at')
         
-        logger.info(f"[payment_success] Processing: user_id={user_id}, order_id={order_id}, amount={amount}")
+        logger.info(f"[payment_success] Processing: user_id={user_id}, invoice_id={order_id}, amount={amount}")
         
         if not user_id or not order_id:
             logger.error("[payment_success] Missing user_id or order_id in webhook")
@@ -479,6 +562,14 @@ def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
         
         # Convert amount from cents to dollars
         amount_decimal = float(amount) / 100 if amount else 0
+        
+        # Parse renews_at for email
+        renews_at_dt = None
+        if renews_at:
+            try:
+                renews_at_dt = datetime.fromisoformat(renews_at.replace('Z', '+00:00'))
+            except:
+                pass
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -498,28 +589,55 @@ def handle_subscription_payment_success(data: Dict[str, Any]) -> None:
         
         if rows_inserted > 0:
             logger.info(f"[payment_success] SUCCESS: user={user_id}, amount=${amount_decimal} {currency}")
+            
+            # Send payment receipt email
+            user_email = get_user_email_by_id(user_id)
+            if user_email:
+                try:
+                    send_payment_receipt_email(
+                        to_email=user_email,
+                        amount=amount_decimal,
+                        billing_cycle=billing_cycle,
+                        order_id=order_id,
+                        invoice_url=invoice_url,
+                        next_billing_date=renews_at_dt
+                    )
+                except Exception as email_err:
+                    logger.error(f"[payment_success] Failed to send receipt email: {str(email_err)}")
         else:
             logger.info(f"[payment_success] Payment already recorded for order_id={order_id}")
         
     except Exception as e:
         logger.error(f"[payment_success] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_payment_failed(data: Dict[str, Any]) -> None:
+
+def handle_subscription_payment_failed(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_payment_failed webhook event.
-    Update subscription status to past_due.
+    Update subscription status to past_due and send warning email.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
+        billing_cycle = custom_data.get('billing_cycle', 'monthly')
+        amount = attributes.get('total')
         
         logger.info(f"[payment_failed] Processing: user_id={user_id}")
         
         if not user_id:
             logger.error("[payment_failed] No user_id in webhook custom_data")
             return
+        
+        # Get user email before updating
+        user_email = get_user_email_by_id(user_id)
+        
+        # Convert amount from cents to dollars
+        amount_decimal = float(amount) / 100 if amount else None
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -537,28 +655,60 @@ def handle_subscription_payment_failed(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.warning(f"[payment_failed] User {user_id} marked as past_due")
+            
+            # Send payment failed warning email
+            if user_email:
+                try:
+                    send_payment_failed_email(
+                        to_email=user_email,
+                        amount=amount_decimal,
+                        billing_cycle=billing_cycle
+                    )
+                except Exception as email_err:
+                    logger.error(f"[payment_failed] Failed to send warning email: {str(email_err)}")
         else:
             logger.warning(f"[payment_failed] No user found with user_id={user_id}")
         
     except Exception as e:
         logger.error(f"[payment_failed] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_payment_recovered(data: Dict[str, Any]) -> None:
+
+def handle_subscription_payment_recovered(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_payment_recovered webhook event.
-    Update subscription status back to active after failed payment recovery.
+    Update subscription status back to active and send recovery notification.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
+        billing_cycle = custom_data.get('billing_cycle', 'monthly')
+        amount = attributes.get('total')
+        renews_at = attributes.get('renews_at')
         
         logger.info(f"[payment_recovered] Processing: user_id={user_id}")
         
         if not user_id:
             logger.error("[payment_recovered] No user_id in webhook custom_data")
             return
+        
+        # Get user email
+        user_email = get_user_email_by_id(user_id)
+        
+        # Convert amount from cents to dollars
+        amount_decimal = float(amount) / 100 if amount else 0
+        
+        # Parse renews_at
+        renews_at_dt = None
+        if renews_at:
+            try:
+                renews_at_dt = datetime.fromisoformat(renews_at.replace('Z', '+00:00'))
+            except:
+                pass
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -576,25 +726,41 @@ def handle_subscription_payment_recovered(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[payment_recovered] SUCCESS: user={user_id} restored to active")
+            
+            # Send payment recovered notification
+            if user_email:
+                try:
+                    send_payment_recovered_email(
+                        to_email=user_email,
+                        amount=amount_decimal,
+                        billing_cycle=billing_cycle,
+                        next_billing_date=renews_at_dt
+                    )
+                except Exception as email_err:
+                    logger.error(f"[payment_recovered] Failed to send email: {str(email_err)}")
         else:
             logger.warning(f"[payment_recovered] No user found with user_id={user_id}")
         
     except Exception as e:
         logger.error(f"[payment_recovered] Error: {str(e)}", exc_info=True)
 
-def handle_subscription_payment_refunded(data: Dict[str, Any]) -> None:
+
+def handle_subscription_payment_refunded(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle subscription_payment_refunded webhook event.
-    Record refund for a recurring subscription payment.
-    This differs from order_refunded which handles initial order refunds.
+    Record refund for a recurring subscription payment and send confirmation.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
-        order_id = attributes.get('order_id') or data.get('id')
+        order_id = str(data.get('id'))  # Invoice ID
         refunded_amount = attributes.get('refunded_amount') or attributes.get('total')
+        original_amount = attributes.get('total')
         
         logger.info(f"[subscription_payment_refunded] Processing: user_id={user_id}, order_id={order_id}")
         
@@ -602,8 +768,12 @@ def handle_subscription_payment_refunded(data: Dict[str, Any]) -> None:
             logger.error("[subscription_payment_refunded] Missing user_id or order_id")
             return
         
-        # Convert amount from cents to dollars
+        # Get user email
+        user_email = get_user_email_by_id(user_id)
+        
+        # Convert amounts from cents to dollars
         refunded_decimal = float(refunded_amount) / 100 if refunded_amount else 0
+        original_decimal = float(original_amount) / 100 if original_amount else refunded_decimal
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -624,25 +794,43 @@ def handle_subscription_payment_refunded(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[subscription_payment_refunded] SUCCESS: order={order_id}, refund=${refunded_decimal}")
+            
+            # Send refund confirmation email
+            if user_email:
+                try:
+                    send_refund_confirmation_email(
+                        to_email=user_email,
+                        refund_amount=refunded_decimal,
+                        original_amount=original_decimal,
+                        order_id=order_id,
+                        subscription_cancelled=False
+                    )
+                except Exception as email_err:
+                    logger.error(f"[subscription_payment_refunded] Failed to send email: {str(email_err)}")
         else:
             logger.warning(f"[subscription_payment_refunded] No payment found for order_id={order_id}")
         
     except Exception as e:
         logger.error(f"[subscription_payment_refunded] Error: {str(e)}", exc_info=True)
 
-def handle_order_refunded(data: Dict[str, Any]) -> None:
+
+def handle_order_refunded(data: Dict[str, Any], meta: Dict[str, Any] = None) -> None:
     """
     Handle order_refunded webhook event.
-    Record refund for the initial order (first purchase).
+    Record refund for the initial order and send confirmation.
     This typically means a full cancellation + refund scenario.
     """
     try:
-        attributes = data['attributes']
-        custom_data = attributes.get('custom_data', {})
+        attributes = data.get('attributes', {})
+        meta = meta or {}
+        
+        # custom_data is in meta, not attributes
+        custom_data = meta.get('custom_data', {})
         
         user_id = custom_data.get('user_id')
-        order_id = data['id']
+        order_id = str(data.get('id'))
         refunded_amount = attributes.get('refunded_amount')
+        total_amount = attributes.get('total')
         
         logger.info(f"[order_refunded] Processing: user_id={user_id}, order_id={order_id}")
         
@@ -650,8 +838,12 @@ def handle_order_refunded(data: Dict[str, Any]) -> None:
             logger.error("[order_refunded] Missing user_id or order_id")
             return
         
-        # Convert amount from cents to dollars
+        # Get user email
+        user_email = get_user_email_by_id(user_id)
+        
+        # Convert amounts from cents to dollars
         refunded_decimal = float(refunded_amount) / 100 if refunded_amount else 0
+        original_decimal = float(total_amount) / 100 if total_amount else refunded_decimal
         
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -672,6 +864,19 @@ def handle_order_refunded(data: Dict[str, Any]) -> None:
         
         if rows_updated > 0:
             logger.info(f"[order_refunded] SUCCESS: order={order_id}, refund=${refunded_decimal}")
+            
+            # Send refund confirmation email (likely with subscription cancelled)
+            if user_email:
+                try:
+                    send_refund_confirmation_email(
+                        to_email=user_email,
+                        refund_amount=refunded_decimal,
+                        original_amount=original_decimal,
+                        order_id=order_id,
+                        subscription_cancelled=True  # Initial order refund usually means cancellation
+                    )
+                except Exception as email_err:
+                    logger.error(f"[order_refunded] Failed to send email: {str(email_err)}")
         else:
             logger.warning(f"[order_refunded] No payment found for order_id={order_id}")
         
@@ -1011,20 +1216,17 @@ async def billing_dashboard_page(request: Request):
     summary="LemonSqueezy Webhook",
     description="Handle webhook events from LemonSqueezy",
     include_in_schema=False  # Hide from public docs
-    )
+)
 async def handle_webhook(
     request: Request,
     background_tasks: BackgroundTasks,
     x_signature: str = Header(None)
-    ):
+):
     """
     Handle incoming webhooks from LemonSqueezy.
     Verifies signature and processes subscription events.
     """
     try:
-        # DEBUG: Log all headers
-        logger.info(f"[webhook] Headers: {dict(request.headers)}")
-        
         # Get raw body for signature verification
         body = await request.body()
         
@@ -1052,7 +1254,7 @@ async def handle_webhook(
         
         # Log full payload in test mode for debugging
         if BILLING_TEST_MODE:
-            logger.debug(f"[webhook] Full payload: {json.dumps(payload, indent=2)}")
+            logger.info(f"[webhook] Full payload: {json.dumps(payload, indent=2)}")
         
         # Route to appropriate handler
         event_handlers = {
@@ -1070,8 +1272,10 @@ async def handle_webhook(
         handler = event_handlers.get(event_name)
         
         if handler:
+            # Extract meta for custom_data - LemonSqueezy puts custom_data in meta, not data.attributes
+            meta = payload.get('meta', {})
             # Process in background to return 200 quickly
-            background_tasks.add_task(handler, data)
+            background_tasks.add_task(handler, data, meta)
             logger.info(f"[webhook] Queued handler for: {event_name}")
         else:
             logger.warning(f"[webhook] No handler for event: {event_name}")
@@ -1220,8 +1424,18 @@ if BILLING_TEST_MODE:
         handler = event_handlers.get(sim_req.event_name)
         
         if handler:
+            # Build simulated meta (where LemonSqueezy puts custom_data)
+            simulated_meta = {
+                "test_mode": True,
+                "event_name": sim_req.event_name,
+                "custom_data": {
+                    "user_id": user_id,
+                    "billing_cycle": sim_req.billing_cycle
+                }
+            }
+            
             # Execute handler directly (not in background for immediate feedback)
-            handler(simulated_data)
+            handler(simulated_data, simulated_meta)
             
             logger.info(f"[TEST] Simulated {sim_req.event_name} for user {sim_req.user_email}")
             
@@ -1367,3 +1581,219 @@ if BILLING_TEST_MODE:
             "message": f"User {email} reset to BASIC",
             "payments_deleted": deleted_payments
         }
+    
+    class SendTestEmailRequest(BaseModel):
+        """Request to send/preview a test email"""
+        email_type: Literal[
+            "subscription_welcome",
+            "payment_receipt",
+            "payment_failed",
+            "subscription_cancelled",
+            "subscription_expired",
+            "payment_recovered",
+            "refund_confirmation"
+        ] = Field(..., description="Type of email to send/preview")
+        user_email: str = Field(..., description="Email address to send to")
+        billing_cycle: Literal["monthly", "quarterly", "annual"] = Field(
+            default="monthly",
+            description="Billing cycle for email content"
+        )
+        amount: float = Field(default=9.99, description="Amount in dollars")
+        renews_at: Optional[str] = Field(default=None, description="Renewal date ISO string")
+        ends_at: Optional[str] = Field(default=None, description="End date ISO string")
+        order_id: Optional[str] = Field(default=None, description="Order/invoice ID")
+        preview_only: bool = Field(default=False, description="If true, return HTML instead of sending")
+    
+    @router.post(
+        "/test/send-email",
+        summary="[TEST] Send or Preview Billing Email",
+        description="Send a billing email or get HTML preview. Only available in test mode.",
+        tags=["Testing"]
+    )
+    async def test_send_email(req: SendTestEmailRequest):
+        """
+        Send or preview a billing email for testing purposes.
+        If preview_only=true, returns the rendered HTML instead of sending.
+        """
+        from email_utils import (
+            send_subscription_welcome_email,
+            send_payment_receipt_email,
+            send_payment_failed_email,
+            send_subscription_cancelled_email,
+            send_subscription_expired_email,
+            send_payment_recovered_email,
+            send_refund_confirmation_email,
+            templates as email_templates,
+            EmailConfig
+        )
+        
+        # Parse dates
+        renews_at_dt = None
+        ends_at_dt = None
+        
+        if req.renews_at:
+            try:
+                renews_at_dt = datetime.fromisoformat(req.renews_at.replace('Z', '+00:00'))
+            except:
+                renews_at_dt = datetime.now(timezone.utc) + timedelta(days=30)
+        else:
+            renews_at_dt = datetime.now(timezone.utc) + timedelta(days=30)
+        
+        if req.ends_at:
+            try:
+                ends_at_dt = datetime.fromisoformat(req.ends_at.replace('Z', '+00:00'))
+            except:
+                ends_at_dt = datetime.now(timezone.utc) + timedelta(days=30)
+        else:
+            ends_at_dt = datetime.now(timezone.utc) + timedelta(days=30)
+        
+        order_id = req.order_id or f"test_order_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Build context for template rendering
+        def format_date(dt):
+            if dt is None:
+                return "N/A"
+            return dt.strftime("%B %d, %Y")
+        
+        base_context = {
+            "header_title": "",
+            "year": datetime.now().year,
+            "billing_cycle": req.billing_cycle,
+            "amount": f"{req.amount:.2f}",
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        # Template and context mapping
+        email_configs = {
+            "subscription_welcome": {
+                "template": "emails/subscription_welcome.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Welcome to Premium!",
+                    "renews_at": format_date(renews_at_dt)
+                },
+                "send_func": lambda: send_subscription_welcome_email(
+                    req.user_email, req.billing_cycle, renews_at_dt
+                )
+            },
+            "payment_receipt": {
+                "template": "emails/payment_receipt.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Payment Receipt",
+                    "payment_date": format_date(datetime.now(timezone.utc)),
+                    "order_id": order_id,
+                    "invoice_url": None,
+                    "next_billing_date": format_date(renews_at_dt)
+                },
+                "send_func": lambda: send_payment_receipt_email(
+                    req.user_email, req.amount, req.billing_cycle, 
+                    order_id, None, renews_at_dt
+                )
+            },
+            "payment_failed": {
+                "template": "emails/payment_failed.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Payment Failed"
+                },
+                "send_func": lambda: send_payment_failed_email(
+                    req.user_email, req.amount, req.billing_cycle
+                )
+            },
+            "subscription_cancelled": {
+                "template": "emails/subscription_cancelled.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Subscription Cancelled",
+                    "ends_at": format_date(ends_at_dt)
+                },
+                "send_func": lambda: send_subscription_cancelled_email(
+                    req.user_email, ends_at_dt
+                )
+            },
+            "subscription_expired": {
+                "template": "emails/subscription_expired.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Subscription Ended"
+                },
+                "send_func": lambda: send_subscription_expired_email(req.user_email)
+            },
+            "payment_recovered": {
+                "template": "emails/payment_recovered.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Payment Recovered",
+                    "next_billing_date": format_date(renews_at_dt)
+                },
+                "send_func": lambda: send_payment_recovered_email(
+                    req.user_email, req.amount, req.billing_cycle, renews_at_dt
+                )
+            },
+            "refund_confirmation": {
+                "template": "emails/refund_confirmation.html",
+                "context": {
+                    **base_context,
+                    "header_title": "Refund Processed",
+                    "refund_amount": f"{req.amount:.2f}",
+                    "original_amount": f"{req.amount:.2f}",
+                    "refund_date": format_date(datetime.now(timezone.utc)),
+                    "order_id": order_id,
+                    "subscription_cancelled": False
+                },
+                "send_func": lambda: send_refund_confirmation_email(
+                    req.user_email, req.amount, req.amount, order_id, False
+                )
+            }
+        }
+        
+        config = email_configs.get(req.email_type)
+        if not config:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown email type: {req.email_type}"
+            )
+        
+        if req.preview_only:
+            # Render template and return HTML
+            try:
+                html_content = email_templates.get_template(config["template"]).render(config["context"])
+                
+                logger.info(f"[TEST] Generated email preview: {req.email_type}")
+                
+                return {
+                    "status": "preview",
+                    "email_type": req.email_type,
+                    "html": html_content
+                }
+            except Exception as e:
+                logger.error(f"[TEST] Failed to render email template: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to render template: {str(e)}"
+                )
+        else:
+            # Actually send the email
+            try:
+                success = config["send_func"]()
+                
+                if success:
+                    logger.info(f"[TEST] Sent {req.email_type} email to {req.user_email}")
+                    return {
+                        "status": "sent",
+                        "email_type": req.email_type,
+                        "to": req.user_email
+                    }
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail="Failed to send email"
+                    )
+            except Exception as e:
+                logger.error(f"[TEST] Failed to send email: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to send email: {str(e)}"
+                )

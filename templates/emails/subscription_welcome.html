@@ -1,0 +1,79 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Welcome to Premium - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #28a745; margin: 0 0 20px 0; font-size: 20px;">Welcome to {{ app_name }} Premium!</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Thank you for subscribing to {{ app_name }} Premium. Your account has been upgraded and you now have access to all premium features.
+</p>
+
+<div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #155724; font-size: 14px; line-height: 1.5;">
+        <strong>Subscription Active:</strong> Your Premium subscription is now active and ready to use.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Your Subscription Details</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 0 0 20px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d; width: 40%;">Plan:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">Premium</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Billing Cycle:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ billing_cycle|capitalize }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Amount:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">${{ amount }} USD</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #6c757d;">Next Billing Date:</td>
+            <td style="padding: 8px 0; color: #212529; font-weight: 600;">{{ renews_at }}</td>
+        </tr>
+    </table>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Premium Features Now Available</h3>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li><strong>Unlimited Results:</strong> Up to 100 records per request (vs 25 for Basic)</li>
+    <li><strong>Advanced Search:</strong> Multi-field queries, complex filters, and field selection</li>
+    <li><strong>Full Data Access:</strong> Complete record details including images and documents</li>
+    <li><strong>Priority Support:</strong> Faster response times for technical inquiries</li>
+    <li><strong>Higher Rate Limits:</strong> More API requests per minute</li>
+</ul>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/docs" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Explore API Documentation
+    </a>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Manage Your Subscription</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    You can view your billing history, update payment methods, or manage your subscription anytime from your account dashboard.
+</p>
+
+<div style="text-align: center; margin: 20px 0;">
+    <a href="{{ app_base_url }}/billing" 
+       style="display: inline-block; padding: 12px 24px; background-color: #ffffff; color: #3d4461; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;
+              border: 2px solid #3d4461;">
+        View Billing Dashboard
+    </a>
+</div>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Questions about your subscription? Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}

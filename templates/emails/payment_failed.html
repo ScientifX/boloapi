@@ -1,0 +1,69 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}Payment Failed - {{ app_name }}{% endblock %}
+
+{% block content %}
+<h2 style="color: #dc3545; margin: 0 0 20px 0; font-size: 20px;">Payment Failed</h2>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    We were unable to process your subscription payment for {{ app_name }} Premium. 
+    Please update your payment method to continue enjoying Premium features.
+</p>
+
+<div style="background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #721c24; font-weight: 600;">Action Required</p>
+    <p style="margin: 0; color: #721c24; font-size: 14px; line-height: 1.5;">
+        Your payment of ${{ amount }} USD could not be processed. Please update your payment information to avoid service interruption.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">What Happened?</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Payment failures can occur for several reasons:
+</p>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Card expired or about to expire</li>
+    <li>Insufficient funds in the account</li>
+    <li>Card issuer declined the transaction</li>
+    <li>Payment information needs to be updated</li>
+</ul>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">What You Need To Do</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Update your payment method through your billing dashboard or the customer portal. 
+    We will automatically retry the payment once your information is updated.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/billing" 
+       style="display: inline-block; padding: 14px 30px; background-color: #dc3545; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Update Payment Method
+    </a>
+</div>
+
+<div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 10px 0; color: #856404; font-weight: 600;">Important</p>
+    <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.5;">
+        Your Premium access remains active while we retry payment. If payment cannot be recovered, 
+        your account will be downgraded to Basic at the end of your current billing period.
+    </p>
+</div>
+
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Need Help?</h3>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    If you believe this is an error or need assistance updating your payment method, 
+    please don't hesitate to contact our support team.
+</p>
+
+<p style="color: #6c757d; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+    Contact us at 
+    <a href="mailto:{{ support_email }}" style="color: #3d4461; text-decoration: none;">{{ support_email }}</a>
+</p>
+{% endblock %}
