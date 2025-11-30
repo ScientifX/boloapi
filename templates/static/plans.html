@@ -20,17 +20,17 @@
             <div class="plan-body">
                 <h4>Features:</h4>
                 <ul class="feature-list">
-                    <li>25 results per request</li>
+                    <li>Max 25 results per search request</li>
                     <li>Raw data access</li>
                     <li>Simple search</li>
                     <li>Current month data only</li>
                 </ul>
-                {% if current_plan == 'basic' %}
-                    <button class="btn btn-secondary btn-block" disabled>Current Plan</button>
-                {% elif user_authenticated %}
-                    <a href="/v1/billing" class="btn btn-outline btn-block">Downgrade to Basic</a>
-                {% else %}
+                {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-secondary btn-block">Get Started</a>
+                {% elif current_plan == 'premium' %}
+                    <button class="btn btn-secondary btn-block btn-disabled" disabled>Subscribed to {{ current_cycle|capitalize }}</button>
+                {% else %}
+                    <button class="btn btn-secondary btn-block btn-disabled" disabled>Current Plan</button>
                 {% endif %}
             </div>
         </div>
@@ -53,12 +53,12 @@
                     <li>Advanced search with Boolean logic</li>
                     <li>6 months historical data</li>
                 </ul>
-                {% if current_plan == 'premium' and current_cycle == 'monthly' %}
-                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
-                {% elif user_authenticated %}
-                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Monthly</a>
-                {% else %}
+                {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% elif current_plan == 'premium' %}
+                    <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to {{ current_cycle|capitalize }}</button>
+                {% else %}
+                    <a href="javascript:void(0)" onclick="startCheckout('monthly')" class="btn btn-primary btn-block">Upgrade to Monthly</a>
                 {% endif %}
             </div>
         </div>
@@ -81,12 +81,12 @@
                     <li>All Premium features included</li>
                     <li>Billed every 3 months</li>
                 </ul>
-                {% if current_plan == 'premium' and current_cycle == 'quarterly' %}
-                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
-                {% elif user_authenticated %}
-                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Quarterly</a>
-                {% else %}
+                {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% elif current_plan == 'premium' and current_cycle in ['quarterly', 'annual'] %}
+                    <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to {{ current_cycle|capitalize }}</button>
+                {% else %}
+                    <a href="javascript:void(0)" onclick="startCheckout('quarterly')" class="btn btn-primary btn-block">Upgrade to Quarterly</a>
                 {% endif %}
             </div>
         </div>
@@ -109,12 +109,12 @@
                     <li>All Premium features included</li>
                     <li>Billed annually</li>
                 </ul>
-                {% if current_plan == 'premium' and current_cycle == 'annual' %}
-                    <button class="btn btn-primary btn-block" disabled>Current Plan</button>
-                {% elif user_authenticated %}
-                    <a href="/v1/billing" class="btn btn-primary btn-block">Upgrade to Premium Annual</a>
-                {% else %}
+                {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
+                {% elif current_plan == 'premium' and current_cycle == 'annual' %}
+                    <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to Annual</button>
+                {% else %}
+                    <a href="javascript:void(0)" onclick="startCheckout('annual')" class="btn btn-primary btn-block">Upgrade to Annual</a>
                 {% endif %}
             </div>
         </div>
@@ -125,7 +125,7 @@
         
         <div class="faq-item">
             <h4>Can I switch plans later?</h4>
-            <p>Yes, you can upgrade or downgrade your plan at any time from your billing dashboard.</p>
+            <p>Yes, you can upgrade your plan at any time from your billing dashboard or subscription portal.</p>
         </div>
         
         <div class="faq-item">
@@ -135,7 +135,7 @@
         
         <div class="faq-item">
             <h4>Can I cancel anytime?</h4>
-            <p>Yes, you can cancel your subscription at any time. You'll continue to have access until the end of your billing period.</p>
+            <p>Yes, you can cancel your subscription at any time from the subscription portal. You'll continue to have access until the end of your billing period.</p>
         </div>
         
         <div class="faq-item">
@@ -144,6 +144,170 @@
         </div>
     </div>
 </div>
+
+{% if user_authenticated %}
+<script>
+// Store original button text for restoration
+const buttonOriginalText = {};
+
+function createCheckoutModal(checkoutUrl) {
+    // Create modal backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'checkout-modal-backdrop';
+    backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9998;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+    
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'checkout-modal';
+    modal.style.cssText = `
+        position: relative;
+        width: 1260px;
+        height: 85%;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        z-index: 9999;
+    `;
+    
+    // Create close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: #f44336;
+        color: white;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    `;
+    closeBtn.onmouseover = () => closeBtn.style.background = '#d32f2f';
+    closeBtn.onmouseout = () => closeBtn.style.background = '#f44336';
+    closeBtn.onclick = closeCheckoutModal;
+    
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = checkoutUrl;
+    iframe.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow-y: auto;
+    `;
+    
+    // Assemble modal
+    modal.appendChild(closeBtn);
+    modal.appendChild(iframe);
+    backdrop.appendChild(modal);
+    
+    // Close on backdrop click
+    backdrop.onclick = function(e) {
+        if (e.target === backdrop) {
+            closeCheckoutModal();
+        }
+    };
+    
+    // Close on Escape key
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    document.body.appendChild(backdrop);
+    document.body.style.overflow = 'hidden';
+}
+
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closeCheckoutModal();
+    }
+}
+
+function closeCheckoutModal() {
+    const backdrop = document.getElementById('checkout-modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleEscapeKey);
+        window.location.href = '/plans';
+    }
+}
+
+async function startCheckout(billingCycle) {
+    // Find the clicked button and show loading state
+    const buttons = document.querySelectorAll('.btn-primary:not([disabled])');
+    let clickedButton = null;
+    
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(billingCycle)) {
+            clickedButton = btn;
+            buttonOriginalText[billingCycle] = btn.textContent;
+            btn.classList.add('loading');
+            btn.textContent = 'Loading...';
+            btn.style.pointerEvents = 'none';
+        }
+    });
+    
+    try {
+        const response = await fetch('/v1/billing/create_checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ billing_cycle: billingCycle })
+        });
+        
+        if (response.status === 401) {
+            window.location.href = '/v1/auth/login';
+            return;
+        }
+        
+        const data = await response.json();
+        
+        if (response.ok && data.checkout_url) {
+            restoreButton(clickedButton, billingCycle);
+            createCheckoutModal(data.checkout_url);
+        } else {
+            restoreButton(clickedButton, billingCycle);
+            alert(data.detail || 'Failed to create checkout. Please try again.');
+        }
+        
+    } catch (error) {
+        console.error('Checkout error:', error);
+        restoreButton(clickedButton, billingCycle);
+        alert('Failed to create checkout. Please try again.');
+    }
+}
+
+function restoreButton(button, billingCycle) {
+    if (button && buttonOriginalText[billingCycle]) {
+        button.classList.remove('loading');
+        button.textContent = buttonOriginalText[billingCycle];
+        button.style.pointerEvents = 'auto';
+    }
+}
+</script>
+{% endif %}
 
 <style>
 .subtitle {
@@ -263,7 +427,7 @@
 }
 
 .feature-list li:before {
-    content: "✓";
+    content: "-";
     position: absolute;
     left: 0;
     color: #28a745;
@@ -280,30 +444,28 @@
     text-align: center;
 }
 
-.btn-outline {
-    background: white;
-    color: #666;
-    border: 2px solid #e0e0e0;
-}
-
-.btn-outline:hover {
-    background: #f8f9fa;
-    border-color: #ccc;
-}
-
+.btn-disabled,
 button.btn:disabled,
 button.btn[disabled] {
     opacity: 0.6;
     cursor: not-allowed;
-    background: #6c757d;
-    border-color: #6c757d;
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    height: 48px;
+    color: white !important;
 }
 
+.btn-disabled:hover,
 button.btn:disabled:hover,
 button.btn[disabled]:hover {
-    background: #6c757d;
-    border-color: #6c757d;
-    transform: none;
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    transform: none !important;
+}
+
+.btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 .pricing-faq {

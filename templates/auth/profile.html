@@ -90,19 +90,17 @@
                     {% endfor %}
                 </div>
             </div>
-            
-            <button type="submit" class="btn btn-primary" style="width:75%;display:block;margin: 0 auto;">Save Profile</button>
         </form>
-        
+        <button type="submit" class="btn btn-primary" style="width:40%;display:block;margin: 0 auto;">Save Profile</button>
         <div id="profileMessage" class="mt-3" style="display: none;"></div>
     </div>
+    
     
     <!-- Account Information -->
     <div class="card mt-4">
         <h2>Account Information</h2>
         <div id="accountInfo">
             <p><strong>User ID:</strong> {{ user.user_id }}</p>
-            <p><strong>Role:</strong> {{ user.role }}</p>
             <p><strong>Account Created:</strong> {{ user.created_at.strftime('%B %d, %Y at %I:%M %p') if user.created_at else 'N/A' }}</p>
             <p><strong>Last Login:</strong> {{ user.last_login_at.strftime('%B %d, %Y at %I:%M %p') if user.last_login_at else 'Never' }}</p>
             <p><strong>Account Status:</strong> 
@@ -110,6 +108,7 @@
                     {% if user.is_active %}Active{% else %}Inactive{% endif %}
                 </span>
             </p>
+            <p><strong>Subscription:</strong> {% if user.role == "basic" %}Basic{% else %}Premium{% endif %}</p>
         </div>
     </div>
     
@@ -123,16 +122,16 @@
         
         <div class="api-key-section">
             
-            <div class="button-group mt-3">
-                <button onclick="resetApiKey()" class="btn btn-danger" style="width:75%;display: block;margin: 0 auto">
-                    Reset API Key
-                </button>
-            </div>
-            
             <div class="alert alert-warning mt-3">
                 <strong>Security Warning:</strong>
                 Never share your API key or commit it to version control. 
                 If compromised, reset it immediately. Check your email after registration for your API key.
+            </div>
+
+            <div class="button-group mt-3">
+                <button onclick="resetApiKey()" class="btn btn-danger" style="width:40%;display: block;margin: 0 auto">
+                    Reset API Key
+                </button>
             </div>
         </div>
     </div>
@@ -177,9 +176,9 @@
                 >
             </div>
             
-            <button type="submit" class="btn btn-primary">Change Password</button>
+            
         </form>
-        
+        <button type="submit" class="btn btn-primary" style="width:40%;display: block;margin: 0 auto">Change Password</button>
         <div id="passwordMessage" class="mt-3" style="display: none;"></div>
     </div>
 </div>

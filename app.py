@@ -1,16 +1,8 @@
-"""
-EXAMPLE: Updated app.py to include JWT authentication
+import httpx, json, re, logging
 
-Key Changes:
-1. Import router_auth
-2. Include router_auth in the app
-3. Update role middleware to work with JWT (optional - can be removed if using JWT exclusively)
-4. Keep session middleware for backward compatibility during migration
-
-This example shows how to integrate the auth router into your existing app.
-"""
-
-import httpx, json, re
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # FastAPI setup
 from fastapi import FastAPI, Request, Depends
@@ -36,7 +28,10 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING
+from config import APP_GLOBALS, PRICING, DB_CONFIG
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 import router_etl
 import router_search
 import router_auth
@@ -51,6 +46,25 @@ from docs_config import (
 templates = Jinja2Templates(directory="templates")
 
 templates.env.globals.update(APP_GLOBALS)
+
+# ============================================================================
+# DATABASE HELPER
+# ============================================================================
+
+@contextmanager
+def get_db_connection():
+    """Context manager for database connections"""
+    conn = None
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        yield conn
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise
+    finally:
+        if conn:
+            conn.close()
 
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
@@ -551,21 +565,43 @@ async def pricing_plans_page(request: Request):
     current_plan = None
     current_cycle = None
     
-    if request.state.user_authenticated and request.state.user_email:
+    logger.info(f"[plans] user_authenticated={request.state.user_authenticated}, user_id={request.state.user_id}, user_email={request.state.user_email}")
+    
+    if request.state.user_authenticated:
         try:
             with get_db_connection() as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    cur.execute(
-                        "SELECT role, billing_cycle FROM tbl_users WHERE email = %s",
-                        (request.state.user_email,)
-                    )
-                    user = cur.fetchone()
-                    if user:
-                        # Determine plan: basic or premium
-                        current_plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
-                        current_cycle = user['billing_cycle']  # 'monthly', 'quarterly', 'annual', or None
+                    # Use user_id (always in token) as primary lookup
+                    if request.state.user_id:
+                        logger.info(f"[plans] Looking up user by user_id: {request.state.user_id}")
+                        cur.execute(
+                            "SELECT role, billing_cycle FROM tbl_users WHERE user_id = %s",
+                            (request.state.user_id,)
+                        )
+                    elif request.state.user_email:
+                        # Fallback to email if user_id not available
+                        logger.info(f"[plans] Looking up user by email: {request.state.user_email}")
+                        cur.execute(
+                            "SELECT role, billing_cycle FROM tbl_users WHERE email = %s",
+                            (request.state.user_email,)
+                        )
+                    else:
+                        logger.warning("[plans] No user_id or email available for lookup")
+                        cur = None
+                    
+                    if cur:
+                        user = cur.fetchone()
+                        logger.info(f"[plans] Database result: {user}")
+                        if user:
+                            # Determine plan: basic or premium
+                            current_plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
+                            current_cycle = user['billing_cycle']  # 'monthly', 'quarterly', 'annual', or None
+                            logger.info(f"[plans] Determined: current_plan={current_plan}, current_cycle={current_cycle}")
         except Exception as e:
             logger.error(f"Error getting user subscription: {str(e)}")
+            # Continue without subscription info
+    
+    logger.info(f"[plans] Rendering with current_plan={current_plan}, current_cycle={current_cycle}")
             # Continue without subscription info
     
     return templates.TemplateResponse(

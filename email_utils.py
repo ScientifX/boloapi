@@ -2,22 +2,6 @@
 Email Utility Module - Extended with Billing Notification Emails
 Sends emails via Microsoft Graph API (Microsoft 365)
 Uses Jinja2 templates for email content
-
-ACCOUNT EMAILS:
-- send_activation_email()
-- send_welcome_email()
-- send_api_key_email()
-- send_password_reset_email()
-- send_password_changed_email()
-
-BILLING EMAILS:
-- send_subscription_welcome_email()
-- send_payment_receipt_email()
-- send_payment_failed_email()
-- send_subscription_cancelled_email()
-- send_subscription_expired_email()
-- send_payment_recovered_email()
-- send_refund_confirmation_email()
 """
 
 import os
@@ -35,7 +19,7 @@ from config import (
     API_APP_BASE_URL,
     APP_GLOBALS,
     PRICING
-)
+    )
 
 # Configure logging 
 logging.basicConfig(level=logging.INFO)
@@ -52,9 +36,9 @@ class EmailConfig:
     CLIENT_ID = API_AZURE_CLIENT_ID
     CLIENT_SECRET = API_AZURE_CLIENT_SECRET
     FROM_ADDRESS = API_EMAIL_FROM_ADDRESS
-    FROM_NAME = API_EMAIL_FROM_NAME or "BoloDoc"
-    APP_BASE_URL = API_APP_BASE_URL or "http://127.0.0.1:8000"
-    SUPPORT_EMAIL = APP_GLOBALS.get('support_email', 'support@scientifics.io')
+    FROM_NAME = API_EMAIL_FROM_NAME
+    APP_BASE_URL = API_APP_BASE_URL
+    SUPPORT_EMAIL = APP_GLOBALS.get('support_email')
     
     @classmethod
     def is_configured(cls) -> bool:
@@ -265,14 +249,15 @@ def send_activation_email(to_email: str, activation_token: str) -> bool:
     """
     activation_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/activate?token={activation_token}"
     
-    subject = f"Activate Your {EmailConfig.FROM_NAME} Account"
+    subject = f"Activate Your {APP_GLOBALS.get('app_name')} Account"
     
     # Render template
     try:
         # Create a mock request object for template rendering
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "activation_link": activation_link,
-            "header_title": f"Welcome to {EmailConfig.FROM_NAME}",
+            "header_title": f"Welcome to {APP_GLOBALS.get('app_name')}",
             "year": datetime.now().year
         }
         
@@ -298,13 +283,14 @@ def send_api_key_email(to_email: str, api_key: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"Your New {EmailConfig.FROM_NAME} API Key"
+    subject = f"Your New {APP_GLOBALS.get('app_name')} API Key"
     
     # Render template
     try:
         context = {
             "api_key": api_key,
             "app_base_url": EmailConfig.APP_BASE_URL,
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "API Key Reset",
             "year": datetime.now().year
         }
@@ -331,13 +317,14 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"Welcome to {EmailConfig.FROM_NAME} - Your API Key"
+    subject = f"Welcome to {APP_GLOBALS.get('app_name')} - Your API Key"
     
     # Render template
     try:
         context = {
             "api_key": api_key,
             "app_base_url": EmailConfig.APP_BASE_URL,
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Account Activated!",
             "year": datetime.now().year
         }
@@ -366,13 +353,14 @@ def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     """
     reset_link = f"{EmailConfig.APP_BASE_URL}/v1/auth/reset_password?token={reset_token}"
     
-    subject = f"Reset Your {EmailConfig.FROM_NAME} Password"
+    subject = f"Reset Your {APP_GLOBALS.get('app_name')} Password"
     
     # Render template
     try:
         context = {
             "reset_link": reset_link,
             "header_title": "Password Reset Request",
+            "app_name": APP_GLOBALS.get('app_name'),
             "year": datetime.now().year,
             "expires_in": "1 hour"
         }
@@ -398,11 +386,12 @@ def send_password_changed_email(to_email: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Password Changed"
+    subject = f"{APP_GLOBALS.get('app_name')} - Password Changed"
     
     # Render template
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Password Changed",
             "year": datetime.now().year,
             "changed_at": datetime.now().strftime("%B %d, %Y at %I:%M %p UTC"),
@@ -440,12 +429,13 @@ def send_subscription_welcome_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"Welcome to {EmailConfig.FROM_NAME} Premium!"
+    subject = f"Welcome to {APP_GLOBALS.get('app_name')} Premium!"
     
     try:
         amount = get_price_for_cycle(billing_cycle)
         
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Welcome to Premium!",
             "year": datetime.now().year,
             "billing_cycle": billing_cycle,
@@ -491,10 +481,11 @@ def send_payment_receipt_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Payment Receipt"
+    subject = f"{APP_GLOBALS.get('app_name')} - Payment Receipt"
     
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Payment Receipt",
             "year": datetime.now().year,
             "amount": f"{amount:.2f}",
@@ -537,7 +528,7 @@ def send_payment_failed_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Payment Failed - Action Required"
+    subject = f"{APP_GLOBALS.get('app_name')} - Payment Failed - Action Required"
     
     try:
         # Get amount from pricing if not provided
@@ -547,6 +538,7 @@ def send_payment_failed_email(
             amount = get_price_for_cycle('monthly')
         
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Payment Failed",
             "year": datetime.now().year,
             "amount": f"{amount:.2f}",
@@ -582,10 +574,11 @@ def send_subscription_cancelled_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Subscription Cancelled"
+    subject = f"{APP_GLOBALS.get('app_name')} - Subscription Cancelled"
     
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Subscription Cancelled",
             "year": datetime.now().year,
             "ends_at": format_date(ends_at),
@@ -617,10 +610,11 @@ def send_subscription_expired_email(to_email: str) -> bool:
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Your Premium Subscription Has Ended"
+    subject = f"{APP_GLOBALS.get('app_name')} - Your Premium Subscription Has Ended"
     
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Subscription Ended",
             "year": datetime.now().year,
             "app_base_url": EmailConfig.APP_BASE_URL,
@@ -659,10 +653,11 @@ def send_payment_recovered_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Payment Successful - Account Restored"
+    subject = f"{APP_GLOBALS.get('app_name')} - Payment Successful - Account Restored"
     
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Payment Recovered",
             "year": datetime.now().year,
             "amount": f"{amount:.2f}",
@@ -706,10 +701,11 @@ def send_refund_confirmation_email(
     Returns:
         bool: True if email sent successfully
     """
-    subject = f"{EmailConfig.FROM_NAME} - Refund Confirmation"
+    subject = f"{APP_GLOBALS.get('app_name')} - Refund Confirmation"
     
     try:
         context = {
+            "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Refund Processed",
             "year": datetime.now().year,
             "refund_amount": f"{refund_amount:.2f}",

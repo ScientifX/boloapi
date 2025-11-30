@@ -3,7 +3,6 @@
 {% block title %}Subscription Cancelled - {{ app_name }}{% endblock %}
 
 {% block content %}
-<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Subscription Cancelled</h2>
 
 <p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
     Your {{ app_name }} Premium subscription has been cancelled as requested. 
@@ -24,7 +23,7 @@
 <ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
     <li>Your Premium features remain active until {{ ends_at }}</li>
     <li>You will not be charged again</li>
-    <li>After {{ ends_at }}, your account reverts to Basic (25 records/request)</li>
+    <li>After {{ ends_at }}, your account reverts to Basic</li>
     <li>Your account, API keys, and data will be preserved</li>
 </ul>
 
@@ -34,7 +33,7 @@
     <table style="width: 100%; border-collapse: collapse;">
         <tr>
             <td style="padding: 8px 0; color: #6c757d; width: 50%;">Results per request:</td>
-            <td style="padding: 8px 0; color: #212529;">25 (was 100)</td>
+            <td style="padding: 8px 0; color: #212529;">25 (was unlimited)</td>
         </tr>
         <tr>
             <td style="padding: 8px 0; color: #6c757d;">Search capabilities:</td>

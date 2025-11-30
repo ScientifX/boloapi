@@ -3,7 +3,6 @@
 {% block title %}Payment Receipt - {{ app_name }}{% endblock %}
 
 {% block content %}
-<h2 style="color: #3d4461; margin: 0 0 20px 0; font-size: 20px;">Payment Receipt</h2>
 
 <p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
     Thank you for your payment. This email confirms that your subscription payment has been processed successfully.
@@ -75,7 +74,7 @@
             border-radius: 4px; margin: 20px 0;">
     <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
         <strong>Tip:</strong> You can view all your payment history and manage your subscription from your 
-        <a href="{{ app_base_url }}/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
+        <a href="{{ app_base_url }}/v1/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
     </p>
 </div>
 

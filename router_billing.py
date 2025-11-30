@@ -245,6 +245,47 @@ def create_lemonsqueezy_checkout(
             detail="Failed to create checkout session"
         )
 
+def get_lemonsqueezy_customer_portal_url(subscription_id: str) -> str:
+    """
+    Fetch signed customer portal URL from LemonSqueezy API.
+    The signed URL auto-authenticates the customer and is valid for 24 hours.
+    
+    Args:
+        subscription_id: LemonSqueezy subscription ID
+        
+    Returns:
+        Signed customer portal URL or None if not available
+    """
+    url = f"https://api.lemonsqueezy.com/v1/subscriptions/{subscription_id}"
+    
+    headers = {
+        "Authorization": f"Bearer {API_LEMONSQUEEZY_API_KEY}",
+        "Accept": "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json"
+    }
+    
+    try:
+        logger.info(f"[portal] Fetching portal URL for subscription {subscription_id}")
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        urls = data.get('data', {}).get('attributes', {}).get('urls', {})
+        portal_url = urls.get('customer_portal')
+        
+        if portal_url:
+            logger.info(f"[portal] Got signed portal URL for subscription {subscription_id}")
+            return portal_url
+        else:
+            logger.warning(f"[portal] No portal URL in response for subscription {subscription_id}")
+            return None
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"[portal] Failed to fetch portal URL: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            logger.error(f"[portal] Response status: {e.response.status_code}")
+        return None
+    
 def verify_webhook_signature(payload: bytes, signature: str) -> bool:
     """
     Verify LemonSqueezy webhook signature.
@@ -276,6 +317,63 @@ def verify_webhook_signature(payload: bytes, signature: str) -> bool:
         logger.warning(f"Signature mismatch. Expected: {expected_signature[:16]}..., Got: {signature[:16]}...")
     
     return is_valid
+
+def cancel_lemonsqueezy_subscription(subscription_id: str) -> dict:
+    """
+    Cancel a subscription via LemonSqueezy API.
+    
+    Args:
+        subscription_id: LemonSqueezy subscription ID
+        
+    Returns:
+        dict with cancellation details or raises HTTPException
+    """
+    url = f"https://api.lemonsqueezy.com/v1/subscriptions/{subscription_id}"
+    
+    headers = {
+        "Authorization": f"Bearer {API_LEMONSQUEEZY_API_KEY}",
+        "Accept": "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json"
+    }
+    
+    try:
+        logger.info(f"[cancel] Cancelling subscription {subscription_id}")
+        response = requests.delete(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        attributes = data.get('data', {}).get('attributes', {})
+        
+        logger.info(f"[cancel] Subscription {subscription_id} cancelled successfully")
+        
+        return {
+            "status": attributes.get('status'),
+            "cancelled": attributes.get('cancelled'),
+            "ends_at": attributes.get('ends_at')
+        }
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"[cancel] Failed to cancel subscription: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            logger.error(f"[cancel] Response status: {e.response.status_code}")
+            logger.error(f"[cancel] Response body: {e.response.text}")
+            
+            # Handle specific error cases
+            if e.response.status_code == 404:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Subscription not found"
+                )
+            elif e.response.status_code == 422:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Subscription cannot be cancelled (may already be cancelled)"
+                )
+        
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to cancel subscription"
+        )
 
 # ============================================================================
 # WEBHOOK EVENT HANDLERS - With Email Notifications
@@ -1060,16 +1158,19 @@ async def get_payment_history(
 @router.get(
     "/portal",
     summary="Get Customer Portal Link",
-    description="Get link to LemonSqueezy customer portal for subscription management"
-)
+    description="Get signed link to LemonSqueezy customer portal for subscription management"
+    )
 @limiter.limit(rate_max)
 async def get_customer_portal(
     request: Request,
-    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
     """
-    Get link to LemonSqueezy customer portal.
-    Users can manage subscriptions, update payment methods, view invoices, etc.
+    Get signed link to LemonSqueezy customer portal.
+    Users can manage subscriptions, update payment methods, view invoices, cancel, etc.
+    
+    The signed URL auto-authenticates the user and is valid for 24 hours.
+    Can be opened in a LemonSqueezy overlay using LemonSqueezy.Url.Open().
     """
     try:
         user = get_user_by_id(current_user["user_id"])
@@ -1080,13 +1181,26 @@ async def get_customer_portal(
                 detail="User not found"
             )
         
-        # LemonSqueezy customer portal URL
-        portal_url = "https://app.lemonsqueezy.com/my-orders"
+        subscription_id = user.get('lemonsqueezy_subscription_id')
+        
+        if not subscription_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No active subscription found"
+            )
+        
+        # Fetch signed portal URL from LemonSqueezy API
+        portal_url = get_lemonsqueezy_customer_portal_url(subscription_id)
+        
+        if not portal_url:
+            # Fallback to generic my-orders page
+            logger.warning(f"[portal] Using fallback URL for user {user['email']}")
+            portal_url = "https://app.lemonsqueezy.com/my-orders"
         
         return {
             "portal_url": portal_url,
-            "message": "Visit this link to manage your subscription, update payment methods, and view invoices",
-            "has_subscription": bool(user['subscription_id'])
+            "message": "Manage your subscription, update payment methods, and view invoices",
+            "has_subscription": True
         }
         
     except HTTPException:
@@ -1096,6 +1210,78 @@ async def get_customer_portal(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get customer portal"
+        )
+    
+@router.post(
+    "/cancel",
+    summary="Cancel Subscription",
+    description="Cancel the current Premium subscription. Access continues until end of billing period."
+)
+@limiter.limit(rate_max)
+async def cancel_subscription(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+):
+    """
+    Cancel the authenticated user's Premium subscription.
+    
+    The subscription will remain active until the end of the current billing period.
+    A webhook will be received from LemonSqueezy to update the subscription status.
+    """
+    try:
+        user = get_user_by_id(current_user["user_id"])
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Check if user has an active subscription
+        subscription_id = user.get('lemonsqueezy_subscription_id')
+        subscription_status = user.get('subscription_status')
+        
+        if not subscription_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No active subscription found"
+            )
+        
+        if subscription_status == 'cancelled':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Subscription is already cancelled"
+            )
+        
+        if subscription_status == 'expired':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Subscription has already expired"
+            )
+        
+        # Cancel via LemonSqueezy API
+        result = cancel_lemonsqueezy_subscription(subscription_id)
+        
+        logger.info(f"[cancel] User {user['email']} cancelled subscription {subscription_id}")
+        
+        # Note: The webhook handler will update the database when LemonSqueezy
+        # sends the subscription_cancelled event. We don't update here to avoid
+        # race conditions and ensure single source of truth.
+        
+        return {
+            "status": "success",
+            "message": "Subscription cancelled successfully",
+            "ends_at": result.get('ends_at'),
+            "note": "You will retain Premium access until the end of your current billing period"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[cancel] Error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to cancel subscription: {str(e)}"
         )
 
 @router.get(

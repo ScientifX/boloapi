@@ -3,10 +3,9 @@
 {% block title %}Payment Failed - {{ app_name }}{% endblock %}
 
 {% block content %}
-<h2 style="color: #dc3545; margin: 0 0 20px 0; font-size: 20px;">Payment Failed</h2>
 
 <p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
-    We were unable to process your subscription payment for {{ app_name }} Premium. 
+    Bummer. We were unable to process your subscription payment for {{ app_name }} Premium. 
     Please update your payment method to continue enjoying Premium features.
 </p>
 
@@ -39,7 +38,7 @@
 </p>
 
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ app_base_url }}/billing" 
+    <a href="{{ app_base_url }}/v1/billing" 
        style="display: inline-block; padding: 14px 30px; background-color: #dc3545; color: #ffffff; 
               text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
         Update Payment Method

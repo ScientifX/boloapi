@@ -3,7 +3,6 @@
 {% block title %}Payment Recovered - {{ app_name }}{% endblock %}
 
 {% block content %}
-<h2 style="color: #28a745; margin: 0 0 20px 0; font-size: 20px;">Payment Successful - Account Restored</h2>
 
 <p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
     Great news! Your subscription payment has been successfully processed and your {{ app_name }} Premium account is fully restored.
@@ -43,7 +42,7 @@
 <h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Your Premium Features Are Back</h3>
 
 <ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
-    <li>Up to 100 records per request</li>
+    <li>No limit on records returned per request</li>
     <li>Advanced multi-field search queries</li>
     <li>Full data access including images and documents</li>
     <li>Priority support</li>
@@ -51,7 +50,7 @@
 </ul>
 
 <div style="text-align: center; margin: 30px 0;">
-    <a href="{{ app_base_url }}/billing" 
+    <a href="{{ app_base_url }}/v1/billing" 
        style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
               text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
         View Billing Dashboard
@@ -64,7 +63,7 @@
     <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.5;">
         To avoid future payment issues, ensure your payment method stays up to date. 
         You can update your card details anytime from your 
-        <a href="{{ app_base_url }}/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
+        <a href="{{ app_base_url }}/v1/billing" style="color: #0c5460; text-decoration: underline;">billing dashboard</a>.
     </p>
 </div>
 

@@ -3,7 +3,6 @@
 {% block title %}Welcome to Premium - {{ app_name }}{% endblock %}
 
 {% block content %}
-<h2 style="color: #28a745; margin: 0 0 20px 0; font-size: 20px;">Welcome to {{ app_name }} Premium!</h2>
 
 <p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
     Thank you for subscribing to {{ app_name }} Premium. Your account has been upgraded and you now have access to all premium features.
@@ -42,7 +41,7 @@
 <h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Premium Features Now Available</h3>
 
 <ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
-    <li><strong>Unlimited Results:</strong> Up to 100 records per request (vs 25 for Basic)</li>
+    <li><strong>Unlimited Results:</strong> No limit on records returned per request (vs 25 for Basic)</li>
     <li><strong>Advanced Search:</strong> Multi-field queries, complex filters, and field selection</li>
     <li><strong>Full Data Access:</strong> Complete record details including images and documents</li>
     <li><strong>Priority Support:</strong> Faster response times for technical inquiries</li>
@@ -64,7 +63,7 @@
 </p>
 
 <div style="text-align: center; margin: 20px 0;">
-    <a href="{{ app_base_url }}/billing" 
+    <a href="{{ app_base_url }}/v1/billing" 
        style="display: inline-block; padding: 12px 24px; background-color: #ffffff; color: #3d4461; 
               text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;
               border: 2px solid #3d4461;">

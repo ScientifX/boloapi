@@ -37,6 +37,7 @@ def create_access_token(user_id: str, role: UserRole, email: str = None,  expire
     to_encode = {
         "sub": user_id,  # Subject (user_id)
         "role": role.value,  # User role
+        "email": email,  # User email
         "exp": expire,  # Expiration time
         "iat": datetime.now(timezone.utc),  # Issued at
         "type": "access"  # Token type
