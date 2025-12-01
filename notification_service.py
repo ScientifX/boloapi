@@ -52,14 +52,14 @@ def log_change_if_new(
 ) -> bool:
     """
     Attempts to log a change to tbl_notification_log.
-    Uses INSERT ... ON CONFLICT DO NOTHING to prevent duplicates.
+    Uses explicit duplicate check to handle NULL values properly.
     
     Args:
         conn: Database connection
         uid: BOLO record UID
         change_type: 'added', 'removed', 'status_change', 'most_wanted'
-        old_value: Previous value (NULL for added)
-        new_value: New value (NULL for removed)
+        old_value: Previous value (None for added)
+        new_value: New value (None for removed)
         title: Person name/title for email display
         poster_url: Image URL for email display
         pull_date: Date of the data refresh
@@ -67,12 +67,30 @@ def log_change_if_new(
     Returns:
         bool: True if new change was logged, False if duplicate (already exists)
     """
+    # Convert None to empty string for comparison (handles NULL != NULL issue)
+    old_val_compare = old_value if old_value is not None else ''
+    new_val_compare = new_value if new_value is not None else ''
+    
     with conn.cursor() as cur:
+        # Check if this exact change already exists (using COALESCE for NULL handling)
+        cur.execute("""
+            SELECT log_id FROM tbl_notification_log 
+            WHERE uid = %s 
+              AND change_type = %s 
+              AND COALESCE(old_value, '') = %s 
+              AND COALESCE(new_value, '') = %s
+        """, (uid, change_type, old_val_compare, new_val_compare))
+        
+        existing = cur.fetchone()
+        if existing:
+            logger.debug(f"Skipped duplicate change: {change_type} for uid={uid}")
+            return False
+        
+        # Insert new entry
         cur.execute("""
             INSERT INTO tbl_notification_log 
                 (uid, change_type, old_value, new_value, title, poster_url, pull_date)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (uid, change_type, old_value, new_value) DO NOTHING
             RETURNING log_id
         """, (uid, change_type, old_value, new_value, title, poster_url, pull_date))
         
@@ -81,7 +99,7 @@ def log_change_if_new(
             logger.debug(f"Logged new change: {change_type} for uid={uid}")
             return True
         else:
-            logger.debug(f"Skipped duplicate change: {change_type} for uid={uid}")
+            logger.debug(f"Failed to log change: {change_type} for uid={uid}")
             return False
 
 
@@ -427,6 +445,14 @@ def process_pending_notifications() -> Dict[str, Any]:
             
             if not users:
                 logger.info("No premium users opted into notifications")
+                # Still mark notifications as processed so they don't pile up
+                all_log_ids = []
+                for change_list in pending.values():
+                    all_log_ids.extend([n['log_id'] for n in change_list])
+                if all_log_ids:
+                    mark_notifications_sent(conn, all_log_ids)
+                    summary['notifications_processed'] = len(all_log_ids)
+                conn.commit()
                 return summary
             
             logger.info(f"Found {len(users)} premium users to potentially notify")

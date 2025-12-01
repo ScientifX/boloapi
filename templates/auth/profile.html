@@ -10,6 +10,7 @@
     <div class="card">
         <label style="font-size:18px;font-weight: bold;">Profile Details</label>
         <form id="profileForm" style="max-width: 600px;">
+            <br>
             <div class="form-group">
                 <label for="email">Email Address <span class="required">*</span></label>
                 <input 
@@ -86,6 +87,7 @@
                 <small class="text-muted">What best describes your professional role?</small>
             </div>
             
+            {% if user.role == 'premium' %}
             <div class="form-group">
                 <label style="font-size:18px;font-weight: bold;">Notification Settings</label>
                 <div class="notification-toggle">
@@ -110,7 +112,13 @@
                     </label>
                 </div>
             </div>
-
+                {% if user.last_notification_at %}
+                <p class="text-muted" style="float:right;margin-top: 0px; font-size: 13px;">
+                    <i>Last notification sent: {{ user.last_notification_at.strftime('%B %d, %Y at %I:%M %p') }}</i>
+                </p><br><br>
+                {% endif %}
+            {% endif %}
+            
             <div class="form-group">
                 <label style="font-size:18px;font-weight: bold;">How do you use this data?</label>
                 <small class="text-muted">Select all that apply</small>
@@ -133,46 +141,6 @@
         <button type="button" id="saveProfileBtn" class="btn btn-primary" style="width:40%;display:block;margin: 0 auto;">Save Profile</button>
         <div id="profileMessage" class="mt-3" style="display: none;"></div>
     </div>
-    
-    {% if user.role == 'premium' %}
-    <!-- Notification Preferences - Premium Only -->
-    <div class="card mt-4">
-        <h2>Notification Preferences</h2>
-        <p class="text-muted" style="margin-bottom: 20px;">
-            Receive email alerts when the FBI Wanted database is updated.
-        </p>
-        
-        <!-- <div class="notification-settings">
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <label class="toggle-label">List Changes</label>
-                    <small class="toggle-description">Notify me when people are added to or removed from the Wanted List</small>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="notifyListChanges" {% if user.notify_list_changes %}checked{% endif %}>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <label class="toggle-label">Status Updates</label>
-                    <small class="toggle-description">Notify me when someone has a status change (captured, located, etc.) or becomes Most Wanted</small>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="notifyStatusChanges" {% if user.notify_status_changes %}checked{% endif %}>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </div>-->
-        
-        {% if user.last_notification_at %}
-        <p class="text-muted" style="margin-top: 20px; font-size: 13px;">
-            Last notification sent: {{ user.last_notification_at.strftime('%B %d, %Y at %I:%M %p') }}
-        </p>
-        {% endif %}
-    </div>
-    {% endif %}
     
     <!-- Account Information -->
     <div class="card mt-4">

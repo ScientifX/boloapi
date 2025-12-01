@@ -60,7 +60,7 @@ def require_role(required_role: UserRole):
         if not has_role(current_role, required_role):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Access denied. Required role: {required_role.value} or higher. Your role: {current_role.value}"
+                detail=f"Access denied."
             )
         
         return current_role
@@ -130,7 +130,7 @@ def validate_limit_for_role(role: UserRole, requested_limit: int) -> int:
     if role == UserRole.PUBLIC:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Search access denied. Required role: basic or higher."
+            detail="Search access denied. Sign up with BoloDoc for access."
         )
     
     if requested_limit > max_limit:

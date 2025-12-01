@@ -1286,3 +1286,36 @@ async def get_etl_metadata(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve metadata: {str(e)}"
         )
+    
+@router.get(
+    "/process_notifications",
+    summary="Process Pending Notifications",
+    description="Process and send pending BoloDoc notifications to opted-in premium users. **ADMIN ONLY**"
+    )
+async def process_notifications_endpoint(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Process and send any pending notifications without running a full refresh.
+    
+    **Access:** ADMIN role only
+    
+    This is useful for:
+    - Retrying failed notifications
+    - Testing the notification system
+    - Manually triggering notifications after a refresh
+    """
+    try:
+        logger.info("Processing notifications (manual trigger)")
+        
+        notification_results = process_pending_notifications()
+        
+        return {
+            "message": "Notification processing complete",
+            "results": notification_results
+        }
+        
+    except Exception as e:
+        logger.error(f"Notification processing error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Notification processing error: {str(e)}")

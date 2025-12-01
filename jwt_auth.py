@@ -131,7 +131,7 @@ def require_jwt_role(required_role: UserRole):
         if not has_role(user_role, required_role):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Access denied. Required role: {required_role.value} or higher. Your role: {user_role.value}"
+                detail=f"Access denied."
             )
         
         return current_user

@@ -762,7 +762,7 @@ def send_bolo_notification_email(
     try:
         context = {
             "app_name": APP_GLOBALS.get('app_name'),
-            "header_title": "BOLO Alert",
+            "header_title": APP_GLOBALS.get('app_name') + " Alert",
             "year": datetime.now().year,
             "first_name": first_name or "Premium User",
             "additions": additions or [],

@@ -809,7 +809,7 @@ async def change_password(
 async def logout_page(request: Request):
     """Logout - clears authentication cookie and redirects to home"""
     # Create redirect response to home page
-    response = RedirectResponse(url="/", status_code=303)
+    response = RedirectResponse(url="/v1/auth/login", status_code=303)
     
     # Clear the auth_token cookie
     response.delete_cookie(

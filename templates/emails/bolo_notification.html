@@ -1,6 +1,6 @@
 {% extends "layouts/base_email.html" %}
 
-{% block title %}BOLO Alert - {{ app_name }}{% endblock %}
+{% block title %}BoloDoc Alert - {{ app_name }}{% endblock %}
 
 {% block content %}
 
@@ -67,12 +67,7 @@
 
 <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin: 0 0 20px 0;">
     {% for item in additions[:10] %}
-    <div style="display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; 
-                border-bottom: 1px solid #e9ecef;">
-        {% if item.poster_url %}
-        <img src="{{ item.poster_url }}" alt="" 
-             style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; margin-right: 12px;">
-        {% endif %}
+    <div style="display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e9ecef;">
         <div>
             <strong style="color: #212529;">{{ item.title or 'Unknown' }}</strong>
         </div>
@@ -131,14 +126,14 @@
     <a href="{{ app_base_url }}/docs" 
        style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
               text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-        Search the Database
+        Search With The BoloDoc API 
     </a>
 </div>
 
 <!-- Notification Settings -->
 <div style="border-top: 1px solid #e9ecef; padding-top: 20px; margin-top: 30px;">
     <p style="color: #6c757d; font-size: 13px; line-height: 1.6; margin: 0;">
-        You received this email because you have BOLO notifications enabled. 
+        You received this email because you have BoloDoc notifications enabled. 
         To change your notification preferences, visit your 
         <a href="{{ app_base_url }}/v1/auth/profile" style="color: #3d4461; text-decoration: none;">profile settings</a>.
     </p>
