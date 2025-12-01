@@ -85,26 +85,16 @@ curl -X POST "{{ app_base_url }}/v1/auth/signup" \
     <h3>Troubleshooting Steps:</h3>
     <ul>
         <li>Verify your email address is correct and properly formatted</li>
-        <li>Ensure you haven't already registered with this email</li>
+        <li>Ensure you haven't already signed up with this email</li>
         <li>Try again in a few minutes if this was a temporary issue</li>
         <li>Contact support if the problem persists</li>
     </ul>
-    
-    <div class="form-group">
-        <h4>Try Registration Again</h4>
-        <div class="code-block">
-curl -X POST "{{ app_base_url }}/v1/auth/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "your.email@example.com"}'
-        </div>
-    </div>
     {% endif %}
     
     <h2>Need Help?</h2>
     
     <div class="text-center mt-4">
-        <a href="/docs" target="_new" class="btn btn-primary">View API Docs</a>
-        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+        <a href="/v1/auth/signup" class="btn btn-secondary">Back To SignUp</a>
     </div>
     
     <div class="mt-4">

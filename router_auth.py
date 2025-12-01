@@ -184,7 +184,9 @@ class ProfileUpdateRequest(BaseModel):
     company: Optional[str] = Field(None, max_length=200)
     job_role: Optional[str] = Field(None, max_length=100)
     data_usage: Optional[list[str]] = None
-    
+    notify_list_changes: Optional[bool] = None
+    notify_status_changes: Optional[bool] = None
+
     @field_validator('email')
     @classmethod
     def validate_email_field(cls, v):
@@ -242,6 +244,9 @@ class ProfileResponse(BaseModel):
     created_at: str
     last_login_at: Optional[str]
     api_key_preview: str
+    notify_list_changes: Optional[bool] = None
+    notify_status_changes: Optional[bool] = None
+    last_notification_at: Optional[str] = None
 
 # ====================================================================
 # DATABASE HELPERS
@@ -1002,14 +1007,24 @@ async def update_profile(
             import json
             update_fields.append("data_usage = %s")
             update_values.append(json.dumps(profile_update.data_usage) if profile_update.data_usage else None)
+
+        if profile_update.notify_list_changes is not None:
+            if user.get('role') == 'premium':
+                update_fields.append("notify_list_changes = %s")
+                update_values.append(profile_update.notify_list_changes)
         
+        if profile_update.notify_status_changes is not None:
+            if user.get('role') == 'premium':
+                update_fields.append("notify_status_changes = %s")
+                update_values.append(profile_update.notify_status_changes)
+
         if not update_fields:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "No fields to update")
         
         # Always update updated_at
         update_fields.append("updated_at = NOW()")
         update_values.append(user['user_id'])
-        
+
         # Execute update
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -1035,13 +1050,13 @@ async def update_profile(
             role=user_role,
             email=new_email,
             codename=new_codename
-        )
+            )
         
         # Build response with refreshed token cookie
         response_data = {
             "message": "Profile updated successfully",
             "updated_fields": [field.split(' = ')[0] for field in update_fields if field != "updated_at = NOW()"]
-        }
+            }
         
         response = JSONResponse(content=response_data)
         
@@ -1053,7 +1068,7 @@ async def update_profile(
             max_age=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             secure=False,  # Set to True in production with HTTPS
             samesite="lax"
-        )
+            )
         
         return response
         

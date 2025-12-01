@@ -8,7 +8,7 @@
     
     <!-- Profile Information Form -->
     <div class="card">
-        <h2>Profile Information</h2>
+        <label style="font-size:18px;font-weight: bold;">Profile Details</label>
         <form id="profileForm" style="max-width: 600px;">
             <div class="form-group">
                 <label for="email">Email Address <span class="required">*</span></label>
@@ -32,6 +32,7 @@
                     value="{{ user.codename or '' }}"
                     maxlength="50"
                     pattern="[\w\s\-]+"
+                    placeholder="Agent 007, Sherlock Holmes, Austin Powers, Weng Weng, etc."
                     title="Letters, numbers, spaces, hyphens, and underscores only"
                 >
                 <small class="text-muted">Your secret identity while logged in (cool, but optional)</small>
@@ -86,7 +87,32 @@
             </div>
             
             <div class="form-group">
-                <label>How do you use this data?</label>
+                <label style="font-size:18px;font-weight: bold;">Notification Settings</label>
+                <div class="notification-toggle">
+                    <div class="toggle-info">
+                        <label class="toggle-label">List Changes</label>
+                        <small class="toggle-description">Notify me when people are added to or removed from the Wanted List</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifyListChanges" {% if user.notify_list_changes %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="notification-toggle">
+                    <div class="toggle-info">
+                        <label class="toggle-label">Status Updates</label>
+                        <small class="toggle-description">Notify me when someone has a status change (captured, located, etc.) or becomes Most Wanted</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifyStatusChanges" {% if user.notify_status_changes %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="font-size:18px;font-weight: bold;">How do you use this data?</label>
                 <small class="text-muted">Select all that apply</small>
                 <div class="checkbox-group">
                     {% for option in data_usage_options %}
@@ -108,6 +134,45 @@
         <div id="profileMessage" class="mt-3" style="display: none;"></div>
     </div>
     
+    {% if user.role == 'premium' %}
+    <!-- Notification Preferences - Premium Only -->
+    <div class="card mt-4">
+        <h2>Notification Preferences</h2>
+        <p class="text-muted" style="margin-bottom: 20px;">
+            Receive email alerts when the FBI Wanted database is updated.
+        </p>
+        
+        <!-- <div class="notification-settings">
+            <div class="notification-toggle">
+                <div class="toggle-info">
+                    <label class="toggle-label">List Changes</label>
+                    <small class="toggle-description">Notify me when people are added to or removed from the Wanted List</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notifyListChanges" {% if user.notify_list_changes %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="notification-toggle">
+                <div class="toggle-info">
+                    <label class="toggle-label">Status Updates</label>
+                    <small class="toggle-description">Notify me when someone has a status change (captured, located, etc.) or becomes Most Wanted</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notifyStatusChanges" {% if user.notify_status_changes %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>-->
+        
+        {% if user.last_notification_at %}
+        <p class="text-muted" style="margin-top: 20px; font-size: 13px;">
+            Last notification sent: {{ user.last_notification_at.strftime('%B %d, %Y at %I:%M %p') }}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
     
     <!-- Account Information -->
     <div class="card mt-4">
@@ -236,15 +301,26 @@ document.getElementById('saveProfileBtn').addEventListener('click', async () => 
         data_usage: dataUsage.length > 0 ? dataUsage : null
     };
     
+    // Include notification preferences if premium user (elements exist)
+    const notifyListEl = document.getElementById('notifyListChanges');
+    const notifyStatusEl = document.getElementById('notifyStatusChanges');
+    
+    if (notifyListEl) {
+        profileData.notify_list_changes = notifyListEl.checked;
+        }
+    if (notifyStatusEl) {
+        profileData.notify_status_changes = notifyStatusEl.checked;
+        }
+
     try {
         const response = await fetch('/v1/auth/profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
-            },
+                },
             credentials: 'include',
             body: JSON.stringify(profileData)
-        });
+            });
         
         const data = await response.json();
         
@@ -254,22 +330,22 @@ document.getElementById('saveProfileBtn').addEventListener('click', async () => 
             messageDiv.style.display = 'block';
             
             // Reload page after 1 second to show updated data
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        } else {
+            setTimeout(() => { window.location.reload(); }, 1000);
+            } 
+        else {
             messageDiv.className = 'alert alert-error';
             messageDiv.textContent = data.detail || 'Failed to update profile';
             messageDiv.style.display = 'block';
-        }
+            }
         
-    } catch (error) {
+        } 
+    catch (error) {
         messageDiv.className = 'alert alert-error';
         messageDiv.textContent = 'Network error. Please try again.';
         messageDiv.style.display = 'block';
         console.error('Profile update error:', error);
-    }
-});
+        }
+    });
 
 // Password change - button click handler
 document.getElementById('changePasswordBtn').addEventListener('click', async () => {
@@ -440,7 +516,93 @@ async function resetApiKey() {
     font-weight: normal;
 }
 
-.api-key-section {
+/* Notification Toggle Styles */
+.notification-settings {
+    max-width: 600px;
+}
+
+.notification-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.toggle-info {
+    flex: 1;
+    padding-right: 20px;
+}
+
+.toggle-label {
+    display: block;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 4px;
+}
+
+.toggle-description {
+    display: block;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 0;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #28a745;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
+}.api-key-section {
     margin-top: 20px;
 }
 
@@ -519,6 +681,20 @@ async function resetApiKey() {
     
     .checkbox-group {
         grid-template-columns: 1fr;
+    }
+    
+    .notification-toggle {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .toggle-info {
+        padding-right: 0;
+        margin-bottom: 12px;
+    }
+    
+    .toggle-switch {
+        align-self: flex-end;
     }
 }
 </style>

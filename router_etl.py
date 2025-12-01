@@ -24,6 +24,7 @@ from fastapi import APIRouter
 # Import auth utilities
 from auth import UserRole
 from jwt_auth import require_jwt_role
+from notification_service import detect_all_changes, process_pending_notifications
 
 # Response Models
 class ImportSummary(BaseModel):
@@ -744,6 +745,7 @@ def mark_missing_uids_inactive(conn: Connection, current_uids: List[str], pull_d
         cur.execute("""
             UPDATE tbl_bolo
             SET is_active = FALSE,
+                became_inactive_at = NOW(),
                 updated_at = NOW()
             WHERE uid NOT IN (
                 SELECT UNNEST(%s::text[])
@@ -877,6 +879,35 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
             # Commit transaction
             conn.commit()
             logger.info("Transaction committed successfully with metadata")
+
+            try:
+                # Get list of UIDs that were inserted (new records)
+                inserted_uids = []  # We'll need to track these in bolo_insert
+                
+                # Get list of UIDs that were marked inactive (removed from FBI list)
+                removed_uids_list = []
+                with conn.cursor() as cur:
+                    cur.execute('''
+                        SELECT uid FROM tbl_bolo 
+                        WHERE became_inactive_at IS NOT NULL 
+                        AND became_inactive_at >= NOW() - INTERVAL '1 minute'
+                    ''')
+                    removed_uids_list = [r[0] for r in cur.fetchall()]
+                
+                # Detect and log all changes
+                change_results = detect_all_changes(
+                    conn=conn,
+                    processed_records=processed_records,
+                    inserted_uids=inserted_uids,
+                    removed_uids=removed_uids_list,
+                    pull_date=pull_date
+                )
+                logger.info(f"Change detection results: {change_results}")
+                
+                conn.commit()
+            except Exception as e:
+                logger.error(f"Error during change detection: {str(e)}")
+                # Don't fail the whole refresh for notification errors
             
     except Exception as e:
         logger.error(f"Database error during import: {str(e)}")
@@ -1151,13 +1182,22 @@ async def full_refresh(
         logger.info("Step 2: Loading extracted data")
         load_response = await data_load(current_user=current_user)
         logger.info(f"Load completed: {load_response}")
+        logger.info("Step 3: Processing notifications")
+
+        try:
+            notification_results = process_pending_notifications()
+            logger.info(f"Notification processing complete: {notification_results}")
+        except Exception as e:
+            logger.error(f"Notification processing error (non-fatal): {str(e)}")
+            notification_results = {"error": str(e)}
         
         logger.info("Full refresh process completed successfully")
         return {
             "message": "Full refresh completed successfully",
             "extract": extract_response,
-            "load": load_response
-        }
+            "load": load_response,
+            "notifications": notification_results  # ADD THIS
+            }
         
     except HTTPException as e:
         logger.error(f"Full refresh failed with HTTP error: {str(e)}")

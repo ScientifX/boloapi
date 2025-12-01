@@ -1,0 +1,147 @@
+{% extends "layouts/base_email.html" %}
+
+{% block title %}BOLO Alert - {{ app_name }}{% endblock %}
+
+{% block content %}
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 15px 0;">
+    Hello {{ first_name }},
+</p>
+
+<p style="color: #212529; line-height: 1.6; margin: 0 0 20px 0;">
+    The FBI Wanted database has been updated. Based on your notification preferences, here are the changes:
+</p>
+
+{% if most_wanted %}
+<!-- Most Wanted Section - Highlighted prominently -->
+<div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; 
+            border-radius: 4px; margin: 20px 0;">
+    <h3 style="color: #856404; margin: 0 0 15px 0; font-size: 16px;">
+        New Ten Most Wanted
+    </h3>
+    {% for item in most_wanted %}
+    <div style="display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 12px; 
+                border-bottom: 1px solid #ffeeba;">
+        {% if item.poster_url %}
+        <img src="{{ item.poster_url }}" alt="" 
+             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 12px;">
+        {% endif %}
+        <div>
+            <strong style="color: #856404;">{{ item.title or 'Unknown' }}</strong>
+            <br>
+            <span style="color: #856404; font-size: 13px;">Added to Ten Most Wanted</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if status_changes %}
+<!-- Status Changes Section -->
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Status Updates</h3>
+
+<div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; 
+            border-radius: 4px; margin: 0 0 20px 0;">
+    {% for item in status_changes %}
+    <div style="display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 12px; 
+                border-bottom: 1px solid #c3e6cb;">
+        {% if item.poster_url %}
+        <img src="{{ item.poster_url }}" alt="" 
+             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 12px;">
+        {% endif %}
+        <div>
+            <strong style="color: #155724;">{{ item.title or 'Unknown' }}</strong>
+            <br>
+            <span style="color: #155724; font-size: 13px;">
+                Status: {{ item.new_value|capitalize }}
+            </span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if additions %}
+<!-- Additions Section -->
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">New Additions to Wanted List</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin: 0 0 20px 0;">
+    {% for item in additions[:10] %}
+    <div style="display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; 
+                border-bottom: 1px solid #e9ecef;">
+        {% if item.poster_url %}
+        <img src="{{ item.poster_url }}" alt="" 
+             style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; margin-right: 12px;">
+        {% endif %}
+        <div>
+            <strong style="color: #212529;">{{ item.title or 'Unknown' }}</strong>
+        </div>
+    </div>
+    {% endfor %}
+    {% if additions|length > 10 %}
+    <p style="color: #6c757d; font-size: 13px; margin: 10px 0 0 0;">
+        ... and {{ additions|length - 10 }} more additions
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if removals %}
+<!-- Removals Section -->
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Removed from Wanted List</h3>
+
+<div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin: 0 0 20px 0;">
+    {% for item in removals[:10] %}
+    <div style="display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; 
+                border-bottom: 1px solid #e9ecef;">
+        {% if item.poster_url %}
+        <img src="{{ item.poster_url }}" alt="" 
+             style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; margin-right: 12px; 
+                    opacity: 0.6;">
+        {% endif %}
+        <div>
+            <span style="color: #6c757d; text-decoration: line-through;">{{ item.title or 'Unknown' }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% if removals|length > 10 %}
+    <p style="color: #6c757d; font-size: 13px; margin: 10px 0 0 0;">
+        ... and {{ removals|length - 10 }} more removals
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Summary -->
+<div style="background-color: #e9ecef; border-radius: 6px; padding: 15px; margin: 25px 0;">
+    <p style="margin: 0; color: #495057; font-size: 14px;">
+        <strong>Summary:</strong>
+        {% if additions %}{{ additions|length }} added{% endif %}
+        {% if additions and (removals or status_changes or most_wanted) %} | {% endif %}
+        {% if removals %}{{ removals|length }} removed{% endif %}
+        {% if removals and (status_changes or most_wanted) %} | {% endif %}
+        {% if status_changes %}{{ status_changes|length }} status update{{ 's' if status_changes|length > 1 else '' }}{% endif %}
+        {% if status_changes and most_wanted %} | {% endif %}
+        {% if most_wanted %}{{ most_wanted|length }} Most Wanted{% endif %}
+    </p>
+</div>
+
+<!-- CTA Button -->
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ app_base_url }}/docs" 
+       style="display: inline-block; padding: 14px 30px; background-color: #3d4461; color: #ffffff; 
+              text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Search the Database
+    </a>
+</div>
+
+<!-- Notification Settings -->
+<div style="border-top: 1px solid #e9ecef; padding-top: 20px; margin-top: 30px;">
+    <p style="color: #6c757d; font-size: 13px; line-height: 1.6; margin: 0;">
+        You received this email because you have BOLO notifications enabled. 
+        To change your notification preferences, visit your 
+        <a href="{{ app_base_url }}/v1/auth/profile" style="color: #3d4461; text-decoration: none;">profile settings</a>.
+    </p>
+</div>
+
+{% endblock %}

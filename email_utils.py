@@ -729,3 +729,69 @@ def send_refund_confirmation_email(
     except Exception as e:
         logger.error(f"Error sending refund confirmation email: {str(e)}")
         return False
+    
+def send_bolo_notification_email(
+    to_email: str,
+    first_name: str,
+    additions: list = None,
+    removals: list = None,
+    status_changes: list = None,
+    most_wanted: list = None
+) -> bool:
+    '''
+    Send BOLO change notification email to premium user
+    
+    Args:
+        to_email: Recipient email address
+        first_name: User's first name for greeting
+        additions: List of newly added records
+        removals: List of removed records
+        status_changes: List of status change records
+        most_wanted: List of new Most Wanted records
+    
+    Returns:
+        bool: True if email sent successfully
+    '''
+    # Skip if no changes to report
+    if not any([additions, removals, status_changes, most_wanted]):
+        logger.info(f"No BOLO changes to report for {to_email}")
+        return True
+    
+    subject = f"{APP_GLOBALS.get('app_name')} - FBI Wanted Database Update"
+    
+    try:
+        context = {
+            "app_name": APP_GLOBALS.get('app_name'),
+            "header_title": "BOLO Alert",
+            "year": datetime.now().year,
+            "first_name": first_name or "Premium User",
+            "additions": additions or [],
+            "removals": removals or [],
+            "status_changes": status_changes or [],
+            "most_wanted": most_wanted or [],
+            "app_base_url": EmailConfig.APP_BASE_URL,
+            "support_email": EmailConfig.SUPPORT_EMAIL
+        }
+        
+        html_body = templates.get_template("emails/bolo_notification.html").render(context)
+        
+        sender = get_email_sender()
+        result = sender.send_email(to_email, subject, html_body)
+        
+        if result:
+            change_summary = []
+            if additions:
+                change_summary.append(f"{len(additions)} added")
+            if removals:
+                change_summary.append(f"{len(removals)} removed")
+            if status_changes:
+                change_summary.append(f"{len(status_changes)} status changes")
+            if most_wanted:
+                change_summary.append(f"{len(most_wanted)} most wanted")
+            
+            logger.info(f"[email] BOLO notification sent to {to_email}: {', '.join(change_summary)}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error sending BOLO notification email: {str(e)}")
+        return False
