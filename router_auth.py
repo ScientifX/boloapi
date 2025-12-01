@@ -178,6 +178,7 @@ class TokenResponse(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     email: Optional[str] = None
+    codename: Optional[str] = Field(None, max_length=50)
     first_name: Optional[str] = Field(None, max_length=100)
     last_name: Optional[str] = Field(None, max_length=100)
     company: Optional[str] = Field(None, max_length=200)
@@ -187,9 +188,29 @@ class ProfileUpdateRequest(BaseModel):
     @field_validator('email')
     @classmethod
     def validate_email_field(cls, v):
-        if v and not is_valid_email(v):
-            raise ValueError("Invalid email format")
-        return v.lower().strip() if v else None
+        if v is not None:
+            v = v.strip()
+            if len(v) == 0:
+                raise ValueError("Email address is required")
+            if not is_valid_email(v):
+                raise ValueError("Invalid email format")
+            return v.lower()
+        return None
+    
+    @field_validator('codename')
+    @classmethod
+    def validate_codename_field(cls, v):
+        if v:
+            v = v.strip()
+            if len(v) == 0:
+                return None
+            if len(v) < 2:
+                raise ValueError("codename must be at least 2 characters")
+            # Allow alphanumeric, spaces, hyphens, underscores
+            import re
+            if not re.match(r'^[\w\s\-]+$', v):
+                raise ValueError("codename can only contain letters, numbers, spaces, hyphens, and underscores")
+        return v
     
     @field_validator('first_name', 'last_name', 'company', 'job_role')
     @classmethod
@@ -210,6 +231,7 @@ class ProfileUpdateRequest(BaseModel):
 class ProfileResponse(BaseModel):
     user_id: str
     email: str
+    codename: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
     company: Optional[str]
@@ -283,6 +305,7 @@ async def login_page(request: Request):
         "request": request,
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
+        "user_display_name": request.state.user_display_name,
         "captcha_token": captcha_token
     })
     
@@ -302,6 +325,7 @@ async def signup_page(request: Request):
         "request": request,
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
+        "user_display_name": request.state.user_display_name,
         "captcha_token": captcha_token
     })
     
@@ -581,7 +605,8 @@ async def login(request: Request, login_req: LoginRequest):
         access_token = create_access_token(
             user_id=str(user['user_id']), 
             role=user_role,
-            email=user['email'] 
+            email=user['email'],
+            codename=user.get('codename')
             )
 
         # Create response with cookie
@@ -858,6 +883,7 @@ async def profile_page(request: Request):
             "request": request,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
             "user": user,
             "data_usage": data_usage,
             "job_roles": job_roles,
@@ -904,6 +930,7 @@ async def get_profile_data(
         return ProfileResponse(
             user_id=str(user['user_id']),
             email=user['email'],
+            codename=user.get('codename'),
             first_name=user.get('first_name'),
             last_name=user.get('last_name'),
             company=user.get('company'),
@@ -950,6 +977,11 @@ async def update_profile(
             update_fields.append("email = %s")
             update_values.append(profile_update.email)
         
+        # Handle codename - allow setting to empty string to clear it
+        if 'codename' in profile_update.model_fields_set:
+            update_fields.append("codename = %s")
+            update_values.append(profile_update.codename if profile_update.codename else None)
+        
         if profile_update.first_name is not None:
             update_fields.append("first_name = %s")
             update_values.append(profile_update.first_name if profile_update.first_name else None)
@@ -991,10 +1023,39 @@ async def update_profile(
         
         logger.info(f"Profile updated: {user['email']}")
         
-        return {
+        # Determine the new values for token refresh
+        # Use updated values if provided, otherwise keep existing
+        new_email = profile_update.email if profile_update.email is not None else user['email']
+        new_codename = profile_update.codename if 'codename' in profile_update.model_fields_set else user.get('codename')
+        
+        # Create a new JWT token with updated user info
+        user_role = UserRole(user['role'])
+        new_access_token = create_access_token(
+            user_id=str(user['user_id']),
+            role=user_role,
+            email=new_email,
+            codename=new_codename
+        )
+        
+        # Build response with refreshed token cookie
+        response_data = {
             "message": "Profile updated successfully",
             "updated_fields": [field.split(' = ')[0] for field in update_fields if field != "updated_at = NOW()"]
         }
+        
+        response = JSONResponse(content=response_data)
+        
+        # Set new auth_token cookie with updated claims
+        response.set_cookie(
+            key="auth_token",
+            value=new_access_token,
+            httponly=True,
+            max_age=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
+            secure=False,  # Set to True in production with HTTPS
+            samesite="lax"
+        )
+        
+        return response
         
     except HTTPException:
         raise
@@ -1075,7 +1136,12 @@ async def get_token(request: Request, token_req: TokenRequest):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid API key")
         
         user_role = UserRole(user['role'])
-        access_token = create_access_token(user_id=str(user['user_id']), role=user_role)
+        access_token = create_access_token(
+            user_id=str(user['user_id']), 
+            role=user_role,
+            email=user['email'],
+            codename=user.get('codename')
+        )
         
         return TokenResponse(
             access_token=access_token,

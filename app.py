@@ -1,9 +1,5 @@
 import httpx, json, re, logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 # FastAPI setup
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -41,7 +37,11 @@ from docs_config import (
     get_role_filtered_openapi,
     get_viewer_role_from_request,
     register_visibility_override,
-)
+	)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 templates = Jinja2Templates(directory="templates")
 
@@ -80,11 +80,10 @@ app = FastAPI(
     title="Bolo API",
     description="Bolo API - FBI Wanted Persons Data",
     version="1.0.0",
-    # Disable default docs - we'll serve custom role-filtered versions
     docs_url=None,
     redoc_url=None,
     openapi_url=None,
-)
+	)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -479,6 +478,7 @@ async def root(request: Request):
             "current_role": current_role.value,  # For testing display
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
         }
     )
 
@@ -498,6 +498,7 @@ async def about_page(request: Request):
             "current_role": current_role.value,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
         }
     )
 
@@ -514,6 +515,7 @@ async def privacy_page(request: Request):
             "last_updated": "November 2025",
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
         }
     )
 
@@ -530,6 +532,7 @@ async def terms_page(request: Request):
             "last_updated": "November 2025",
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
         }
     )
 
@@ -545,6 +548,7 @@ async def contact_page(request: Request):
             "current_role": current_role.value,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
         }
     )
 
@@ -612,9 +616,10 @@ async def pricing_plans_page(request: Request):
             "request": request,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
             "pricing": PRICING,
             "current_plan": current_plan,
-            "current_cycle": current_cycle,
+            "current_cycle": current_cycle, 
             "subscription_status": subscription_status
         }
     )

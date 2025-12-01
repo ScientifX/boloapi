@@ -11,7 +11,7 @@
         <h2>Profile Information</h2>
         <form id="profileForm" style="max-width: 600px;">
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Email Address <span class="required">*</span></label>
                 <input 
                     type="email" 
                     id="email" 
@@ -20,7 +20,21 @@
                     required
                     maxlength="255"
                 >
-                <small class="text-muted">Your primary email address for account access</small>
+                <small class="text-muted">Your primary email address for account access (required). Change only if you have to. </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="codename">Codename</label>
+                <input 
+                    type="text" 
+                    id="codename" 
+                    class="form-control" 
+                    value="{{ user.codename or '' }}"
+                    maxlength="50"
+                    pattern="[\w\s\-]+"
+                    title="Letters, numbers, spaces, hyphens, and underscores only"
+                >
+                <small class="text-muted">Your secret identity while logged in (cool, but optional)</small>
             </div>
             
             <div class="form-row">
@@ -43,7 +57,7 @@
                         class="form-control" 
                         value="{{ user.last_name or '' }}"
                         maxlength="100"
-                    >
+                        >
                 </div>
             </div>
             
@@ -55,8 +69,7 @@
                     class="form-control" 
                     value="{{ user.company or '' }}"
                     maxlength="200"
-                >
-                <small class="text-muted">Optional</small>
+                    >
             </div>
             
             <div class="form-group">
@@ -91,7 +104,7 @@
                 </div>
             </div>
         </form>
-        <button type="submit" class="btn btn-primary" style="width:40%;display:block;margin: 0 auto;">Save Profile</button>
+        <button type="button" id="saveProfileBtn" class="btn btn-primary" style="width:40%;display:block;margin: 0 auto;">Save Profile</button>
         <div id="profileMessage" class="mt-3" style="display: none;"></div>
     </div>
     
@@ -178,24 +191,44 @@
             
             
         </form>
-        <button type="submit" class="btn btn-primary" style="width:40%;display: block;margin: 0 auto">Change Password</button>
+        <button type="button" id="changePasswordBtn" class="btn btn-primary" style="width:40%;display: block;margin: 0 auto">Change Password</button>
         <div id="passwordMessage" class="mt-3" style="display: none;"></div>
     </div>
 </div>
 
 <script>
-// Profile update form handler
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
+// Profile update - button click handler
+document.getElementById('saveProfileBtn').addEventListener('click', async () => {
     const messageDiv = document.getElementById('profileMessage');
+    const emailInput = document.getElementById('email');
+    const emailValue = emailInput.value.trim();
+    
+    // Client-side email validation
+    if (!emailValue) {
+        messageDiv.className = 'alert alert-error';
+        messageDiv.textContent = 'Email address is required';
+        messageDiv.style.display = 'block';
+        emailInput.focus();
+        return;
+    }
+    
+    // Basic email format validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(emailValue)) {
+        messageDiv.className = 'alert alert-error';
+        messageDiv.textContent = 'Please enter a valid email address';
+        messageDiv.style.display = 'block';
+        emailInput.focus();
+        return;
+    }
     
     // Get selected data usage checkboxes
     const dataUsageCheckboxes = document.querySelectorAll('input[name="dataUsage"]:checked');
     const dataUsage = Array.from(dataUsageCheckboxes).map(cb => cb.value);
     
     const profileData = {
-        email: document.getElementById('email').value.trim(),
+        email: emailValue,
+        codename: document.getElementById('codename').value.trim() || null,
         first_name: document.getElementById('firstName').value.trim() || null,
         last_name: document.getElementById('lastName').value.trim() || null,
         company: document.getElementById('company').value.trim() || null,
@@ -238,18 +271,31 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Password change form handler
-document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
+// Password change - button click handler
+document.getElementById('changePasswordBtn').addEventListener('click', async () => {
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const messageDiv = document.getElementById('passwordMessage');
     
+    // Basic validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        messageDiv.className = 'alert alert-error';
+        messageDiv.textContent = 'All password fields are required';
+        messageDiv.style.display = 'block';
+        return;
+    }
+    
     if (newPassword !== confirmPassword) {
         messageDiv.className = 'alert alert-error';
         messageDiv.textContent = 'New passwords do not match';
+        messageDiv.style.display = 'block';
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        messageDiv.className = 'alert alert-error';
+        messageDiv.textContent = 'New password must be at least 8 characters';
         messageDiv.style.display = 'block';
         return;
     }
@@ -272,7 +318,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
             messageDiv.className = 'alert alert-success';
             messageDiv.textContent = 'Password changed successfully! Redirecting to login...';
             messageDiv.style.display = 'block';
-            e.target.reset();
+            document.getElementById('changePasswordForm').reset();
             
             // Logout and redirect after 2 seconds
             setTimeout(() => {
@@ -324,6 +370,11 @@ async function resetApiKey() {
 </script>
 
 <style>
+.required {
+    color: #dc3545;
+    font-weight: bold;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

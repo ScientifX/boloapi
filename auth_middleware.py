@@ -23,6 +23,8 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
         request.state.user_email = None
         request.state.user_role = None
         request.state.user_id = None
+        request.state.user_codename = None
+        request.state.user_display_name = None  # codename if set, otherwise email
         
         if token:
             try:
@@ -33,12 +35,21 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
                 user_id = payload.get("sub")
                 role = payload.get("role")
                 email = payload.get("email") 
+                codename = payload.get("codename")
                 
                 if user_id and role:
                     request.state.user_authenticated = True
                     request.state.user_id = user_id
                     request.state.user_role = role
                     request.state.user_email = email
+                    request.state.user_codename = codename
+                    # Display codename if set, otherwise use email username (before @)
+                    if codename:
+                        request.state.user_display_name = codename
+                    elif email:
+                        request.state.user_display_name = email.split('@')[0]
+                    else:
+                        request.state.user_display_name = None
                     
             except JWTError:
                 # Token is invalid or expired - remain unauthenticated

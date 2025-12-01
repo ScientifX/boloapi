@@ -14,14 +14,15 @@ class JWTError(Exception):
     pass
 
 
-def create_access_token(user_id: str, role: UserRole, email: str = None,  expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(user_id: str, role: UserRole, email: str = None, codename: str = None, expires_delta: Optional[timedelta] = None) -> str:
     """
     Create a JWT access token with user claims.
     
     Args:
         user_id: The user's UUID as string
         role: The user's role (from UserRole enum)
-        email: user email address
+        email: User email address
+        codename: Optional display name (shown instead of email if set)
         expires_delta: Optional custom expiration time
         
     Returns:
@@ -38,6 +39,7 @@ def create_access_token(user_id: str, role: UserRole, email: str = None,  expire
         "sub": user_id,  # Subject (user_id)
         "role": role.value,  # User role
         "email": email,  # User email
+        "codename": codename,  # Display name (optional)
         "exp": expire,  # Expiration time
         "iat": datetime.now(timezone.utc),  # Issued at
         "type": "access"  # Token type

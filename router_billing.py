@@ -1420,7 +1420,8 @@ async def billing_dashboard_page(request: Request):
         {
             "request": request,
             "user_authenticated": request.state.user_authenticated,
-            "user_email": request.state.user_email
+            "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name
         }
     )
 

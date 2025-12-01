@@ -15,8 +15,8 @@
                 <!-- Logged-in Indicator 2: Status Bar -->
                 <div class="status-bar"></div>
                 
-                <!-- Logged-in Indicator 3: User Email Display -->
-                <div class="user-email-display">{{ user_email }}</div>
+                <!-- Logged-in Indicator 3: User Display Name (codename if set, otherwise email) -->
+                <div class="user-email-display">{{ user_display_name or user_email }}</div>
             {% endif %}
             
             <nav class="nav">
@@ -79,7 +79,7 @@
 }
 
 .user-email-display::before {
-    content: "Logged in: ";
+    content: "Granted: ";
     font-weight: 600;
     color: #495057;
 }
