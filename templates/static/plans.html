@@ -55,7 +55,7 @@
                 </ul>
                 {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
-                {% elif current_plan == 'premium' %}
+                {% elif current_plan == 'premium' and subscription_status not in ['cancelled', 'expired'] %}
                     <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to {{ current_cycle|capitalize }}</button>
                 {% else %}
                     <a href="javascript:void(0)" onclick="startCheckout('monthly')" class="btn btn-primary btn-block">Upgrade to Monthly</a>
@@ -83,7 +83,7 @@
                 </ul>
                 {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
-                {% elif current_plan == 'premium' and current_cycle in ['quarterly', 'annual'] %}
+                {% elif current_plan == 'premium' and current_cycle in ['quarterly', 'annual'] and subscription_status not in ['cancelled', 'expired'] %}
                     <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to {{ current_cycle|capitalize }}</button>
                 {% else %}
                     <a href="javascript:void(0)" onclick="startCheckout('quarterly')" class="btn btn-primary btn-block">Upgrade to Quarterly</a>
@@ -111,7 +111,7 @@
                 </ul>
                 {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
-                {% elif current_plan == 'premium' and current_cycle == 'annual' %}
+                {% elif current_plan == 'premium' and current_cycle == 'annual' and subscription_status not in ['cancelled', 'expired'] %}
                     <button class="btn btn-primary btn-block btn-disabled" disabled>Subscribed to Annual</button>
                 {% else %}
                     <a href="javascript:void(0)" onclick="startCheckout('annual')" class="btn btn-primary btn-block">Upgrade to Annual</a>

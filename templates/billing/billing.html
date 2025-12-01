@@ -288,17 +288,138 @@ async function loadBillingInfo() {
     }
 }
 
+// Portal Modal Functions
+function createPortalModal(portalUrl) {
+    // Create modal backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'portal-modal-backdrop';
+    backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9998;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+    
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'portal-modal';
+    modal.style.cssText = `
+        position: relative;
+        width: 1260px;
+        height: 85%;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        z-index: 9999;
+    `;
+    
+    // Create close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: #f44336;
+        color: white;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    `;
+    closeBtn.onmouseover = () => closeBtn.style.background = '#d32f2f';
+    closeBtn.onmouseout = () => closeBtn.style.background = '#f44336';
+    closeBtn.onclick = closePortalModal;
+    
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = portalUrl;
+    iframe.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow-y: auto;
+    `;
+    
+    // Assemble modal
+    modal.appendChild(closeBtn);
+    modal.appendChild(iframe);
+    backdrop.appendChild(modal);
+    
+    // Close on backdrop click
+    backdrop.onclick = function(e) {
+        if (e.target === backdrop) {
+            closePortalModal();
+        }
+    };
+    
+    // Close on Escape key
+    document.addEventListener('keydown', handlePortalEscapeKey);
+    
+    document.body.appendChild(backdrop);
+    document.body.style.overflow = 'hidden';
+}
+
+function handlePortalEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closePortalModal();
+    }
+}
+
+function closePortalModal() {
+    const backdrop = document.getElementById('portal-modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handlePortalEscapeKey);
+        // Reload billing page to reflect any changes made in portal
+        window.location.href = '/v1/billing/';
+    }
+}
+
 async function openCustomerPortal() {
+    const portalBtn = document.getElementById('portalBtn');
+    const originalText = portalBtn.textContent;
+    
     try {
+        portalBtn.disabled = true;
+        portalBtn.textContent = 'Loading...';
+        
         const response = await fetchWithAuth('/v1/billing/portal');
         if (!response) return;
         
         const data = await response.json();
-        window.open(data.portal_url, '_blank');
+        
+        if (response.ok && data.portal_url) {
+            portalBtn.textContent = originalText;
+            portalBtn.disabled = false;
+            createPortalModal(data.portal_url);
+        } else {
+            alert(data.detail || 'Failed to open customer portal.');
+            portalBtn.textContent = originalText;
+            portalBtn.disabled = false;
+        }
         
     } catch (error) {
         alert('Failed to open customer portal.');
         console.error(error);
+        portalBtn.textContent = originalText;
+        portalBtn.disabled = false;
     }
 }
 

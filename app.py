@@ -564,6 +564,7 @@ async def pricing_plans_page(request: Request):
     # Get current user's subscription info if logged in
     current_plan = None
     current_cycle = None
+    subscription_status = None
     
     logger.info(f"[plans] user_authenticated={request.state.user_authenticated}, user_id={request.state.user_id}, user_email={request.state.user_email}")
     
@@ -575,14 +576,14 @@ async def pricing_plans_page(request: Request):
                     if request.state.user_id:
                         logger.info(f"[plans] Looking up user by user_id: {request.state.user_id}")
                         cur.execute(
-                            "SELECT role, billing_cycle FROM tbl_users WHERE user_id = %s",
+                            "SELECT role, billing_cycle, subscription_status FROM tbl_users WHERE user_id = %s",
                             (request.state.user_id,)
                         )
                     elif request.state.user_email:
                         # Fallback to email if user_id not available
                         logger.info(f"[plans] Looking up user by email: {request.state.user_email}")
                         cur.execute(
-                            "SELECT role, billing_cycle FROM tbl_users WHERE email = %s",
+                            "SELECT role, billing_cycle, subscription_status FROM tbl_users WHERE email = %s",
                             (request.state.user_email,)
                         )
                     else:
@@ -596,12 +597,13 @@ async def pricing_plans_page(request: Request):
                             # Determine plan: basic or premium
                             current_plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
                             current_cycle = user['billing_cycle']  # 'monthly', 'quarterly', 'annual', or None
-                            logger.info(f"[plans] Determined: current_plan={current_plan}, current_cycle={current_cycle}")
+                            subscription_status = user['subscription_status']  # 'active', 'cancelled', 'expired', etc.
+                            logger.info(f"[plans] Determined: current_plan={current_plan}, current_cycle={current_cycle}, subscription_status={subscription_status}")
         except Exception as e:
             logger.error(f"Error getting user subscription: {str(e)}")
             # Continue without subscription info
     
-    logger.info(f"[plans] Rendering with current_plan={current_plan}, current_cycle={current_cycle}")
+    logger.info(f"[plans] Rendering with current_plan={current_plan}, current_cycle={current_cycle}, subscription_status={subscription_status}")
             # Continue without subscription info
     
     return templates.TemplateResponse(
@@ -612,7 +614,8 @@ async def pricing_plans_page(request: Request):
             "user_email": request.state.user_email,
             "pricing": PRICING,
             "current_plan": current_plan,
-            "current_cycle": current_cycle
+            "current_cycle": current_cycle,
+            "subscription_status": subscription_status
         }
     )
 

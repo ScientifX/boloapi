@@ -1010,11 +1010,42 @@ async def create_checkout(
                 detail="User not found"
             )
         
-        # Check if already premium
-        if user['role'] == UserRole.PREMIUM.value:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Already subscribed to Premium. Use customer portal to change plan."
+        # For active PREMIUM users, redirect to customer portal to change plan
+        # Cancelled/expired PREMIUM users should create a new checkout to resubscribe
+        subscription_status = user.get('subscription_status')
+        is_active_premium = (
+            user['role'] == UserRole.PREMIUM.value and 
+            subscription_status not in ['cancelled', 'expired']
+        )
+        
+        if is_active_premium:
+            subscription_id = user.get('lemonsqueezy_subscription_id')
+            
+            if not subscription_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="No active subscription found. Please contact support."
+                )
+            
+            # Get portal URL for plan changes
+            portal_url = get_lemonsqueezy_customer_portal_url(subscription_id)
+            
+            if not portal_url:
+                # Fallback to generic my-orders page (handles test subscriptions)
+                logger.warning(f"[create_checkout] Using fallback portal URL for user {user['email']}")
+                portal_url = "https://app.lemonsqueezy.com/my-orders"
+            
+            # Return portal URL in same format so modal opens it
+            billing_cycle = checkout_req.billing_cycle
+            pricing_info = PRICING[billing_cycle]
+            
+            logger.info(f"Premium user {user['email']} redirected to portal for plan change")
+            
+            return CheckoutResponse(
+                checkout_url=portal_url,
+                billing_cycle=billing_cycle,
+                price=pricing_info['price'],
+                currency=pricing_info['currency']
             )
         
         # Get pricing info
