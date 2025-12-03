@@ -61,6 +61,11 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 # Router
 router = APIRouter(prefix="/v1/billing", tags=["Billing"])
 
+# Test router - only created if test mode enabled (prevents duplicate tags in docs)
+test_router = None
+if BILLING_TEST_MODE:
+    test_router = APIRouter(prefix="/v1/billing", tags=["Testing"])
+
 # Templates
 templates = Jinja2Templates(directory="templates")
 templates.env.globals.update(APP_GLOBALS)
@@ -1564,11 +1569,10 @@ if BILLING_TEST_MODE:
             description="Amount in cents (e.g., 999 = $9.99)"
         )
     
-    @router.post(
+    @test_router.post(
         "/test/simulate-webhook",
         summary="[TEST] Simulate Webhook Event",
-        description="Simulate a LemonSqueezy webhook event for testing. Only available in test mode.",
-        tags=["Testing"]
+        description="Simulate a LemonSqueezy webhook event for testing. Only available in test mode."
     )
     async def simulate_webhook(
         request: Request,
@@ -1676,11 +1680,10 @@ if BILLING_TEST_MODE:
                 detail=f"Unknown event: {sim_req.event_name}"
             )
     
-    @router.get(
+    @test_router.get(
         "/test/user-status/{email}",
         summary="[TEST] Get User Subscription Status",
-        description="Get detailed subscription status for a user by email. Only available in test mode.",
-        tags=["Testing"]
+        description="Get detailed subscription status for a user by email. Only available in test mode."
     )
     async def test_get_user_status(email: str):
         """
@@ -1740,11 +1743,10 @@ if BILLING_TEST_MODE:
             ]
         }
     
-    @router.post(
+    @test_router.post(
         "/test/reset-user/{email}",
         summary="[TEST] Reset User to Basic",
-        description="Reset a user's subscription back to Basic for testing. Only available in test mode.",
-        tags=["Testing"]
+        description="Reset a user's subscription back to Basic for testing. Only available in test mode."
     )
     async def test_reset_user(email: str):
         """
@@ -1822,11 +1824,10 @@ if BILLING_TEST_MODE:
         order_id: Optional[str] = Field(default=None, description="Order/invoice ID")
         preview_only: bool = Field(default=False, description="If true, return HTML instead of sending")
     
-    @router.post(
+    @test_router.post(
         "/test/send-email",
         summary="[TEST] Send or Preview Billing Email",
-        description="Send a billing email or get HTML preview. Only available in test mode.",
-        tags=["Testing"]
+        description="Send a billing email or get HTML preview. Only available in test mode."
     )
     async def test_send_email(req: SendTestEmailRequest):
         """

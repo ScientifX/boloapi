@@ -92,6 +92,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
 app.include_router(router_billing.router)
+if router_billing.test_router:
+    app.include_router(router_billing.test_router)
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
 app.include_router(router_auth.router) 
