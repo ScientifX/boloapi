@@ -1343,7 +1343,14 @@ async def get_billing_info(
             )
         
         # Get subscription status
-        plan = "premium" if user['role'] == UserRole.PREMIUM.value else "basic"
+        # Determine plan based on role
+        if user['role'] == UserRole.ADMIN.value:
+            plan = "admin"
+        elif user['role'] == UserRole.PREMIUM.value:
+            plan = "premium"
+        else:
+            plan = "basic"
+            
         subscription = SubscriptionStatus(
             plan=plan,
             status=user['subscription_status'] or 'none',
@@ -1388,11 +1395,15 @@ async def get_billing_info(
             for p in payments
         ]
         
-        return BillingInfo(
-            subscription=subscription,
-            payment_history=payment_history,
-            portal_url="https://app.lemonsqueezy.com/my-orders"
-        )
+        # Check if user is an admin
+        is_admin = user['role'] == UserRole.ADMIN.value
+        
+        return {
+            "subscription": subscription.model_dump(),
+            "payment_history": [p.model_dump() for p in payment_history],
+            "portal_url": "https://app.lemonsqueezy.com/my-orders",
+            "is_admin": is_admin
+        }
         
     except HTTPException:
         raise
@@ -1426,7 +1437,9 @@ async def billing_dashboard_page(request: Request):
             "request": request,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
-            "user_display_name": request.state.user_display_name
+            "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
+            "is_admin": request.state.user_role == UserRole.ADMIN.value
         }
     )
 
@@ -1569,10 +1582,11 @@ if BILLING_TEST_MODE:
             description="Amount in cents (e.g., 999 = $9.99)"
         )
     
-    @test_router.post(
+    @router.post(
         "/test/simulate-webhook",
         summary="[TEST] Simulate Webhook Event",
-        description="Simulate a LemonSqueezy webhook event for testing. Only available in test mode."
+        description="Simulate a LemonSqueezy webhook event for testing. Only available in test mode.",
+        tags=["Testing"]
     )
     async def simulate_webhook(
         request: Request,
@@ -1680,10 +1694,11 @@ if BILLING_TEST_MODE:
                 detail=f"Unknown event: {sim_req.event_name}"
             )
     
-    @test_router.get(
+    @router.get(
         "/test/user-status/{email}",
         summary="[TEST] Get User Subscription Status",
-        description="Get detailed subscription status for a user by email. Only available in test mode."
+        description="Get detailed subscription status for a user by email. Only available in test mode.",
+        tags=["Testing"]
     )
     async def test_get_user_status(email: str):
         """
@@ -1743,10 +1758,11 @@ if BILLING_TEST_MODE:
             ]
         }
     
-    @test_router.post(
+    @router.post(
         "/test/reset-user/{email}",
         summary="[TEST] Reset User to Basic",
-        description="Reset a user's subscription back to Basic for testing. Only available in test mode."
+        description="Reset a user's subscription back to Basic for testing. Only available in test mode.",
+        tags=["Testing"]
     )
     async def test_reset_user(email: str):
         """
@@ -1824,10 +1840,11 @@ if BILLING_TEST_MODE:
         order_id: Optional[str] = Field(default=None, description="Order/invoice ID")
         preview_only: bool = Field(default=False, description="If true, return HTML instead of sending")
     
-    @test_router.post(
+    @router.post(
         "/test/send-email",
         summary="[TEST] Send or Preview Billing Email",
-        description="Send a billing email or get HTML preview. Only available in test mode."
+        description="Send a billing email or get HTML preview. Only available in test mode.",
+        tags=["Testing"]
     )
     async def test_send_email(req: SendTestEmailRequest):
         """

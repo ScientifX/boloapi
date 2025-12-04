@@ -1353,7 +1353,7 @@ async def get_top_ten(
 async def get_top_missing(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """
     Get FBI Missing Persons using database function.
@@ -1490,8 +1490,8 @@ async def get_top_terrorist(
 async def get_top_reward(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
     """
     Get high reward cases ($1M+) using database function.
     Returns clean or raw data based on user role.
@@ -1546,7 +1546,7 @@ async def get_top_reward(
     summary="API Information",
     description="Get information about this API and available endpoints"
 )
-async def root():
+async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
     """Return API information and usage guide - accessible to all roles"""
     return {
         "name": "Advanced Search API",
@@ -1556,7 +1556,7 @@ async def root():
             "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)",
             "/top_ten": "FBI Ten Most Wanted Fugitives (BASIC role or higher)",
             "/top_terrorist": "FBI Most Wanted Terrorists (BASIC role or higher)",
-            "/top_missing": "FBI Missing Persons (BASIC role or higher)",
+            "admining": "FBI Missing Persons (BASIC role or higher)",
             "/top_reward": "High reward cases ($1M+ rewards) (BASIC role or higher)"
         },
         "convenience_endpoints": {

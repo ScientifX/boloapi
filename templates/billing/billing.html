@@ -22,6 +22,7 @@
                 <div class="plan-details" id="planDetails"></div>
                 
                 <div class="button-group mt-3">
+                    {% if not is_admin %}
                     <button id="upgradeBtn" class="btn btn-primary" style="width:30%;display:none;margin: 0 auto;">
                         Upgrade to Premium
                     </button>
@@ -31,11 +32,13 @@
                     <button id="cancelBtn" class="btn btn-danger-outline" style="width:30%;display:none;margin: 0 auto;">
                         Cancel Subscription
                     </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
     
+    {% if not is_admin %}
     <!-- Payment History -->
     <div class="card mt-4">
         <h2>Payment History</h2>
@@ -59,10 +62,11 @@
         <p id="noPayments" class="text-muted" style="display: none;">
             No payment history yet. Subscribe to Premium to see payments here.
         </p>
-    </div>
+    </div>{% endif %}
 </div>
 
 <!-- Cancel Confirmation Modal -->
+{% if not is_admin %}
 <div id="cancelModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
@@ -90,6 +94,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
 <script>
@@ -173,82 +178,117 @@ async function loadBillingInfo() {
         const data = await response.json();
         currentSubscription = data.subscription;
         
+        // Check if user is an admin (either from is_admin flag or plan type)
+        const isAdmin = data.is_admin === true || data.subscription.plan === 'admin';
+        
         // Update subscription info
         const sub = data.subscription;
         const isPremium = sub.plan === 'premium';
         const status = sub.status?.toLowerCase() || 'none';
         
-        document.getElementById('planBadge').textContent = 
-            isPremium ? 'PREMIUM' : 'BASIC';
-        document.getElementById('planBadge').className = 
-            'status-badge ' + (isPremium ? 'premium' : 'basic');
-        
-        // Format status display
-        let statusDisplay = status;
-        if (status === 'past_due') statusDisplay = 'Past Due';
-        else if (status) statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
-        
-        document.getElementById('statusBadge').textContent = (statusDisplay == 'Expired' ? 'Premium ' + statusDisplay : statusDisplay);
-        document.getElementById('statusBadge').className = 
-            'status-indicator ' + status.replace('_', '-');
-        
-        // Show status message
-        const statusInfo = getStatusMessage(sub);
-        const statusMsgEl = document.getElementById('statusMessage');
-        if (statusInfo.message) {
-            statusMsgEl.innerHTML = statusInfo.message;
-            statusMsgEl.className = 'status-message ' + statusInfo.type;
+        // Admin badge handling
+        if (isAdmin) {
+            document.getElementById('planBadge').textContent = 'admin';
+            document.getElementById('planBadge').className = 'status-badge admin';
+            document.getElementById('statusBadge').textContent = 'Full Access';
+            document.getElementById('statusBadge').className = 'status-indicator active';
+            
+            // Admin-specific message
+            const statusMsgEl = document.getElementById('statusMessage');
+            statusMsgEl.innerHTML = 'As an administrator, you have full access to all features. Subscription management is not applicable to admin accounts.';
+            statusMsgEl.className = 'status-message info';
             statusMsgEl.style.display = 'block';
+            
+            // Hide all subscription management buttons for admins
+            document.getElementById('upgradeBtn').style.display = 'none';
+            document.getElementById('portalBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            // Show admin-specific plan details
+            document.getElementById('planDetails').innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Account Type:</strong> Administrator
+                    </div>
+                    <div class="detail-item">
+                        <strong>Features:</strong> Unlimited access to all Premium features
+                    </div>
+                </div>
+            `;
         } else {
-            statusMsgEl.style.display = 'none';
-        }
+            // Regular user handling (Basic/Premium)
+            document.getElementById('planBadge').textContent = 
+                isPremium ? 'premium' : 'basic';
+            document.getElementById('planBadge').className = 
+                'status-badge ' + (isPremium ? 'premium' : 'basic');
+            
+            // Format status display
+            let statusDisplay = status;
+            if (status === 'past_due') statusDisplay = 'Past Due';
+            else if (status) statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
+            
+            document.getElementById('statusBadge').textContent = (statusDisplay == 'Expired' ? 'Premium ' + statusDisplay : statusDisplay);
+            document.getElementById('statusBadge').className = 
+                'status-indicator ' + status.replace('_', '-');
+            
+            // Show status message
+            const statusInfo = getStatusMessage(sub);
+            const statusMsgEl = document.getElementById('statusMessage');
+            if (statusInfo.message) {
+                statusMsgEl.innerHTML = statusInfo.message;
+                statusMsgEl.className = 'status-message ' + statusInfo.type;
+                statusMsgEl.style.display = 'block';
+            } else {
+                statusMsgEl.style.display = 'none';
+            }
 
-        // Build plan details
-        let detailsHtml = '<div class="detail-grid">';
-        
-        if (isPremium) {
-            if (sub.billing_cycle) {
-                const cycle = sub.billing_cycle.charAt(0).toUpperCase() + 
-                             sub.billing_cycle.slice(1);
-                detailsHtml += `<div class="detail-item">
-                    <strong>Billing Cycle:</strong> ${cycle}
-                </div>`;
-            }
+            // Build plan details
+            let detailsHtml = '<div class="detail-grid">';
             
-            if (sub.renews_at && status === 'active') {
-                const renewDate = new Date(sub.renews_at).toLocaleDateString();
-                detailsHtml += `<div class="detail-item">
-                    <strong>Next Billing:</strong> ${renewDate}
-                </div>`;
-            }
-            
-            if (sub.ends_at && (status === 'cancelled' || status === 'expired')) {
-                const endDate = new Date(sub.ends_at).toLocaleDateString();
-                detailsHtml += `<div class="detail-item">
-                    <strong>Access Until:</strong> ${endDate}
-                </div>`;
-            }
-            
-            // Show portal button for all active premium users
-            if (status === 'active') { 
-                document.getElementById('portalBtn').style.display = 'inline-block';
+            if (isPremium) {
+                if (sub.billing_cycle) {
+                    const cycle = sub.billing_cycle.charAt(0).toUpperCase() + 
+                                 sub.billing_cycle.slice(1);
+                    detailsHtml += `<div class="detail-item">
+                        <strong>Billing Cycle:</strong> ${cycle}
+                    </div>`;
                 }
-            // Show upgrade button for expired/cancelled (to resubscribe)
-            else if (status === 'expired' || status === 'cancelled') {
+                
+                if (sub.renews_at && status === 'active') {
+                    const renewDate = new Date(sub.renews_at).toLocaleDateString();
+                    detailsHtml += `<div class="detail-item">
+                        <strong>Next Billing:</strong> ${renewDate}
+                    </div>`;
+                }
+                
+                if (sub.ends_at && (status === 'cancelled' || status === 'expired')) {
+                    const endDate = new Date(sub.ends_at).toLocaleDateString();
+                    detailsHtml += `<div class="detail-item">
+                        <strong>Access Until:</strong> ${endDate}
+                    </div>`;
+                }
+                
+                // Show portal button for all active premium users
+                if (status === 'active') { 
+                    document.getElementById('portalBtn').style.display = 'inline-block';
+                    }
+                // Show upgrade button for expired/cancelled (to resubscribe)
+                else if (status === 'expired' || status === 'cancelled') {
+                    document.getElementById('upgradeBtn').style.display = 'inline-block';
+                    document.getElementById('upgradeBtn').textContent = 'Upgrade to Premium';
+                    }
+            } else {
+                detailsHtml += `<div class="detail-item">
+                    <strong>Features:</strong> 25 results/request, Raw data, Simple search
+                </div>`;
                 document.getElementById('upgradeBtn').style.display = 'inline-block';
-                document.getElementById('upgradeBtn').textContent = 'Upgrade to Premium';
-                }
-        } else {
-            detailsHtml += `<div class="detail-item">
-                <strong>Features:</strong> 25 results/request, Raw data, Simple search
-            </div>`;
-            document.getElementById('upgradeBtn').style.display = 'inline-block';
+            }
+            
+            detailsHtml += '</div>';
+            document.getElementById('planDetails').innerHTML = detailsHtml;
         }
         
-        detailsHtml += '</div>';
-        document.getElementById('planDetails').innerHTML = detailsHtml;
-        
-        // Load payment history
+        // Load payment history (applies to all users including admins)
         const payments = data.payment_history;
         
         if (payments && payments.length > 0) {
@@ -280,6 +320,9 @@ async function loadBillingInfo() {
             document.getElementById('paymentTable').style.display = 'table';
         } else {
             document.getElementById('paymentHistory').style.display = 'none';
+            if (isAdmin) {
+                document.getElementById('noPayments').textContent = 'Admin accounts do not have payment history.';
+            }
             document.getElementById('noPayments').style.display = 'block';
         }
         
@@ -494,6 +537,11 @@ loadBillingInfo();
 </script>
 
 <style>
+.status-badge.admin {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
 .plan-summary {
     padding: 20px 0;
 }

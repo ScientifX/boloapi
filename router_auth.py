@@ -344,8 +344,9 @@ async def signup_page(request: Request):
 async def set_password_page(
     request: Request,
     user_id: str = Query(...),
-    token: str = Query(None)
-):
+    token: str = Query(None), 
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
     """Display set password form after activation"""
     user = get_user_by_id(user_id)
     
@@ -534,7 +535,10 @@ async def activate(request: Request, token: str = Query(...)):
 
 @router.post("/set_password")
 @limiter.limit(rate_max)
-async def set_password(request: Request, password_req: SetPasswordRequest):
+async def set_password(request: Request, 
+            password_req: SetPasswordRequest, 
+            current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+            ):
     """Set password after activation"""
     try:
         user = get_user_by_id(password_req.user_id)
@@ -826,7 +830,7 @@ async def logout_page(request: Request):
 
 @router.get("/profile")
 @limiter.limit(rate_max)
-async def profile_page(request: Request):
+async def profile_page(request: Request, current_user: dict = Depends(require_jwt_role(UserRole.BASIC))):
     """Display user profile page with current data"""
     try:
         # Try to get authenticated user - will raise HTTPException if not authenticated

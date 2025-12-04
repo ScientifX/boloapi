@@ -38,6 +38,8 @@ from docs_config import (
     get_viewer_role_from_request,
     register_visibility_override,
 	)
+from jwt_auth import require_jwt_role
+import visibility_config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -245,10 +247,12 @@ app.add_middleware(
 
 # ============================================================================
 # ROUTES AND TESTING ENDPOINTS
-# ============================================================================
-
+# ============================================================================ 
 @app.get("/routes", response_class=HTMLResponse, include_in_schema=False)
-async def list_routes(request: Request):
+async def list_routes(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
     """
     List all API routes with their router, endpoint name, auth requirements, and rate limits.
     No authentication required.
