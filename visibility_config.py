@@ -18,6 +18,7 @@ DOCS_VISIBILITY_CONFIG = {
     ("GET", "/privacy"): UserRole.PUBLIC,
     ("GET", "/redoc"): UserRole.PUBLIC,
     ("GET", "/terms"): UserRole.PUBLIC,
+    ("POST", "/v1/auth/token"): UserRole.PUBLIC,
     
     # ----- Admin-only visibility -----
     # These endpoints are only visible in /docs for ADMIN users
@@ -38,13 +39,11 @@ DOCS_VISIBILITY_CONFIG = {
     ("PUT", "/v1/auth/profile"): UserRole.ADMIN,
     ("GET", "/v1/auth/profile/data"): UserRole.ADMIN,
     ("POST", "/v1/auth/register"): UserRole.ADMIN,
-    ("POST", "/v1/auth/reset_key"): UserRole.ADMIN,
     ("GET", "/v1/auth/reset_password"): UserRole.ADMIN,
     ("POST", "/v1/auth/reset_password"): UserRole.ADMIN,
     ("GET", "/v1/auth/set_password"): UserRole.ADMIN,
     ("POST", "/v1/auth/set_password"): UserRole.ADMIN,
     ("GET", "/v1/auth/signup"): UserRole.ADMIN,
-    ("POST", "/v1/auth/token"): UserRole.ADMIN,
     
     # Billing endpoints - all admin visibility
     ("GET", "/v1/billing/"): UserRole.ADMIN,
@@ -73,13 +72,14 @@ DOCS_VISIBILITY_CONFIG = {
     
     # ----- Basic visibility (BASIC and above see these) -----
     ("POST", "/v1/search/simple"): UserRole.BASIC,
+    ("POST", "/v1/auth/reset_key"): UserRole.BASIC,
     
     # ----- Premium visibility (PREMIUM and above see these) -----
-    ("POST", "/v1/search/advanced"): UserRole.PREMIUM,
-    ("GET", "/v1/search/top_missing"): UserRole.PREMIUM,
-    ("GET", "/v1/search/top_reward"): UserRole.PREMIUM,
-    ("GET", "/v1/search/top_ten"): UserRole.PREMIUM,
-    ("GET", "/v1/search/top_terrorist"): UserRole.PREMIUM,
+    ("POST", "/v1/search/advanced"): UserRole.BASIC,
+    ("GET", "/v1/search/top_missing"): UserRole.BASIC,
+    ("GET", "/v1/search/top_reward"): UserRole.BASIC,
+    ("GET", "/v1/search/top_ten"): UserRole.BASIC,
+    ("GET", "/v1/search/top_terrorist"): UserRole.BASIC,
 }
 
 # Register all visibility overrides at startup

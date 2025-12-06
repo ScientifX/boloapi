@@ -80,7 +80,7 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 app = FastAPI(
     title="BoloDoc API",
-    description="FBI Wanted and Missing Persons Data. <br><br>Premium subscribers: <a href='/v1/auth/login'>log in</a> to see the full API docs",
+    description="FBI Wanted and Missing Persons Data. <br><br><a href='/v1/auth/signup'>Sign up free</a> to get started, then <a href='/v1/auth/login'>log in</a> to see the full API docs",
     version="1.0.0",
     docs_url=None,
     redoc_url=None,
