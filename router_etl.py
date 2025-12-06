@@ -25,6 +25,7 @@ from fastapi import APIRouter
 from auth import UserRole
 from jwt_auth import require_jwt_role
 from notification_service import detect_all_changes, process_pending_notifications
+from link_validation_service import validate_links_from_file, get_link_check_summary, get_failed_links
 
 # Response Models
 class ImportSummary(BaseModel):
@@ -1029,6 +1030,10 @@ router = APIRouter(prefix="/v1/etl", tags=["Data Import"], include_in_schema=Tru
     description="Import FBI wanted data from JSON file on server. **ADMIN ONLY**"
     )
 async def data_load(
+    run_link_validation: bool = Query(
+        default=True, 
+        description="Run link validation after data load"
+    ),
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
@@ -1036,16 +1041,34 @@ async def data_load(
     
     **Access:** ADMIN role only
     
+    Parameters:
+    - run_link_validation: If True, automatically validate all URLs after load
+    
     Returns a summary of the import operation including counts and any errors.
     """
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
+    
+    link_validation_results = None
+    
     try:
         pull_date = date.today()
         file_path = "data/bolo-api-data.json"
 
         # Perform import
         summary = import_data_set(file_path, pull_date)
+        
+        # Run link validation if requested
+        if run_link_validation:
+            try:
+                logger.info("Starting link validation after data load")
+                link_validation_results = await validate_links_from_file(file_path)
+                logger.info(f"Link validation complete: {link_validation_results.get('total_urls', 0)} URLs checked")
+            except Exception as e:
+                logger.error(f"Link validation error (non-fatal): {str(e)}")
+                link_validation_results = {"error": str(e)}
+        
+        # Return summary (ImportSummary model - link validation logged separately)
         return summary
         
     except FileNotFoundError as e:
@@ -1063,7 +1086,7 @@ async def data_load(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Import has failed: {str(e)}"
             )
-
+    
 @router.get(
     "/extract",
     summary="Extract FBI Data from API",
@@ -1319,3 +1342,125 @@ async def process_notifications_endpoint(
     except Exception as e:
         logger.error(f"Notification processing error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Notification processing error: {str(e)}")
+    
+# =============================================================================
+# LINK VALIDATION ENDPOINTS
+# =============================================================================
+
+@router.get(
+    "/validate_links",
+    summary="Validate All URLs in BOLO Data",
+    description="Extract and validate all URLs from the FBI data file. **ADMIN ONLY**"
+    )
+async def validate_links_endpoint(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Extract all URLs from FBI BOLO data and validate their accessibility.
+    
+    **Access:** ADMIN role only
+    
+    This endpoint:
+    1. Reads the current FBI data file
+    2. Extracts all URLs (pathId, url, files, images)
+    3. Validates each URL using HEAD requests
+    4. Stores results in tbl_bolo_link_check
+    
+    URLs are validated asynchronously with rate limiting to avoid
+    overwhelming FBI servers.
+    
+    Returns summary statistics including success/failure/timeout counts.
+    """
+    try:
+        file_path = "data/bolo-api-data.json"
+        
+        logger.info("Starting link validation process")
+        summary = await validate_links_from_file(file_path)
+        
+        return summary
+        
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="FBI data file not found. Run /extract first."
+            )
+    except Exception as e:
+        logger.error(f"Link validation error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Link validation failed: {str(e)}"
+            )
+
+
+@router.get(
+    "/link_status",
+    summary="Link Validation Status Summary",
+    description="View summary statistics from link validation results. **ADMIN ONLY**"
+    )
+async def get_link_status(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get summary statistics from the link validation table.
+    
+    **Access:** ADMIN role only
+    
+    Returns:
+    - Total links checked
+    - Counts by result (success, failure, timeout)
+    - Counts by HTTP response code
+    - Counts by field type (url, pathId, images, files)
+    - Last update timestamp
+    """
+    try:
+        with get_db_connection() as conn:
+            summary = get_link_check_summary(conn)
+            return summary
+            
+    except Exception as e:
+        logger.error(f"Error getting link status: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get link status: {str(e)}"
+            )
+
+
+@router.get(
+    "/link_failures",
+    summary="List Failed Links",
+    description="View list of URLs that failed validation. **ADMIN ONLY**"
+    )
+async def get_link_failures(
+    limit: int = Query(default=100, ge=1, le=1000, description="Maximum results to return"),
+    include_timeouts: bool = Query(default=True, description="Include timeout results"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get list of URLs that failed validation or timed out.
+    
+    **Access:** ADMIN role only
+    
+    Useful for identifying:
+    - Broken links in FBI data
+    - URLs that may have moved or been removed
+    - Network connectivity issues
+    
+    Parameters:
+    - limit: Maximum number of results (1-1000)
+    - include_timeouts: Whether to include timeout results
+    """
+    try:
+        with get_db_connection() as conn:
+            failures = get_failed_links(conn, limit, include_timeouts)
+            return {
+                "count": len(failures),
+                "include_timeouts": include_timeouts,
+                "failures": failures
+            }
+            
+    except Exception as e:
+        logger.error(f"Error getting link failures: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get link failures: {str(e)}"
+            )
