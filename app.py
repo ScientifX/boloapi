@@ -110,14 +110,24 @@ async def get_openapi_schema(request: Request):
     """
     Serve OpenAPI schema filtered by the viewer's role.
     
-    Visibility:
-    - Not logged in: PUBLIC + BASIC endpoints
-    - BASIC: PUBLIC + BASIC + PREMIUM endpoints
+    Visibility (users see their role level and below):
+    - PUBLIC: Only PUBLIC endpoints
+    - BASIC: PUBLIC + BASIC endpoints
     - PREMIUM: PUBLIC + BASIC + PREMIUM endpoints
     - ADMIN: All endpoints
+    
+    Cache-Control: no-store prevents browser from caching role-specific schemas.
+    This ensures users see the correct endpoints after login/logout.
     """
     filtered_schema = get_role_filtered_openapi(app, request)
-    return JSONResponse(content=filtered_schema)
+    return JSONResponse(
+        content=filtered_schema,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
 
 
 @app.get("/docs", include_in_schema=False)
@@ -125,6 +135,8 @@ async def get_docs(request: Request):
     """
     Serve Swagger UI with role-filtered endpoints.
     Shows different endpoints based on viewer's authentication level.
+    
+    Cache-Control: no-store ensures fresh content after login/logout.
     """
     viewer_role = get_viewer_role_from_request(request)
     
@@ -137,17 +149,27 @@ async def get_docs(request: Request):
     }
     role_label = role_labels.get(viewer_role, "Guest")
     
-    return get_swagger_ui_html(
+    # Get the Swagger UI HTML response
+    swagger_response = get_swagger_ui_html(
         openapi_url="/openapi.json",
         title=f"API Docs - BoloDoc",
         swagger_ui_parameters={"defaultModelsExpandDepth": -1}
     )
+    
+    # Add cache-control headers to prevent browser caching
+    swagger_response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    swagger_response.headers["Pragma"] = "no-cache"
+    swagger_response.headers["Expires"] = "0"
+    
+    return swagger_response
 
 
 @app.get("/redoc", include_in_schema=False)
 async def get_redoc(request: Request):
     """
     Serve ReDoc with role-filtered endpoints.
+    
+    Cache-Control: no-store ensures fresh content after login/logout.
     """
     viewer_role = get_viewer_role_from_request(request)
     
@@ -159,10 +181,18 @@ async def get_redoc(request: Request):
     }
     role_label = role_labels.get(viewer_role, "Guest")
     
-    return get_redoc_html(
+    # Get the ReDoc HTML response
+    redoc_response = get_redoc_html(
         openapi_url="/openapi.json",
         title=f"Bolo API - {role_label} View",
     )
+    
+    # Add cache-control headers to prevent browser caching
+    redoc_response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    redoc_response.headers["Pragma"] = "no-cache"
+    redoc_response.headers["Expires"] = "0"
+    
+    return redoc_response
 
 
 # ============================================================================

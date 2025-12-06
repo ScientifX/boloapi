@@ -21,6 +21,7 @@ from contextlib import contextmanager
 
 from auth import UserRole, get_data_field_for_role, validate_limit_for_role
 from jwt_auth import require_jwt_role
+from format_utils import ResponseFormat, format_response
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -556,7 +557,7 @@ class AdvancedSearchRequest(BaseModel):
                 }
             ],
             "group_logic": "OR",
-            "limit": 50
+            "limit": 25
         }
     """
     model_config = ConfigDict(
@@ -573,7 +574,7 @@ class AdvancedSearchRequest(BaseModel):
                         }
                     ],
                     "group_logic": "AND",
-                    "limit": 50
+                    "limit": 25
                 }
             }
         )
@@ -587,8 +588,8 @@ class AdvancedSearchRequest(BaseModel):
         description="How to combine multiple groups (AND/OR)"
         )
     limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
-        default=50,
-        description="Maximum number of results to return (default: 50)"
+        default=25,
+        description="Maximum number of results to return (default: 25)"
         )
     
     @field_validator('groups')
@@ -760,7 +761,7 @@ class SimpleSearchRequest(BaseModel):
                     {"field": "description", "value": "*armed*"}
                     ],
                 "logic": "AND",
-                "limit": 50
+                "limit": 25
                 }
             }
         )
@@ -774,10 +775,10 @@ class SimpleSearchRequest(BaseModel):
         description="How to combine filters (AND/OR)"
         )
     limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
-        default=50,
-        description="Maximum number of results to return (default: 50)"
+        default=25,
+        description="Maximum number of results to return (default: 25)"
         )
-    rules: Literal["strict", "flex"] = "strict" 
+    rules: Literal["strict", "flex"] = "strict"
     
     @field_validator('filters')
     @classmethod
@@ -942,7 +943,7 @@ def get_db_connection():
     
     **Access:** BASIC role or higher
     **Result limits by role:**
-    - BASIC: Maximum 25 results, returns raw data
+    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
     - PREMIUM: Maximum 5000 results, returns cleaned data
     - ADMIN: Maximum 5000 results, returns cleaned data
     
@@ -954,10 +955,10 @@ def get_db_connection():
     **Perfect for:** Basic text searches without complex logic.
     
     **Wildcard Patterns:**
-    - `*text*` â†’ Contains "text" anywhere in the field
-    - `text*` â†’ Starts with "text"
-    - `*text` â†’ Ends with "text"
-    - `text` â†’ Exact match
+    - `*text*` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Contains "text" anywhere in the field
+    - `text*` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Starts with "text"
+    - `*text` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Ends with "text"
+    - `text` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Exact match
     
     **Examples:**
     
@@ -968,7 +969,7 @@ def get_db_connection():
             {"field": "title", "value": "Murder*"}
         ],
         "logic": "AND",
-        "limit": 50, 
+        "limit": 25, 
         "rules": "strict" 
     }
 ```
@@ -994,6 +995,7 @@ def get_db_connection():
 async def simple_search(
     request: Request, 
     search_request: SimpleSearchRequest,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC)) 
     ):
     """
@@ -1078,12 +1080,14 @@ async def simple_search(
                 "data": item_data
             })
             
-        return {
+        result_dict = {
             "query": search_request.model_dump(),
             "role": current_role.value,
             "resultcount": len(items),
             "items": items
         }
+        result_dict["query"]["endpoint"] = "simple"
+        return format_response(result_dict, format, "bolo_simple_search")
             
     except Exception as e:
         raise Exception(f"Database Error: {str(e)}")
@@ -1134,7 +1138,7 @@ async def simple_search(
             }
         ],
         "group_logic": "AND",
-        "limit": 50
+        "limit": 25
     }
 ```
     **Result:** title contains "Murder" AND reward_max >= 100000
@@ -1172,6 +1176,7 @@ async def simple_search(
 async def advanced_search(
     request: Request, 
     search_request: AdvancedSearchRequest,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
     ):
     """
@@ -1252,12 +1257,14 @@ async def advanced_search(
             })
         
         # Construct response payload
-        return {
+        result_dict = {
             "query": search_request.model_dump(),
             "role": current_role.value,
             "resultcount": len(items),
             "items": items
         }
+        result_dict["query"]["endpoint"] = "advanced"
+        return format_response(result_dict, format, "bolo_advanced_search")
     
     except Exception as e:
         logger.error(f"Advanced search error: {str(e)}")
@@ -1269,20 +1276,35 @@ async def advanced_search(
 @router.get(
     "/top_ten",
     summary="FBI Ten Most Wanted Fugitives",
-    description="""[keep existing description]""",
+    description="""
+    Get the FBI's Ten Most Wanted Fugitives list.
+    
+    **Access:** PREMIUM role or higher
+    **Results:** Always returns up to 10 results (the actual Ten Most Wanted list)
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    
+    **Note:** Results are ordered by most recently modified first.
+    
+    **Returns:** Query parameters, result count, and array of matching records
+    """,
     response_description="Ten Most Wanted Fugitives with data_type and data fields"
     )
 @limiter.limit(rate_max)
 async def get_top_ten(
     request: Request,
-    limit: int = Query(default=10, ge=1, le=5000, description="Maximum results to return"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI Ten Most Wanted Fugitives using database function"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
-    actual_limit = validate_limit_for_role(current_role, limit)
+    # Always return max 10 for the Ten Most Wanted
+    actual_limit = 10
     data_field = get_data_field_for_role(current_role)
     
     try:
@@ -1307,16 +1329,16 @@ async def get_top_ten(
                 "data": item_data
             })
         
-        return {
+        result_dict = {
             "query": {
                 "endpoint": "top_ten",
-                "poster_classification": "ten",
-                "limit": actual_limit
+                "poster_classification": "ten"
             },
             "role": current_role.value,
             "resultcount": len(items),
             "items": items
         }
+        return format_response(result_dict, format, "bolo_top_ten")
     
     except Exception as e:
         logger.error(f"Top Ten search error: {str(e)}")
@@ -1334,7 +1356,7 @@ async def get_top_ten(
     
     **Access:** BASIC role or higher
     **Result limits by role:**
-    - BASIC: Maximum 25 results, returns raw data
+    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
     - PREMIUM: Maximum 5000 results, returns cleaned data
     - ADMIN: Maximum 5000 results, returns cleaned data
     
@@ -1353,6 +1375,7 @@ async def get_top_ten(
 async def get_top_missing(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """
@@ -1386,7 +1409,7 @@ async def get_top_missing(
                 "data": item_data
             })
         
-        return {
+        result_dict = {
             "query": {
                 "endpoint": "top_missing",
                 "poster_classification": "missing",
@@ -1396,6 +1419,7 @@ async def get_top_missing(
             "resultcount": len(items),
             "items": items
         }
+        return format_response(result_dict, format, "bolo_top_missing")
     
     except Exception as e:
         logger.error(f"Top Missing search error: {str(e)}")
@@ -1415,6 +1439,7 @@ async def get_top_missing(
 async def get_top_terrorist(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI Most Wanted Terrorists using database function"""
@@ -1445,7 +1470,7 @@ async def get_top_terrorist(
                 "data": item_data
             })
         
-        return {
+        result_dict = {
             "query": {
                 "endpoint": "top_terrorist",
                 "poster_classification": "terrorist",
@@ -1455,6 +1480,7 @@ async def get_top_terrorist(
             "resultcount": len(items),
             "items": items
         }
+        return format_response(result_dict, format, "bolo_top_terrorist")
     
     except Exception as e:
         logger.error(f"Top Terrorist search error: {str(e)}")
@@ -1471,7 +1497,7 @@ async def get_top_terrorist(
     
     **Access:** BASIC role or higher
     **Result limits by role:**
-    - BASIC: Maximum 25 results, returns raw data
+    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
     - PREMIUM: Maximum 5000 results, returns cleaned data
     - ADMIN: Maximum 5000 results, returns cleaned data
     
@@ -1490,6 +1516,7 @@ async def get_top_terrorist(
 async def get_top_reward(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """
@@ -1523,7 +1550,7 @@ async def get_top_reward(
                 "data": item_data
             })
         
-        return {
+        result_dict = {
             "query": {
                 "endpoint": "top_reward",
                 "filter": "reward_max >= 1000000",
@@ -1533,6 +1560,7 @@ async def get_top_reward(
             "resultcount": len(items),
             "items": items
         }
+        return format_response(result_dict, format, "bolo_top_reward")
     
     except Exception as e:
         logger.error(f"Top Reward search error: {str(e)}")
@@ -1595,6 +1623,16 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
             "numeric": ["equals", "gt", "lt", "gte", "lte", "between"],
             "arrays": ["equals", "contains", "starts_with", "ends_with"]
         },
+        "response_formats": {
+            "description": "All search endpoints support multiple response formats via the 'format' query parameter",
+            "formats": {
+                "json": "Default JSON format with full metadata",
+                "csv": "Comma-separated values for spreadsheet import",
+                "txt": "Human-readable plain text BOLO format",
+                "xml": "Structured XML for RMS/CAD system integration"
+            },
+            "example": "/v1/search/top_ten?format=csv"
+        },
         "result_limits": [25, 50, 100, 250, 500, 5000],
-        "default_limit": 50
+        "default_limit": 25
     }

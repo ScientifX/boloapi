@@ -3,22 +3,18 @@
 # =============================================================================
 # Controls which endpoints are visible in /docs based on user role
 # Visibility levels: PUBLIC (anyone), BASIC, PREMIUM, ADMIN
-# Each role sees their level and below in the docs
+# Each role sees their level and below in the docs:
+#   - PUBLIC users see only PUBLIC endpoints
+#   - BASIC users see PUBLIC + BASIC endpoints
+#   - PREMIUM users see PUBLIC + BASIC + PREMIUM endpoints
+#   - ADMIN users see all endpoints
 # Generated from routes.xlsx
 from auth import UserRole
 from docs_config import register_visibility_override
 DOCS_VISIBILITY_CONFIG = {
     # ----- Public Pages (visible to everyone) -----
-    ("GET", "/"): UserRole.PUBLIC,
-    ("GET", "/about"): UserRole.PUBLIC,
-    ("GET", "/contact"): UserRole.PUBLIC,
-    ("GET", "/docs"): UserRole.PUBLIC,
-    ("GET", "/openapi.json"): UserRole.PUBLIC,
-    ("GET", "/plans"): UserRole.PUBLIC,
-    ("GET", "/privacy"): UserRole.PUBLIC,
-    ("GET", "/redoc"): UserRole.PUBLIC,
-    ("GET", "/terms"): UserRole.PUBLIC,
     ("POST", "/v1/auth/token"): UserRole.PUBLIC,
+    ("POST", "/v1/auth/reset_key"): UserRole.PUBLIC,
     
     # ----- Admin-only visibility -----
     # These endpoints are only visible in /docs for ADMIN users
@@ -72,7 +68,6 @@ DOCS_VISIBILITY_CONFIG = {
     
     # ----- Basic visibility (BASIC and above see these) -----
     ("POST", "/v1/search/simple"): UserRole.BASIC,
-    ("POST", "/v1/auth/reset_key"): UserRole.BASIC,
     
     # ----- Premium visibility (PREMIUM and above see these) -----
     ("POST", "/v1/search/advanced"): UserRole.BASIC,

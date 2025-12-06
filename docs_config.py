@@ -4,14 +4,14 @@ Role-Based OpenAPI Documentation Visibility
 Controls which endpoints are visible in /docs based on user role.
 Supports per-endpoint exceptions for custom visibility rules.
 
-Visibility Matrix:
-- Not logged in: PUBLIC + BASIC endpoints
-- BASIC: PUBLIC + BASIC + PREMIUM endpoints  
-- PREMIUM: PUBLIC + BASIC + PREMIUM endpoints (same as BASIC)
+Visibility Matrix (users see their role and below):
+- PUBLIC: Only PUBLIC endpoints
+- BASIC: PUBLIC + BASIC endpoints  
+- PREMIUM: PUBLIC + BASIC + PREMIUM endpoints
 - ADMIN: All endpoints (PUBLIC + BASIC + PREMIUM + ADMIN)
 
 Exception system:
-- docs_visible_to: Force endpoint visible to a lower role tier
+- docs_visible_to: Set minimum role required to see endpoint in docs
 - docs_hidden: Hide from everyone including ADMIN
 """
 
@@ -30,14 +30,10 @@ from jwt_utils import decode_access_token, JWTError
 # VISIBILITY CONFIGURATION
 # ============================================================================
 
-# Maps viewer role to the maximum endpoint role they can see in docs
-# Each role sees "one level up" except PREMIUM (same as BASIC) and ADMIN (sees all)
-DOCS_VISIBILITY_MAP = {
-    UserRole.PUBLIC: UserRole.BASIC,      # Not logged in sees up to BASIC
-    UserRole.BASIC: UserRole.PREMIUM,     # BASIC sees up to PREMIUM
-    UserRole.PREMIUM: UserRole.PREMIUM,   # PREMIUM sees up to PREMIUM (no ADMIN)
-    UserRole.ADMIN: UserRole.ADMIN,       # ADMIN sees everything
-}
+# Visibility is role-based: users see endpoints at their level and below
+# e.g., BASIC users see PUBLIC + BASIC endpoints
+#       PREMIUM users see PUBLIC + BASIC + PREMIUM endpoints
+#       ADMIN users see all endpoints
 
 # Storage for endpoint-level visibility overrides
 # Key: (method, path), Value: {"visible_to": UserRole, "hidden": bool}
@@ -242,8 +238,11 @@ def can_viewer_see_endpoint(viewer_role: UserRole, route) -> bool:
     Logic:
     1. If endpoint has include_in_schema=False, hide it (unchanged behavior)
     2. If endpoint has docs_hidden=True, hide it from everyone
-    3. If endpoint has docs_visible_to override, use that
-    4. Otherwise, use the endpoint's required_role and visibility matrix
+    3. If endpoint has docs_visible_to override, use that as minimum required role
+    4. Otherwise, use the endpoint's required_role as minimum required role
+    
+    Users see endpoints where their role >= endpoint's visibility level.
+    e.g., visible_to=BASIC means BASIC, PREMIUM, and ADMIN can see it
     """
     # Check include_in_schema (FastAPI's built-in hiding)
     if hasattr(route, 'include_in_schema') and not route.include_in_schema:
@@ -266,11 +265,10 @@ def can_viewer_see_endpoint(viewer_role: UserRole, route) -> bool:
         # No auth requirement = PUBLIC endpoint
         min_role_to_see = UserRole.PUBLIC
     
-    # Get the maximum role this viewer can see
-    max_visible_role = DOCS_VISIBILITY_MAP.get(viewer_role, UserRole.BASIC)
-    
-    # Viewer can see endpoint if its required role <= viewer's max visible role
-    return ROLE_HIERARCHY[min_role_to_see] <= ROLE_HIERARCHY[max_visible_role]
+    # Viewer can see endpoint if their role >= minimum required role
+    # e.g., BASIC user (rank 1) can see PUBLIC (0) and BASIC (1) endpoints
+    #       but not PREMIUM (2) or ADMIN (3) endpoints
+    return ROLE_HIERARCHY[viewer_role] >= ROLE_HIERARCHY[min_role_to_see]
 
 
 # ============================================================================

@@ -121,22 +121,23 @@ def validate_limit_for_role(role: UserRole, requested_limit: int) -> int:
     """
     Validate and cap the requested limit based on user role.
     Returns the actual limit to use.
-    Raises HTTPException if requested limit exceeds role permissions.
+    
+    - BASIC: Always returns 25 (silently capped, no error)
+    - PREMIUM/ADMIN: Returns requested limit up to 5000
+    - PUBLIC: Raises HTTPException (no search access)
     
     This function works for both session-based and JWT-based auth.
     """
-    max_limit = get_max_limit_for_role(role)
-    
     if role == UserRole.PUBLIC:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Search access denied. Sign up with BoloDoc for access."
         )
     
-    if requested_limit > max_limit:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Requested limit ({requested_limit}) exceeds maximum for {role.value} role ({max_limit}). Upgrade to premium for higher limits."
-        )
+    # BASIC users always get 25 results, silently capped
+    if role == UserRole.BASIC:
+        return 25
     
-    return requested_limit
+    # PREMIUM/ADMIN: cap at max limit
+    max_limit = get_max_limit_for_role(role)
+    return min(requested_limit, max_limit)

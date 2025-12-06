@@ -144,17 +144,16 @@
     
     <!-- Account Information -->
     <div class="card mt-4">
-        <h2>Account Information</h2>
+        <h2>Account Details</h2>
         <div id="accountInfo">
-            <p><strong>User ID:</strong> {{ user.user_id }}</p>
-            <p><strong>Account Created:</strong> {{ user.created_at.strftime('%B %d, %Y at %I:%M %p') if user.created_at else 'N/A' }}</p>
-            <p><strong>Last Login:</strong> {{ user.last_login_at.strftime('%B %d, %Y at %I:%M %p') if user.last_login_at else 'Never' }}</p>
             <p><strong>Account Status:</strong> 
                 <span class="badge {% if user.is_active %}badge-success{% else %}badge-danger{% endif %}">
                     {% if user.is_active %}Active{% else %}Inactive{% endif %}
                 </span>
             </p>
-            <p><strong>Subscription:</strong> {% if user.role == "basic" %}Basic{% else %}Premium{% endif %}</p>
+            <p><strong>Subscription:</strong> {% if user.role == "basic" %}Basic{% elif user.role == "premium" %}Premium{% elif user.role == "admin" %}Admin/Premium{% endif %}</p>
+            <p><strong>Account Created:</strong> {{ user.created_at.strftime('%B %d, %Y at %I:%M %p') if user.created_at else 'N/A' }}</p>
+            <p><strong>Last Login:</strong> {{ user.last_login_at.strftime('%B %d, %Y at %I:%M %p') if user.last_login_at else 'Never' }}</p>
         </div>
     </div>
     
