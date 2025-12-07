@@ -27,7 +27,9 @@ Thumbs.db
 
 # Logs
 *.log
-artifacts/*.log
+
+# Document cache
+data/bolo_cache/
 
 # Database
 *.db
