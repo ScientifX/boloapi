@@ -8,6 +8,7 @@ from psycopg2.extensions import connection as Connection
 from psycopg2.extras import RealDictCursor
 
 from fastapi import APIRouter, HTTPException, Request, Depends, Query, status
+from fastapi.responses import FileResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -22,6 +23,7 @@ from contextlib import contextmanager
 from auth import UserRole, get_data_field_for_role, validate_limit_for_role
 from jwt_auth import require_jwt_role
 from format_utils import ResponseFormat, format_response
+from link_validation_service import get_archive_info, get_archive_file_path
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -1636,3 +1638,161 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         "result_limits": [25, 50, 100, 250, 500, 5000],
         "default_limit": 25
     }
+
+# =============================================================================
+# PREMIUM ANNUAL SUBSCRIBER ENDPOINTS - DOCUMENTS ARCHIVE
+# =============================================================================
+
+@router.get(
+    "/documents_info",
+    summary="Documents Archive Information",
+    description="""
+    Get information about the available BOLO documents archive.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    Returns archive availability, file size, and generation timestamp.
+    """
+    )
+@limiter.limit(rate_max)
+async def get_documents_info(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """
+    Get information about the current documents archive.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    Returns:
+    - Archive availability
+    - File size
+    - Generation timestamp
+    """
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    # Check access: ADMIN always allowed, PREMIUM must have annual billing
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Documents archive is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    try:
+        info = get_archive_info()
+        
+        if not info:
+            return {
+                "available": False,
+                "message": "Documents archive is not currently available. "
+                           "Please check back later."
+            }
+        
+        return {
+            "available": True,
+            "size_mb": info.get("size_mb"),
+            "size_bytes": info.get("size_bytes"),
+            "generated_at": info.get("modified_at"),
+            "download_endpoint": "/v1/search/documents_download"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting archive info: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving archive information: {str(e)}"
+        )
+
+
+@router.get(
+    "/documents_download",
+    summary="Download Documents Archive",
+    description="""
+    Download the complete BOLO documents archive (ZIP file).
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    The archive contains:
+    - Per-person folders with meaningful names
+    - info.txt summary for each person
+    - All available documents and images
+    - Root manifest.txt with complete statistics
+    
+    **Note:** This is a large file (typically 100-500 MB). Download may take several minutes.
+    """,
+    response_class=FileResponse,
+    responses={
+        200: {
+            "description": "ZIP file download",
+            "content": {"application/zip": {}}
+        },
+        403: {
+            "description": "Access denied - annual subscription required"
+        },
+        404: {
+            "description": "Archive not available"
+        }
+    }
+    )
+@limiter.limit("3/hour")  # More restrictive limit for large file downloads
+async def download_documents_archive(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """
+    Download the complete BOLO documents archive.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    Returns the bolodoc_files.zip archive containing all BOLO documents
+    organized by person with info.txt summaries and a root manifest.
+    
+    This is a large file download. Rate limited to 3 downloads per hour.
+    """
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    user_id = current_user.get("user_id")
+    
+    # Check access: ADMIN always allowed, PREMIUM must have annual billing
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            logger.warning(f"User {user_id} attempted archive download without annual subscription")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Documents archive download is only available to annual subscribers. "
+                       "Your current billing cycle is: " + (billing_cycle or "none") + ". "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    try:
+        archive_path = get_archive_file_path()
+        
+        if not archive_path:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Documents archive is not currently available. "
+                       "Please check back later or contact support."
+            )
+        
+        logger.info(f"User {user_id} downloading documents archive")
+        
+        return FileResponse(
+            path=str(archive_path),
+            media_type="application/zip",
+            filename="bolodoc_files.zip",
+            headers={
+                "Content-Disposition": "attachment; filename=bolodoc_files.zip"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error serving archive download: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error downloading archive: {str(e)}"
+        )

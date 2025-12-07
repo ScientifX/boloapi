@@ -25,7 +25,16 @@ from fastapi import APIRouter
 from auth import UserRole
 from jwt_auth import require_jwt_role
 from notification_service import detect_all_changes, process_pending_notifications
-from link_validation_service import validate_links_from_file, get_link_check_summary, get_failed_links
+from link_validation_service import (
+    validate_links_from_file, 
+    get_link_check_summary, 
+    get_failed_links,
+    get_cache_stats,
+    clear_cache,
+    download_files_for_archive,
+    create_documents_archive,
+    get_archive_info
+)
 
 # Response Models
 class ImportSummary(BaseModel):
@@ -1034,6 +1043,10 @@ async def data_load(
         default=True, 
         description="Run link validation after data load"
     ),
+    generate_archive: bool = Query(
+        default=True,
+        description="Download files and generate ZIP archive after validation"
+    ),
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
@@ -1043,6 +1056,7 @@ async def data_load(
     
     Parameters:
     - run_link_validation: If True, automatically validate all URLs after load
+    - generate_archive: If True, download files and create ZIP archive (requires link validation)
     
     Returns a summary of the import operation including counts and any errors.
     """
@@ -1050,6 +1064,7 @@ async def data_load(
     user_id = current_user["user_id"] 
     
     link_validation_results = None
+    archive_results = None
     
     try:
         pull_date = date.today()
@@ -1064,11 +1079,26 @@ async def data_load(
                 logger.info("Starting link validation after data load")
                 link_validation_results = await validate_links_from_file(file_path)
                 logger.info(f"Link validation complete: {link_validation_results.get('total_urls', 0)} URLs checked")
+                
+                # Generate archive if requested (only after successful validation)
+                if generate_archive:
+                    try:
+                        logger.info("Starting file download and archive generation")
+                        with get_db_connection() as conn:
+                            download_results = await download_files_for_archive(conn)
+                        logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
+                        
+                        archive_results = create_documents_archive()
+                        logger.info(f"Archive created: {archive_results.get('archive_path')}")
+                    except Exception as e:
+                        logger.error(f"Archive generation error (non-fatal): {str(e)}")
+                        archive_results = {"error": str(e)}
+                        
             except Exception as e:
                 logger.error(f"Link validation error (non-fatal): {str(e)}")
                 link_validation_results = {"error": str(e)}
         
-        # Return summary (ImportSummary model - link validation logged separately)
+        # Return summary (ImportSummary model - link validation and archive logged separately)
         return summary
         
     except FileNotFoundError as e:
@@ -1086,7 +1116,7 @@ async def data_load(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Import has failed: {str(e)}"
             )
-    
+     
 @router.get(
     "/extract",
     summary="Extract FBI Data from API",
@@ -1463,4 +1493,256 @@ async def get_link_failures(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get link failures: {str(e)}"
+            )
+    
+# =============================================================================
+# CACHE MANAGEMENT ENDPOINTS
+# =============================================================================
+
+@router.get(
+    "/cache_stats",
+    summary="View Cache Statistics",
+    description="View file cache statistics including file count and total size. **ADMIN ONLY**"
+    )
+async def get_cache_statistics(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get statistics about the download cache directory.
+    
+    **Access:** ADMIN role only
+    
+    Returns:
+    - File count in cache
+    - Total size (bytes and MB)
+    - Files by extension
+    """
+    try:
+        stats = get_cache_stats()
+        return stats
+        
+    except Exception as e:
+        logger.error(f"Error getting cache stats: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get cache stats: {str(e)}"
+            )
+
+
+@router.delete(
+    "/cache",
+    summary="Clear Download Cache",
+    description="Delete all cached files to force re-download. **ADMIN ONLY**"
+    )
+async def clear_download_cache(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Delete all cached download files.
+    
+    **Access:** ADMIN role only
+    
+    Use this to force re-download of all files on next archive generation.
+    
+    Returns count of deleted files and bytes freed.
+    """
+    try:
+        result = clear_cache()
+        return {
+            "status": "success",
+            "message": f"Cleared {result['files_deleted']} cached files",
+            **result
+        }
+        
+    except Exception as e:
+        logger.error(f"Error clearing cache: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear cache: {str(e)}"
+            )
+
+
+# =============================================================================
+# ARCHIVE MANAGEMENT ENDPOINTS
+# =============================================================================
+
+@router.post(
+    "/download_files",
+    summary="Download Files to Cache",
+    description="Download all validated files to cache directory. **ADMIN ONLY**"
+    )
+async def download_files_endpoint(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Download all files from validated URLs to local cache.
+    
+    **Access:** ADMIN role only
+    
+    This step must complete before archive generation.
+    Uses existing cached files when available.
+    
+    Returns statistics on files downloaded vs cached.
+    """
+    try:
+        with get_db_connection() as conn:
+            result = await download_files_for_archive(conn)
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error downloading files: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"File download failed: {str(e)}"
+            )
+
+
+@router.post(
+    "/create_archive",
+    summary="Create Documents Archive",
+    description="Generate ZIP archive from cached files. **ADMIN ONLY**"
+    )
+async def create_archive_endpoint(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Create the BOLO documents ZIP archive.
+    
+    **Access:** ADMIN role only
+    
+    Prerequisites:
+    - Link validation must have been run
+    - Files must have been downloaded to cache
+    
+    Creates bolodoc_files.zip with:
+    - Per-person folders (LASTNAME_FIRSTNAME_uid/)
+    - info.txt summary per person
+    - All downloaded documents and images
+    - Root manifest.txt with statistics
+    
+    Returns archive creation statistics.
+    """
+    try:
+        result = create_documents_archive()
+        
+        if result['status'] != 'success':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result.get('message', 'Archive creation failed')
+            )
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating archive: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Archive creation failed: {str(e)}"
+            )
+
+
+@router.get(
+    "/archive_status",
+    summary="Archive Status",
+    description="Get information about the current archive file. **ADMIN ONLY**"
+    )
+async def get_archive_status(
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get status and information about the current archive file.
+    
+    **Access:** ADMIN role only
+    
+    Returns:
+    - Archive file path
+    - File size
+    - Creation/modification timestamps
+    - Whether archive exists
+    """
+    try:
+        info = get_archive_info()
+        
+        if not info:
+            return {
+                "exists": False,
+                "message": "No archive file exists. Run create_archive first."
+            }
+        
+        return info
+        
+    except Exception as e:
+        logger.error(f"Error getting archive status: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get archive status: {str(e)}"
+            )
+
+
+@router.post(
+    "/generate_full_archive",
+    summary="Full Archive Generation",
+    description="Run complete archive generation process: validate links, download files, create archive. **ADMIN ONLY**"
+    )
+async def generate_full_archive(
+    skip_validation: bool = Query(
+        default=False,
+        description="Skip link validation (use existing validation data)"
+    ),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Run complete archive generation pipeline.
+    
+    **Access:** ADMIN role only
+    
+    Steps:
+    1. Validate all URLs (unless skip_validation=True)
+    2. Download all validated files to cache
+    3. Create ZIP archive
+    
+    This is equivalent to running:
+    - /validate_links
+    - /download_files
+    - /create_archive
+    
+    Returns combined results from all steps.
+    """
+    results = {
+        "validation": None,
+        "download": None,
+        "archive": None
+    }
+    
+    try:
+        # Step 1: Validate links (unless skipped)
+        if not skip_validation:
+            logger.info("Step 1/3: Validating links")
+            file_path = "data/bolo-api-data.json"
+            results["validation"] = await validate_links_from_file(file_path)
+        else:
+            results["validation"] = {"skipped": True, "message": "Using existing validation data"}
+        
+        # Step 2: Download files
+        logger.info("Step 2/3: Downloading files")
+        with get_db_connection() as conn:
+            results["download"] = await download_files_for_archive(conn)
+        
+        # Step 3: Create archive
+        logger.info("Step 3/3: Creating archive")
+        results["archive"] = create_documents_archive()
+        
+        return {
+            "status": "success",
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"Full archive generation error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Archive generation failed: {str(e)}"
             )
