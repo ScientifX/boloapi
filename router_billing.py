@@ -15,7 +15,7 @@ from contextlib import contextmanager
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from fastapi import APIRouter, HTTPException, Request, status, Depends, Header
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi import BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -32,7 +32,7 @@ from config import (
     BILLING_TEST_MODE
 )
 from auth import UserRole
-from jwt_auth import require_jwt_role
+from jwt_auth import require_jwt_role, require_browser_auth
 from email_utils import (
     send_subscription_welcome_email,
     send_payment_receipt_email,
@@ -1426,11 +1426,18 @@ async def get_billing_info(
     include_in_schema=False  # Hide from API docs since it's a web page
 )
 @limiter.limit(rate_max)
-async def billing_dashboard_page(request: Request):
+async def billing_dashboard_page(
+    request: Request,
+    current_user: Optional[dict] = Depends(require_browser_auth(UserRole.BASIC))
+):
     """
     Billing Dashboard - View subscription and payment history.
-    Authentication handled by JavaScript on frontend (checks for JWT token).
+    Requires authentication - redirects to login if not authenticated.
     """
+    # If not authenticated, redirect to login page
+    if not current_user:
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+    
     return templates.TemplateResponse(
         "billing/billing.html",
         {
