@@ -451,30 +451,9 @@ $(document).ready(function() {
     
     // Show error from server
     function showServerErrorDialog(html) {
+        // Extract the response and automatically show details without modal
         const $response = $(html);
-        const errorMessage = $response.find('.alert-error strong').text() + ' ' + 
-                           $response.find('.alert-error').text().replace($response.find('.alert-error strong').text(), '').trim();
-        
-        let message = '<div class="error-message">' + errorMessage + '</div>';
-        
-        $('#dialogMessage').html(message);
-        $('#messageDialog').dialog({
-            title: 'Registration Error',
-            modal: true,
-            width: 500,
-            buttons: {
-                "View Details": function() {
-                    $(this).dialog("close");
-                    // Show the full error page
-                    $('.form-container').html($response.find('.content').html());
-                },
-                "Try Again": function() {
-                    $(this).dialog("close");
-                    formSubmitted = false;
-                    $('#submitBtn').prop('disabled', false).html('Sign Up!');
-                }
-            }
-        });
+        $('.form-container').html($response.find('.content').html());
     }
     
     // Handle form submission
@@ -528,8 +507,6 @@ $(document).ready(function() {
                         showSuccessDialog(response);
                     } else if (response.includes('Registration Error') || response.includes('register-error')) {
                         showServerErrorDialog(response);
-                        formSubmitted = false;
-                        $submitBtn.prop('disabled', false).html('Sign Up!');
                     } else {
                         // Fallback: replace page content
                         $('.form-container').html($(response).find('.content').html());

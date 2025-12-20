@@ -1170,5 +1170,3 @@ async def get_token(request: Request, token_req: TokenRequest):
     except Exception as e:
         logger.error(f"Token generation error: {str(e)}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate token")
-
-
