@@ -24,7 +24,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING, DB_CONFIG
+from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -521,6 +521,46 @@ async def root(request: Request):
 # ============================================================================
 # STATIC CONTENT PAGES
 # ============================================================================
+
+@app.get("/quickstart", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
+@limiter.limit("30/minute")
+async def quickstart_page(request: Request):
+    """QuickStart guide for authenticated users"""
+    current_role = get_current_role(request)
+    
+    # Get user's API key if authenticated
+    user_api_key = None
+    if request.state.user_authenticated and request.state.user_id:
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(
+                        "SELECT api_key_hash FROM tbl_users WHERE user_id = %s",
+                        (request.state.user_id,)
+                    )
+                    user = cur.fetchone()
+                    if user:
+                        # Note: We can't decrypt the hash, so we'll show a placeholder
+                        # The actual API key was sent via email during registration
+                        # Users can reset it from profile page if needed
+                        user_api_key = "Check your email or reset from Profile page"
+        except Exception as e:
+            logger.error(f"Error fetching API key: {str(e)}")
+    
+    return templates.TemplateResponse(
+        "static/quickstart.html",
+        {
+            "request": request,
+            "current_role": current_role.value,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
+            "user_role": current_role.value,
+            "user_api_key": user_api_key,
+            "base_url": "https://127.0.0.1:8000", 
+            "token_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES,
+        }
+    )
 
 @app.get("/about", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
 @limiter.limit("30/minute")  # More permissive

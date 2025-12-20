@@ -1,0 +1,568 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}QuickStart Guide - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>QuickStart Guide</h1>
+    
+    <p class="text-muted">Get started with the BoloDoc API in minutes. This guide walks you through authentication and making your first API calls.</p>
+    
+    <!-- API Key Section -->
+    <div class="card mt-4">
+        <div class="card-header">Step 1: Your API Key</div>
+        <div class="card-body">
+            <p>Your API key is used to authenticate all API requests. Keep it secure and never share it publicly.</p>
+            
+            {% if user_api_key %}
+            <div class="api-key-section">
+                <label style="font-weight: 600; display: block; margin-bottom: 10px;">Your API Key:</label>
+                <div class="api-key-display" id="apiKeyDisplay">{{ user_api_key }}</div>
+                <button onclick="copyApiKey()" class="btn btn-secondary" style="width: 200px; margin: 10px auto; display: block;">
+                    Copy to Clipboard
+                </button>
+                <div id="copyMessage" style="display: none; text-align: center; color: var(--success-color); margin-top: 10px; font-weight: 600;"></div>
+            </div>
+            
+            <div class="alert alert-warning mt-3">
+                <strong>Security Warning:</strong>
+                Never commit your API key to version control or share it in public forums. 
+                If compromised, reset it immediately from your <a href="/v1/auth/profile">profile page</a>.
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <strong>Note:</strong> Your API key was sent to your email during registration. 
+                Check your inbox or visit your <a href="/v1/auth/profile">profile page</a> to reset it.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Authentication Section -->
+    <div class="card mt-4">
+        <div class="card-header">Step 2: Get an Access Token</div>
+        <div class="card-body">
+            <p>Exchange your API key for a JWT access token. Tokens expire after {{ token_expiry_minutes }} minutes.</p>
+            
+            <h3>Python Example:</h3>
+            <pre><code>import requests
+
+# Your API credentials
+API_KEY = "{{ user_api_key or 'your-api-key-here' }}"
+BASE_URL = "{{ base_url }}"
+
+# Get access token
+response = requests.post(
+    f"{BASE_URL}/v1/auth/token",
+    json={"api_key": API_KEY}
+)
+
+if response.status_code == 200:
+    token_data = response.json()
+    access_token = token_data["access_token"]
+    print(f"Access token: {access_token}")
+    print(f"Token expires in: {token_data['expires_in']} seconds")
+    print(f"Your role: {token_data['role']}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+            
+            <h3>Example Response:</h3>
+            <pre><code>{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "bearer",
+    "expires_in": 3600,
+    "role": "{{ user_role }}",
+    "redirect_url": "/v1/auth/profile"
+}</code></pre>
+        </div>
+    </div>
+    
+    <!-- Simple Search Section -->
+    <div class="card mt-4">
+        <div class="card-header">Step 3: Make Your First Search</div>
+        <div class="card-body">
+            <p>Use the <code>/v1/search/simple</code> endpoint for wildcard-based searches. Available to all authenticated users.</p>
+            
+            <h3>Python Example - Search by Title:</h3>
+            <pre><code>import requests
+
+# Use the access token from Step 2
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Content-Type": "application/json"
+}
+
+# Search for records with "Murder" in the title
+search_request = {
+    "filters": [
+        {"field": "title", "value": "Murder*"}
+    ],
+    "logic": "AND",
+    "limit": 10
+}
+
+response = requests.post(
+    f"{BASE_URL}/v1/search/simple",
+    headers=headers,
+    json=search_request
+)
+
+if response.status_code == 200:
+    results = response.json()
+    print(f"Found {results['count']} results")
+    
+    # Display first result
+    if results['results']:
+        first = results['results'][0]
+        data = first['data']
+        print(f"\nFirst result:")
+        print(f"Title: {data.get('title', 'N/A')}")
+        print(f"UID: {data.get('uid', 'N/A')}")
+        print(f"Subjects: {', '.join(data.get('subjects', []))}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+            
+            <h3>Example Request:</h3>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "Murder*"}
+    ],
+    "logic": "AND",
+    "limit": 10
+}</code></pre>
+            
+            <h3>Example Response:</h3>
+            <pre><code>{
+    "query": {
+        "filters": [{"field": "title", "value": "Murder*"}],
+        "logic": "AND",
+        "limit": 10
+    },
+    "count": 3,
+    "results": [
+        {
+            "data_type": "{{ 'clean' if user_role == 'premium' or user_role == 'admin' else 'raw' }}",
+            "data": {
+                "uid": "abc123def456",
+                "title": "Murder; Kidnapping",
+                "subjects": ["John Doe"],
+                "description": "Wanted for murder and kidnapping...",
+                "reward_text": "Up to $100,000",
+                "reward_min": 100000,
+                "reward_max": 100000,
+                "publication": "2023-05-15",
+                "modified": "2024-11-20",
+                "url": "https://www.fbi.gov/wanted/...",
+                "status": "na",
+                "person_classification": "main"
+            }
+        }
+    ]
+}</code></pre>
+
+            <h3>Available Wildcard Patterns:</h3>
+            <ul>
+                <li><code>*text*</code> - Contains "text" anywhere</li>
+                <li><code>text*</code> - Starts with "text"</li>
+                <li><code>*text</code> - Ends with "text"</li>
+                <li><code>text</code> - Exact match</li>
+            </ul>
+
+            <h3>Common Search Fields:</h3>
+            <ul>
+                <li><code>title</code> - Crime titles (e.g., "Murder", "Kidnapping")</li>
+                <li><code>subjects</code> - Person names</li>
+                <li><code>description</code> - Full text descriptions</li>
+                <li><code>caution</code> - Warning information</li>
+                <li><code>warning_message</code> - Additional warnings</li>
+                <li><code>details</code> - Detailed case information</li>
+                <li><code>remarks</code> - Additional remarks</li>
+            </ul>
+        </div>
+    </div>
+    
+    {% if user_role == 'premium' or user_role == 'admin' %}
+    <!-- Advanced Search Section (Premium Only) -->
+    <div class="card mt-4" style="border: 2px solid var(--warning-color);">
+        <div class="card-header" style="background-color: #fff3cd; color: #856404; display: flex; justify-content: space-between; align-items: center;">
+            <span>Step 4: Advanced Search</span>
+            <span class="badge badge-warning">PREMIUM</span>
+        </div>
+        <div class="card-body">
+            <p>Use the <code>/v1/search/advanced</code> endpoint for complex queries with multiple operators and grouped conditions.</p>
+            
+            <h3>Python Example - Complex Search:</h3>
+            <pre><code>import requests
+
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Content-Type": "application/json"
+}
+
+# Search for high-value fugitives
+# Males, age 25-45, reward >= $100,000, title contains "Murder"
+search_request = {
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "sex", "operator": "equals", "value": "Male"},
+                {"field": "age_min", "operator": "between", "value": [25, 45]},
+                {"field": "reward_max", "operator": "gte", "value": 100000},
+                {"field": "title", "operator": "contains", "value": "Murder"}
+            ]
+        }
+    ],
+    "group_logic": "AND",
+    "limit": 25
+}
+
+response = requests.post(
+    f"{BASE_URL}/v1/search/advanced",
+    headers=headers,
+    json=search_request
+)
+
+if response.status_code == 200:
+    results = response.json()
+    print(f"Found {results['count']} matching fugitives")
+    
+    for item in results['results']:
+        data = item['data']
+        print(f"\n{data.get('subjects', ['Unknown'])[0]}")
+        print(f"  Crime: {data.get('title', 'N/A')}")
+        print(f"  Reward: {data.get('reward_text', 'N/A')}")
+        print(f"  Age Range: {data.get('age_range', 'N/A')}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+            
+            <h3>Available Operators:</h3>
+            <ul>
+                <li><code>equals</code> - Exact match (case-insensitive for strings)</li>
+                <li><code>contains</code> - Field contains value</li>
+                <li><code>starts_with</code> - Field starts with value</li>
+                <li><code>ends_with</code> - Field ends with value</li>
+                <li><code>gt</code> - Greater than (numeric fields)</li>
+                <li><code>lt</code> - Less than (numeric fields)</li>
+                <li><code>gte</code> - Greater than or equal (numeric fields)</li>
+                <li><code>lte</code> - Less than or equal (numeric fields)</li>
+                <li><code>between</code> - Between two values (requires array: [min, max])</li>
+            </ul>
+
+            <h3>Numeric Fields for Comparisons:</h3>
+            <ul>
+                <li><code>age_min</code> - Minimum age</li>
+                <li><code>age_max</code> - Maximum age</li>
+                <li><code>reward_min</code> - Minimum reward</li>
+                <li><code>reward_max</code> - Maximum reward</li>
+                <li><code>height_min</code> - Minimum height (inches)</li>
+                <li><code>height_max</code> - Maximum height (inches)</li>
+                <li><code>weight_min</code> - Minimum weight (pounds)</li>
+                <li><code>weight_max</code> - Maximum weight (pounds)</li>
+            </ul>
+
+            <h3>Example Response:</h3>
+            <pre><code>{
+    "query": {
+        "groups": [...],
+        "group_logic": "AND",
+        "limit": 25
+    },
+    "count": 7,
+    "results": [
+        {
+            "data_type": "clean",
+            "data": {
+                "uid": "xyz789abc123",
+                "title": "Murder; Armed Robbery",
+                "subjects": ["Jane Smith"],
+                "sex": "Male",
+                "age_min": 32,
+                "age_max": 36,
+                "age_range": "32 to 36",
+                "reward_text": "Up to $250,000",
+                "reward_min": 250000,
+                "reward_max": 250000,
+                "description": "Wanted for murder and armed robbery...",
+                "publication": "2022-08-10",
+                "modified": "2024-12-01",
+                "status": "na"
+            }
+        }
+    ]
+}</code></pre>
+
+            <h3>Complex Query Example - Multiple Groups:</h3>
+            <pre><code># Find records matching EITHER:
+# Group 1: High reward murders (>= $100k AND contains "Murder")
+# Group 2: Recent kidnappings (contains "Kidnapping" AND published after 2023)
+
+search_request = {
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "reward_max", "operator": "gte", "value": 100000},
+                {"field": "title", "operator": "contains", "value": "Murder"}
+            ]
+        },
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "title", "operator": "contains", "value": "Kidnapping"},
+                {"field": "publication", "operator": "gte", "value": "2023-01-01"}
+            ]
+        }
+    ],
+    "group_logic": "OR",  # Combine groups with OR
+    "limit": 50
+}</code></pre>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Response Formats Section -->
+    <div class="card mt-4">
+        <div class="card-header">Response Formats</div>
+        <div class="card-body">
+            <p>All search endpoints support multiple response formats via the <code>format</code> query parameter:</p>
+            
+            <h3>Available Formats:</h3>
+            <ul>
+                <li><code>json</code> (default) - Structured JSON response</li>
+                <li><code>csv</code> - Comma-separated values</li>
+                <li><code>txt</code> - Plain text, pipe-delimited</li>
+                <li><code>xml</code> - XML format</li>
+            </ul>
+
+            <h3>Python Example - CSV Format:</h3>
+            <pre><code>response = requests.post(
+    f"{BASE_URL}/v1/search/simple?format=csv",
+    headers=headers,
+    json=search_request
+)
+
+if response.status_code == 200:
+    # Save CSV to file
+    with open('results.csv', 'w') as f:
+        f.write(response.text)
+    print("Results saved to results.csv")</code></pre>
+        </div>
+    </div>
+    
+    <!-- Rate Limits Section -->
+    <div class="card mt-4">
+        <div class="card-header">Rate Limits & Best Practices</div>
+        <div class="card-body">
+            <h3>Rate Limits:</h3>
+            <ul>
+                <li>API endpoints: <strong>10 requests per minute</strong></li>
+                <li>Tokens expire after <strong>{{ token_expiry_minutes }} minutes</strong></li>
+                <li>Request a new token before expiration</li>
+            </ul>
+
+            <h3>Result Limits by Role:</h3>
+            <ul>
+                <li><strong>Basic:</strong> Fixed at 25 results per search</li>
+                <li><strong>Premium:</strong> Up to 5,000 results per search</li>
+                <li><strong>Admin:</strong> Up to 5,000 results per search</li>
+            </ul>
+
+            <h3>Best Practices:</h3>
+            <ul>
+                <li>Cache tokens and reuse them until expiration</li>
+                <li>Handle rate limit errors (429 status code) gracefully</li>
+                <li>Use specific filters to narrow results</li>
+                <li>Implement exponential backoff for retries</li>
+                <li>Store your API key securely (environment variables, key vault)</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Next Steps Section -->
+    <div class="card mt-4">
+        <div class="card-header">Next Steps</div>
+        <div class="card-body">
+            <h3>Explore the API:</h3>
+            <ul>
+                <li><a href="/docs" target="_blank">View full API documentation</a> - Interactive Swagger UI with all endpoints</li>
+                <li><a href="/v1/auth/profile">Manage your profile</a> - Update settings and reset your API key</li>
+                <li><a href="/plans">Upgrade to Premium</a> - Unlock advanced search and higher limits</li>
+                <li><a href="/contact">Contact support</a> - Get help from our team</li>
+            </ul>
+
+            {% if user_role == 'basic' %}
+            <div class="alert alert-info mt-3">
+                <strong>Want more?</strong> Upgrade to Premium for advanced search capabilities, 
+                higher result limits, cleaned data, and email notifications when the FBI database updates.
+                <br><br>
+                <a href="/plans" class="btn btn-warning" style="width: 200px;">View Premium Plans</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyApiKey() {
+    const apiKeyText = document.getElementById('apiKeyDisplay').textContent;
+    const messageDiv = document.getElementById('copyMessage');
+    
+    // Use modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(apiKeyText)
+            .then(() => {
+                messageDiv.textContent = 'API key copied to clipboard!';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            })
+            .catch(err => {
+                console.error('Failed to copy:', err);
+                fallbackCopy(apiKeyText, messageDiv);
+            });
+    } else {
+        fallbackCopy(apiKeyText, messageDiv);
+    }
+}
+
+function fallbackCopy(text, messageDiv) {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            messageDiv.textContent = 'API key copied to clipboard!';
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        } else {
+            messageDiv.textContent = 'Copy failed - please select and copy manually';
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = 'var(--danger-color)';
+        }
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        messageDiv.textContent = 'Copy failed - please select and copy manually';
+        messageDiv.style.display = 'block';
+        messageDiv.style.color = 'var(--danger-color)';
+    }
+    
+    document.body.removeChild(textArea);
+}
+</script>
+
+<style>
+.api-key-section {
+    margin-top: 20px;
+}
+
+.api-key-display {
+    background-color: var(--light-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    padding: 1.5rem;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    word-break: break-all;
+    margin: 1rem 0;
+    user-select: all;
+    cursor: pointer;
+}
+
+.api-key-display:hover {
+    background-color: #e9ecef;
+}
+
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #333;
+}
+
+code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--primary-color);
+}
+
+.card-header {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.card h3 {
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.card h3:first-of-type {
+    margin-top: 1rem;
+}
+
+.card ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card ul li {
+    margin-bottom: 0.5rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background-color: var(--warning-color);
+    color: #212529;
+}
+
+@media (max-width: 768px) {
+    .api-key-display {
+        font-size: 0.8rem;
+        padding: 1rem;
+    }
+    
+    pre code {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
