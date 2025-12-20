@@ -10,31 +10,22 @@
     
     <!-- API Key Section -->
     <div class="card mt-4">
-        <div class="card-header">Step 1: Your API Key</div>
+        <div class="card-header">Step 1: Get Your API Key</div>
         <div class="card-body">
-            <p>Your API key is used to authenticate all API requests. Keep it secure and never share it publicly.</p>
+            <p>Your API key is required to authenticate all API requests. You received it via email when you registered.</p>
             
-            {% if user_api_key %}
-            <div class="api-key-section">
-                <label style="font-weight: 600; display: block; margin-bottom: 10px;">Your API Key:</label>
-                <div class="api-key-display" id="apiKeyDisplay">{{ user_api_key }}</div>
-                <button onclick="copyApiKey()" class="btn btn-secondary" style="width: 200px; margin: 10px auto; display: block;">
-                    Copy to Clipboard
-                </button>
-                <div id="copyMessage" style="display: none; text-align: center; color: var(--success-color); margin-top: 10px; font-weight: 600;"></div>
-            </div>
+            <h3>How to Access Your API Key:</h3>
+            <ul>
+                <li><strong>Check your registration email</strong> - Your API key was sent when you signed up</li>
+                <li><strong>View or reset it</strong> - Go to your <a href="/v1/auth/profile">Profile page</a> and use the "Reset API Key" button</li>
+            </ul>
             
             <div class="alert alert-warning mt-3">
                 <strong>Security Warning:</strong>
-                Never commit your API key to version control or share it in public forums. 
+                Never commit your API key to version control or share it publicly. 
+                Store it securely in environment variables or a key vault.
                 If compromised, reset it immediately from your <a href="/v1/auth/profile">profile page</a>.
             </div>
-            {% else %}
-            <div class="alert alert-info">
-                <strong>Note:</strong> Your API key was sent to your email during registration. 
-                Check your inbox or visit your <a href="/v1/auth/profile">profile page</a> to reset it.
-            </div>
-            {% endif %}
         </div>
     </div>
     
@@ -44,29 +35,280 @@
         <div class="card-body">
             <p>Exchange your API key for a JWT access token. Tokens expire after {{ token_expiry_minutes }} minutes.</p>
             
-            <h3>Python Example:</h3>
-            <pre><code>import requests
+            <h3>Request:</h3>
+            <pre><code>POST {{ base_url }}/v1/auth/token
+Content-Type: application/json
 
-# Your API credentials
-API_KEY = "{{ user_api_key or 'your-api-key-here' }}"
+{
+    "api_key": "your-api-key-here"
+}</code></pre>
+            
+            <h3>Code Examples:</h3>
+            <div class="code-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab(event, 'auth-js')">JavaScript</button>
+                    <button class="tab-button" onclick="showTab(event, 'auth-python')">Python</button>
+                    <button class="tab-button" onclick="showTab(event, 'auth-java')">Java</button>
+                    <button class="tab-button" onclick="showTab(event, 'auth-csharp')">C#</button>
+                    <button class="tab-button" onclick="showTab(event, 'auth-go')">Go</button>
+                </div>
+                
+                <div id="auth-js" class="tab-content active">
+                    <pre><code>// Using fetch API
+const API_KEY = process.env.BOLO_API_KEY; // Store securely
+const BASE_URL = "{{ base_url }}";
+
+async function getAccessToken() {
+    const response = await fetch(`${BASE_URL}/v1/auth/token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            api_key: API_KEY
+        })
+    });
+    
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Access token:', data.access_token);
+        console.log('Expires in:', data.expires_in, 'seconds');
+        console.log('Your role:', data.role);
+        return data.access_token;
+    } else {
+        const error = await response.text();
+        throw new Error(`Failed to get token: ${response.status} - ${error}`);
+    }
+}
+
+// Usage
+getAccessToken()
+    .then(token => console.log('Ready to make API calls!'))
+    .catch(error => console.error(error));</code></pre>
+                </div>
+                
+                <div id="auth-python" class="tab-content">
+                    <pre><code>import os
+import requests
+
+# Store API key securely in environment variable
+API_KEY = os.getenv("BOLO_API_KEY")
 BASE_URL = "{{ base_url }}"
 
-# Get access token
-response = requests.post(
-    f"{BASE_URL}/v1/auth/token",
-    json={"api_key": API_KEY}
+def get_access_token():
+    response = requests.post(
+        f"{BASE_URL}/v1/auth/token",
+        json={"api_key": API_KEY}
+    )
+    
+    if response.status_code == 200:
+        token_data = response.json()
+        print(f"Access token: {token_data['access_token']}")
+        print(f"Expires in: {token_data['expires_in']} seconds")
+        print(f"Your role: {token_data['role']}")
+        return token_data['access_token']
+    else:
+        raise Exception(f"Failed to get token: {response.status_code} - {response.text}")
+
+# Usage
+try:
+    access_token = get_access_token()
+    print("Ready to make API calls!")
+except Exception as e:
+    print(f"Error: {e}")</code></pre>
+                </div>
+                
+                <div id="auth-java" class="tab-content">
+                    <pre><code>import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+public class BoloAuth {
+    private static final String API_KEY = System.getenv("BOLO_API_KEY");
+    private static final String BASE_URL = "{{ base_url }}";
+    private static final HttpClient client = HttpClient.newHttpClient();
+    private static final Gson gson = new Gson();
+    
+    public static String getAccessToken() throws Exception {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("api_key", API_KEY);
+        
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(BASE_URL + "/v1/auth/token"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
+            .build();
+        
+        HttpResponse<String> response = client.send(request, 
+            HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() == 200) {
+            JsonObject data = gson.fromJson(response.body(), JsonObject.class);
+            String accessToken = data.get("access_token").getAsString();
+            int expiresIn = data.get("expires_in").getAsInt();
+            String role = data.get("role").getAsString();
+            
+            System.out.println("Access token: " + accessToken);
+            System.out.println("Expires in: " + expiresIn + " seconds");
+            System.out.println("Your role: " + role);
+            
+            return accessToken;
+        } else {
+            throw new Exception("Failed to get token: " + 
+                response.statusCode() + " - " + response.body());
+        }
+    }
+    
+    public static void main(String[] args) {
+        try {
+            String token = getAccessToken();
+            System.out.println("Ready to make API calls!");
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="auth-csharp" class="tab-content">
+                    <pre><code>using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class BoloAuth
+{
+    private static readonly string ApiKey = Environment.GetEnvironmentVariable("BOLO_API_KEY");
+    private static readonly string BaseUrl = "{{ base_url }}";
+    private static readonly HttpClient client = new HttpClient();
+    
+    public static async Task<string> GetAccessToken()
+    {
+        var requestBody = new { api_key = ApiKey };
+        var json = JsonSerializer.Serialize(requestBody);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        var response = await client.PostAsync($"{BaseUrl}/v1/auth/token", content);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var data = JsonSerializer.Deserialize<JsonElement>(responseBody);
+            
+            var accessToken = data.GetProperty("access_token").GetString();
+            var expiresIn = data.GetProperty("expires_in").GetInt32();
+            var role = data.GetProperty("role").GetString();
+            
+            Console.WriteLine($"Access token: {accessToken}");
+            Console.WriteLine($"Expires in: {expiresIn} seconds");
+            Console.WriteLine($"Your role: {role}");
+            
+            return accessToken;
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to get token: {response.StatusCode} - {error}");
+        }
+    }
+    
+    public static async Task Main()
+    {
+        try
+        {
+            var token = await GetAccessToken();
+            Console.WriteLine("Ready to make API calls!");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="auth-go" class="tab-content">
+                    <pre><code>package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
+    "net/http"
+    "os"
 )
 
-if response.status_code == 200:
-    token_data = response.json()
-    access_token = token_data["access_token"]
-    print(f"Access token: {access_token}")
-    print(f"Token expires in: {token_data['expires_in']} seconds")
-    print(f"Your role: {token_data['role']}")
-else:
-    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+const baseURL = "{{ base_url }}"
+
+type TokenRequest struct {
+    APIKey string `json:"api_key"`
+}
+
+type TokenResponse struct {
+    AccessToken string `json:"access_token"`
+    TokenType   string `json:"token_type"`
+    ExpiresIn   int    `json:"expires_in"`
+    Role        string `json:"role"`
+}
+
+func getAccessToken() (string, error) {
+    apiKey := os.Getenv("BOLO_API_KEY")
+    
+    requestBody := TokenRequest{APIKey: apiKey}
+    jsonData, err := json.Marshal(requestBody)
+    if err != nil {
+        return "", err
+    }
+    
+    resp, err := http.Post(
+        baseURL+"/v1/auth/token",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
+    
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return "", err
+    }
+    
+    if resp.StatusCode == 200 {
+        var tokenResp TokenResponse
+        err = json.Unmarshal(body, &tokenResp)
+        if err != nil {
+            return "", err
+        }
+        
+        fmt.Printf("Access token: %s\n", tokenResp.AccessToken)
+        fmt.Printf("Expires in: %d seconds\n", tokenResp.ExpiresIn)
+        fmt.Printf("Your role: %s\n", tokenResp.Role)
+        
+        return tokenResp.AccessToken, nil
+    }
+    
+    return "", fmt.Errorf("failed to get token: %d - %s", resp.StatusCode, string(body))
+}
+
+func main() {
+    token, err := getAccessToken()
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
+    fmt.Println("Ready to make API calls!")
+}</code></pre>
+                </div>
+            </div>
             
-            <h3>Example Response:</h3>
+            <h3>Response:</h3>
             <pre><code>{
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "token_type": "bearer",
@@ -83,55 +325,339 @@ else:
         <div class="card-body">
             <p>Use the <code>/v1/search/simple</code> endpoint for wildcard-based searches. Available to all authenticated users.</p>
             
-            <h3>Python Example - Search by Title:</h3>
-            <pre><code>import requests
+            <h3>Request:</h3>
+            <pre><code>POST {{ base_url }}/v1/search/simple
+Authorization: Bearer {your-access-token}
+Content-Type: application/json
 
-# Use the access token from Step 2
-headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json"
-}
-
-# Search for records with "Murder" in the title
-search_request = {
-    "filters": [
-        {"field": "title", "value": "Murder*"}
-    ],
-    "logic": "AND",
-    "limit": 10
-}
-
-response = requests.post(
-    f"{BASE_URL}/v1/search/simple",
-    headers=headers,
-    json=search_request
-)
-
-if response.status_code == 200:
-    results = response.json()
-    print(f"Found {results['count']} results")
-    
-    # Display first result
-    if results['results']:
-        first = results['results'][0]
-        data = first['data']
-        print(f"\nFirst result:")
-        print(f"Title: {data.get('title', 'N/A')}")
-        print(f"UID: {data.get('uid', 'N/A')}")
-        print(f"Subjects: {', '.join(data.get('subjects', []))}")
-else:
-    print(f"Error: {response.status_code} - {response.text}")</code></pre>
-            
-            <h3>Example Request:</h3>
-            <pre><code>{
+{
     "filters": [
         {"field": "title", "value": "Murder*"}
     ],
     "logic": "AND",
     "limit": 10
 }</code></pre>
+
+            <h3>Code Examples:</h3>
+            <div class="code-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab(event, 'search-js')">JavaScript</button>
+                    <button class="tab-button" onclick="showTab(event, 'search-python')">Python</button>
+                    <button class="tab-button" onclick="showTab(event, 'search-java')">Java</button>
+                    <button class="tab-button" onclick="showTab(event, 'search-csharp')">C#</button>
+                    <button class="tab-button" onclick="showTab(event, 'search-go')">Go</button>
+                </div>
+                
+                <div id="search-js" class="tab-content active">
+                    <pre><code>// Simple search for records with "Murder" in title
+async function simpleSearch(accessToken) {
+    const searchRequest = {
+        filters: [
+            { field: "title", value: "Murder*" }
+        ],
+        logic: "AND",
+        limit: 10
+    };
+    
+    const response = await fetch(`${BASE_URL}/v1/search/simple`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchRequest)
+    });
+    
+    if (response.ok) {
+        const results = await response.json();
+        console.log(`Found ${results.count} results`);
+        
+        // Display first result
+        if (results.results.length > 0) {
+            const first = results.results[0];
+            const data = first.data;
+            console.log('\nFirst result:');
+            console.log('Title:', data.title || 'N/A');
+            console.log('UID:', data.uid || 'N/A');
+            console.log('Subjects:', data.subjects?.join(', ') || 'N/A');
+        }
+        
+        return results;
+    } else {
+        const error = await response.text();
+        throw new Error(`Search failed: ${response.status} - ${error}`);
+    }
+}
+
+// Usage
+simpleSearch(accessToken)
+    .then(results => console.log('Search complete!'))
+    .catch(error => console.error(error));</code></pre>
+                </div>
+                
+                <div id="search-python" class="tab-content">
+                    <pre><code>import requests
+
+def simple_search(access_token):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    search_request = {
+        "filters": [
+            {"field": "title", "value": "Murder*"}
+        ],
+        "logic": "AND",
+        "limit": 10
+    }
+    
+    response = requests.post(
+        f"{BASE_URL}/v1/search/simple",
+        headers=headers,
+        json=search_request
+    )
+    
+    if response.status_code == 200:
+        results = response.json()
+        print(f"Found {results['count']} results")
+        
+        # Display first result
+        if results['results']:
+            first = results['results'][0]
+            data = first['data']
+            print(f"\nFirst result:")
+            print(f"Title: {data.get('title', 'N/A')}")
+            print(f"UID: {data.get('uid', 'N/A')}")
+            print(f"Subjects: {', '.join(data.get('subjects', []))}")
+        
+        return results
+    else:
+        raise Exception(f"Search failed: {response.status_code} - {response.text}")
+
+# Usage
+try:
+    results = simple_search(access_token)
+    print("Search complete!")
+except Exception as e:
+    print(f"Error: {e}")</code></pre>
+                </div>
+                
+                <div id="search-java" class="tab-content">
+                    <pre><code>import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+
+public class BoloSearch {
+    private static final HttpClient client = HttpClient.newHttpClient();
+    private static final Gson gson = new Gson();
+    
+    public static JsonObject simpleSearch(String accessToken) throws Exception {
+        JsonObject filter = new JsonObject();
+        filter.addProperty("field", "title");
+        filter.addProperty("value", "Murder*");
+        
+        JsonArray filters = new JsonArray();
+        filters.add(filter);
+        
+        JsonObject requestBody = new JsonObject();
+        requestBody.add("filters", filters);
+        requestBody.addProperty("logic", "AND");
+        requestBody.addProperty("limit", 10);
+        
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(BASE_URL + "/v1/search/simple"))
+            .header("Authorization", "Bearer " + accessToken)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
+            .build();
+        
+        HttpResponse<String> response = client.send(request, 
+            HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() == 200) {
+            JsonObject results = gson.fromJson(response.body(), JsonObject.class);
+            int count = results.get("count").getAsInt();
+            System.out.println("Found " + count + " results");
             
-            <h3>Example Response:</h3>
+            // Display first result
+            JsonArray resultArray = results.getAsJsonArray("results");
+            if (resultArray.size() > 0) {
+                JsonObject first = resultArray.get(0).getAsJsonObject();
+                JsonObject data = first.getAsJsonObject("data");
+                
+                System.out.println("\nFirst result:");
+                System.out.println("Title: " + data.get("title").getAsString());
+                System.out.println("UID: " + data.get("uid").getAsString());
+            }
+            
+            return results;
+        } else {
+            throw new Exception("Search failed: " + 
+                response.statusCode() + " - " + response.body());
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="search-csharp" class="tab-content">
+                    <pre><code>using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class BoloSearch
+{
+    private static readonly HttpClient client = new HttpClient();
+    
+    public static async Task<JsonElement> SimpleSearch(string accessToken)
+    {
+        var searchRequest = new
+        {
+            filters = new[]
+            {
+                new { field = "title", value = "Murder*" }
+            },
+            logic = "AND",
+            limit = 10
+        };
+        
+        var json = JsonSerializer.Serialize(searchRequest);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        
+        var response = await client.PostAsync($"{BaseUrl}/v1/search/simple", content);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
+            
+            var count = results.GetProperty("count").GetInt32();
+            Console.WriteLine($"Found {count} results");
+            
+            // Display first result
+            var resultArray = results.GetProperty("results");
+            if (resultArray.GetArrayLength() > 0)
+            {
+                var first = resultArray[0];
+                var data = first.GetProperty("data");
+                
+                Console.WriteLine("\nFirst result:");
+                Console.WriteLine($"Title: {data.GetProperty("title").GetString()}");
+                Console.WriteLine($"UID: {data.GetProperty("uid").GetString()}");
+            }
+            
+            return results;
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Search failed: {response.StatusCode} - {error}");
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="search-go" class="tab-content">
+                    <pre><code>package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
+    "net/http"
+)
+
+type Filter struct {
+    Field string `json:"field"`
+    Value string `json:"value"`
+}
+
+type SearchRequest struct {
+    Filters []Filter `json:"filters"`
+    Logic   string   `json:"logic"`
+    Limit   int      `json:"limit"`
+}
+
+type SearchResult struct {
+    Count   int                      `json:"count"`
+    Results []map[string]interface{} `json:"results"`
+}
+
+func simpleSearch(accessToken string) (*SearchResult, error) {
+    searchReq := SearchRequest{
+        Filters: []Filter{
+            {Field: "title", Value: "Murder*"},
+        },
+        Logic: "AND",
+        Limit: 10,
+    }
+    
+    jsonData, err := json.Marshal(searchReq)
+    if err != nil {
+        return nil, err
+    }
+    
+    req, err := http.NewRequest(
+        "POST",
+        baseURL+"/v1/search/simple",
+        bytes.NewBuffer(jsonData),
+    )
+    if err != nil {
+        return nil, err
+    }
+    
+    req.Header.Set("Authorization", "Bearer "+accessToken)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
+    
+    if resp.StatusCode == 200 {
+        var results SearchResult
+        err = json.Unmarshal(body, &results)
+        if err != nil {
+            return nil, err
+        }
+        
+        fmt.Printf("Found %d results\n", results.Count)
+        
+        // Display first result
+        if len(results.Results) > 0 {
+            first := results.Results[0]
+            data := first["data"].(map[string]interface{})
+            fmt.Println("\nFirst result:")
+            fmt.Printf("Title: %v\n", data["title"])
+            fmt.Printf("UID: %v\n", data["uid"])
+        }
+        
+        return &results, nil
+    }
+    
+    return nil, fmt.Errorf("search failed: %d - %s", resp.StatusCode, string(body))
+}</code></pre>
+                </div>
+            </div>
+            
+            <h3>Response:</h3>
             <pre><code>{
     "query": {
         "filters": [{"field": "title", "value": "Murder*"}],
@@ -191,17 +717,12 @@ else:
         <div class="card-body">
             <p>Use the <code>/v1/search/advanced</code> endpoint for complex queries with multiple operators and grouped conditions.</p>
             
-            <h3>Python Example - Complex Search:</h3>
-            <pre><code>import requests
+            <h3>Request:</h3>
+            <pre><code>POST {{ base_url }}/v1/search/advanced
+Authorization: Bearer {your-access-token}
+Content-Type: application/json
 
-headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json"
-}
-
-# Search for high-value fugitives
-# Males, age 25-45, reward >= $100,000, title contains "Murder"
-search_request = {
+{
     "groups": [
         {
             "condition": "AND",
@@ -215,26 +736,387 @@ search_request = {
     ],
     "group_logic": "AND",
     "limit": 25
+}</code></pre>
+
+            <h3>Code Examples:</h3>
+            <div class="code-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab(event, 'advanced-js')">JavaScript</button>
+                    <button class="tab-button" onclick="showTab(event, 'advanced-python')">Python</button>
+                    <button class="tab-button" onclick="showTab(event, 'advanced-java')">Java</button>
+                    <button class="tab-button" onclick="showTab(event, 'advanced-csharp')">C#</button>
+                    <button class="tab-button" onclick="showTab(event, 'advanced-go')">Go</button>
+                </div>
+                
+                <div id="advanced-js" class="tab-content active">
+                    <pre><code>// Advanced search - High-value fugitives
+// Males, age 25-45, reward >= $100k, title contains "Murder"
+async function advancedSearch(accessToken) {
+    const searchRequest = {
+        groups: [
+            {
+                condition: "AND",
+                rules: [
+                    { field: "sex", operator: "equals", value: "Male" },
+                    { field: "age_min", operator: "between", value: [25, 45] },
+                    { field: "reward_max", operator: "gte", value: 100000 },
+                    { field: "title", operator: "contains", value: "Murder" }
+                ]
+            }
+        ],
+        group_logic: "AND",
+        limit: 25
+    };
+    
+    const response = await fetch(`${BASE_URL}/v1/search/advanced`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchRequest)
+    });
+    
+    if (response.ok) {
+        const results = await response.json();
+        console.log(`Found ${results.count} matching fugitives`);
+        
+        results.results.forEach(item => {
+            const data = item.data;
+            console.log(`\n${data.subjects?.[0] || 'Unknown'}`);
+            console.log(`  Crime: ${data.title || 'N/A'}`);
+            console.log(`  Reward: ${data.reward_text || 'N/A'}`);
+            console.log(`  Age Range: ${data.age_range || 'N/A'}`);
+        });
+        
+        return results;
+    } else {
+        const error = await response.text();
+        throw new Error(`Search failed: ${response.status} - ${error}`);
+    }
 }
 
-response = requests.post(
-    f"{BASE_URL}/v1/search/advanced",
-    headers=headers,
-    json=search_request
+// Usage
+advancedSearch(accessToken)
+    .then(results => console.log('Advanced search complete!'))
+    .catch(error => console.error(error));</code></pre>
+                </div>
+                
+                <div id="advanced-python" class="tab-content">
+                    <pre><code>import requests
+
+def advanced_search(access_token):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    # Search for high-value fugitives
+    # Males, age 25-45, reward >= $100k, title contains "Murder"
+    search_request = {
+        "groups": [
+            {
+                "condition": "AND",
+                "rules": [
+                    {"field": "sex", "operator": "equals", "value": "Male"},
+                    {"field": "age_min", "operator": "between", "value": [25, 45]},
+                    {"field": "reward_max", "operator": "gte", "value": 100000},
+                    {"field": "title", "operator": "contains", "value": "Murder"}
+                ]
+            }
+        ],
+        "group_logic": "AND",
+        "limit": 25
+    }
+    
+    response = requests.post(
+        f"{BASE_URL}/v1/search/advanced",
+        headers=headers,
+        json=search_request
+    )
+    
+    if response.status_code == 200:
+        results = response.json()
+        print(f"Found {results['count']} matching fugitives")
+        
+        for item in results['results']:
+            data = item['data']
+            print(f"\n{data.get('subjects', ['Unknown'])[0]}")
+            print(f"  Crime: {data.get('title', 'N/A')}")
+            print(f"  Reward: {data.get('reward_text', 'N/A')}")
+            print(f"  Age Range: {data.get('age_range', 'N/A')}")
+        
+        return results
+    else:
+        raise Exception(f"Search failed: {response.status_code} - {response.text}")
+
+# Usage
+try:
+    results = advanced_search(access_token)
+    print("Advanced search complete!")
+except Exception as e:
+    print(f"Error: {e}")</code></pre>
+                </div>
+                
+                <div id="advanced-java" class="tab-content">
+                    <pre><code>import com.google.gson.*;
+
+public class BoloAdvancedSearch {
+    private static final Gson gson = new Gson();
+    
+    public static JsonObject advancedSearch(String accessToken) throws Exception {
+        JsonObject rule1 = new JsonObject();
+        rule1.addProperty("field", "sex");
+        rule1.addProperty("operator", "equals");
+        rule1.addProperty("value", "Male");
+        
+        JsonArray ageRange = new JsonArray();
+        ageRange.add(25);
+        ageRange.add(45);
+        
+        JsonObject rule2 = new JsonObject();
+        rule2.addProperty("field", "age_min");
+        rule2.addProperty("operator", "between");
+        rule2.add("value", ageRange);
+        
+        JsonObject rule3 = new JsonObject();
+        rule3.addProperty("field", "reward_max");
+        rule3.addProperty("operator", "gte");
+        rule3.addProperty("value", 100000);
+        
+        JsonObject rule4 = new JsonObject();
+        rule4.addProperty("field", "title");
+        rule4.addProperty("operator", "contains");
+        rule4.addProperty("value", "Murder");
+        
+        JsonArray rules = new JsonArray();
+        rules.add(rule1);
+        rules.add(rule2);
+        rules.add(rule3);
+        rules.add(rule4);
+        
+        JsonObject group = new JsonObject();
+        group.addProperty("condition", "AND");
+        group.add("rules", rules);
+        
+        JsonArray groups = new JsonArray();
+        groups.add(group);
+        
+        JsonObject requestBody = new JsonObject();
+        requestBody.add("groups", groups);
+        requestBody.addProperty("group_logic", "AND");
+        requestBody.addProperty("limit", 25);
+        
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(BASE_URL + "/v1/search/advanced"))
+            .header("Authorization", "Bearer " + accessToken)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
+            .build();
+        
+        HttpResponse<String> response = client.send(request, 
+            HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() == 200) {
+            JsonObject results = gson.fromJson(response.body(), JsonObject.class);
+            int count = results.get("count").getAsInt();
+            System.out.println("Found " + count + " matching fugitives");
+            
+            JsonArray resultArray = results.getAsJsonArray("results");
+            for (int i = 0; i < resultArray.size(); i++) {
+                JsonObject item = resultArray.get(i).getAsJsonObject();
+                JsonObject data = item.getAsJsonObject("data");
+                
+                JsonArray subjects = data.getAsJsonArray("subjects");
+                String name = subjects.size() > 0 ? subjects.get(0).getAsString() : "Unknown";
+                
+                System.out.println("\n" + name);
+                System.out.println("  Crime: " + data.get("title").getAsString());
+                System.out.println("  Reward: " + data.get("reward_text").getAsString());
+            }
+            
+            return results;
+        } else {
+            throw new Exception("Search failed: " + 
+                response.statusCode() + " - " + response.body());
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="advanced-csharp" class="tab-content">
+                    <pre><code>using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class BoloAdvancedSearch
+{
+    public static async Task<JsonElement> AdvancedSearch(string accessToken)
+    {
+        var searchRequest = new
+        {
+            groups = new[]
+            {
+                new
+                {
+                    condition = "AND",
+                    rules = new[]
+                    {
+                        new { field = "sex", @operator = "equals", value = (object)"Male" },
+                        new { field = "age_min", @operator = "between", value = (object)new[] { 25, 45 } },
+                        new { field = "reward_max", @operator = "gte", value = (object)100000 },
+                        new { field = "title", @operator = "contains", value = (object)"Murder" }
+                    }
+                }
+            },
+            group_logic = "AND",
+            limit = 25
+        };
+        
+        var json = JsonSerializer.Serialize(searchRequest);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        
+        var response = await client.PostAsync($"{BaseUrl}/v1/search/advanced", content);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
+            
+            var count = results.GetProperty("count").GetInt32();
+            Console.WriteLine($"Found {count} matching fugitives");
+            
+            var resultArray = results.GetProperty("results");
+            foreach (var item in resultArray.EnumerateArray())
+            {
+                var data = item.GetProperty("data");
+                var subjects = data.GetProperty("subjects");
+                var name = subjects.GetArrayLength() > 0 ? subjects[0].GetString() : "Unknown";
+                
+                Console.WriteLine($"\n{name}");
+                Console.WriteLine($"  Crime: {data.GetProperty("title").GetString()}");
+                Console.WriteLine($"  Reward: {data.GetProperty("reward_text").GetString()}");
+            }
+            
+            return results;
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Search failed: {response.StatusCode} - {error}");
+        }
+    }
+}</code></pre>
+                </div>
+                
+                <div id="advanced-go" class="tab-content">
+                    <pre><code>package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
+    "net/http"
 )
 
-if response.status_code == 200:
-    results = response.json()
-    print(f"Found {results['count']} matching fugitives")
+type Rule struct {
+    Field    string      `json:"field"`
+    Operator string      `json:"operator"`
+    Value    interface{} `json:"value"`
+}
+
+type Group struct {
+    Condition string `json:"condition"`
+    Rules     []Rule `json:"rules"`
+}
+
+type AdvancedSearchRequest struct {
+    Groups     []Group `json:"groups"`
+    GroupLogic string  `json:"group_logic"`
+    Limit      int     `json:"limit"`
+}
+
+func advancedSearch(accessToken string) (*SearchResult, error) {
+    searchReq := AdvancedSearchRequest{
+        Groups: []Group{
+            {
+                Condition: "AND",
+                Rules: []Rule{
+                    {Field: "sex", Operator: "equals", Value: "Male"},
+                    {Field: "age_min", Operator: "between", Value: []int{25, 45}},
+                    {Field: "reward_max", Operator: "gte", Value: 100000},
+                    {Field: "title", Operator: "contains", Value: "Murder"},
+                },
+            },
+        },
+        GroupLogic: "AND",
+        Limit:      25,
+    }
     
-    for item in results['results']:
-        data = item['data']
-        print(f"\n{data.get('subjects', ['Unknown'])[0]}")
-        print(f"  Crime: {data.get('title', 'N/A')}")
-        print(f"  Reward: {data.get('reward_text', 'N/A')}")
-        print(f"  Age Range: {data.get('age_range', 'N/A')}")
-else:
-    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+    jsonData, err := json.Marshal(searchReq)
+    if err != nil {
+        return nil, err
+    }
+    
+    req, err := http.NewRequest(
+        "POST",
+        baseURL+"/v1/search/advanced",
+        bytes.NewBuffer(jsonData),
+    )
+    if err != nil {
+        return nil, err
+    }
+    
+    req.Header.Set("Authorization", "Bearer "+accessToken)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
+    
+    if resp.StatusCode == 200 {
+        var results SearchResult
+        err = json.Unmarshal(body, &results)
+        if err != nil {
+            return nil, err
+        }
+        
+        fmt.Printf("Found %d matching fugitives\n", results.Count)
+        
+        for _, item := range results.Results {
+            data := item["data"].(map[string]interface{})
+            subjects := data["subjects"].([]interface{})
+            name := "Unknown"
+            if len(subjects) > 0 {
+                name = subjects[0].(string)
+            }
+            
+            fmt.Printf("\n%s\n", name)
+            fmt.Printf("  Crime: %v\n", data["title"])
+            fmt.Printf("  Reward: %v\n", data["reward_text"])
+        }
+        
+        return &results, nil
+    }
+    
+    return nil, fmt.Errorf("search failed: %d - %s", resp.StatusCode, string(body))
+}</code></pre>
+                </div>
+            </div>
             
             <h3>Available Operators:</h3>
             <ul>
@@ -261,7 +1143,7 @@ else:
                 <li><code>weight_max</code> - Maximum weight (pounds)</li>
             </ul>
 
-            <h3>Example Response:</h3>
+            <h3>Response:</h3>
             <pre><code>{
     "query": {
         "groups": [...],
@@ -291,32 +1173,6 @@ else:
         }
     ]
 }</code></pre>
-
-            <h3>Complex Query Example - Multiple Groups:</h3>
-            <pre><code># Find records matching EITHER:
-# Group 1: High reward murders (>= $100k AND contains "Murder")
-# Group 2: Recent kidnappings (contains "Kidnapping" AND published after 2023)
-
-search_request = {
-    "groups": [
-        {
-            "condition": "AND",
-            "rules": [
-                {"field": "reward_max", "operator": "gte", "value": 100000},
-                {"field": "title", "operator": "contains", "value": "Murder"}
-            ]
-        },
-        {
-            "condition": "AND",
-            "rules": [
-                {"field": "title", "operator": "contains", "value": "Kidnapping"},
-                {"field": "publication", "operator": "gte", "value": "2023-01-01"}
-            ]
-        }
-    ],
-    "group_logic": "OR",  # Combine groups with OR
-    "limit": 50
-}</code></pre>
         </div>
     </div>
     {% endif %}
@@ -335,8 +1191,40 @@ search_request = {
                 <li><code>xml</code> - XML format</li>
             </ul>
 
-            <h3>Python Example - CSV Format:</h3>
-            <pre><code>response = requests.post(
+            <h3>Examples:</h3>
+            <div class="code-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab(event, 'format-js')">JavaScript</button>
+                    <button class="tab-button" onclick="showTab(event, 'format-python')">Python</button>
+                    <button class="tab-button" onclick="showTab(event, 'format-java')">Java</button>
+                    <button class="tab-button" onclick="showTab(event, 'format-csharp')">C#</button>
+                    <button class="tab-button" onclick="showTab(event, 'format-go')">Go</button>
+                </div>
+                
+                <div id="format-js" class="tab-content active">
+                    <pre><code>// Request CSV format
+const response = await fetch(
+    `${BASE_URL}/v1/search/simple?format=csv`,
+    {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchRequest)
+    }
+);
+
+if (response.ok) {
+    const csvText = await response.text();
+    // Save to file or process as needed
+    console.log(csvText);
+}</code></pre>
+                </div>
+                
+                <div id="format-python" class="tab-content">
+                    <pre><code># Request CSV format
+response = requests.post(
     f"{BASE_URL}/v1/search/simple?format=csv",
     headers=headers,
     json=search_request
@@ -347,6 +1235,66 @@ if response.status_code == 200:
     with open('results.csv', 'w') as f:
         f.write(response.text)
     print("Results saved to results.csv")</code></pre>
+                </div>
+                
+                <div id="format-java" class="tab-content">
+                    <pre><code>// Request CSV format
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create(BASE_URL + "/v1/search/simple?format=csv"))
+    .header("Authorization", "Bearer " + accessToken)
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
+    .build();
+
+HttpResponse<String> response = client.send(request, 
+    HttpResponse.BodyHandlers.ofString());
+
+if (response.statusCode() == 200) {
+    String csvText = response.body();
+    // Save to file or process
+    System.out.println(csvText);
+}</code></pre>
+                </div>
+                
+                <div id="format-csharp" class="tab-content">
+                    <pre><code>// Request CSV format
+var response = await client.PostAsync(
+    $"{BaseUrl}/v1/search/simple?format=csv", 
+    content
+);
+
+if (response.IsSuccessStatusCode)
+{
+    var csvText = await response.Content.ReadAsStringAsync();
+    // Save to file or process
+    File.WriteAllText("results.csv", csvText);
+    Console.WriteLine("Results saved to results.csv");
+}</code></pre>
+                </div>
+                
+                <div id="format-go" class="tab-content">
+                    <pre><code>// Request CSV format
+req, _ := http.NewRequest(
+    "POST",
+    baseURL+"/v1/search/simple?format=csv",
+    bytes.NewBuffer(jsonData),
+)
+req.Header.Set("Authorization", "Bearer "+accessToken)
+req.Header.Set("Content-Type", "application/json")
+
+resp, _ := client.Do(req)
+defer resp.Body.Close()
+
+if resp.StatusCode == 200 {
+    body, _ := ioutil.ReadAll(resp.Body)
+    csvText := string(body)
+    
+    // Save to file
+    ioutil.WriteFile("results.csv", body, 0644)
+    fmt.Println("Results saved to results.csv")
+}</code></pre>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -375,6 +1323,7 @@ if response.status_code == 200:
                 <li>Use specific filters to narrow results</li>
                 <li>Implement exponential backoff for retries</li>
                 <li>Store your API key securely (environment variables, key vault)</li>
+                <li>Never hardcode API keys in your source code</li>
             </ul>
         </div>
     </div>
@@ -404,86 +1353,77 @@ if response.status_code == 200:
 </div>
 
 <script>
-function copyApiKey() {
-    const apiKeyText = document.getElementById('apiKeyDisplay').textContent;
-    const messageDiv = document.getElementById('copyMessage');
+function showTab(event, tabId) {
+    // Get the parent code-tabs container
+    const tabsContainer = event.target.closest('.code-tabs');
     
-    // Use modern clipboard API
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(apiKeyText)
-            .then(() => {
-                messageDiv.textContent = 'API key copied to clipboard!';
-                messageDiv.style.display = 'block';
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 3000);
-            })
-            .catch(err => {
-                console.error('Failed to copy:', err);
-                fallbackCopy(apiKeyText, messageDiv);
-            });
-    } else {
-        fallbackCopy(apiKeyText, messageDiv);
-    }
-}
-
-function fallbackCopy(text, messageDiv) {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
+    // Hide all tab contents in this container
+    const tabContents = tabsContainer.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+    });
     
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            messageDiv.textContent = 'API key copied to clipboard!';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
-        } else {
-            messageDiv.textContent = 'Copy failed - please select and copy manually';
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'var(--danger-color)';
-        }
-    } catch (err) {
-        console.error('Fallback copy failed:', err);
-        messageDiv.textContent = 'Copy failed - please select and copy manually';
-        messageDiv.style.display = 'block';
-        messageDiv.style.color = 'var(--danger-color)';
-    }
+    // Remove active class from all buttons in this container
+    const tabButtons = tabsContainer.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
     
-    document.body.removeChild(textArea);
+    // Show the selected tab and mark button as active
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
 }
 </script>
 
 <style>
-.api-key-section {
-    margin-top: 20px;
+.code-tabs {
+    margin: 1.5rem 0;
 }
 
-.api-key-display {
+.tab-buttons {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 0;
+}
+
+.tab-button {
     background-color: var(--light-bg);
-    border: 2px solid var(--primary-color);
-    border-radius: 6px;
-    padding: 1.5rem;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    word-break: break-all;
-    margin: 1rem 0;
-    user-select: all;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    padding: 0.75rem 1.5rem;
     cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: -2px;
 }
 
-.api-key-display:hover {
+.tab-button:hover {
     background-color: #e9ecef;
+    color: var(--primary-color);
+}
+
+.tab-button.active {
+    background-color: white;
+    color: var(--primary-color);
+    border-bottom: 2px solid white;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content pre {
+    margin-top: 0;
+    border-top-left-radius: 0;
 }
 
 pre {
@@ -555,9 +1495,13 @@ code {
 }
 
 @media (max-width: 768px) {
-    .api-key-display {
-        font-size: 0.8rem;
-        padding: 1rem;
+    .tab-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
     }
     
     pre code {
