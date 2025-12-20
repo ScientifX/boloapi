@@ -148,6 +148,31 @@
 </div>
 
 <script>
+// Check for success messages in URL query parameters
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    
+    if (message === 'password_set') {
+        // Create success message div
+        const successDiv = document.createElement('div');
+        successDiv.id = 'successMessage';
+        successDiv.className = 'alert alert-success';
+        successDiv.style.marginBottom = '20px';
+        successDiv.style.width = '500px';
+        successDiv.style.margin = '0 auto 20px auto';
+        successDiv.textContent = 'Password set!';
+        
+        // Insert at top of content area, before the header
+        const contentDiv = document.querySelector('.content');
+        contentDiv.insertBefore(successDiv, contentDiv.firstChild);
+        
+        // Clean up URL without the message parameter
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+});
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     

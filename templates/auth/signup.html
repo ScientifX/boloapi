@@ -443,31 +443,10 @@ $(document).ready(function() {
     
     // Show success dialog with redirect option
     function showSuccessDialog(html) {
-        // Extract key information from the response
+        // Extract the response and automatically show details
         const $response = $(html);
-        const email = $response.find('.form-group strong:contains("Email:")').parent().text().replace('Email:', '').trim() || 'your email';
-        const userId = $response.find('.form-group strong:contains("User ID:")').parent().text().replace('User ID:', '').trim();
-        
-        let message = '<div class="success-message">Registration Successful!</div>';
-        message += '<p style="margin: 15px 0;">Your account has been created. Check <strong>' + email + '</strong> for your activation link.</p>';
-        message += '<p style="font-size: 13px; color: #6c757d;">You will receive two emails: an activation email (now) and a welcome email with your API key (after activation).</p>';
-        
-        $('#dialogMessage').html(message);
-        $('#messageDialog').dialog({
-            title: 'Success',
-            modal: true,
-            width: 500,
-            buttons: {
-                "View Details": function() {
-                    $(this).dialog("close");
-                    // Show the full response in the page
-                    $('.form-container').html($response.find('.content').html());
-                },
-                "Go to Documentation": function() {
-                    window.location.href = '/docs';
-                }
-            }
-        });
+        // Automatically show the full response in the page without the modal
+        $('.form-container').html($response.find('.content').html());
     }
     
     // Show error from server
@@ -542,10 +521,11 @@ $(document).ready(function() {
                 if (xhr.getResponseHeader('content-type').includes('text/html')) {
                     // Check if it's a success or error page
                     if (response.includes('Registration Successful') || response.includes('registration-success')) {
-                        showSuccessDialog(response);
-                        // Clear form
+                        // Clear form before showing success details
                         $('#signupForm')[0].reset();
                         $('input').removeClass('valid error');
+                        // Automatically show registration details
+                        showSuccessDialog(response);
                     } else if (response.includes('Registration Error') || response.includes('register-error')) {
                         showServerErrorDialog(response);
                         formSubmitted = false;

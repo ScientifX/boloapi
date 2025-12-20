@@ -343,9 +343,7 @@ async def signup_page(request: Request):
 @limiter.limit(rate_max)
 async def set_password_page(
     request: Request,
-    user_id: str = Query(...),
-    token: str = Query(None), 
-    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    user_id: str = Query(...)
     ):
     """Display set password form after activation"""
     user = get_user_by_id(user_id)
@@ -535,10 +533,7 @@ async def activate(request: Request, token: str = Query(...)):
 
 @router.post("/set_password")
 @limiter.limit(rate_max)
-async def set_password(request: Request, 
-            password_req: SetPasswordRequest, 
-            current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
-            ):
+async def set_password(request: Request, password_req: SetPasswordRequest):
     """Set password after activation"""
     try:
         user = get_user_by_id(password_req.user_id)

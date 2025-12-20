@@ -32,9 +32,8 @@
         <strong>User ID:</strong> <code>{{ user_id }}</code>
     </div>
     
-    {% if email_sent %}
     <div class="alert alert-info">
-        <h3 style="margin-top: 0;">📧 Next Steps - Check Your Email</h3>
+        <h3 style="margin-top: 0;">Next Steps - Check Your Email</h3>
         <p><strong>Important:</strong> You will receive TWO emails:</p>
         <ol style="margin: 10px 0; padding-left: 20px;">
             <li><strong>ACTIVATION Email</strong> (arriving now)
@@ -53,20 +52,6 @@
         </ol>
         <p style="margin-top: 15px;"><strong>⏱️ Time limit:</strong> The activation link expires in 1 hour.</p>
     </div>
-    {% else %}
-    <div class="alert alert-warning">
-        <h3 style="margin-top: 0;">⚠️ Email Not Configured (Testing Mode)</h3>
-        <p>Email functionality is disabled. Click the link below to activate your account:</p>
-        <div style="margin: 15px 0;">
-            <a href="{{ app_base_url }}/v1/auth/activate?token={{ activation_token }}" class="btn btn-primary">
-                Activate Account Now
-            </a>
-        </div>
-        <p style="margin-top: 10px; font-size: 0.9em;">
-            Or copy this URL: <code style="word-break: break-all;">{{ app_base_url }}/v1/auth/activate?token={{ activation_token }}</code>
-        </p>
-    </div>
-    {% endif %}
     
     <h2>What Happens After Activation?</h2>
     
@@ -96,17 +81,7 @@
     </div>
     
     <div class="text-center mt-4">
-        <a href="/docs" target="_new" class="btn btn-primary">View API Docs</a>
         <a href="/" class="btn btn-secondary">Go to Homepage</a>
     </div>
-    
-    {% if not email_sent %}
-    <div class="mt-4">
-        <p class="text-muted text-center" style="font-size: 0.9em;">
-            <strong>Note:</strong> Since email is not configured, your activation link is shown above. 
-            In production, this would be sent securely via email.
-        </p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
