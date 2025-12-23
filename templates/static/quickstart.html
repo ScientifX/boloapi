@@ -17,7 +17,7 @@
             <h3>How to Access Your API Key:</h3>
             <ul>
                 <li><strong>Check your registration email</strong> - Your API key was sent when you signed up</li>
-                <li><strong>View or reset it</strong> - Go to your <a href="/v1/auth/profile">Profile page</a> and use the "Reset API Key" button</li>
+                <li><strong>Reset it</strong> - Go to your <a href="/v1/auth/profile">Profile page</a> and use the "Reset API Key" button</li>
             </ul>
             
             <div class="alert alert-warning mt-3">
@@ -1302,9 +1302,8 @@ if resp.StatusCode == 200 {
     <div class="card mt-4">
         <div class="card-header">Rate Limits & Best Practices</div>
         <div class="card-body">
-            <h3>Rate Limits:</h3>
+            <h3>Token Limits:</h3>
             <ul>
-                <li>API endpoints: <strong>10 requests per minute</strong></li>
                 <li>Tokens expire after <strong>{{ token_expiry_minutes }} minutes</strong></li>
                 <li>Request a new token before expiration</li>
             </ul>
@@ -1312,8 +1311,8 @@ if resp.StatusCode == 200 {
             <h3>Result Limits by Role:</h3>
             <ul>
                 <li><strong>Basic:</strong> Fixed at 25 results per search</li>
-                <li><strong>Premium:</strong> Up to 5,000 results per search</li>
-                <li><strong>Admin:</strong> Up to 5,000 results per search</li>
+                <li><strong>Premium:</strong> No limit to results per search</li>
+                <li><strong>Admin:</strong> No limit to results per search</li>
             </ul>
 
             <h3>Best Practices:</h3>
@@ -1332,12 +1331,9 @@ if resp.StatusCode == 200 {
     <div class="card mt-4">
         <div class="card-header">Next Steps</div>
         <div class="card-body">
-            <h3>Explore the API:</h3>
             <ul>
-                <li><a href="/docs" target="_blank">View full API documentation</a> - Interactive Swagger UI with all endpoints</li>
-                <li><a href="/v1/auth/profile">Manage your profile</a> - Update settings and reset your API key</li>
-                <li><a href="/plans">Upgrade to Premium</a> - Unlock advanced search and higher limits</li>
-                <li><a href="/contact">Contact support</a> - Get help from our team</li>
+                <li><a href="/docs" target="_blank">View full API documentation</a> - Interactive Swagger UI with endpoints {{ user_role }}</li>
+                <li><a href="/v1/auth/profile">Manage your profile</a> - Update settings or reset your API key</li>
             </ul>
 
             {% if user_role == 'basic' %}

@@ -22,7 +22,7 @@ from contextlib import contextmanager
 
 from auth import UserRole, get_data_field_for_role, validate_limit_for_role
 from jwt_auth import require_jwt_role
-from format_utils import ResponseFormat, format_response
+from format_utils import ResponseFormat, format_response, validate_format_access
 from link_validation_service import get_archive_info, get_archive_file_path
 
 # Set up logging
@@ -946,8 +946,8 @@ def get_db_connection():
     **Access:** BASIC role or higher
     **Result limits by role:**
     - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: Maximum 5000 results, returns cleaned data
-    - ADMIN: Maximum 5000 results, returns cleaned data
+    - PREMIUM: No max limit to results, returns cleaned data
+    - ADMIN: No max limit to results, returns cleaned data
     
     **Response Format:**
     Each item in the results array contains:
@@ -957,10 +957,10 @@ def get_db_connection():
     **Perfect for:** Basic text searches without complex logic.
     
     **Wildcard Patterns:**
-    - `*text*` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Contains "text" anywhere in the field
-    - `text*` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Starts with "text"
-    - `*text` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Ends with "text"
-    - `text` ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Exact match
+    - `*text*` -> Contains "text" anywhere in the field
+    - `text*` -> Starts with "text"
+    - `*text` -> Ends with "text"
+    - `text` -> Exact match
     
     **Examples:**
     
@@ -1009,6 +1009,9 @@ async def simple_search(
     current_role = current_user["role"]
     user_id = current_user["user_id"]
 
+
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
     # Validate and enforce limit based on role
     actual_limit = validate_limit_for_role(current_role, search_request.limit)
     
@@ -1102,8 +1105,8 @@ async def simple_search(
     
     **Access:** PREMIUM role or higher
     **Result limits by role:**
-    - PREMIUM: Maximum 5000 results, returns cleaned data
-    - ADMIN: Maximum 5000 results, returns cleaned data
+    - PREMIUM: No max limit to results, returns cleaned data
+    - ADMIN: No max limit to results, returns cleaned data
     
     **Response Format:**
     Each item in the results array contains:
@@ -1198,6 +1201,9 @@ async def advanced_search(
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
 
+
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
     # Validate and enforce limit based on role
     actual_limit = validate_limit_for_role(current_role, search_request.limit)
     
@@ -1305,6 +1311,9 @@ async def get_top_ten(
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
+    
     # Always return max 10 for the Ten Most Wanted
     actual_limit = 10
     data_field = get_data_field_for_role(current_role)
@@ -1359,8 +1368,8 @@ async def get_top_ten(
     **Access:** BASIC role or higher
     **Result limits by role:**
     - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: Maximum 5000 results, returns cleaned data
-    - ADMIN: Maximum 5000 results, returns cleaned data
+    - PREMIUM: No max limit to results, returns cleaned data
+    - ADMIN: No max limit to results, returns cleaned data
     
     **Response Format:**
     Each item in the results array contains:
@@ -1386,6 +1395,9 @@ async def get_top_missing(
     """
     current_role = current_user["role"]
     user_id = current_user["user_id"]
+
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
     
     actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
@@ -1447,6 +1459,9 @@ async def get_top_terrorist(
     """Get FBI Most Wanted Terrorists using database function"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
+
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
     
     actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
@@ -1500,8 +1515,8 @@ async def get_top_terrorist(
     **Access:** BASIC role or higher
     **Result limits by role:**
     - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: Maximum 5000 results, returns cleaned data
-    - ADMIN: Maximum 5000 results, returns cleaned data
+    - PREMIUM: No max limit to results, returns cleaned data
+    - ADMIN: No max limit to results, returns cleaned data
     
     **Response Format:**
     Each item in the results array contains:
@@ -1527,6 +1542,9 @@ async def get_top_reward(
     """
     current_role = current_user["role"]
     user_id = current_user["user_id"]
+
+    # Validate format access based on user role
+    validate_format_access(current_role, format)
     
     actual_limit = validate_limit_for_role(current_role, limit)
     data_field = get_data_field_for_role(current_role)
@@ -1611,9 +1629,9 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         },
         "access_levels": {
             "PUBLIC": "Root endpoints only",
-            "BASIC": "Simple search + convenience endpoints, max 25 results, raw data",
-            "PREMIUM": "Simple + Advanced search + convenience endpoints, max 5000 results, clean data",
-            "ADMIN": "All endpoints, max 5000 results, clean data"
+            "BASIC": "Simple search, max 25 results, raw data, JSON format only",
+            "PREMIUM": "Simple + Advanced search, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)",
+            "ADMIN": "All endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)"
         },
         "searchable_fields": [
             "String fields: title, description, details, sex, race, etc.",
@@ -1626,14 +1644,20 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
             "arrays": ["equals", "contains", "starts_with", "ends_with"]
         },
         "response_formats": {
-            "description": "All search endpoints support multiple response formats via the 'format' query parameter",
-            "formats": {
-                "json": "Default JSON format with full metadata",
-                "csv": "Comma-separated values for spreadsheet import",
-                "txt": "Human-readable plain text BOLO format",
-                "xml": "Structured XML for RMS/CAD system integration"
+            "description": "Search endpoints support multiple response formats via the 'format' query parameter",
+            "access_by_role": {
+                "BASIC": ["json"],
+                "PREMIUM": ["json", "csv", "txt", "xml"],
+                "ADMIN": ["json", "csv", "txt", "xml"]
             },
-            "example": "/v1/search/top_ten?format=csv"
+            "formats": {
+                "json": "Default JSON format with full metadata (all roles)",
+                "csv": "Comma-separated values for spreadsheet import (PREMIUM/ADMIN only)",
+                "txt": "Human-readable plain text BOLO format (PREMIUM/ADMIN only)",
+                "xml": "Structured XML for RMS/CAD system integration (PREMIUM/ADMIN only)"
+            },
+            "example": "/v1/search/simple?format=csv",
+            "note": "BASIC users attempting to use csv, txt, or xml formats will receive a 403 Forbidden error"
         },
         "result_limits": [25, 50, 100, 250, 500, 5000],
         "default_limit": 25

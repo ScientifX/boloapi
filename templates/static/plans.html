@@ -51,7 +51,7 @@
                     <li>No search result limit per request</li>
                     <li>Cleaned, standardized data</li>
                     <li>Advanced search with Boolean logic</li>
-                    <li>6 months historical data</li>
+                    <li>Additional data formats</li>
                 </ul>
                 {% if not user_authenticated %}
                     <a href="/v1/auth/signup" class="btn btn-primary btn-block">Get Started</a>
@@ -120,6 +120,104 @@
         </div>
     </div>
     
+    <div class="feature-comparison-section">
+        <h2 style="text-align:left;font-size:1.5rem;">Feature Comparison</h2>
+        <p class="comparison-subtitle">Compare features across all plans</p>
+        
+        <div class="comparison-table-wrapper">
+            <table class="feature-comparison-table">
+                <thead>
+                    <tr>
+                        <th class="feature-column">Feature</th>
+                        <th class="plan-column basic-col">Basic</th>
+                        <th class="plan-column premium-col">Premium</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-row">
+                        <td colspan="3" class="category-header">Core Search Features</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Search Result Limit</td>
+                        <td class="plan-value">25 max</td>
+                        <td class="plan-value">No limit</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Simple Search Access</td>
+                        <td class="plan-value has-feature">Yes</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Advanced Search with Boolean Logic</td>
+                        <td class="plan-value no-feature">-</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Response Formats</td>
+                        <td class="plan-value">JSON only</td>
+                        <td class="plan-value">JSON, CSV, TXT, XML</td>
+                    </tr>
+                    
+                    <tr class="category-row">
+                        <td colspan="3" class="category-header">Data Access & Quality</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Data Type</td>
+                        <td class="plan-value">Raw FBI data</td>
+                        <td class="plan-value">Cleaned & standardized</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Quick Access Lists</td>
+                        <td class="plan-value has-feature">Yes</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    
+                    <tr class="category-row">
+                        <td colspan="3" class="category-header">Premium Features</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Email Change Alerts</td>
+                        <td class="plan-value no-feature">-</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Notification Preferences</td>
+                        <td class="plan-value no-feature">-</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    
+                    <tr class="category-row">
+                        <td colspan="3" class="category-header">Account Features</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">API Key Management</td>
+                        <td class="plan-value has-feature">Yes</td>
+                        <td class="plan-value has-feature">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Interactive API Documentation</td>
+                        <td class="plan-value">Limited</td>
+                        <td class="plan-value">Full access</td>
+                    </tr>
+                    
+                    <tr class="category-row">
+                        <td colspan="3" class="category-header">Additional Value</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Billing Options</td>
+                        <td class="plan-value">Free forever</td>
+                        <td class="plan-value">Monthly, Quarterly, Annual</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Annual Savings</td>
+                        <td class="plan-value no-feature">-</td>
+                        <td class="plan-value">Save ${{ pricing.annual.savings }}/year</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
     <div class="pricing-faq">
         <h3>Frequently Asked Questions</h3>
         
@@ -130,7 +228,7 @@
         
         <div class="faq-item">
             <h4>What payment methods do you accept?</h4>
-            <p>We accept all major credit cards through our secure payment processor, LemonSqueezy.</p>
+            <p>We accept all major credit cards through our secure payment processor, <a href="https://www.lemonsqueezy.com/" target="_ls">Lemon Squeezy</a>.</p>
         </div>
         
         <div class="faq-item">
@@ -394,7 +492,7 @@ function restoreButton(button, billingCycle) {
 
 .badge-popular, .badge-save {
     position: absolute;
-    top: 10px;
+    top: 6px;
     right: 10px;
     background: rgba(255, 255, 255, 0.3);
     padding: 5px 12px;
@@ -495,6 +593,112 @@ button.btn[disabled]:hover {
     line-height: 1.6;
 }
 
+.faq-item p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Feature Comparison Table Styles */
+.feature-comparison-section {
+    margin: 80px auto 60px;
+    max-width: 1000px;
+}
+
+.feature-comparison-section h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.comparison-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 1.1em;
+}
+
+.comparison-table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.feature-comparison-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.feature-comparison-table th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.feature-comparison-table th.feature-column {
+    width: 45%;
+}
+
+.feature-comparison-table th.plan-column {
+    width: 27.5%;
+    text-align: center;
+}
+
+.feature-comparison-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.feature-comparison-table tbody tr:hover:not(.category-row) {
+    background-color: #f8f9fa;
+}
+
+.category-row {
+    background-color: #e8e8e8;
+}
+
+.category-header {
+    padding: 15px;
+    font-weight: 700;
+    color: #333;
+    font-size: 1.05em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.category-row:first-child .category-header {
+    border-top: none;
+}
+
+.feature-name {
+    padding: 18px 15px;
+    font-weight: 500;
+    color: #444;
+}
+
+.plan-value {
+    padding: 18px 15px;
+    text-align: center;
+    color: #666;
+}
+
+.plan-value.has-feature {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.plan-value.no-feature {
+    color: #ccc;
+    font-size: 1.2em;
+}
+
 @media (max-width: 768px) {
     .pricing-container {
         grid-template-columns: 1fr;
@@ -502,6 +706,38 @@ button.btn[disabled]:hover {
     
     .price .amount {
         font-size: 2.5em;
+    }
+    
+    .feature-comparison-section {
+        margin: 60px 0 40px;
+        padding: 0 10px;
+    }
+    
+    .feature-comparison-table {
+        font-size: 0.85em;
+    }
+    
+    .feature-comparison-table th,
+    .feature-name,
+    .plan-value {
+        padding: 12px 8px;
+    }
+    
+    .feature-comparison-table th {
+        font-size: 0.95em;
+    }
+    
+    .category-header {
+        padding: 12px 8px;
+        font-size: 0.9em;
+    }
+    
+    .feature-comparison-table th.feature-column {
+        width: 40%;
+    }
+    
+    .feature-comparison-table th.plan-column {
+        width: 30%;
     }
 }
 </style>

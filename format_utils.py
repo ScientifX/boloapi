@@ -10,7 +10,7 @@ import io
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from fastapi import Response
+from fastapi import Response, HTTPException, status
 
 
 class ResponseFormat(str, Enum):
@@ -19,6 +19,38 @@ class ResponseFormat(str, Enum):
     CSV = "csv"
     TXT = "txt"
     XML = "xml"
+
+
+def validate_format_access(user_role: str, requested_format: ResponseFormat) -> None:
+    """
+    Validate that the user's role allows access to the requested format.
+    
+    Format access rules:
+    - BASIC: JSON only
+    - PREMIUM: JSON, CSV, TXT, XML
+    - ADMIN: JSON, CSV, TXT, XML
+    
+    Args:
+        user_role: The user's role (basic, premium, admin)
+        requested_format: The requested response format
+        
+    Raises:
+        HTTPException: 403 if user doesn't have access to the requested format
+    """
+    # Convert role to lowercase for comparison
+    role_lower = user_role.lower() if isinstance(user_role, str) else user_role.value.lower()
+    
+    # BASIC users can only use JSON format
+    if role_lower == "basic":
+        if requested_format != ResponseFormat.JSON:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Format '{requested_format.value}' is only available to PREMIUM and ADMIN subscribers. "
+                       f"BASIC users can only use JSON format. Upgrade to PREMIUM for CSV, TXT, and XML formats."
+            )
+    
+    # PREMIUM and ADMIN can use all formats (no restrictions)
+    # No validation needed for premium/admin users
 
 
 # Field office code to readable name mapping

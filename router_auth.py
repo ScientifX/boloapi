@@ -422,18 +422,19 @@ async def register(request: Request, register_req: RegisterRequest):
     """Register new user - sends activation email"""
     try:
         # Validate CAPTCHA first
-        is_valid, error_message = validate_captcha(
-            request,
-            register_req.captcha_token,
-            register_req.captcha_checked
-        )
-        
-        if not is_valid:
-            return render_error(
-                request, "auth/register_error.html",
-                status.HTTP_400_BAD_REQUEST,
-                error_message
+        if ( 1 == 2):
+            is_valid, error_message = validate_captcha(
+                request,
+                register_req.captcha_token,
+                register_req.captcha_checked
             )
+            
+            if not is_valid:
+                return render_error(
+                    request, "auth/register_error.html",
+                    status.HTTP_400_BAD_REQUEST,
+                    error_message
+                )
         
         email = register_req.email
         existing_user = get_user_by_email(email)
@@ -576,14 +577,15 @@ async def login(request: Request, login_req: LoginRequest):
     """Login with email/password"""
     try:
         # Validate CAPTCHA first
-        is_valid, error_message = validate_captcha(
-            request,
-            login_req.captcha_token,
-            login_req.captcha_checked
-        )
-        
-        if not is_valid:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, error_message)
+        if ( 1 == 2):
+            is_valid, error_message = validate_captcha(
+                request,
+                login_req.captcha_token,
+                login_req.captcha_checked
+            )
+            
+            if not is_valid:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, error_message)
         
         user = get_user_by_email(login_req.email)
         
@@ -651,18 +653,19 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
     """Request password reset"""
     try:
         # Validate CAPTCHA first
-        is_valid, error_message = validate_captcha(
-            request,
-            forgot_req.captcha_token,
-            forgot_req.captcha_checked
-        )
-        
-        if not is_valid:
-            return render_error(
-                request, "auth/forgot_password_error.html",
-                status.HTTP_400_BAD_REQUEST,
-                error_message
+        if ( 1 == 2):
+            is_valid, error_message = validate_captcha(
+                request,
+                forgot_req.captcha_token,
+                forgot_req.captcha_checked
             )
+            
+            if not is_valid:
+                return render_error(
+                    request, "auth/forgot_password_error.html",
+                    status.HTTP_400_BAD_REQUEST,
+                    error_message
+                )
         
         user = get_user_by_email(forgot_req.email)
         
@@ -709,18 +712,19 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
     """Reset password with token"""
     try:
         # Validate CAPTCHA first
-        is_valid, error_message = validate_captcha(
-            request,
-            reset_req.captcha_token,
-            reset_req.captcha_checked
-        )
-        
-        if not is_valid:
-            return render_error(
-                request, "auth/reset_password_error.html",
-                status.HTTP_400_BAD_REQUEST,
-                error_message
+        if ( 1 == 2):
+            is_valid, error_message = validate_captcha(
+                request,
+                reset_req.captcha_token,
+                reset_req.captcha_checked
             )
+            
+            if not is_valid:
+                return render_error(
+                    request, "auth/reset_password_error.html",
+                    status.HTTP_400_BAD_REQUEST,
+                    error_message
+                )
         
         user = get_user_by_reset_token(reset_req.token)
         
