@@ -1008,12 +1008,13 @@ async def simple_search(
 
     current_role = current_user["role"]
     user_id = current_user["user_id"]
+    billing_cycle = current_user.get("billing_cycle")
 
 
     # Validate format access based on user role
     validate_format_access(current_role, format)
     # Validate and enforce limit based on role
-    actual_limit = validate_limit_for_role(current_role, search_request.limit)
+    actual_limit = validate_limit_for_role(current_role, search_request.limit, billing_cycle)
     
     # Determine which data field to return based on role
     data_field = get_data_field_for_role(current_role)
@@ -1200,12 +1201,13 @@ async def advanced_search(
     """
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
+    billing_cycle = current_user.get("billing_cycle")
 
 
     # Validate format access based on user role
     validate_format_access(current_role, format)
     # Validate and enforce limit based on role
-    actual_limit = validate_limit_for_role(current_role, search_request.limit)
+    actual_limit = validate_limit_for_role(current_role, search_request.limit, billing_cycle)
     
     # Determine which data field to return based on role
     data_field = get_data_field_for_role(current_role)
@@ -1279,7 +1281,10 @@ async def advanced_search(
         raise Exception(f"Search error: {str(e)}")
 
 
-# In router_search.py, update the three endpoints to use the function
+
+# =============================================================================
+# CLASSIFICATION-BASED SEARCH ENDPOINTS
+# =============================================================================
 
 @router.get(
     "/top_ten",
@@ -1287,7 +1292,7 @@ async def advanced_search(
     description="""
     Get the FBI's Ten Most Wanted Fugitives list.
     
-    **Access:** PREMIUM role or higher
+    **Access:** PREMIUM role or higher (any billing cycle)
     **Results:** Always returns up to 10 results (the actual Ten Most Wanted list)
     
     **Response Format:**
@@ -1311,20 +1316,17 @@ async def get_top_ten(
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
-    # Validate format access based on user role
     validate_format_access(current_role, format)
     
-    # Always return max 10 for the Ten Most Wanted
     actual_limit = 10
     data_field = get_data_field_for_role(current_role)
     
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                # Call the function and limit results
                 query = f"""
                     SELECT {data_field}
-                    FROM ftn_bolo_top('ten')
+                    FROM ftn_bolo_group('topten')
                     LIMIT %s
                 """
                 cur.execute(query, (actual_limit,))
@@ -1343,7 +1345,7 @@ async def get_top_ten(
         result_dict = {
             "query": {
                 "endpoint": "top_ten",
-                "poster_classification": "ten"
+                "classification": "topten"
             },
             "role": current_role.value,
             "resultcount": len(items),
@@ -1360,163 +1362,15 @@ async def get_top_ten(
 
 
 @router.get(
-    "/top_missing",
-    summary="FBI Missing Persons",
-    description="""
-    Get the FBI's missing persons and kidnapping cases.
-    
-    **Access:** BASIC role or higher
-    **Result limits by role:**
-    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: No max limit to results, returns cleaned data
-    - ADMIN: No max limit to results, returns cleaned data
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Note:** Results are ordered by most recently modified first.
-    
-    **Returns:** Query parameters, result count, and array of matching records
-    """,
-    response_description="Missing persons with data_type and data fields"
-    )
-@limiter.limit(rate_max)
-async def get_top_missing(
-    request: Request,
-    limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
-    ):
-    """
-    Get FBI Missing Persons using database function.
-    Returns clean or raw data based on user role.
-    """
-    current_role = current_user["role"]
-    user_id = current_user["user_id"]
-
-    # Validate format access based on user role
-    validate_format_access(current_role, format)
-    
-    actual_limit = validate_limit_for_role(current_role, limit)
-    data_field = get_data_field_for_role(current_role)
-    
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                query = f"""
-                    SELECT {data_field}
-                    FROM ftn_bolo_top('missing')
-                    LIMIT %s
-                """
-                cur.execute(query, (actual_limit,))
-                results = cur.fetchall()
-        
-        items = []
-        data_type = "clean" if data_field == "full_data_clean" else "raw"
-        
-        for row in results:
-            item_data = row[data_field]
-            items.append({
-                "data_type": data_type,
-                "data": item_data
-            })
-        
-        result_dict = {
-            "query": {
-                "endpoint": "top_missing",
-                "poster_classification": "missing",
-                "limit": actual_limit
-            },
-            "role": current_role.value,
-            "resultcount": len(items),
-            "items": items
-        }
-        return format_response(result_dict, format, "bolo_top_missing")
-    
-    except Exception as e:
-        logger.error(f"Top Missing search error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search error: {str(e)}"
-        )
-
-
-@router.get(
-    "/top_terrorist",
-    summary="FBI Most Wanted Terrorists",
-    description="""[keep existing description]""",
-    response_description="Most Wanted Terrorists with data_type and data fields"
-    )
-@limiter.limit(rate_max)
-async def get_top_terrorist(
-    request: Request,
-    limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
-    ):
-    """Get FBI Most Wanted Terrorists using database function"""
-    current_role = current_user["role"]
-    user_id = current_user["user_id"]
-
-    # Validate format access based on user role
-    validate_format_access(current_role, format)
-    
-    actual_limit = validate_limit_for_role(current_role, limit)
-    data_field = get_data_field_for_role(current_role)
-    
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                query = f"""
-                    SELECT {data_field}
-                    FROM ftn_bolo_top('terrorist')
-                    LIMIT %s
-                """
-                cur.execute(query, (actual_limit,))
-                results = cur.fetchall()
-        
-        items = []
-        data_type = "clean" if data_field == "full_data_clean" else "raw"
-        
-        for row in results:
-            item_data = row[data_field]
-            items.append({
-                "data_type": data_type,
-                "data": item_data
-            })
-        
-        result_dict = {
-            "query": {
-                "endpoint": "top_terrorist",
-                "poster_classification": "terrorist",
-                "limit": actual_limit
-            },
-            "role": current_role.value,
-            "resultcount": len(items),
-            "items": items
-        }
-        return format_response(result_dict, format, "bolo_top_terrorist")
-    
-    except Exception as e:
-        logger.error(f"Top Terrorist search error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search error: {str(e)}"
-        )
-
-@router.get(
     "/top_reward",
     summary="High Reward Cases ($1M+)",
     description="""
     Get wanted persons with rewards of $1 million or more.
     
-    **Access:** BASIC role or higher
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
     **Result limits by role:**
-    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: No max limit to results, returns cleaned data
-    - ADMIN: No max limit to results, returns cleaned data
+    - PREMIUM (annual): Configurable limit up to 5000 results, returns cleaned data
+    - ADMIN: Configurable limit up to 5000 results, returns cleaned data
     
     **Response Format:**
     Each item in the results array contains:
@@ -1536,17 +1390,21 @@ async def get_top_reward(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """
-    Get high reward cases ($1M+) using database function.
-    Returns clean or raw data based on user role.
-    """
+    """Get high reward cases ($1M+) using database function"""
     current_role = current_user["role"]
-    user_id = current_user["user_id"]
-
-    # Validate format access based on user role
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
     validate_format_access(current_role, format)
     
-    actual_limit = validate_limit_for_role(current_role, limit)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
     data_field = get_data_field_for_role(current_role)
     
     try:
@@ -1554,7 +1412,7 @@ async def get_top_reward(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
                     SELECT {data_field}
-                    FROM ftn_bolo_top('reward')
+                    FROM ftn_bolo_group('top_reward')
                     LIMIT %s
                 """
                 cur.execute(query, (actual_limit,))
@@ -1573,7 +1431,7 @@ async def get_top_reward(
         result_dict = {
             "query": {
                 "endpoint": "top_reward",
-                "filter": "reward_max >= 1000000",
+                "classification": "top_reward",
                 "limit": actual_limit
             },
             "role": current_role.value,
@@ -1588,7 +1446,1566 @@ async def get_top_reward(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Search error: {str(e)}"
         )
- 
+
+
+@router.get(
+    "/additional_info",
+    summary="Additional Information Cases",
+    description="""
+    Get additional information cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Additional information cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_additional_info(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get additional information cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('additional')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "additional_info",
+                "classification": "additional",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_additional_info")
+    
+    except Exception as e:
+        logger.error(f"Additional Info search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/crimes_against_children",
+    summary="Crimes Against Children",
+    description="""
+    Get crimes against children cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Crimes against children cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_crimes_against_children(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get crimes against children cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('cac')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "crimes_against_children",
+                "classification": "cac",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_crimes_against_children")
+    
+    except Exception as e:
+        logger.error(f"Crimes Against Children search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/criminal_enterprise_investigations",
+    summary="Criminal Enterprise Investigations",
+    description="""
+    Get criminal enterprise investigation cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Criminal enterprise investigation cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_criminal_enterprise_investigations(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get criminal enterprise investigation cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('cei')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "criminal_enterprise_investigations",
+                "classification": "cei",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_criminal_enterprise_investigations")
+    
+    except Exception as e:
+        logger.error(f"Criminal Enterprise Investigations search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/counterintelligence",
+    summary="Counterintelligence Cases",
+    description="""
+    Get counterintelligence cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Counterintelligence cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_counterintelligence(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get counterintelligence cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('counterintelligence')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "counterintelligence",
+                "classification": "counterintelligence",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_counterintelligence")
+    
+    except Exception as e:
+        logger.error(f"Counterintelligence search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/cyber_crimes",
+    summary="Cyber Crimes",
+    description="""
+    Get cyber crime cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Cyber crime cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_cyber_crimes(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get cyber crime cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('cyber')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "cyber_crimes",
+                "classification": "cyber",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_cyber_crimes")
+    
+    except Exception as e:
+        logger.error(f"Cyber Crimes search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/domestic_terrorism",
+    summary="Domestic Terrorism Cases",
+    description="""
+    Get domestic terrorism cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Domestic terrorism cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_domestic_terrorism(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get domestic terrorism cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('dt')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "domestic_terrorism",
+                "classification": "dt",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_domestic_terrorism")
+    
+    except Exception as e:
+        logger.error(f"Domestic Terrorism search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/endangered_child_alert_program",
+    summary="Endangered Child Alert Program (ECAP)",
+    description="""
+    Get Endangered Child Alert Program (ECAP) cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="ECAP cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_endangered_child_alert_program(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get ECAP cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('ecap')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "endangered_child_alert_program",
+                "classification": "ecap",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_ecap")
+    
+    except Exception as e:
+        logger.error(f"ECAP search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/human_trafficking",
+    summary="Human Trafficking Cases",
+    description="""
+    Get human trafficking cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Human trafficking cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_human_trafficking(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get human trafficking cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('human-trafficking')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "human_trafficking",
+                "classification": "human-trafficking",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_human_trafficking")
+    
+    except Exception as e:
+        logger.error(f"Human Trafficking search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/kidnap_missing",
+    summary="Kidnappings and Missing Persons",
+    description="""
+    Get kidnapping and missing person cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Kidnapping and missing person cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_kidnap_missing(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get kidnapping and missing person cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('kidnap')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "kidnap_missing",
+                "classification": "kidnap",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_kidnap_missing")
+    
+    except Exception as e:
+        logger.error(f"Kidnap/Missing search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/known_bank_robbers",
+    summary="Known Bank Robbers",
+    description="""
+    Get known bank robber cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Bank robber cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_known_bank_robbers(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get bank robber cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('known-bank-robbers')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "known_bank_robbers",
+                "classification": "known-bank-robbers",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_known_bank_robbers")
+    
+    except Exception as e:
+        logger.error(f"Known Bank Robbers search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/law_enforcement_assistance",
+    summary="Law Enforcement Assistance",
+    description="""
+    Get law enforcement assistance cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Law enforcement assistance cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_law_enforcement_assistance(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get law enforcement assistance cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('law-enforcement-assistance')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "law_enforcement_assistance",
+                "classification": "law-enforcement-assistance",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_law_enforcement_assistance")
+    
+    except Exception as e:
+        logger.error(f"Law Enforcement Assistance search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/murders",
+    summary="Murder Cases",
+    description="""
+    Get murder cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Murder cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_murders(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get murder cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('murders')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "murders",
+                "classification": "murders",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_murders")
+    
+    except Exception as e:
+        logger.error(f"Murders search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/kidnap_parental",
+    summary="Parental Kidnappings",
+    description="""
+    Get parental kidnapping cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Parental kidnapping cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_kidnap_parental(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get parental kidnapping cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('parental-kidnappings')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "kidnap_parental",
+                "classification": "parental-kidnappings",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_kidnap_parental")
+    
+    except Exception as e:
+        logger.error(f"Parental Kidnappings search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/seeking_info",
+    summary="Seeking Information",
+    description="""
+    Get seeking information cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Seeking information cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_seeking_info(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get seeking information cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('seeking-info')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "seeking_info",
+                "classification": "seeking-info",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_seeking_info")
+    
+    except Exception as e:
+        logger.error(f"Seeking Info search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/terror_info",
+    summary="Terrorism Information",
+    description="""
+    Get terrorism information cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Terrorism information cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_terror_info(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get terrorism information cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('terrorinfo')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "terror_info",
+                "classification": "terrorinfo",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_terror_info")
+    
+    except Exception as e:
+        logger.error(f"Terror Info search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/violent_criminal_apprehension_program",
+    summary="Violent Criminal Apprehension Program (ViCAP)",
+    description="""
+    Get Violent Criminal Apprehension Program (ViCAP) cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="ViCAP cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_violent_criminal_apprehension_program(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get ViCAP cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('vicap')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "violent_criminal_apprehension_program",
+                "classification": "vicap",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_vicap")
+    
+    except Exception as e:
+        logger.error(f"ViCAP search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/wanted_terrorists",
+    summary="Wanted Terrorists",
+    description="""
+    Get wanted terrorist cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Wanted terrorist cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_wanted_terrorists(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get wanted terrorist cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('wanted_terrorists')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "wanted_terrorists",
+                "classification": "wanted_terrorists",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_wanted_terrorists")
+    
+    except Exception as e:
+        logger.error(f"Wanted Terrorists search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+
+@router.get(
+    "/white_collar_crimes",
+    summary="White Collar Crimes",
+    description="""
+    Get white collar crime cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="White collar crime cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_white_collar_crimes(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get white collar crime cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('wcc')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "white_collar_crimes",
+                "classification": "wcc",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_white_collar_crimes")
+    
+    except Exception as e:
+        logger.error(f"White Collar Crimes search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
+@router.get(
+    "/case_of_the_week",
+    summary="Get Case of the Week",
+    description="""
+    Get Case of the Week cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Case of the Week cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_case_of_the_week(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get white collar crime cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('case_of_the_week')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "case_of_the_week",
+                "classification": "case_of_the_week",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_white_collar_crimes")
+    
+    except Exception as e:
+        logger.error(f"Case of the Week search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+    
+
+@router.get(
+    "/native_american",
+    summary="Native American Cases",
+    description="""
+    Get Native American cases from FBI wanted persons.
+    
+    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    
+    **Response Format:**
+    Each item in the results array contains:
+    - `data_type`: Either "raw" or "clean" depending on user role
+    - `data`: The actual FBI wanted person record (JSONB)
+    """,
+    response_description="Native American cases with data_type and data fields"
+)
+@limiter.limit(rate_max)
+async def get_native_american(
+    request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    ):
+    """Get Native American cases using database function"""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+    
+    if current_role != UserRole.ADMIN:
+        if billing_cycle != "annual":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This endpoint is only available to annual subscribers. "
+                       "Upgrade to an annual plan to access this feature."
+            )
+    
+    validate_format_access(current_role, format)
+    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
+    data_field = get_data_field_for_role(current_role)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = f"""
+                    SELECT {data_field}
+                    FROM ftn_bolo_group('native_american')
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        items = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+        
+        for row in results:
+            item_data = row[data_field]
+            items.append({
+                "data_type": data_type,
+                "data": item_data
+            })
+        
+        result_dict = {
+            "query": {
+                "endpoint": "native_american",
+                "classification": "native_american",
+                "limit": actual_limit
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "items": items
+        }
+        return format_response(result_dict, format, "bolo_native_american")
+    
+    except Exception as e:
+        logger.error(f"Native American search error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search error: {str(e)}"
+        )
+
 @router.get(
     "/",
     summary="API Information",
@@ -1601,36 +3018,40 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         "version": "1.0.0",
         "endpoints": {
             "/simple": "Simple wildcard-based search (BASIC role or higher)",
-            "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)",
-            "/top_ten": "FBI Ten Most Wanted Fugitives (BASIC role or higher)",
-            "/top_terrorist": "FBI Most Wanted Terrorists (BASIC role or higher)",
-            "admining": "FBI Missing Persons (BASIC role or higher)",
-            "/top_reward": "High reward cases ($1M+ rewards) (BASIC role or higher)"
+            "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)"
         },
-        "convenience_endpoints": {
-            "description": "Quick access to common FBI lists",
-            "top_ten": {
-                "description": "FBI Ten Most Wanted Fugitives",
-                "filter": "poster_classification = 'ten'"
-            },
-            "top_terrorist": {
-                "description": "Most Wanted Terrorists",
-                "filter": "poster_classification = 'terrorist'"
-            },
-            "top_missing": {
-                "description": "Missing Persons & Kidnappings",
-                "filter": "poster_classification = 'missing'"
-            },
-            "top_reward": {
-                "description": "Cases with rewards $1M or higher",
-                "filter": "reward_max >= 1000000",
-                "note": "Sorted by reward amount (highest first)"
+        "classification_endpoints": {
+            "description": "FBI wanted persons by classification category",
+            "access_note": "top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual or ADMIN",
+            "endpoints": {
+                "/top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
+                "/top_reward": "High reward cases $1M+ (PREMIUM annual or ADMIN)",
+                "/additional_info": "Additional Information (PREMIUM annual or ADMIN)",
+                "/crimes_against_children": "Crimes Against Children (PREMIUM annual or ADMIN)",
+                "/criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual or ADMIN)",
+                "/counterintelligence": "Counterintelligence (PREMIUM annual or ADMIN)",
+                "/cyber_crimes": "Cyber Crimes (PREMIUM annual or ADMIN)",
+                "/domestic_terrorism": "Domestic Terrorism (PREMIUM annual or ADMIN)",
+                "/endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual or ADMIN)",
+                "/human_trafficking": "Human Trafficking (PREMIUM annual or ADMIN)",
+                "/kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual or ADMIN)",
+                "/known_bank_robbers": "Known Bank Robbers (PREMIUM annual or ADMIN)",
+                "/law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual or ADMIN)",
+                "/murders": "Murders (PREMIUM annual or ADMIN)",
+                "/kidnap_parental": "Parental Kidnappings (PREMIUM annual or ADMIN)",
+                "/seeking_info": "Seeking Information (PREMIUM annual or ADMIN)",
+                "/terror_info": "Terrorism Information (PREMIUM annual or ADMIN)",
+                "/violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual or ADMIN)",
+                "/wanted_terrorists": "Wanted Terrorists (PREMIUM annual or ADMIN)",
+                "/white_collar_crimes": "White Collar Crimes (PREMIUM annual or ADMIN)",
+                "/native_american": "Native American Cases (PREMIUM annual or ADMIN)"
             }
         },
         "access_levels": {
             "PUBLIC": "Root endpoints only",
             "BASIC": "Simple search, max 25 results, raw data, JSON format only",
-            "PREMIUM": "Simple + Advanced search, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)",
+            "PREMIUM (monthly)": "Simple + Advanced search, max 25 results, clean data, all formats (JSON/CSV/TXT/XML)",
+            "PREMIUM (annual)": "Simple + Advanced search + Category endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)",
             "ADMIN": "All endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)"
         },
         "searchable_fields": [

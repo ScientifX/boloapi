@@ -99,31 +99,37 @@ def get_data_field_for_role(role: UserRole) -> str:
     else:
         return "full_data"
 
-def get_max_limit_for_role(role: UserRole) -> int:
+def get_max_limit_for_role(role: UserRole, billing_cycle: Optional[str] = None) -> int:
     """
-    Get maximum result limit based on user role.
+    Get maximum result limit based on user role and billing cycle.
     
     - PUBLIC: N/A (no search access)
     - BASIC: 25
-    - PREMIUM: 5000
+    - PREMIUM (annual): 5000
+    - PREMIUM (monthly or other): 25
     - ADMIN: 5000
     
     This function works for both session-based and JWT-based auth.
     """
     if role == UserRole.BASIC:
         return 25
-    elif role in [UserRole.PREMIUM, UserRole.ADMIN]:
+    elif role == UserRole.ADMIN:
         return 5000
+    elif role == UserRole.PREMIUM:
+        # PREMIUM annual subscribers get 5000, others get 25
+        return 5000 if billing_cycle == "annual" else 25
     else:
         return 0  # PUBLIC has no search access
 
-def validate_limit_for_role(role: UserRole, requested_limit: int) -> int:
+def validate_limit_for_role(role: UserRole, requested_limit: int, billing_cycle: Optional[str] = None) -> int:
     """
-    Validate and cap the requested limit based on user role.
+    Validate and cap the requested limit based on user role and billing cycle.
     Returns the actual limit to use.
     
     - BASIC: Always returns 25 (silently capped, no error)
-    - PREMIUM/ADMIN: Returns requested limit up to 5000
+    - PREMIUM (annual): Returns requested limit up to 5000
+    - PREMIUM (monthly/other): Always returns 25 (silently capped, no error)
+    - ADMIN: Returns requested limit up to 5000
     - PUBLIC: Raises HTTPException (no search access)
     
     This function works for both session-based and JWT-based auth.
@@ -138,6 +144,17 @@ def validate_limit_for_role(role: UserRole, requested_limit: int) -> int:
     if role == UserRole.BASIC:
         return 25
     
-    # PREMIUM/ADMIN: cap at max limit
-    max_limit = get_max_limit_for_role(role)
-    return min(requested_limit, max_limit)
+    # PREMIUM users: check billing cycle
+    if role == UserRole.PREMIUM:
+        # Annual subscribers can request up to 5000, others capped at 25
+        if billing_cycle == "annual":
+            return min(requested_limit, 5000)
+        else:
+            return 25
+    
+    # ADMIN: cap at max limit
+    if role == UserRole.ADMIN:
+        return min(requested_limit, 5000)
+    
+    # Fallback (should not reach here)
+    return 25
