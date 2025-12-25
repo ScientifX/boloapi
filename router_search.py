@@ -940,57 +940,7 @@ def get_db_connection():
 @router.post(
     "/simple",
     summary="Simple Search with Wildcards",
-    description="""
-    Perform a simple search using wildcard patterns.
-    
-    **Access:** BASIC role or higher
-    **Result limits by role:**
-    - BASIC: Fixed at 25 results (limit parameter ignored), returns raw data
-    - PREMIUM: No max limit to results, returns cleaned data
-    - ADMIN: No max limit to results, returns cleaned data
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Perfect for:** Basic text searches without complex logic.
-    
-    **Wildcard Patterns:**
-    - `*text*` -> Contains "text" anywhere in the field
-    - `text*` -> Starts with "text"
-    - `*text` -> Ends with "text"
-    - `text` -> Exact match
-    
-    **Examples:**
-    
-    Search for titles starting with "Murder":
-```json
-    {
-        "filters": [
-            {"field": "title", "value": "Murder*"}
-        ],
-        "logic": "AND",
-        "limit": 25, 
-        "rules": "strict" 
-    }
-```
-    
-    Search for records with "armed" in description AND "dangerous" in caution:
-```json
-    {
-        "filters": [
-            {"field": "description", "value": "*armed*"},
-            {"field": "caution", "value": "*dangerous*"}
-        ],
-        "logic": "AND",
-        "limit": 100, 
-        "rules": "strict" 
-    }
-```
-    
-    **Returns:** Query parameters, result count, and array of matching records (each with data_type and data fields)
-    """,
+    description="",
     response_description="Query parameters, count, and array of records with data_type and data fields"
     )
 @limiter.limit(rate_max)
@@ -1003,7 +953,6 @@ async def simple_search(
     """
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
-    Requires BASIC role or higher.
     """
 
     current_role = current_user["role"]
@@ -1101,81 +1050,7 @@ async def simple_search(
 @router.post(
     "/advanced",
     summary="Advanced Search with Grouped Conditions",
-    description="""
-    Perform advanced searches with grouped conditions and multiple operators.
-    
-    **Access:** PREMIUM role or higher
-    **Result limits by role:**
-    - PREMIUM: No max limit to results, returns cleaned data
-    - ADMIN: No max limit to results, returns cleaned data
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Perfect for:** Complex queries with multiple conditions and grouping logic.
-    
-    **Available Operators:**
-    - `equals`: Exact match (case-insensitive for strings)
-    - `contains`: Field contains value (case-insensitive)
-    - `starts_with`: Field starts with value (case-insensitive)
-    - `ends_with`: Field ends with value (case-insensitive)
-    - `gt`: Greater than (for numeric fields)
-    - `lt`: Less than (for numeric fields)
-    - `gte`: Greater than or equal (for numeric fields)
-    - `lte`: Less than or equal (for numeric fields)
-    - `between`: Between two values (for numeric fields) - requires array of 2 values [min, max]
-    
-    **Query Structure:**
-    You can create multiple groups of rules, where each group's rules are combined with AND/OR,
-    and then groups themselves are combined with AND/OR.
-    
-    **Example 1:** Simple AND query - High reward murders
-```json
-    {
-        "groups": [
-            {
-                "condition": "AND",
-                "rules": [
-                    {"field": "title", "operator": "contains", "value": "Murder"},
-                    {"field": "reward_max", "operator": "gte", "value": 100000}
-                ]
-            }
-        ],
-        "group_logic": "AND",
-        "limit": 25
-    }
-```
-    **Result:** title contains "Murder" AND reward_max >= 100000
-    
-    **Example 2:** Complex grouped query with numeric ranges
-```json
-    {
-        "groups": [
-            {
-                "condition": "AND",
-                "rules": [
-                    {"field": "sex", "operator": "equals", "value": "Male"},
-                    {"field": "age_min", "operator": "between", "value": [25, 45]}
-                ]
-            },
-            {
-                "condition": "AND",
-                "rules": [
-                    {"field": "reward_max", "operator": "gte", "value": 50000},
-                    {"field": "subjects", "operator": "contains", "value": "Murder"}
-                ]
-            }
-        ],
-        "group_logic": "OR",
-        "limit": 100
-    }
-```
-    **Result:** (sex = "Male" AND age between 25-45) OR (reward >= 50000 AND subjects contains "Murder")
-    
-    **Returns:** Query parameters, result count, and array of matching records (each with data_type and data fields)
-    """,
+    description="",
     response_description="Query parameters, count, and array of records with data_type and data fields"
 )
 @limiter.limit(rate_max)
@@ -1185,20 +1060,7 @@ async def advanced_search(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
     ):
-    """
-    Execute an advanced search with grouped conditions.
-    All validation is performed by Pydantic before this function runs.
-    Returns the appropriate JSONB column based on user role.
-    Requires PREMIUM role or higher.
-    
-    This function supports:
-    - Multiple filter groups combined with AND/OR logic
-    - All comparison operators (equals, contains, gt, lt, gte, lte, between, etc.)
-    - String fields (case-insensitive matching)
-    - Integer/numeric fields (with type casting)
-    - Text array fields (languages, aliases, locations, etc.)
-    - Complex nested boolean logic
-    """
+
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
     billing_cycle = current_user.get("billing_cycle")
@@ -1281,7 +1143,6 @@ async def advanced_search(
         raise Exception(f"Search error: {str(e)}")
 
 
-
 # =============================================================================
 # CLASSIFICATION-BASED SEARCH ENDPOINTS
 # =============================================================================
@@ -1289,22 +1150,8 @@ async def advanced_search(
 @router.get(
     "/top_ten",
     summary="FBI Ten Most Wanted Fugitives",
-    description="""
-    Get the FBI's Ten Most Wanted Fugitives list.
-    
-    **Access:** PREMIUM role or higher (any billing cycle)
-    **Results:** Always returns up to 10 results (the actual Ten Most Wanted list)
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Note:** Results are ordered by most recently modified first.
-    
-    **Returns:** Query parameters, result count, and array of matching records
-    """,
-    response_description="Ten Most Wanted Fugitives with data_type and data fields"
+    description="",
+    response_description="Ten Most Wanted Fugitives"
     )
 @limiter.limit(rate_max)
 async def get_top_ten(
@@ -1312,7 +1159,7 @@ async def get_top_ten(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get FBI Ten Most Wanted Fugitives using database function"""
+    """Get FBI Ten Most Wanted Fugitives"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
@@ -1364,24 +1211,8 @@ async def get_top_ten(
 @router.get(
     "/top_reward",
     summary="High Reward Cases ($1M+)",
-    description="""
-    Get wanted persons with rewards of $1 million or more.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    **Result limits by role:**
-    - PREMIUM (annual): Configurable limit up to 5000 results, returns cleaned data
-    - ADMIN: Configurable limit up to 5000 results, returns cleaned data
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    
-    **Note:** Results are ordered by reward amount (highest first), then by most recently modified.
-    
-    **Returns:** Query parameters, result count, and array of matching records
-    """,
-    response_description="High reward cases with data_type and data fields"
+    description="",
+    response_description="Fugitives and cases with high-dollar rewards >= USD$1 Million"
 )
 @limiter.limit(rate_max)
 async def get_top_reward(
@@ -1390,7 +1221,7 @@ async def get_top_reward(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get high reward cases ($1M+) using database function"""
+    """Fugitives and cases with high-dollar rewards >= USD$1 Million"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1450,18 +1281,9 @@ async def get_top_reward(
 
 @router.get(
     "/additional_info",
-    summary="Additional Information Cases",
-    description="""
-    Get additional information cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Additional information cases with data_type and data fields"
+    summary="Additional/Miscellaneous Cases",
+    description="",
+    response_description="Additional/Miscellaneous Cases"
 )
 @limiter.limit(rate_max)
 async def get_additional_info(
@@ -1469,7 +1291,7 @@ async def get_additional_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get additional information cases using database function"""
+    """Additional/Miscellaneous Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1529,17 +1351,8 @@ async def get_additional_info(
 @router.get(
     "/crimes_against_children",
     summary="Crimes Against Children",
-    description="""
-    Get crimes against children cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Crimes against children cases with data_type and data fields"
+    description="",
+    response_description="Crimes Against Children"
 )
 @limiter.limit(rate_max)
 async def get_crimes_against_children(
@@ -1547,7 +1360,7 @@ async def get_crimes_against_children(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get crimes against children cases using database function"""
+    """Crimes Against Children"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1607,17 +1420,8 @@ async def get_crimes_against_children(
 @router.get(
     "/criminal_enterprise_investigations",
     summary="Criminal Enterprise Investigations",
-    description="""
-    Get criminal enterprise investigation cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Criminal enterprise investigation cases with data_type and data fields"
+    description="",
+    response_description="Criminal Enterprise Investigations"
 )
 @limiter.limit(rate_max)
 async def get_criminal_enterprise_investigations(
@@ -1625,7 +1429,7 @@ async def get_criminal_enterprise_investigations(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get criminal enterprise investigation cases using database function"""
+    """Criminal Enterprise Investigations"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1685,17 +1489,8 @@ async def get_criminal_enterprise_investigations(
 @router.get(
     "/counterintelligence",
     summary="Counterintelligence Cases",
-    description="""
-    Get counterintelligence cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Counterintelligence cases with data_type and data fields"
+    description="",
+    response_description="Counterintelligence Cases"
 )
 @limiter.limit(rate_max)
 async def get_counterintelligence(
@@ -1703,7 +1498,7 @@ async def get_counterintelligence(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get counterintelligence cases using database function"""
+    """Counterintelligence Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1763,17 +1558,8 @@ async def get_counterintelligence(
 @router.get(
     "/cyber_crimes",
     summary="Cyber Crimes",
-    description="""
-    Get cyber crime cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Cyber crime cases with data_type and data fields"
+    description="",
+    response_description="Cyber Crimes"
 )
 @limiter.limit(rate_max)
 async def get_cyber_crimes(
@@ -1781,7 +1567,7 @@ async def get_cyber_crimes(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get cyber crime cases using database function"""
+    """Cyber Crimes"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1841,17 +1627,8 @@ async def get_cyber_crimes(
 @router.get(
     "/domestic_terrorism",
     summary="Domestic Terrorism Cases",
-    description="""
-    Get domestic terrorism cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Domestic terrorism cases with data_type and data fields"
+    description="",
+    response_description="Domestic Terrorism Cases"
 )
 @limiter.limit(rate_max)
 async def get_domestic_terrorism(
@@ -1859,7 +1636,7 @@ async def get_domestic_terrorism(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get domestic terrorism cases using database function"""
+    """Domestic Terrorism Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1919,17 +1696,8 @@ async def get_domestic_terrorism(
 @router.get(
     "/endangered_child_alert_program",
     summary="Endangered Child Alert Program (ECAP)",
-    description="""
-    Get Endangered Child Alert Program (ECAP) cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="ECAP cases with data_type and data fields"
+    description="",
+    response_description="Endangered Child Alert Program (ECAP)"
 )
 @limiter.limit(rate_max)
 async def get_endangered_child_alert_program(
@@ -1937,7 +1705,7 @@ async def get_endangered_child_alert_program(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get ECAP cases using database function"""
+    """Endangered Child Alert Program (ECAP)"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1997,17 +1765,8 @@ async def get_endangered_child_alert_program(
 @router.get(
     "/human_trafficking",
     summary="Human Trafficking Cases",
-    description="""
-    Get human trafficking cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Human trafficking cases with data_type and data fields"
+    description="",
+    response_description="Human Trafficking Cases"
 )
 @limiter.limit(rate_max)
 async def get_human_trafficking(
@@ -2015,7 +1774,7 @@ async def get_human_trafficking(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get human trafficking cases using database function"""
+    """Human Trafficking Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2075,17 +1834,8 @@ async def get_human_trafficking(
 @router.get(
     "/kidnap_missing",
     summary="Kidnappings and Missing Persons",
-    description="""
-    Get kidnapping and missing person cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Kidnapping and missing person cases with data_type and data fields"
+    description="",
+    response_description="Kidnappings and Missing Persons"
 )
 @limiter.limit(rate_max)
 async def get_kidnap_missing(
@@ -2093,7 +1843,7 @@ async def get_kidnap_missing(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get kidnapping and missing person cases using database function"""
+    """Kidnappings and Missing Persons"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2153,17 +1903,8 @@ async def get_kidnap_missing(
 @router.get(
     "/known_bank_robbers",
     summary="Known Bank Robbers",
-    description="""
-    Get known bank robber cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Bank robber cases with data_type and data fields"
+    description="",
+    response_description="Known Bank Robbers"
 )
 @limiter.limit(rate_max)
 async def get_known_bank_robbers(
@@ -2171,7 +1912,7 @@ async def get_known_bank_robbers(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get bank robber cases using database function"""
+    """Known Bank Robbers"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2231,17 +1972,8 @@ async def get_known_bank_robbers(
 @router.get(
     "/law_enforcement_assistance",
     summary="Law Enforcement Assistance",
-    description="""
-    Get law enforcement assistance cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Law enforcement assistance cases with data_type and data fields"
+    description="",
+    response_description="Law Enforcement Assistance"
 )
 @limiter.limit(rate_max)
 async def get_law_enforcement_assistance(
@@ -2249,7 +1981,7 @@ async def get_law_enforcement_assistance(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get law enforcement assistance cases using database function"""
+    """Law Enforcement Assistance"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2309,17 +2041,8 @@ async def get_law_enforcement_assistance(
 @router.get(
     "/murders",
     summary="Murder Cases",
-    description="""
-    Get murder cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Murder cases with data_type and data fields"
+    description="",
+    response_description="Murder Cases"
 )
 @limiter.limit(rate_max)
 async def get_murders(
@@ -2327,7 +2050,7 @@ async def get_murders(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get murder cases using database function"""
+    """Murder Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2387,17 +2110,8 @@ async def get_murders(
 @router.get(
     "/kidnap_parental",
     summary="Parental Kidnappings",
-    description="""
-    Get parental kidnapping cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Parental kidnapping cases with data_type and data fields"
+    description="",
+    response_description="Parental Kidnappings"
 )
 @limiter.limit(rate_max)
 async def get_kidnap_parental(
@@ -2405,7 +2119,7 @@ async def get_kidnap_parental(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get parental kidnapping cases using database function"""
+    """Parental Kidnappings"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2465,17 +2179,8 @@ async def get_kidnap_parental(
 @router.get(
     "/seeking_info",
     summary="Seeking Information",
-    description="""
-    Get seeking information cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Seeking information cases with data_type and data fields"
+    description="",
+    response_description="Seeking Information"
 )
 @limiter.limit(rate_max)
 async def get_seeking_info(
@@ -2483,7 +2188,7 @@ async def get_seeking_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get seeking information cases using database function"""
+    """Seeking Information"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2543,17 +2248,8 @@ async def get_seeking_info(
 @router.get(
     "/terror_info",
     summary="Terrorism Information",
-    description="""
-    Get terrorism information cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Terrorism information cases with data_type and data fields"
+    description="",
+    response_description="Terrorism Information"
 )
 @limiter.limit(rate_max)
 async def get_terror_info(
@@ -2561,7 +2257,7 @@ async def get_terror_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get terrorism information cases using database function"""
+    """Terrorism Information"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2621,17 +2317,8 @@ async def get_terror_info(
 @router.get(
     "/violent_criminal_apprehension_program",
     summary="Violent Criminal Apprehension Program (ViCAP)",
-    description="""
-    Get Violent Criminal Apprehension Program (ViCAP) cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="ViCAP cases with data_type and data fields"
+    description="",
+    response_description="Violent Criminal Apprehension Program (ViCAP)"
 )
 @limiter.limit(rate_max)
 async def get_violent_criminal_apprehension_program(
@@ -2639,7 +2326,7 @@ async def get_violent_criminal_apprehension_program(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get ViCAP cases using database function"""
+    """Violent Criminal Apprehension Program (ViCAP)"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2699,17 +2386,8 @@ async def get_violent_criminal_apprehension_program(
 @router.get(
     "/wanted_terrorists",
     summary="Wanted Terrorists",
-    description="""
-    Get wanted terrorist cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Wanted terrorist cases with data_type and data fields"
+    description="",
+    response_description="Wanted Terrorists"
 )
 @limiter.limit(rate_max)
 async def get_wanted_terrorists(
@@ -2717,7 +2395,7 @@ async def get_wanted_terrorists(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get wanted terrorist cases using database function"""
+    """Wanted Terrorists"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2777,17 +2455,8 @@ async def get_wanted_terrorists(
 @router.get(
     "/white_collar_crimes",
     summary="White Collar Crimes",
-    description="""
-    Get white collar crime cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="White collar crime cases with data_type and data fields"
+    description="",
+    response_description="White Collar Crimes"
 )
 @limiter.limit(rate_max)
 async def get_white_collar_crimes(
@@ -2795,7 +2464,7 @@ async def get_white_collar_crimes(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get white collar crime cases using database function"""
+    """White Collar Crimes"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2854,17 +2523,8 @@ async def get_white_collar_crimes(
 @router.get(
     "/case_of_the_week",
     summary="Get Case of the Week",
-    description="""
-    Get Case of the Week cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Case of the Week cases with data_type and data fields"
+    description="",
+    response_description="Get Case of the Week"
 )
 @limiter.limit(rate_max)
 async def get_case_of_the_week(
@@ -2872,7 +2532,7 @@ async def get_case_of_the_week(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get white collar crime cases using database function"""
+    """Get Case of the Week"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2932,25 +2592,16 @@ async def get_case_of_the_week(
 @router.get(
     "/native_american",
     summary="Native American Cases",
-    description="""
-    Get Native American cases from FBI wanted persons.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    **Response Format:**
-    Each item in the results array contains:
-    - `data_type`: Either "raw" or "clean" depending on user role
-    - `data`: The actual FBI wanted person record (JSONB)
-    """,
-    response_description="Native American cases with data_type and data fields"
+    description="",
+    response_description="Native American Cases"
 )
-@limiter.limit(rate_max)
+@limiter.limit(rate_max) 
 async def get_native_american(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get Native American cases using database function"""
+    """Native American Cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -3022,37 +2673,36 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         },
         "classification_endpoints": {
             "description": "FBI wanted persons by classification category",
-            "access_note": "top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual or ADMIN",
+            "access_note": "top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual subscription only",
             "endpoints": {
                 "/top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
-                "/top_reward": "High reward cases $1M+ (PREMIUM annual or ADMIN)",
-                "/additional_info": "Additional Information (PREMIUM annual or ADMIN)",
-                "/crimes_against_children": "Crimes Against Children (PREMIUM annual or ADMIN)",
-                "/criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual or ADMIN)",
-                "/counterintelligence": "Counterintelligence (PREMIUM annual or ADMIN)",
-                "/cyber_crimes": "Cyber Crimes (PREMIUM annual or ADMIN)",
-                "/domestic_terrorism": "Domestic Terrorism (PREMIUM annual or ADMIN)",
-                "/endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual or ADMIN)",
-                "/human_trafficking": "Human Trafficking (PREMIUM annual or ADMIN)",
-                "/kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual or ADMIN)",
-                "/known_bank_robbers": "Known Bank Robbers (PREMIUM annual or ADMIN)",
-                "/law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual or ADMIN)",
-                "/murders": "Murders (PREMIUM annual or ADMIN)",
-                "/kidnap_parental": "Parental Kidnappings (PREMIUM annual or ADMIN)",
-                "/seeking_info": "Seeking Information (PREMIUM annual or ADMIN)",
-                "/terror_info": "Terrorism Information (PREMIUM annual or ADMIN)",
-                "/violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual or ADMIN)",
-                "/wanted_terrorists": "Wanted Terrorists (PREMIUM annual or ADMIN)",
-                "/white_collar_crimes": "White Collar Crimes (PREMIUM annual or ADMIN)",
-                "/native_american": "Native American Cases (PREMIUM annual or ADMIN)"
+                "/top_reward": "High reward cases $1M+ (PREMIUM annual subscription only)",
+                "/additional_info": "Additional Information (PREMIUM annual subscription only)",
+                "/crimes_against_children": "Crimes Against Children (PREMIUM annual subscription only)",
+                "/criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual subscription only)",
+                "/counterintelligence": "Counterintelligence (PREMIUM annual subscription only)",
+                "/cyber_crimes": "Cyber Crimes (PREMIUM annual subscription only)",
+                "/domestic_terrorism": "Domestic Terrorism (PREMIUM annual subscription only)",
+                "/endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
+                "/human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
+                "/kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
+                "/known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
+                "/law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
+                "/murders": "Murders (PREMIUM annual subscription only)",
+                "/kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
+                "/seeking_info": "Seeking Information (PREMIUM annual subscription only)",
+                "/terror_info": "Terrorism Information (PREMIUM annual subscription only)",
+                "/violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual subscription only)",
+                "/wanted_terrorists": "Wanted Terrorists (PREMIUM annual subscription only)",
+                "/white_collar_crimes": "White Collar Crimes (PREMIUM annual subscription only)",
+                "/native_american": "Native American Cases (PREMIUM annual subscription only)"
             }
         },
         "access_levels": {
             "PUBLIC": "Root endpoints only",
             "BASIC": "Simple search, max 25 results, raw data, JSON format only",
             "PREMIUM (monthly)": "Simple + Advanced search, max 25 results, clean data, all formats (JSON/CSV/TXT/XML)",
-            "PREMIUM (annual)": "Simple + Advanced search + Category endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)",
-            "ADMIN": "All endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)"
+            "PREMIUM (annual)": "Simple + Advanced search + Category endpoints, max 5000 results, clean data, all formats (JSON/CSV/TXT/XML)"
         },
         "searchable_fields": [
             "String fields: title, description, details, sex, race, etc.",
@@ -3068,8 +2718,7 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
             "description": "Search endpoints support multiple response formats via the 'format' query parameter",
             "access_by_role": {
                 "BASIC": ["json"],
-                "PREMIUM": ["json", "csv", "txt", "xml"],
-                "ADMIN": ["json", "csv", "txt", "xml"]
+                "PREMIUM": ["json", "csv", "txt", "xml"]
             },
             "formats": {
                 "json": "Default JSON format with full metadata (all roles)",
@@ -3091,13 +2740,7 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
 @router.get(
     "/documents_info",
     summary="Documents Archive Information",
-    description="""
-    Get information about the available BOLO documents archive.
-    
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
-    
-    Returns archive availability, file size, and generation timestamp.
-    """
+    description=""
     )
 @limiter.limit(rate_max)
 async def get_documents_info(
@@ -3107,7 +2750,7 @@ async def get_documents_info(
     """
     Get information about the current documents archive.
     
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    **Access:** PREMIUM subscription with annual billing cycle
     
     Returns:
     - Archive availability
@@ -3158,7 +2801,7 @@ async def get_documents_info(
     description="""
     Download the complete BOLO documents archive (ZIP file).
     
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    **Access:** PREMIUM subscription with annual billing cycle
     
     The archive contains:
     - Per-person folders with meaningful names
@@ -3190,7 +2833,7 @@ async def download_documents_archive(
     """
     Download the complete BOLO documents archive.
     
-    **Access:** PREMIUM role with annual billing cycle, or ADMIN
+    **Access:** PREMIUM subscription with annual billing cycle
     
     Returns the bolodoc_files.zip archive containing all BOLO documents
     organized by person with info.txt summaries and a root manifest.

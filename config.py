@@ -66,7 +66,7 @@ API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')  # Default for dev
 # ============================================================================
 
 APP_GLOBALS = {
-    "app_name": "BoloDoc",
+    "app_name": "BoloDoc API",
     "company_name": "Scientifics.io",
     "business_email": "contact@scientifics.io",
     "legal_email": "legal@scientifics.io",
@@ -74,13 +74,13 @@ APP_GLOBALS = {
     "security_email": "security@scientifics.io",
     "support_email": "engage@scientifics.io",
     "api_version" : "2.0.0", 
-    "api_description" : "A Comprehensive FBI Wanted Persons Search API", 
+    "api_description" : "A Comprehensive Wrapper for FBI Wanted API data", 
     "year": 2025
     }
 
 
 # Rate limiting
-RATE_LIMIT_DEFAULT = "10/minute"
+RATE_LIMIT_DEFAULT = "30/minute"
 
 # ============================================================================
 # LEMONSQUEEZY CONFIGURATION
@@ -135,6 +135,84 @@ PRICING = {
     }
 }
 
+SWAGGER_UI_CUSTOM_CSS = """
+<style>
+    .swagger-ui .markdown h1, .swagger-ui .markdown h2, 
+    .swagger-ui .markdown h3, .swagger-ui .markdown h4 {
+        font-weight: 700 !important;
+        color: #0066cc !important;
+        margin-top: 1.5em !important;
+        margin-bottom: 0.5em !important;
+    }
+    
+    .swagger-ui .markdown h3 { font-size: 1.2em !important; }
+    .swagger-ui .markdown h4 { font-size: 1.1em !important; color: #24292e !important; }
+    
+    .swagger-ui .markdown strong, .swagger-ui .markdown b {
+        font-weight: 700 !important;
+        color: #24292e !important;
+    }
+    
+    .swagger-ui .markdown pre {
+        background-color: #f6f8fa !important;
+        border: 1px solid #e1e4e8 !important;
+        border-radius: 6px !important;
+        padding: 12px !important;
+        overflow-x: auto !important;
+    }
+    
+    .swagger-ui .markdown code {
+        background-color: #f6f8fa !important;
+        border-radius: 3px !important;
+        padding: 0.2em 0.4em !important;
+        color: #e83e8c !important;
+        font-family: 'SFMono-Regular', Consolas, monospace !important;
+        font-size: 0.9em !important;
+    }
+    
+    .swagger-ui .markdown pre code {
+        padding: 0 !important;
+        color: #24292e !important;
+        background-color: transparent !important;
+    }
+    
+    .swagger-ui .markdown ul, .swagger-ui .markdown ol {
+        line-height: 1.8 !important;
+        margin-left: 1.5em !important;
+    }
+    
+    .swagger-ui .markdown li { margin-bottom: 0.5em !important; }
+    
+    .swagger-ui .markdown p {
+        color: #24292e !important;
+        line-height: 1.6 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+    }
+    
+    .swagger-ui .markdown table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        margin: 1em 0 !important;
+    }
+    
+    .swagger-ui .markdown table th, .swagger-ui .markdown table td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+        text-align: left !important;
+    }
+    
+    .swagger-ui .markdown table th {
+        background-color: #f6f8fa !important;
+        font-weight: 600 !important;
+    }
+    
+    .swagger-ui .opblock-description-wrapper p,
+    .swagger-ui .opblock-description-wrapper {
+        color: #24292e !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+    }
+</style>
+"""
 # ============================================================================
 # VALIDATION HELPERS
 # ============================================================================

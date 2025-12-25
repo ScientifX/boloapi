@@ -1308,11 +1308,10 @@ if resp.StatusCode == 200 {
                 <li>Request a new token before expiration</li>
             </ul>
 
-            <h3>Result Limits by Role:</h3>
+            <h3>Result Limits by Subscription:</h3>
             <ul>
                 <li><strong>Basic:</strong> Fixed at 25 results per search</li>
                 <li><strong>Premium:</strong> No limit to results per search</li>
-                <li><strong>Admin:</strong> No limit to results per search</li>
             </ul>
 
             <h3>Best Practices:</h3>
@@ -1339,7 +1338,7 @@ if resp.StatusCode == 200 {
             {% if user_role == 'basic' %}
             <div class="alert alert-info mt-3">
                 <strong>Want more?</strong> Upgrade to Premium for advanced search capabilities, 
-                higher result limits, cleaned data, and email notifications when the FBI database updates.
+                higher result limits, cleaned data, and email notifications when the FBI Wanted API database updates.
                 <br><br>
                 <a href="/plans" class="btn btn-warning" style="width: 200px;">View Premium Plans</a>
             </div>

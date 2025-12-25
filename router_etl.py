@@ -1035,8 +1035,8 @@ router = APIRouter(prefix="/v1/etl", tags=["Data Import"], include_in_schema=Tru
     "/load", 
     response_model=ImportSummary, 
     status_code=status.HTTP_200_OK,
-    summary="Load FBI Data from File",
-    description="Import FBI wanted data from JSON file on server. **ADMIN ONLY**"
+    summary="Load FBI Wanted API data from File",
+    description="Import FBI Wanted API data from JSON file on server."
     )
 async def data_load(
     run_link_validation: bool = Query(
@@ -1050,7 +1050,7 @@ async def data_load(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
-    Import FBI wanted data from a JSON file on the server
+    Import FBI Wanted API data from a JSON file on the server
     
     **Access:** ADMIN role only
     
@@ -1119,8 +1119,8 @@ async def data_load(
      
 @router.get(
     "/extract",
-    summary="Extract FBI Data from API",
-    description="Extract FBI wanted data and save to file in JSON or CSV format. **ADMIN ONLY**"
+    summary="Extract FBI Wanted API data from API",
+    description="Extract FBI Wanted API data and save to file in JSON or CSV format."
     )
 async def get_wanted(
     request: Request,
@@ -1129,7 +1129,7 @@ async def get_wanted(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
-    Extract FBI wanted data and save to file in JSON or CSV format.
+    Extract FBI Wanted API data and save to file in JSON or CSV format.
     
     **Access:** ADMIN role only
     
@@ -1201,16 +1201,14 @@ async def get_wanted(
 @router.get(
     "/full_refresh",
     summary="Full Data Refresh",
-    description="Perform a full refresh: extract all FBI wanted data to JSON file, then load it. **ADMIN ONLY**"
+    description="Perform a full refresh: extract all FBI Wanted API data to JSON file, then load it."
     )
 async def full_refresh(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
-    Perform a full refresh: extract all FBI wanted data to JSON file, then load it.
-    
-    **Access:** ADMIN role only
+    Perform a full refresh: extract all FBI Wanted API data to JSON file, then load it.
     
     This endpoint calls:
     1. /extract with format=json and size=all
@@ -1262,7 +1260,7 @@ async def full_refresh(
 @router.get(
     "/metadata",
     summary="ETL Metadata History",
-    description="View ETL run statistics and performance metrics. **ADMIN ONLY**"
+    description="View ETL run statistics and performance metrics."
     )
 async def get_etl_metadata(
     limit: int = Query(default=30, ge=1, le=365, description="Number of recent pulls to return"),
@@ -1343,7 +1341,7 @@ async def get_etl_metadata(
 @router.get(
     "/process_notifications",
     summary="Process Pending Notifications",
-    description="Process and send pending BoloDoc notifications to opted-in premium users. **ADMIN ONLY**"
+    description="Process and send pending BoloDoc notifications to opted-in premium users."
     )
 async def process_notifications_endpoint(
     request: Request,
@@ -1379,19 +1377,19 @@ async def process_notifications_endpoint(
 
 @router.get(
     "/validate_links",
-    summary="Validate All URLs in BOLO Data",
-    description="Extract and validate all URLs from the FBI data file. **ADMIN ONLY**"
+    summary="Validate All URLs in BoloDoc aata",
+    description="Extract and validate all URLs from the FBI Wanted API data file."
     )
 async def validate_links_endpoint(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
-    Extract all URLs from FBI BOLO data and validate their accessibility.
+    Extract all URLs from FBI BoloDoc data and validate their accessibility.
     
     **Access:** ADMIN role only
     
     This endpoint:
-    1. Reads the current FBI data file
+    1. Reads the current FBI Wanted API data file
     2. Extracts all URLs (pathId, url, files, images)
     3. Validates each URL using HEAD requests
     4. Stores results in tbl_bolo_link_check
@@ -1412,7 +1410,7 @@ async def validate_links_endpoint(
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="FBI data file not found. Run /extract first."
+            detail="FBI Wanted API data file not found. Run /extract first."
             )
     except Exception as e:
         logger.error(f"Link validation error: {str(e)}")
@@ -1425,7 +1423,7 @@ async def validate_links_endpoint(
 @router.get(
     "/link_status",
     summary="Link Validation Status Summary",
-    description="View summary statistics from link validation results. **ADMIN ONLY**"
+    description="View summary statistics from link validation results."
     )
 async def get_link_status(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1458,7 +1456,7 @@ async def get_link_status(
 @router.get(
     "/link_failures",
     summary="List Failed Links",
-    description="View list of URLs that failed validation. **ADMIN ONLY**"
+    description="View list of URLs that failed validation."
     )
 async def get_link_failures(
     limit: int = Query(default=100, ge=1, le=1000, description="Maximum results to return"),
@@ -1471,7 +1469,7 @@ async def get_link_failures(
     **Access:** ADMIN role only
     
     Useful for identifying:
-    - Broken links in FBI data
+    - Broken links in FBI Wanted API data
     - URLs that may have moved or been removed
     - Network connectivity issues
     
@@ -1502,7 +1500,7 @@ async def get_link_failures(
 @router.get(
     "/cache_stats",
     summary="View Cache Statistics",
-    description="View file cache statistics including file count and total size. **ADMIN ONLY**"
+    description="View file cache statistics including file count and total size."
     )
 async def get_cache_statistics(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1532,7 +1530,7 @@ async def get_cache_statistics(
 @router.delete(
     "/cache",
     summary="Clear Download Cache",
-    description="Delete all cached files to force re-download. **ADMIN ONLY**"
+    description="Delete all cached files to force re-download."
     )
 async def clear_download_cache(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1569,7 +1567,7 @@ async def clear_download_cache(
 @router.post(
     "/download_files",
     summary="Download Files to Cache",
-    description="Download all validated files to cache directory. **ADMIN ONLY**"
+    description="Download all validated files to cache directory."
     )
 async def download_files_endpoint(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1601,7 +1599,7 @@ async def download_files_endpoint(
 @router.post(
     "/create_archive",
     summary="Create Documents Archive",
-    description="Generate ZIP archive from cached files. **ADMIN ONLY**"
+    description="Generate ZIP archive from cached files."
     )
 async def create_archive_endpoint(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1647,7 +1645,7 @@ async def create_archive_endpoint(
 @router.get(
     "/archive_status",
     summary="Archive Status",
-    description="Get information about the current archive file. **ADMIN ONLY**"
+    description="Get information about the current archive file."
     )
 async def get_archive_status(
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
@@ -1685,7 +1683,7 @@ async def get_archive_status(
 @router.post(
     "/generate_full_archive",
     summary="Full Archive Generation",
-    description="Run complete archive generation process: validate links, download files, create archive. **ADMIN ONLY**"
+    description="Run complete archive generation process: validate links, download files, create archive."
     )
 async def generate_full_archive(
     skip_validation: bool = Query(

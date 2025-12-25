@@ -1,7 +1,7 @@
 """
 Link Validation and File Caching Service
 =========================================
-Extracts and validates all URLs from FBI BOLO data records.
+Extracts and validates all URLs from FBI BoloDoc data records.
 Downloads and caches files for archive generation.
 Creates ZIP archives for premium annual subscribers.
 

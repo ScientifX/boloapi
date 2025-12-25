@@ -994,7 +994,7 @@ def handle_order_refunded(data: Dict[str, Any], meta: Dict[str, Any] = None) -> 
     "/create_checkout",
     response_model=CheckoutResponse,
     summary="Create Checkout Session",
-    description="Create a LemonSqueezy checkout session to upgrade to Premium"
+    description=""
 )
 @limiter.limit(rate_max)
 async def create_checkout(
@@ -1143,7 +1143,6 @@ async def get_subscription_status(
 @limiter.limit(rate_max)
 async def get_payment_history(
     request: Request,
-    limit: int = 10,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """
@@ -1165,9 +1164,9 @@ async def get_payment_history(
                     FROM tbl_payment_history
                     WHERE user_id = %s
                     ORDER BY payment_date DESC
-                    LIMIT %s
+                    LIMIT 250
                     """,
-                    (current_user["user_id"], limit)
+                    (current_user["user_id"], 250)
                 )
                 payments = cur.fetchall()
         

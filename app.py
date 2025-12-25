@@ -8,11 +8,12 @@ from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import HTMLResponse 
 
 # Rate limiting libraries
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
+from slowapi.errors import RateLimitExceeded 
 
 from lookups import COUNTRIES, STATES
 from auth import (
@@ -24,7 +25,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, SWAGGER_UI_CUSTOM_CSS
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -80,7 +81,7 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 app = FastAPI(
     title="BoloDoc API",
-    description="FBI Wanted and Missing Persons Data. <br><br><a href='/v1/auth/signup'>Sign up free</a> to get started, then <a href='/v1/auth/login'>log in</a> to see the full API docs",
+    description="Enhanced FBI Wanted API data. <br><br><a href='/v1/auth/signup'>Sign up free</a> to get started, then <a href='/v1/auth/login'>log in</a> to see the full API docs",
     version="1.0.0",
     docs_url=None,
     redoc_url=None,
@@ -111,10 +112,9 @@ async def get_openapi_schema(request: Request):
     Serve OpenAPI schema filtered by the viewer's role.
     
     Visibility (users see their role level and below):
-    - PUBLIC: Only PUBLIC endpoints
-    - BASIC: PUBLIC + BASIC endpoints
-    - PREMIUM: PUBLIC + BASIC + PREMIUM endpoints
-    - ADMIN: All endpoints
+      - PUBLIC: Only PUBLIC endpoints
+      - BASIC: PUBLIC + BASIC endpoints
+      - PREMIUM: PUBLIC + BASIC + PREMIUM endpoints
     
     Cache-Control: no-store prevents browser from caching role-specific schemas.
     This ensures users see the correct endpoints after login/logout.
@@ -133,7 +133,7 @@ async def get_openapi_schema(request: Request):
 @app.get("/docs", include_in_schema=False)
 async def get_docs(request: Request):
     """
-    Serve Swagger UI with role-filtered endpoints.
+    Serve Swagger UI with role-filtered endpoints and custom styling.
     Shows different endpoints based on viewer's authentication level.
     
     Cache-Control: no-store ensures fresh content after login/logout.
@@ -149,20 +149,28 @@ async def get_docs(request: Request):
     }
     role_label = role_labels.get(viewer_role, "Guest")
     
-    # Get the Swagger UI HTML response
-    swagger_response = get_swagger_ui_html(
+    # Get the base Swagger UI HTML response
+    html = get_swagger_ui_html(
         openapi_url="/openapi.json",
         title=f"API Docs - BoloDoc",
         swagger_ui_parameters={"defaultModelsExpandDepth": -1}
     )
     
-    # Add cache-control headers to prevent browser caching
-    swagger_response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    swagger_response.headers["Pragma"] = "no-cache"
-    swagger_response.headers["Expires"] = "0"
+    # Inject custom CSS for better markdown rendering
+    html_body = html.body.decode('utf-8')
+    html_body = html_body.replace('</head>', f'{SWAGGER_UI_CUSTOM_CSS}</head>')
     
-    return swagger_response
-
+    print(html_body)
+    
+    # Create response with updated HTML
+    response = HTMLResponse(content=html_body)
+    
+    # Add cache-control headers to prevent browser caching
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    return response
 
 @app.get("/redoc", include_in_schema=False)
 async def get_redoc(request: Request):
@@ -492,7 +500,7 @@ async def list_routes(
 async def root(request: Request):
     """
     Homepage - accessible by all roles (PUBLIC and above)
-    Shows live FBI data statistics, features, pricing, and use cases
+    Shows live FBI Wanted API data statistics, features, pricing, and use cases
     """
     # Public endpoint - no authentication required
     current_role = get_current_role(request)  # For session-based testing
