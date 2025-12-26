@@ -55,7 +55,7 @@ if BILLING_TEST_MODE:
     logger.warning("=" * 60)
 
 # Rate limiter
-rate_max = "10/minute"
+rate_max = "3000/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # Router

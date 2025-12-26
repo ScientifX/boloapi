@@ -29,7 +29,7 @@ from link_validation_service import get_archive_info, get_archive_file_path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-rate_max = "10/minute"
+rate_max = "500/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # FastAPI Router
@@ -808,8 +808,10 @@ def build_comparison_clause(field: str, operator: str, value: Union[str, int, fl
     Build a SQL WHERE clause with parameter placeholders.
     Returns tuple of (clause, params_list) for parameterized queries.
     
+    Queries are built against direct columns in vw_bolo, NOT the full_data JSONB.
+    
     Args:
-        field: The database field name
+        field: The database field name (must be a column in vw_bolo)
         operator: The comparison operator (equals, contains, gt, lt, etc.)
         value: The value(s) to compare against
         param_placeholder: The parameter placeholder (always '%s' for psycopg2)
@@ -834,67 +836,67 @@ def build_comparison_clause(field: str, operator: str, value: Union[str, int, fl
         elif operator == 'ends_with':
             return (f"EXISTS (SELECT 1 FROM unnest({field}) elem WHERE elem ILIKE {param_placeholder})", [f"%{value}"])
     
-    # Handle string comparison operators
+    # Handle string comparison operators - query direct columns in vw_bolo
     if operator == 'contains':
         if is_string:
-            return (f"full_data->>'{field}' ILIKE {param_placeholder}", [f"%{value}%"])
+            return (f"{field} ILIKE {param_placeholder}", [f"%{value}%"])
         else:
-            return (f"full_data->>'{field}' = {param_placeholder}", [value])
+            return (f"{field} = {param_placeholder}", [value])
     
     elif operator == 'starts_with':
         if is_string:
-            return (f"full_data->>'{field}' ILIKE {param_placeholder}", [f"{value}%"])
+            return (f"{field} ILIKE {param_placeholder}", [f"{value}%"])
         else:
-            return (f"full_data->>'{field}' = {param_placeholder}", [value])
+            return (f"{field} = {param_placeholder}", [value])
     
     elif operator == 'ends_with':
         if is_string:
-            return (f"full_data->>'{field}' ILIKE {param_placeholder}", [f"%{value}"])
+            return (f"{field} ILIKE {param_placeholder}", [f"%{value}"])
         else:
-            return (f"full_data->>'{field}' = {param_placeholder}", [value])
+            return (f"{field} = {param_placeholder}", [value])
         
     elif operator == 'equals':
         if is_string:
-            return (f"LOWER(full_data->>'{field}') = LOWER({param_placeholder})", [value])
+            return (f"LOWER({field}) = LOWER({param_placeholder})", [value])
         elif is_timestamp:
-            return (f"(full_data->>'{field}')::timestamp = {param_placeholder}::timestamp", [value])
+            return (f"{field} = {param_placeholder}::timestamp", [value])
         elif is_integer: 
-            return (f"(full_data->>'{field}')::integer = {param_placeholder}", [value])
+            return (f"{field} = {param_placeholder}", [value])
         else:  # For other numeric types
-            return (f"(full_data->>'{field}')::numeric = {param_placeholder}", [value])
+            return (f"{field} = {param_placeholder}", [value])
     
     # Handle numeric/timestamp comparison operators
     elif operator == 'gt':
         if is_timestamp:
-            return (f"(full_data->>'{field}')::timestamp > {param_placeholder}::timestamp", [value])
+            return (f"{field} > {param_placeholder}::timestamp", [value])
         elif is_integer:
-            return (f"(full_data->>'{field}')::integer > {param_placeholder}", [value])
+            return (f"{field} > {param_placeholder}", [value])
         else:
-            return (f"(full_data->>'{field}')::numeric > {param_placeholder}", [value])
+            return (f"{field} > {param_placeholder}", [value])
     
     elif operator == 'lt':
         if is_timestamp:
-            return (f"(full_data->>'{field}')::timestamp < {param_placeholder}::timestamp", [value])
+            return (f"{field} < {param_placeholder}::timestamp", [value])
         elif is_integer:
-            return (f"(full_data->>'{field}')::integer < {param_placeholder}", [value])
+            return (f"{field} < {param_placeholder}", [value])
         else:
-            return (f"(full_data->>'{field}')::numeric < {param_placeholder}", [value])
+            return (f"{field} < {param_placeholder}", [value])
     
     elif operator == 'gte':
         if is_timestamp:
-            return (f"(full_data->>'{field}')::timestamp >= {param_placeholder}::timestamp", [value])
+            return (f"{field} >= {param_placeholder}::timestamp", [value])
         elif is_integer:
-            return (f"(full_data->>'{field}')::integer >= {param_placeholder}", [value])
+            return (f"{field} >= {param_placeholder}", [value])
         else:
-            return (f"(full_data->>'{field}')::numeric >= {param_placeholder}", [value])
+            return (f"{field} >= {param_placeholder}", [value])
     
     elif operator == 'lte':
         if is_timestamp:
-            return (f"(full_data->>'{field}')::timestamp <= {param_placeholder}::timestamp", [value])
+            return (f"{field} <= {param_placeholder}::timestamp", [value])
         elif is_integer:
-            return (f"(full_data->>'{field}')::integer <= {param_placeholder}", [value])
+            return (f"{field} <= {param_placeholder}", [value])
         else:
-            return (f"(full_data->>'{field}')::numeric <= {param_placeholder}", [value])
+            return (f"{field} <= {param_placeholder}", [value])
     
     elif operator == 'between':
         # Value should be a list of [min, max]
@@ -904,17 +906,17 @@ def build_comparison_clause(field: str, operator: str, value: Union[str, int, fl
         if is_timestamp:
             # For timestamps, use < on end date + 1 day to include entire end date
             return (
-                f"(full_data->>'{field}')::timestamp >= {param_placeholder}::timestamp AND (full_data->>'{field}')::timestamp < ({param_placeholder}::timestamp + INTERVAL '1 day')",
+                f"{field} >= {param_placeholder}::timestamp AND {field} < ({param_placeholder}::timestamp + INTERVAL '1 day')",
                 [value[0], value[1]]
             )
         elif is_integer:
             return (
-                f"(full_data->>'{field}')::integer BETWEEN {param_placeholder} AND {param_placeholder}",
+                f"{field} BETWEEN {param_placeholder} AND {param_placeholder}",
                 [value[0], value[1]]
             )
         else:
             return (
-                f"(full_data->>'{field}')::numeric BETWEEN {param_placeholder} AND {param_placeholder}",
+                f"{field} BETWEEN {param_placeholder} AND {param_placeholder}",
                 [value[0], value[1]]
             )
     
@@ -2740,7 +2742,13 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
 @router.get(
     "/documents_info",
     summary="Documents Archive Information",
-    description=""
+    description="""
+    Get information about the available BOLO documents archive.
+    
+    **Access:** PREMIUM subscription with annual billing cycle
+    
+    Returns archive availability, file size, and generation timestamp.
+    """
     )
 @limiter.limit(rate_max)
 async def get_documents_info(

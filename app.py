@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse 
@@ -25,7 +26,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, SWAGGER_UI_CUSTOM_CSS
+from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, SWAGGER_UI_CUSTOM_CSS, API_APP_BASE_URL
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -72,7 +73,7 @@ def get_db_connection():
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
 # Initialize rate limiter
-rate_max = "10/minute"
+rate_max = "3000/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # ============================================================================
@@ -90,6 +91,78 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# ============================================================================
+# CUSTOM VALIDATION ERROR HANDLER
+# ============================================================================
+
+# Build quickstart URL for error messages
+QUICKSTART_FIELDS_URL = f"{API_APP_BASE_URL}/quickstart#fields-reference" if API_APP_BASE_URL else "/quickstart#fields-reference"
+
+async def custom_validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Custom handler for validation errors that adds helpful reference URLs.
+    
+    Specifically enhances error messages for invalid field names in search endpoints
+    by providing a link to the quickstart page with valid field documentation.
+    """
+    errors = exc.errors()
+    enhanced_errors = []
+    
+    # Check if this is a search endpoint request
+    is_search_endpoint = "/v1/search" in str(request.url.path)
+    
+    for error in errors:
+        error_detail = dict(error)
+        
+        # Check if this is an invalid field error (enum validation failure)
+        error_type = error.get("type", "")
+        error_loc = error.get("loc", [])
+        error_msg = error.get("msg", "")
+        
+        # Detect field validation errors in search requests
+        # These typically have 'field' in the location path and are enum errors
+        is_field_error = (
+            is_search_endpoint and 
+            any("field" in str(loc).lower() for loc in error_loc) and
+            ("literal" in error_type.lower() or 
+             "enum" in error_type.lower() or
+             "input should be" in error_msg.lower() or
+             "unexpected value" in error_msg.lower())
+        )
+        
+        if is_field_error:
+            # Extract the invalid value from the error if possible
+            invalid_value = None
+            if "input" in error_detail:
+                invalid_value = error_detail["input"]
+            
+            # Build enhanced error message
+            if invalid_value:
+                enhanced_msg = (
+                    f"Invalid field name: '{invalid_value}'. "
+                    f"See valid fields at: {QUICKSTART_FIELDS_URL}"
+                )
+            else:
+                enhanced_msg = (
+                    f"{error_msg}. "
+                    f"See valid fields at: {QUICKSTART_FIELDS_URL}"
+                )
+            
+            error_detail["msg"] = enhanced_msg
+            error_detail["help_url"] = QUICKSTART_FIELDS_URL
+        
+        enhanced_errors.append(error_detail)
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": enhanced_errors,
+            "help": "For valid field names and operators, see: " + QUICKSTART_FIELDS_URL if is_search_endpoint else None
+        }
+    )
+
+app.add_exception_handler(RequestValidationError, custom_validation_exception_handler)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -348,146 +421,89 @@ async def list_routes(
         # Extract rate limits from endpoint function decorators
         rate_limits = []
         if hasattr(endpoint, '__wrapped__'):
-            # Check for slowapi limit decorator info
-            current = endpoint
-            while current:
-                if hasattr(current, '_rate_limit'):
-                    rate_limits.append(current._rate_limit)
-                if hasattr(current, '__wrapped__'):
-                    current = current.__wrapped__
-                else:
-                    break
+            # Check for limiter decorators
+            wrapped = endpoint
+            while hasattr(wrapped, '__wrapped__'):
+                if hasattr(wrapped, '_rate_limit'):
+                    rate_limits.append(wrapped._rate_limit)
+                wrapped = wrapped.__wrapped__
         
-        # Also check the endpoint's __self__ for limiter decorators
-        # SlowAPI stores limits differently - check for _limits attribute
-        if hasattr(endpoint, '__self__') and hasattr(endpoint.__self__, '_limits'):
-            rate_limits.extend(endpoint.__self__._limits)
-        
-        # Default rate limit if none found on endpoint
-        rate_limit_display = ', '.join(rate_limits) if rate_limits else rate_max
+        # Try to get rate limit from function attributes
+        if hasattr(endpoint, '__self__') and hasattr(endpoint.__self__, 'limit'):
+            rate_limits.append(endpoint.__self__.limit)
         
         routes_info.append({
-            'router': router_name,
-            'method': methods,
             'path': path,
+            'methods': methods,
+            'router': router_name,
             'endpoint': endpoint_name,
             'auth_required': auth_required,
-            'rate_limit': rate_limit_display
+            'rate_limits': ', '.join(rate_limits) if rate_limits else 'default'
         })
     
-    # Sort routes by router, then by path
+    # Sort by router, then path
     routes_info.sort(key=lambda x: (x['router'], x['path']))
     
-    # Generate HTML table
+    # Build HTML table
     html = """
     <!DOCTYPE html>
     <html>
     <head>
         <title>API Routes</title>
         <style>
-            body { 
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-                margin: 40px;
-                background: #f5f5f5;
-            }
-            h1 { 
-                color: #333;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 10px;
-            }
-            table { 
-                border-collapse: collapse; 
-                width: 100%; 
-                background: white;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            th, td { 
-                border: 1px solid #ddd; 
-                padding: 12px 15px; 
-                text-align: left; 
-            }
-            th { 
-                background: #007bff; 
-                color: white;
-                font-weight: 600;
-            }
-            tr:nth-child(even) { background: #f8f9fa; }
-            tr:hover { background: #e9ecef; }
-            .method { 
-                font-weight: bold; 
-                font-family: monospace;
-            }
-            .method.GET { color: #28a745; }
-            .method.POST { color: #007bff; }
-            .method.PUT { color: #ffc107; }
-            .method.DELETE { color: #dc3545; }
-            .path { 
-                font-family: monospace; 
-                color: #6c757d;
-            }
-            .auth-yes { color: #dc3545; font-weight: 500; }
-            .auth-no { color: #28a745; }
-            .router-tag {
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 0.85em;
-                font-weight: 500;
-            }
-            .router-auth { background: #e7f1ff; color: #0056b3; }
-            .router-search { background: #d4edda; color: #155724; }
-            .router-etl { background: #fff3cd; color: #856404; }
-            .router-billing { background: #f8d7da; color: #721c24; }
-            .router-root { background: #e2e3e5; color: #383d41; }
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #3d4461; color: white; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            tr:hover { background-color: #f1f1f1; }
+            .method-get { color: #61affe; font-weight: bold; }
+            .method-post { color: #49cc90; font-weight: bold; }
+            .method-put { color: #fca130; font-weight: bold; }
+            .method-delete { color: #f93e3e; font-weight: bold; }
+            .auth-yes { color: #49cc90; }
+            .auth-no { color: #999; }
         </style>
     </head>
     <body>
         <h1>API Routes</h1>
+        <p>Total routes: """ + str(len(routes_info)) + """</p>
         <table>
-            <thead>
-                <tr>
-                    <th>Router</th>
-                    <th>Method</th>
-                    <th>Path</th>
-                    <th>Endpoint</th>
-                    <th>Auth Required</th>
-                    <th>Rate Limit</th>
-                </tr>
-            </thead>
-            <tbody>
+            <tr>
+                <th>Path</th>
+                <th>Methods</th>
+                <th>Router</th>
+                <th>Endpoint</th>
+                <th>Auth Required</th>
+                <th>Rate Limits</th>
+            </tr>
     """
     
     for route in routes_info:
-        # Determine method class for styling
-        method_class = route['method'].split(',')[0].strip()
+        method_class = ''
+        if 'GET' in route['methods']:
+            method_class = 'method-get'
+        elif 'POST' in route['methods']:
+            method_class = 'method-post'
+        elif 'PUT' in route['methods']:
+            method_class = 'method-put'
+        elif 'DELETE' in route['methods']:
+            method_class = 'method-delete'
         
-        # Determine auth class
         auth_class = 'auth-yes' if route['auth_required'].startswith('Yes') else 'auth-no'
         
-        # Determine router class
-        router_class = 'router-root'
-        if 'auth' in route['router']:
-            router_class = 'router-auth'
-        elif 'search' in route['router']:
-            router_class = 'router-search'
-        elif 'etl' in route['router']:
-            router_class = 'router-etl'
-        elif 'billing' in route['router']:
-            router_class = 'router-billing'
-        
         html += f"""
-                <tr>
-                    <td><span class="router-tag {router_class}">{route['router']}</span></td>
-                    <td class="method {method_class}">{route['method']}</td>
-                    <td class="path">{route['path']}</td>
-                    <td>{route['endpoint']}</td>
-                    <td class="{auth_class}">{route['auth_required']}</td>
-                    <td>{route['rate_limit']}</td>
-                </tr>
+            <tr>
+                <td>{route['path']}</td>
+                <td class="{method_class}">{route['methods']}</td>
+                <td>{route['router']}</td>
+                <td>{route['endpoint']}</td>
+                <td class="{auth_class}">{route['auth_required']}</td>
+                <td>{route['rate_limits']}</td>
+            </tr>
         """
     
     html += """
-            </tbody>
         </table>
     </body>
     </html>
@@ -495,43 +511,31 @@ async def list_routes(
     
     return HTMLResponse(content=html)
 
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
-@limiter.limit(rate_max)
-async def root(request: Request):
-    """
-    Homepage - accessible by all roles (PUBLIC and above)
-    Shows live FBI Wanted API data statistics, features, pricing, and use cases
-    """
-    # Public endpoint - no authentication required
-    current_role = get_current_role(request)  # For session-based testing
-    
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(FBI_API_URL, params={"page": 1})
-            response.raise_for_status()
-            data = response.json()
-            total = data.get("total", "N/A")
-        except Exception:
-            total = "5,200+"  # Fallback if FBI API is unavailable
+
+# ============================================================================
+# ROOT AND STATIC ENDPOINTS
+# ============================================================================
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
+@limiter.limit("3000/minute")  # More permissive for landing page
+async def home(request: Request):
+    """Home page with API overview and login/signup links"""
+    # Get session role
+    current_role = get_current_role(request)
     
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
-            "total": total,
-            "current_role": current_role.value,  # For testing display
+            "current_role": current_role.value,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
         }
     )
 
-# ============================================================================
-# STATIC CONTENT PAGES
-# ============================================================================
-
 @app.get("/quickstart", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
-@limiter.limit("30/minute")
+@limiter.limit("3000/minute")
 async def quickstart_page(request: Request):
     """QuickStart guide for authenticated users"""
     current_role = get_current_role(request)
@@ -565,13 +569,13 @@ async def quickstart_page(request: Request):
             "user_display_name": request.state.user_display_name,
             "user_role": current_role.value,
             "user_api_key": user_api_key,
-            "base_url": "https://127.0.0.1:8000", 
+            "base_url": API_APP_BASE_URL or "https://127.0.0.1:8000", 
             "token_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES,
         }
     )
 
 @app.get("/about", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
-@limiter.limit("30/minute")  # More permissive
+@limiter.limit("3000/minute")  # More permissive
 async def about_page(request: Request):
     """About BoloDoc and the FBI Wanted API"""
     current_role = get_current_role(request)
@@ -587,7 +591,7 @@ async def about_page(request: Request):
     )
 
 @app.get("/privacy", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
-@limiter.limit("30/minute")  # More permissive
+@limiter.limit("3000/minute")  # More permissive
 async def privacy_page(request: Request):
     """Privacy Policy"""
     current_role = get_current_role(request)
@@ -604,7 +608,7 @@ async def privacy_page(request: Request):
     )
 
 @app.get("/terms", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
-@limiter.limit("30/minute")  # More permissive
+@limiter.limit("3000/minute")  # More permissive
 async def terms_page(request: Request):
     """Terms of Service"""
     current_role = get_current_role(request)
@@ -621,7 +625,7 @@ async def terms_page(request: Request):
     )
 
 @app.get("/contact", response_class=HTMLResponse, include_in_schema=False, tags=["Static Pages"])
-@limiter.limit("30/minute")  # More permissive
+@limiter.limit("3000/minute")  # More permissive
 async def contact_page(request: Request):
     """Contact Information"""
     current_role = get_current_role(request)

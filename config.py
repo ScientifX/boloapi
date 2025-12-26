@@ -80,7 +80,7 @@ APP_GLOBALS = {
 
 
 # Rate limiting
-RATE_LIMIT_DEFAULT = "30/minute"
+RATE_LIMIT_DEFAULT = "3000/minute"
 
 # ============================================================================
 # LEMONSQUEEZY CONFIGURATION

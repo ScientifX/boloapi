@@ -483,18 +483,6 @@ public class BoloSearch {
             JsonObject results = gson.fromJson(response.body(), JsonObject.class);
             int count = results.get("count").getAsInt();
             System.out.println("Found " + count + " results");
-            
-            // Display first result
-            JsonArray resultArray = results.getAsJsonArray("results");
-            if (resultArray.size() > 0) {
-                JsonObject first = resultArray.get(0).getAsJsonObject();
-                JsonObject data = first.getAsJsonObject("data");
-                
-                System.out.println("\nFirst result:");
-                System.out.println("Title: " + data.get("title").getAsString());
-                System.out.println("UID: " + data.get("uid").getAsString());
-            }
-            
             return results;
         } else {
             throw new Exception("Search failed: " + 
@@ -505,117 +493,56 @@ public class BoloSearch {
                 </div>
                 
                 <div id="search-csharp" class="tab-content">
-                    <pre><code>using System;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-
-public class BoloSearch
+                    <pre><code>public static async Task<JsonElement> SimpleSearch(string accessToken)
 {
-    private static readonly HttpClient client = new HttpClient();
+    var searchRequest = new {
+        filters = new[] {
+            new { field = "title", value = "Murder*" }
+        },
+        logic = "AND",
+        limit = 10
+    };
     
-    public static async Task<JsonElement> SimpleSearch(string accessToken)
+    var json = JsonSerializer.Serialize(searchRequest);
+    var content = new StringContent(json, Encoding.UTF8, "application/json");
+    
+    client.DefaultRequestHeaders.Authorization = 
+        new AuthenticationHeaderValue("Bearer", accessToken);
+    
+    var response = await client.PostAsync($"{BaseUrl}/v1/search/simple", content);
+    
+    if (response.IsSuccessStatusCode)
     {
-        var searchRequest = new
-        {
-            filters = new[]
-            {
-                new { field = "title", value = "Murder*" }
-            },
-            logic = "AND",
-            limit = 10
-        };
-        
-        var json = JsonSerializer.Serialize(searchRequest);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        
-        client.DefaultRequestHeaders.Clear();
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        
-        var response = await client.PostAsync($"{BaseUrl}/v1/search/simple", content);
-        
-        if (response.IsSuccessStatusCode)
-        {
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
-            
-            var count = results.GetProperty("count").GetInt32();
-            Console.WriteLine($"Found {count} results");
-            
-            // Display first result
-            var resultArray = results.GetProperty("results");
-            if (resultArray.GetArrayLength() > 0)
-            {
-                var first = resultArray[0];
-                var data = first.GetProperty("data");
-                
-                Console.WriteLine("\nFirst result:");
-                Console.WriteLine($"Title: {data.GetProperty("title").GetString()}");
-                Console.WriteLine($"UID: {data.GetProperty("uid").GetString()}");
-            }
-            
-            return results;
-        }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Search failed: {response.StatusCode} - {error}");
-        }
+        var responseBody = await response.Content.ReadAsStringAsync();
+        var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
+        Console.WriteLine($"Found {results.GetProperty("count")} results");
+        return results;
+    }
+    else
+    {
+        var error = await response.Content.ReadAsStringAsync();
+        throw new Exception($"Search failed: {response.StatusCode} - {error}");
     }
 }</code></pre>
                 </div>
                 
                 <div id="search-go" class="tab-content">
-                    <pre><code>package main
-
-import (
-    "bytes"
-    "encoding/json"
-    "fmt"
-    "io/ioutil"
-    "net/http"
-)
-
-type Filter struct {
-    Field string `json:"field"`
-    Value string `json:"value"`
-}
-
-type SearchRequest struct {
-    Filters []Filter `json:"filters"`
-    Logic   string   `json:"logic"`
-    Limit   int      `json:"limit"`
-}
-
-type SearchResult struct {
-    Count   int                      `json:"count"`
-    Results []map[string]interface{} `json:"results"`
-}
-
-func simpleSearch(accessToken string) (*SearchResult, error) {
-    searchReq := SearchRequest{
-        Filters: []Filter{
-            {Field: "title", Value: "Murder*"},
+                    <pre><code>func simpleSearch(accessToken string) (map[string]interface{}, error) {
+    searchRequest := map[string]interface{}{
+        "filters": []map[string]string{
+            {"field": "title", "value": "Murder*"},
         },
-        Logic: "AND",
-        Limit: 10,
+        "logic": "AND",
+        "limit": 10,
     }
     
-    jsonData, err := json.Marshal(searchReq)
-    if err != nil {
-        return nil, err
-    }
+    jsonData, _ := json.Marshal(searchRequest)
     
-    req, err := http.NewRequest(
+    req, _ := http.NewRequest(
         "POST",
         baseURL+"/v1/search/simple",
         bytes.NewBuffer(jsonData),
     )
-    if err != nil {
-        return nil, err
-    }
-    
     req.Header.Set("Authorization", "Bearer "+accessToken)
     req.Header.Set("Content-Type", "application/json")
     
@@ -626,572 +553,279 @@ func simpleSearch(accessToken string) (*SearchResult, error) {
     }
     defer resp.Body.Close()
     
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return nil, err
-    }
+    body, _ := ioutil.ReadAll(resp.Body)
     
     if resp.StatusCode == 200 {
-        var results SearchResult
-        err = json.Unmarshal(body, &results)
-        if err != nil {
-            return nil, err
-        }
-        
-        fmt.Printf("Found %d results\n", results.Count)
-        
-        // Display first result
-        if len(results.Results) > 0 {
-            first := results.Results[0]
-            data := first["data"].(map[string]interface{})
-            fmt.Println("\nFirst result:")
-            fmt.Printf("Title: %v\n", data["title"])
-            fmt.Printf("UID: %v\n", data["uid"])
-        }
-        
-        return &results, nil
+        var results map[string]interface{}
+        json.Unmarshal(body, &results)
+        fmt.Printf("Found %.0f results\n", results["count"])
+        return results, nil
     }
     
     return nil, fmt.Errorf("search failed: %d - %s", resp.StatusCode, string(body))
 }</code></pre>
                 </div>
             </div>
-            
-            <h3>Response:</h3>
-            <pre><code>{
-    "query": {
-        "filters": [{"field": "title", "value": "Murder*"}],
-        "logic": "AND",
-        "limit": 10
-    },
-    "count": 3,
-    "results": [
-        {
-            "data_type": "{{ 'clean' if user_role == 'premium' or user_role == 'admin' else 'raw' }}",
-            "data": {
-                "uid": "abc123def456",
-                "title": "Murder; Kidnapping",
-                "subjects": ["John Doe"],
-                "description": "Wanted for murder and kidnapping...",
-                "reward_text": "Up to $100,000",
-                "reward_min": 100000,
-                "reward_max": 100000,
-                "publication": "2023-05-15",
-                "modified": "2024-11-20",
-                "url": "https://www.fbi.gov/wanted/...",
-                "status": "na",
-                "person_classification": "main"
-            }
-        }
-    ]
-}</code></pre>
-
-            <h3>Available Wildcard Patterns:</h3>
-            <ul>
-                <li><code>*text*</code> - Contains "text" anywhere</li>
-                <li><code>text*</code> - Starts with "text"</li>
-                <li><code>*text</code> - Ends with "text"</li>
-                <li><code>text</code> - Exact match</li>
-            </ul>
-
-            <h3>Common Search Fields:</h3>
-            <ul>
-                <li><code>title</code> - Crime titles (e.g., "Murder", "Kidnapping")</li>
-                <li><code>subjects</code> - Person names</li>
-                <li><code>description</code> - Full text descriptions</li>
-                <li><code>caution</code> - Warning information</li>
-                <li><code>warning_message</code> - Additional warnings</li>
-                <li><code>details</code> - Detailed case information</li>
-                <li><code>remarks</code> - Additional remarks</li>
-            </ul>
         </div>
     </div>
     
-    {% if user_role == 'premium' or user_role == 'admin' %}
-    <!-- Advanced Search Section (Premium Only) -->
-    <div class="card mt-4" style="border: 2px solid var(--warning-color);">
-        <div class="card-header" style="background-color: #fff3cd; color: #856404; display: flex; justify-content: space-between; align-items: center;">
-            <span>Step 4: Advanced Search</span>
-            <span class="badge badge-warning">PREMIUM</span>
-        </div>
+    <!-- Searchable Fields Reference Section -->
+    <div class="card mt-4" id="fields-reference">
+        <div class="card-header">Searchable Fields Reference</div>
         <div class="card-body">
-            <p>Use the <code>/v1/search/advanced</code> endpoint for complex queries with multiple operators and grouped conditions.</p>
+            <p>Both Simple and Advanced search endpoints accept the following fields. Use the exact field names shown below.</p>
             
-            <h3>Request:</h3>
-            <pre><code>POST {{ base_url }}/v1/search/advanced
+            <!-- String Fields -->
+            <h3>String Fields</h3>
+            <p class="text-muted">Text fields supporting operators: <code>equals</code>, <code>contains</code>, <code>starts_with</code>, <code>ends_with</code></p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>title</code></td><td>Person's name or case title</td></tr>
+                        <tr><td><code>description</code></td><td>Brief description of the person</td></tr>
+                        <tr><td><code>details</code></td><td>Detailed case information</td></tr>
+                        <tr><td><code>sex</code></td><td>Gender (Male, Female)</td></tr>
+                        <tr><td><code>race</code></td><td>Race/ethnicity (cleaned)</td></tr>
+                        <tr><td><code>race_raw</code></td><td>Race/ethnicity (original FBI data)</td></tr>
+                        <tr><td><code>nationality</code></td><td>Country of citizenship</td></tr>
+                        <tr><td><code>place_of_birth</code></td><td>Birth location</td></tr>
+                        <tr><td><code>hair</code></td><td>Hair color (cleaned)</td></tr>
+                        <tr><td><code>hair_raw</code></td><td>Hair color (original FBI data)</td></tr>
+                        <tr><td><code>eyes</code></td><td>Eye color (cleaned)</td></tr>
+                        <tr><td><code>eyes_raw</code></td><td>Eye color (original FBI data)</td></tr>
+                        <tr><td><code>build</code></td><td>Body build description</td></tr>
+                        <tr><td><code>complexion</code></td><td>Skin complexion</td></tr>
+                        <tr><td><code>weight</code></td><td>Weight description (text)</td></tr>
+                        <tr><td><code>scars_and_marks</code></td><td>Identifying marks, tattoos, scars</td></tr>
+                        <tr><td><code>caution</code></td><td>Warning information</td></tr>
+                        <tr><td><code>warning_message</code></td><td>Safety warnings</td></tr>
+                        <tr><td><code>remarks</code></td><td>Additional notes</td></tr>
+                        <tr><td><code>reward_text</code></td><td>Reward description text</td></tr>
+                        <tr><td><code>status</code></td><td>Case status</td></tr>
+                        <tr><td><code>ncic</code></td><td>NCIC number</td></tr>
+                        <tr><td><code>path</code></td><td>FBI URL path</td></tr>
+                        <tr><td><code>pathid</code></td><td>FBI path identifier</td></tr>
+                        <tr><td><code>url</code></td><td>Full FBI URL</td></tr>
+                        <tr><td><code>poster_url</code></td><td>Wanted poster image URL</td></tr>
+                        <tr><td><code>person_classification</code></td><td>Person type classification</td></tr>
+                        <tr><td><code>poster_classification</code></td><td>Poster type classification</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Integer Fields -->
+            <h3 class="mt-4">Integer Fields</h3>
+            <p class="text-muted">Numeric fields supporting operators: <code>equals</code>, <code>gt</code>, <code>lt</code>, <code>gte</code>, <code>lte</code>, <code>between</code></p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>age_min</code></td><td>Minimum estimated age</td></tr>
+                        <tr><td><code>age_max</code></td><td>Maximum estimated age</td></tr>
+                        <tr><td><code>height_min</code></td><td>Minimum height (inches)</td></tr>
+                        <tr><td><code>height_max</code></td><td>Maximum height (inches)</td></tr>
+                        <tr><td><code>weight_min</code></td><td>Minimum weight (pounds)</td></tr>
+                        <tr><td><code>weight_max</code></td><td>Maximum weight (pounds)</td></tr>
+                        <tr><td><code>reward_min</code></td><td>Minimum reward amount (USD)</td></tr>
+                        <tr><td><code>reward_max</code></td><td>Maximum reward amount (USD)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Timestamp Fields -->
+            <h3 class="mt-4">Timestamp Fields</h3>
+            <p class="text-muted">Date fields (format: YYYY-MM-DD) supporting operators: <code>equals</code>, <code>gt</code>, <code>lt</code>, <code>gte</code>, <code>lte</code>, <code>between</code></p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>modified</code></td><td>Last modified date in FBI database</td></tr>
+                        <tr><td><code>publication</code></td><td>Original publication date</td></tr>
+                        <tr><td><code>first_seen_date</code></td><td>First seen in BoloDoc database</td></tr>
+                        <tr><td><code>last_seen_date</code></td><td>Last seen in BoloDoc database</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Array Fields -->
+            <h3 class="mt-4">Array Fields</h3>
+            <p class="text-muted">Multi-value fields supporting operators: <code>equals</code>, <code>contains</code>, <code>starts_with</code>, <code>ends_with</code></p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>aliases</code></td><td>Known aliases and alternate names</td></tr>
+                        <tr><td><code>dates_of_birth_used</code></td><td>Known dates of birth used</td></tr>
+                        <tr><td><code>field_offices</code></td><td>FBI field offices handling the case</td></tr>
+                        <tr><td><code>languages</code></td><td>Languages spoken</td></tr>
+                        <tr><td><code>legat_names</code></td><td>Legal attache office names</td></tr>
+                        <tr><td><code>locations</code></td><td>Known locations</td></tr>
+                        <tr><td><code>occupations</code></td><td>Known occupations</td></tr>
+                        <tr><td><code>possible_countries</code></td><td>Countries where person may be located</td></tr>
+                        <tr><td><code>possible_states</code></td><td>US states where person may be located</td></tr>
+                        <tr><td><code>subjects</code></td><td>Crime categories/subjects</td></tr>
+                        <tr><td><code>suspects</code></td><td>Associated suspects</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Special Fields -->
+            <h3 class="mt-4">Special Fields</h3>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>coordinates</code></td><td>JSONB</td><td>Geographic coordinates (lat/lng)</td></tr>
+                        <tr><td><code>full_data</code></td><td>JSONB</td><td>Complete raw data object</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Smart Normalization Note -->
+            <div class="alert alert-info mt-4">
+                <strong>Smart Field Normalization:</strong> The following fields are automatically normalized for easier searching:
+                <ul class="mb-0 mt-2">
+                    <li><code>possible_countries</code> - Accepts country names or codes (e.g., "USA", "United States", "us")</li>
+                    <li><code>possible_states</code> - Accepts state names or abbreviations (e.g., "California", "CA", "calif")</li>
+                    <li><code>field_offices</code> - Automatically normalized to lowercase</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Operators Reference -->
+    <div class="card mt-4" id="operators-reference">
+        <div class="card-header">Search Operators Reference</div>
+        <div class="card-body">
+            <h3>Simple Search (Wildcard Patterns)</h3>
+            <p>Simple search uses wildcard patterns with the <code>*</code> character:</p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>Behavior</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>*text*</code></td><td>Contains</td><td><code>{"field": "title", "value": "*murder*"}</code></td></tr>
+                        <tr><td><code>text*</code></td><td>Starts with</td><td><code>{"field": "title", "value": "John*"}</code></td></tr>
+                        <tr><td><code>*text</code></td><td>Ends with</td><td><code>{"field": "title", "value": "*Smith"}</code></td></tr>
+                        <tr><td><code>text</code></td><td>Exact match</td><td><code>{"field": "sex", "value": "Male"}</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3 class="mt-4">Advanced Search (Explicit Operators)</h3>
+            <p>Advanced search uses explicit operator names for precise control:</p>
+            
+            <h4>Text Operators</h4>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>equals</code></td><td>Exact match (case-insensitive)</td><td><code>{"field": "sex", "operator": "equals", "value": "Male"}</code></td></tr>
+                        <tr><td><code>contains</code></td><td>Contains substring</td><td><code>{"field": "title", "operator": "contains", "value": "murder"}</code></td></tr>
+                        <tr><td><code>starts_with</code></td><td>Starts with text</td><td><code>{"field": "title", "operator": "starts_with", "value": "John"}</code></td></tr>
+                        <tr><td><code>ends_with</code></td><td>Ends with text</td><td><code>{"field": "title", "operator": "ends_with", "value": "Smith"}</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h4 class="mt-3">Numeric/Date Operators</h4>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>equals</code></td><td>Equal to</td><td><code>{"field": "age_min", "operator": "equals", "value": 30}</code></td></tr>
+                        <tr><td><code>gt</code></td><td>Greater than</td><td><code>{"field": "reward_max", "operator": "gt", "value": 10000}</code></td></tr>
+                        <tr><td><code>lt</code></td><td>Less than</td><td><code>{"field": "age_max", "operator": "lt", "value": 50}</code></td></tr>
+                        <tr><td><code>gte</code></td><td>Greater than or equal</td><td><code>{"field": "reward_min", "operator": "gte", "value": 5000}</code></td></tr>
+                        <tr><td><code>lte</code></td><td>Less than or equal</td><td><code>{"field": "height_max", "operator": "lte", "value": 72}</code></td></tr>
+                        <tr><td><code>between</code></td><td>Between two values</td><td><code>{"field": "reward_max", "operator": "between", "value": [5000, 50000]}</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Response Formats Section -->
+    <div class="card mt-4">
+        <div class="card-header">Response Formats <span class="badge badge-warning">PREMIUM</span></div>
+        <div class="card-body">
+            <p>Search endpoints support multiple response formats via the <code>format</code> query parameter.</p>
+            
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Access</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>json</code></td><td>All users</td><td>Default JSON format with full metadata</td></tr>
+                        <tr><td><code>csv</code></td><td>PREMIUM only</td><td>Comma-separated values for spreadsheet import</td></tr>
+                        <tr><td><code>txt</code></td><td>PREMIUM only</td><td>Human-readable plain text BOLO format</td></tr>
+                        <tr><td><code>xml</code></td><td>PREMIUM only</td><td>Structured XML for RMS/CAD system integration</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3 class="mt-4">Usage:</h3>
+            <pre><code>POST {{ base_url }}/v1/search/simple?format=csv
 Authorization: Bearer {your-access-token}
 Content-Type: application/json
 
 {
-    "groups": [
-        {
-            "condition": "AND",
-            "rules": [
-                {"field": "sex", "operator": "equals", "value": "Male"},
-                {"field": "age_min", "operator": "between", "value": [25, 45]},
-                {"field": "reward_max", "operator": "gte", "value": 100000},
-                {"field": "title", "operator": "contains", "value": "Murder"}
-            ]
-        }
+    "filters": [
+        {"field": "title", "value": "*murder*"}
     ],
-    "group_logic": "AND",
-    "limit": 25
+    "limit": 100
 }</code></pre>
-
+            
             <h3>Code Examples:</h3>
-            <div class="code-tabs">
-                <div class="tab-buttons">
-                    <button class="tab-button active" onclick="showTab(event, 'advanced-js')">JavaScript</button>
-                    <button class="tab-button" onclick="showTab(event, 'advanced-python')">Python</button>
-                    <button class="tab-button" onclick="showTab(event, 'advanced-java')">Java</button>
-                    <button class="tab-button" onclick="showTab(event, 'advanced-csharp')">C#</button>
-                    <button class="tab-button" onclick="showTab(event, 'advanced-go')">Go</button>
-                </div>
-                
-                <div id="advanced-js" class="tab-content active">
-                    <pre><code>// Advanced search - High-value fugitives
-// Males, age 25-45, reward >= $100k, title contains "Murder"
-async function advancedSearch(accessToken) {
-    const searchRequest = {
-        groups: [
-            {
-                condition: "AND",
-                rules: [
-                    { field: "sex", operator: "equals", value: "Male" },
-                    { field: "age_min", operator: "between", value: [25, 45] },
-                    { field: "reward_max", operator: "gte", value: 100000 },
-                    { field: "title", operator: "contains", value: "Murder" }
-                ]
-            }
-        ],
-        group_logic: "AND",
-        limit: 25
-    };
-    
-    const response = await fetch(`${BASE_URL}/v1/search/advanced`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(searchRequest)
-    });
-    
-    if (response.ok) {
-        const results = await response.json();
-        console.log(`Found ${results.count} matching fugitives`);
-        
-        results.results.forEach(item => {
-            const data = item.data;
-            console.log(`\n${data.subjects?.[0] || 'Unknown'}`);
-            console.log(`  Crime: ${data.title || 'N/A'}`);
-            console.log(`  Reward: ${data.reward_text || 'N/A'}`);
-            console.log(`  Age Range: ${data.age_range || 'N/A'}`);
-        });
-        
-        return results;
-    } else {
-        const error = await response.text();
-        throw new Error(`Search failed: ${response.status} - ${error}`);
-    }
-}
-
-// Usage
-advancedSearch(accessToken)
-    .then(results => console.log('Advanced search complete!'))
-    .catch(error => console.error(error));</code></pre>
-                </div>
-                
-                <div id="advanced-python" class="tab-content">
-                    <pre><code>import requests
-
-def advanced_search(access_token):
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-    
-    # Search for high-value fugitives
-    # Males, age 25-45, reward >= $100k, title contains "Murder"
-    search_request = {
-        "groups": [
-            {
-                "condition": "AND",
-                "rules": [
-                    {"field": "sex", "operator": "equals", "value": "Male"},
-                    {"field": "age_min", "operator": "between", "value": [25, 45]},
-                    {"field": "reward_max", "operator": "gte", "value": 100000},
-                    {"field": "title", "operator": "contains", "value": "Murder"}
-                ]
-            }
-        ],
-        "group_logic": "AND",
-        "limit": 25
-    }
-    
-    response = requests.post(
-        f"{BASE_URL}/v1/search/advanced",
-        headers=headers,
-        json=search_request
-    )
-    
-    if response.status_code == 200:
-        results = response.json()
-        print(f"Found {results['count']} matching fugitives")
-        
-        for item in results['results']:
-            data = item['data']
-            print(f"\n{data.get('subjects', ['Unknown'])[0]}")
-            print(f"  Crime: {data.get('title', 'N/A')}")
-            print(f"  Reward: {data.get('reward_text', 'N/A')}")
-            print(f"  Age Range: {data.get('age_range', 'N/A')}")
-        
-        return results
-    else:
-        raise Exception(f"Search failed: {response.status_code} - {response.text}")
-
-# Usage
-try:
-    results = advanced_search(access_token)
-    print("Advanced search complete!")
-except Exception as e:
-    print(f"Error: {e}")</code></pre>
-                </div>
-                
-                <div id="advanced-java" class="tab-content">
-                    <pre><code>import com.google.gson.*;
-
-public class BoloAdvancedSearch {
-    private static final Gson gson = new Gson();
-    
-    public static JsonObject advancedSearch(String accessToken) throws Exception {
-        JsonObject rule1 = new JsonObject();
-        rule1.addProperty("field", "sex");
-        rule1.addProperty("operator", "equals");
-        rule1.addProperty("value", "Male");
-        
-        JsonArray ageRange = new JsonArray();
-        ageRange.add(25);
-        ageRange.add(45);
-        
-        JsonObject rule2 = new JsonObject();
-        rule2.addProperty("field", "age_min");
-        rule2.addProperty("operator", "between");
-        rule2.add("value", ageRange);
-        
-        JsonObject rule3 = new JsonObject();
-        rule3.addProperty("field", "reward_max");
-        rule3.addProperty("operator", "gte");
-        rule3.addProperty("value", 100000);
-        
-        JsonObject rule4 = new JsonObject();
-        rule4.addProperty("field", "title");
-        rule4.addProperty("operator", "contains");
-        rule4.addProperty("value", "Murder");
-        
-        JsonArray rules = new JsonArray();
-        rules.add(rule1);
-        rules.add(rule2);
-        rules.add(rule3);
-        rules.add(rule4);
-        
-        JsonObject group = new JsonObject();
-        group.addProperty("condition", "AND");
-        group.add("rules", rules);
-        
-        JsonArray groups = new JsonArray();
-        groups.add(group);
-        
-        JsonObject requestBody = new JsonObject();
-        requestBody.add("groups", groups);
-        requestBody.addProperty("group_logic", "AND");
-        requestBody.addProperty("limit", 25);
-        
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(BASE_URL + "/v1/search/advanced"))
-            .header("Authorization", "Bearer " + accessToken)
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
-            .build();
-        
-        HttpResponse<String> response = client.send(request, 
-            HttpResponse.BodyHandlers.ofString());
-        
-        if (response.statusCode() == 200) {
-            JsonObject results = gson.fromJson(response.body(), JsonObject.class);
-            int count = results.get("count").getAsInt();
-            System.out.println("Found " + count + " matching fugitives");
-            
-            JsonArray resultArray = results.getAsJsonArray("results");
-            for (int i = 0; i < resultArray.size(); i++) {
-                JsonObject item = resultArray.get(i).getAsJsonObject();
-                JsonObject data = item.getAsJsonObject("data");
-                
-                JsonArray subjects = data.getAsJsonArray("subjects");
-                String name = subjects.size() > 0 ? subjects.get(0).getAsString() : "Unknown";
-                
-                System.out.println("\n" + name);
-                System.out.println("  Crime: " + data.get("title").getAsString());
-                System.out.println("  Reward: " + data.get("reward_text").getAsString());
-            }
-            
-            return results;
-        } else {
-            throw new Exception("Search failed: " + 
-                response.statusCode() + " - " + response.body());
-        }
-    }
-}</code></pre>
-                </div>
-                
-                <div id="advanced-csharp" class="tab-content">
-                    <pre><code>using System;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-
-public class BoloAdvancedSearch
-{
-    public static async Task<JsonElement> AdvancedSearch(string accessToken)
-    {
-        var searchRequest = new
-        {
-            groups = new[]
-            {
-                new
-                {
-                    condition = "AND",
-                    rules = new[]
-                    {
-                        new { field = "sex", @operator = "equals", value = (object)"Male" },
-                        new { field = "age_min", @operator = "between", value = (object)new[] { 25, 45 } },
-                        new { field = "reward_max", @operator = "gte", value = (object)100000 },
-                        new { field = "title", @operator = "contains", value = (object)"Murder" }
-                    }
-                }
-            },
-            group_logic = "AND",
-            limit = 25
-        };
-        
-        var json = JsonSerializer.Serialize(searchRequest);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        
-        client.DefaultRequestHeaders.Clear();
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        
-        var response = await client.PostAsync($"{BaseUrl}/v1/search/advanced", content);
-        
-        if (response.IsSuccessStatusCode)
-        {
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
-            
-            var count = results.GetProperty("count").GetInt32();
-            Console.WriteLine($"Found {count} matching fugitives");
-            
-            var resultArray = results.GetProperty("results");
-            foreach (var item in resultArray.EnumerateArray())
-            {
-                var data = item.GetProperty("data");
-                var subjects = data.GetProperty("subjects");
-                var name = subjects.GetArrayLength() > 0 ? subjects[0].GetString() : "Unknown";
-                
-                Console.WriteLine($"\n{name}");
-                Console.WriteLine($"  Crime: {data.GetProperty("title").GetString()}");
-                Console.WriteLine($"  Reward: {data.GetProperty("reward_text").GetString()}");
-            }
-            
-            return results;
-        }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Search failed: {response.StatusCode} - {error}");
-        }
-    }
-}</code></pre>
-                </div>
-                
-                <div id="advanced-go" class="tab-content">
-                    <pre><code>package main
-
-import (
-    "bytes"
-    "encoding/json"
-    "fmt"
-    "io/ioutil"
-    "net/http"
-)
-
-type Rule struct {
-    Field    string      `json:"field"`
-    Operator string      `json:"operator"`
-    Value    interface{} `json:"value"`
-}
-
-type Group struct {
-    Condition string `json:"condition"`
-    Rules     []Rule `json:"rules"`
-}
-
-type AdvancedSearchRequest struct {
-    Groups     []Group `json:"groups"`
-    GroupLogic string  `json:"group_logic"`
-    Limit      int     `json:"limit"`
-}
-
-func advancedSearch(accessToken string) (*SearchResult, error) {
-    searchReq := AdvancedSearchRequest{
-        Groups: []Group{
-            {
-                Condition: "AND",
-                Rules: []Rule{
-                    {Field: "sex", Operator: "equals", Value: "Male"},
-                    {Field: "age_min", Operator: "between", Value: []int{25, 45}},
-                    {Field: "reward_max", Operator: "gte", Value: 100000},
-                    {Field: "title", Operator: "contains", Value: "Murder"},
-                },
-            },
-        },
-        GroupLogic: "AND",
-        Limit:      25,
-    }
-    
-    jsonData, err := json.Marshal(searchReq)
-    if err != nil {
-        return nil, err
-    }
-    
-    req, err := http.NewRequest(
-        "POST",
-        baseURL+"/v1/search/advanced",
-        bytes.NewBuffer(jsonData),
-    )
-    if err != nil {
-        return nil, err
-    }
-    
-    req.Header.Set("Authorization", "Bearer "+accessToken)
-    req.Header.Set("Content-Type", "application/json")
-    
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
-    
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return nil, err
-    }
-    
-    if resp.StatusCode == 200 {
-        var results SearchResult
-        err = json.Unmarshal(body, &results)
-        if err != nil {
-            return nil, err
-        }
-        
-        fmt.Printf("Found %d matching fugitives\n", results.Count)
-        
-        for _, item := range results.Results {
-            data := item["data"].(map[string]interface{})
-            subjects := data["subjects"].([]interface{})
-            name := "Unknown"
-            if len(subjects) > 0 {
-                name = subjects[0].(string)
-            }
-            
-            fmt.Printf("\n%s\n", name)
-            fmt.Printf("  Crime: %v\n", data["title"])
-            fmt.Printf("  Reward: %v\n", data["reward_text"])
-        }
-        
-        return &results, nil
-    }
-    
-    return nil, fmt.Errorf("search failed: %d - %s", resp.StatusCode, string(body))
-}</code></pre>
-                </div>
-            </div>
-            
-            <h3>Available Operators:</h3>
-            <ul>
-                <li><code>equals</code> - Exact match (case-insensitive for strings)</li>
-                <li><code>contains</code> - Field contains value</li>
-                <li><code>starts_with</code> - Field starts with value</li>
-                <li><code>ends_with</code> - Field ends with value</li>
-                <li><code>gt</code> - Greater than (numeric fields)</li>
-                <li><code>lt</code> - Less than (numeric fields)</li>
-                <li><code>gte</code> - Greater than or equal (numeric fields)</li>
-                <li><code>lte</code> - Less than or equal (numeric fields)</li>
-                <li><code>between</code> - Between two values (requires array: [min, max])</li>
-            </ul>
-
-            <h3>Numeric Fields for Comparisons:</h3>
-            <ul>
-                <li><code>age_min</code> - Minimum age</li>
-                <li><code>age_max</code> - Maximum age</li>
-                <li><code>reward_min</code> - Minimum reward</li>
-                <li><code>reward_max</code> - Maximum reward</li>
-                <li><code>height_min</code> - Minimum height (inches)</li>
-                <li><code>height_max</code> - Maximum height (inches)</li>
-                <li><code>weight_min</code> - Minimum weight (pounds)</li>
-                <li><code>weight_max</code> - Maximum weight (pounds)</li>
-            </ul>
-
-            <h3>Response:</h3>
-            <pre><code>{
-    "query": {
-        "groups": [...],
-        "group_logic": "AND",
-        "limit": 25
-    },
-    "count": 7,
-    "results": [
-        {
-            "data_type": "clean",
-            "data": {
-                "uid": "xyz789abc123",
-                "title": "Murder; Armed Robbery",
-                "subjects": ["Jane Smith"],
-                "sex": "Male",
-                "age_min": 32,
-                "age_max": 36,
-                "age_range": "32 to 36",
-                "reward_text": "Up to $250,000",
-                "reward_min": 250000,
-                "reward_max": 250000,
-                "description": "Wanted for murder and armed robbery...",
-                "publication": "2022-08-10",
-                "modified": "2024-12-01",
-                "status": "na"
-            }
-        }
-    ]
-}</code></pre>
-        </div>
-    </div>
-    {% endif %}
-    
-    <!-- Response Formats Section -->
-    <div class="card mt-4">
-        <div class="card-header">Response Formats</div>
-        <div class="card-body">
-            <p>All search endpoints support multiple response formats via the <code>format</code> query parameter:</p>
-            
-            <h3>Available Formats:</h3>
-            <ul>
-                <li><code>json</code> (default) - Structured JSON response</li>
-                <li><code>csv</code> - Comma-separated values</li>
-                <li><code>txt</code> - Plain text, pipe-delimited</li>
-                <li><code>xml</code> - XML format</li>
-            </ul>
-
-            <h3>Examples:</h3>
             <div class="code-tabs">
                 <div class="tab-buttons">
                     <button class="tab-button active" onclick="showTab(event, 'format-js')">JavaScript</button>
@@ -1203,21 +837,18 @@ func advancedSearch(accessToken string) (*SearchResult, error) {
                 
                 <div id="format-js" class="tab-content active">
                     <pre><code>// Request CSV format
-const response = await fetch(
-    `${BASE_URL}/v1/search/simple?format=csv`,
-    {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(searchRequest)
-    }
-);
+const response = await fetch(`${BASE_URL}/v1/search/simple?format=csv`, {
+    method: 'POST',
+    headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(searchRequest)
+});
 
 if (response.ok) {
     const csvText = await response.text();
-    // Save to file or process as needed
+    // Save to file or process
     console.log(csvText);
 }</code></pre>
                 </div>
@@ -1231,9 +862,10 @@ response = requests.post(
 )
 
 if response.status_code == 200:
-    # Save CSV to file
+    csv_text = response.text
+    # Save to file
     with open('results.csv', 'w') as f:
-        f.write(response.text)
+        f.write(csv_text)
     print("Results saved to results.csv")</code></pre>
                 </div>
                 
@@ -1309,10 +941,38 @@ if resp.StatusCode == 200 {
             </ul>
 
             <h3>Result Limits by Subscription:</h3>
-            <ul>
-                <li><strong>Basic:</strong> Fixed at 25 results per search</li>
-                <li><strong>Premium:</strong> No limit to results per search</li>
-            </ul>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Max Results</th>
+                            <th>Data Quality</th>
+                            <th>Features</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Basic</td>
+                            <td>25 per search</td>
+                            <td>Raw data</td>
+                            <td>Simple search, JSON only</td>
+                        </tr>
+                        <tr>
+                            <td>Premium (Monthly)</td>
+                            <td>25 per search</td>
+                            <td>Cleaned data</td>
+                            <td>Simple + Advanced search, All formats</td>
+                        </tr>
+                        <tr>
+                            <td>Premium (Annual)</td>
+                            <td>5,000 per search</td>
+                            <td>Cleaned data</td>
+                            <td>All features + Category endpoints + Document archive</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3>Best Practices:</h3>
             <ul>
@@ -1468,6 +1128,13 @@ code {
     margin-top: 1rem;
 }
 
+.card h4 {
+    color: var(--primary-color);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
 .card ul {
     margin-left: 1.5rem;
     margin-bottom: 1rem;
@@ -1489,6 +1156,46 @@ code {
     color: #212529;
 }
 
+/* Field Reference Tables */
+.field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+
+.field-table th,
+.field-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    text-align: left;
+}
+
+.field-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.field-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.field-table tr:hover {
+    background-color: #e9ecef;
+}
+
+.field-table code {
+    background-color: #e9ecef;
+    color: #c7254e;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.85em;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
 @media (max-width: 768px) {
     .tab-buttons {
         flex-wrap: wrap;
@@ -1501,6 +1208,15 @@ code {
     
     pre code {
         font-size: 0.8rem;
+    }
+    
+    .field-table {
+        font-size: 0.85rem;
+    }
+    
+    .field-table th,
+    .field-table td {
+        padding: 0.5rem;
     }
 }
 </style>

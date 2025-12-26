@@ -56,8 +56,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Rate limiter
-rate_max = "10/minute"
+rate_max = "3000/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
+captcha_enforce = True
 
 # Router
 router = APIRouter(prefix="/v1/auth", tags=["Authentication"])
@@ -422,7 +423,7 @@ async def register(request: Request, register_req: RegisterRequest):
     """Register new user - sends activation email"""
     try:
         # Validate CAPTCHA first
-        if ( 1 == 2):
+        if ( captcha_enforce):
             is_valid, error_message = validate_captcha(
                 request,
                 register_req.captcha_token,
@@ -577,7 +578,7 @@ async def login(request: Request, login_req: LoginRequest):
     """Login with email/password"""
     try:
         # Validate CAPTCHA first
-        if ( 1 == 2):
+        if ( captcha_enforce):
             is_valid, error_message = validate_captcha(
                 request,
                 login_req.captcha_token,
@@ -653,7 +654,7 @@ async def forgot_password(request: Request, forgot_req: ForgotPasswordRequest):
     """Request password reset"""
     try:
         # Validate CAPTCHA first
-        if ( 1 == 2):
+        if ( captcha_enforce):
             is_valid, error_message = validate_captcha(
                 request,
                 forgot_req.captcha_token,
@@ -712,7 +713,7 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
     """Reset password with token"""
     try:
         # Validate CAPTCHA first
-        if ( 1 == 2):
+        if ( captcha_enforce):
             is_valid, error_message = validate_captcha(
                 request,
                 reset_req.captcha_token,
