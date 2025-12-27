@@ -938,7 +938,7 @@ def get_db_connection():
     "/simple",
     tags=[TAG_SEARCH],
     summary="Simple search with wildcards",
-    description="",
+    description=f"See {QUICKSTART_URL} for details.",
     response_description="Query parameters, count, and array of matching recordss"
     )
 @limiter.limit(rate_max)
@@ -1050,7 +1050,7 @@ async def simple_search(
     "/advanced",
     tags=[TAG_SEARCH],
     summary="Advanced search with grouped conditions",
-    description="",
+    description=f"See {QUICKSTART_URL} for details.",
     response_description="Query parameters, count, and array of matching recordss"
 )
 @limiter.limit(rate_max)
@@ -1154,20 +1154,16 @@ async def advanced_search(
 @router.get(
     "/list_field_offices",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List Common Field Offices",
-    description="""
-    Get a list of distinct FBI field offices from the BoloDoc database.
-    
-    Returns an alphabetically sorted list of field office names.
-    """,
-    response_description="List of field office names"
+    summary="List of FBI field office locations",
+    description="Returns a one-variable record set",
+    response_description="List of FBI field office locations"
 )
 @limiter.limit(rate_max)
 async def list_field_offices(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
-    """Get list of all distinct field offices"""
+    """List of FBI field office locations"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
     
@@ -1181,6 +1177,7 @@ async def list_field_offices(
                     SELECT DISTINCT elem AS field_office
                     FROM vw_bolo
                     CROSS JOIN LATERAL unnest(field_offices) AS elem
+                    WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
                     LIMIT %s
                 """
@@ -1213,13 +1210,9 @@ async def list_field_offices(
 @router.get(
     "/list_languages",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List Common Languages",
-    description="""
-    Get a list of common languages from the BoloDoc database.
-    
-    Returns an alphabetically sorted list of languages (single-word entries only).
-    """,
-    response_description="List of languages"
+    summary="List of languages spoken by wanted individuals",
+    description="Returns a one-variable record set",
+    response_description="List of languages spoken by wanted individuals"
 )
 @limiter.limit(rate_max)
 async def list_languages(
@@ -1240,6 +1233,7 @@ async def list_languages(
                     SELECT DISTINCT elem AS language
                     FROM vw_bolo
                     CROSS JOIN LATERAL unnest(languages) AS elem
+                    WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
                     LIMIT %s
                 """
@@ -1272,20 +1266,16 @@ async def list_languages(
 @router.get(
     "/list_nationality",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List Common Nationalities",
-    description="""
-    Get a list of common possible nationalities from the BoloDoc database.
-    
-    Returns an alphabetically sorted list of countries of subjects' nationalities
-    """,
-    response_description="List of possible countries"
+    summary="List of nationalities of wanted individuals",
+    description="Returns a one-variable record set",
+    response_description="List of nationalities of wanted individuals"
 )
 @limiter.limit(rate_max)
 async def list_nationality(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
-    """Get list of nationalities"""
+    """List of nationalities of wanted individuals"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
     
@@ -1298,6 +1288,7 @@ async def list_nationality(
                 query = """
                     SELECT DISTINCT nationality
                     FROM vw_bolo
+                    WHERE nationality IS NOT NULL AND TRIM(nationality) <> ''
                     ORDER BY nationality
                     LIMIT %s
                 """
@@ -1329,20 +1320,16 @@ async def list_nationality(
 @router.get(
     "/list_possible_countries",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List Common Possible Countries",
-    description="""
-    Get a list of common possible countries from the BoloDoc database.
-    
-    Returns an alphabetically sorted list of countries where subjects may be located.
-    """,
-    response_description="List of possible countries"
+    summary="List of possible countries associated with wanted individuals and cases",
+    description="Returns a one-variable record set",
+    response_description="List of possible countries associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
 async def list_possible_countries(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
-    """Get list of all distinct possible countries"""
+    """List of possible countries associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
     
@@ -1356,6 +1343,7 @@ async def list_possible_countries(
                     SELECT DISTINCT elem AS country
                     FROM vw_bolo
                     CROSS JOIN LATERAL unnest(possible_countries) AS elem
+                    WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
                     LIMIT %s
                 """
@@ -1388,20 +1376,16 @@ async def list_possible_countries(
 @router.get(
     "/list_possible_states",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List Common Possible States",
-    description="""
-    Get a list of common possible US states from the BoloDoc database.
-    
-    Returns an alphabetically sorted list of US states where subjects may be located.
-    """,
-    response_description="List of possible states"
+    summary="List of possible USA states associated with wanted individuals and cases",
+    description="Returns a one-variable record set",
+    response_description="List of possible USA states associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
 async def list_possible_states(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
-    """Get list of all distinct possible states"""
+    """List of possible USA states associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
     
@@ -1415,6 +1399,7 @@ async def list_possible_states(
                     SELECT DISTINCT elem AS state
                     FROM vw_bolo
                     CROSS JOIN LATERAL unnest(possible_states) AS elem
+                    WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
                     LIMIT %s
                 """
@@ -1446,18 +1431,16 @@ async def list_possible_states(
 @router.get(
     "/list_race",
     tags=[TAG_SEARCH_BY_LIST],
-    summary="List of subject races",
-    description="""    
-    Returns an alphabetically sorted list of subjects' races.
-    """,
-    response_description="List of subject races"
+    summary="List of races of origin associated with wanted individuals and cases",
+    description="Returns a one-variable record set",
+    response_description="List of races of origin associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
 async def list_race(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
-    """Get list of subject races"""
+    """List of races of origin associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
     
@@ -1470,6 +1453,7 @@ async def list_race(
                 query = """
                     SELECT DISTINCT race
                     FROM vw_bolo
+                    WHERE race IS NOT NULL AND TRIM(race) <> ''
                     ORDER BY race
                     LIMIT %s
                 """
@@ -1506,9 +1490,9 @@ async def list_race(
 @router.get(
     "/class_top_ten",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="FBI Ten Most Wanted Fugitives",
-    description="",
-    response_description="Ten Most Wanted Fugitives"
+    summary="FBI ten most wanted fugitives",
+    description="Returns records of a given class",
+    response_description="FBI ten most wanted fugitives"
     )
 @limiter.limit(rate_max)
 async def get_top_ten(
@@ -1516,7 +1500,7 @@ async def get_top_ten(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get FBI Ten Most Wanted Fugitives"""
+    """Get FBI ten most wanted fugitives"""
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
@@ -1568,9 +1552,9 @@ async def get_top_ten(
 @router.get(
     "/class_top_reward",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="High Reward Cases ($1M+)",
-    description="",
-    response_description="Fugitives and cases with high-dollar rewards >= USD$1 Million"
+    summary="Wanted individuals and cases with high-dollar rewards >= USD$1 Million",
+    description="Returns records of a given class",
+    response_description="Wanted individuals and cases with high-dollar rewards >= USD$1 Million"
 )
 @limiter.limit(rate_max)
 async def get_top_reward(
@@ -1579,7 +1563,7 @@ async def get_top_reward(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Fugitives and cases with high-dollar rewards >= USD$1 Million"""
+    """Wanted individuals and cases with high-dollar rewards >= USD$1 Million"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1640,9 +1624,9 @@ async def get_top_reward(
 @router.get(
     "/class_additional_info",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Additional/Miscellaneous Cases",
-    description="",
-    response_description="Additional/Miscellaneous Cases"
+    summary="Additional and miscellaneous FBI cases",
+    description="Returns records of a given class",
+    response_description="Additional and miscellaneous FBI cases"
 )
 @limiter.limit(rate_max)
 async def get_additional_info(
@@ -1650,7 +1634,7 @@ async def get_additional_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Additional/Miscellaneous Cases"""
+    """Additional and miscellaneous FBI cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1710,9 +1694,9 @@ async def get_additional_info(
 @router.get(
     "/class_crimes_against_children",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Crimes Against Children",
-    description="",
-    response_description="Crimes Against Children"
+    summary="Individuals and cases related to crimes against children",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to crimes against children"
 )
 @limiter.limit(rate_max)
 async def get_crimes_against_children(
@@ -1720,7 +1704,7 @@ async def get_crimes_against_children(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Crimes Against Children"""
+    """Individuals and cases related to crimes against children"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1780,9 +1764,9 @@ async def get_crimes_against_children(
 @router.get(
     "/class_criminal_enterprise_investigations",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Criminal Enterprise Investigations",
-    description="",
-    response_description="Criminal Enterprise Investigations"
+    summary="Individuals and cases related to criminal enterprise investigations",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to criminal enterprise investigations"
 )
 @limiter.limit(rate_max)
 async def get_criminal_enterprise_investigations(
@@ -1790,7 +1774,7 @@ async def get_criminal_enterprise_investigations(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Criminal Enterprise Investigations"""
+    """Individuals and cases related to criminal enterprise investigations"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1850,9 +1834,9 @@ async def get_criminal_enterprise_investigations(
 @router.get(
     "/class_counterintelligence",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Counterintelligence Cases",
-    description="",
-    response_description="Counterintelligence Cases"
+    summary="Individuals and cases related to counterintelligence",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to counterintelligences"
 )
 @limiter.limit(rate_max)
 async def get_counterintelligence(
@@ -1860,7 +1844,7 @@ async def get_counterintelligence(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Counterintelligence Cases"""
+    """Individuals and cases related to counterintelligence"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1920,9 +1904,9 @@ async def get_counterintelligence(
 @router.get(
     "/class_cyber_crimes",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Cyber Crimes",
-    description="",
-    response_description="Cyber Crimes"
+    summary="Individuals and cases related to cyber crimes",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to cyber crimes"
 )
 @limiter.limit(rate_max)
 async def get_cyber_crimes(
@@ -1930,7 +1914,7 @@ async def get_cyber_crimes(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Cyber Crimes"""
+    """Individuals and cases related to cyber crimes"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1990,9 +1974,9 @@ async def get_cyber_crimes(
 @router.get(
     "/class_domestic_terrorism",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Domestic Terrorism Cases",
-    description="",
-    response_description="Domestic Terrorism Cases"
+    summary="Individuals and cases related to domestic terrorism",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to domestic terrorism"
 )
 @limiter.limit(rate_max)
 async def get_domestic_terrorism(
@@ -2000,7 +1984,7 @@ async def get_domestic_terrorism(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Domestic Terrorism Cases"""
+    """Individuals and cases related to domestic terrorism"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2060,9 +2044,9 @@ async def get_domestic_terrorism(
 @router.get(
     "/class_endangered_child_alert_program",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Endangered Child Alert Program (ECAP)",
-    description="",
-    response_description="Endangered Child Alert Program (ECAP)"
+    summary="Individuals and cases related to the Endangered Child Alert Program (ECAP)",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to the Endangered Child Alert Program (ECAP)"
 )
 @limiter.limit(rate_max)
 async def get_endangered_child_alert_program(
@@ -2070,7 +2054,7 @@ async def get_endangered_child_alert_program(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Endangered Child Alert Program (ECAP)"""
+    """Individuals and cases related to the Endangered Child Alert Program (ECAP)"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2130,9 +2114,9 @@ async def get_endangered_child_alert_program(
 @router.get(
     "/class_human_trafficking",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Human Trafficking Cases",
-    description="",
-    response_description="Human Trafficking Cases"
+    summary="Individuals and cases related to human trafficking",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to human trafficking"
 )
 @limiter.limit(rate_max)
 async def get_human_trafficking(
@@ -2140,7 +2124,7 @@ async def get_human_trafficking(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Human Trafficking Cases"""
+    """Individuals and cases related to human trafficking"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2200,9 +2184,9 @@ async def get_human_trafficking(
 @router.get(
     "/class_kidnap_missing",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Kidnappings and Missing Persons",
-    description="",
-    response_description="Kidnappings and Missing Persons"
+    summary="Individuals and cases related to kidnappings and missing persons",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to kidnappings and missing persons"
 )
 @limiter.limit(rate_max)
 async def get_kidnap_missing(
@@ -2210,7 +2194,7 @@ async def get_kidnap_missing(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Kidnappings and Missing Persons"""
+    """Individuals and cases related to kidnappings and missing persons"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2270,9 +2254,9 @@ async def get_kidnap_missing(
 @router.get(
     "/class_known_bank_robbers",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Known Bank Robbers",
-    description="",
-    response_description="Known Bank Robbers"
+    summary="Individuals and cases related to known bank robbers",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to known bank robbers"
 )
 @limiter.limit(rate_max)
 async def get_known_bank_robbers(
@@ -2280,7 +2264,7 @@ async def get_known_bank_robbers(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Known Bank Robbers"""
+    """Individuals and cases related to known bank robbers"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2340,9 +2324,9 @@ async def get_known_bank_robbers(
 @router.get(
     "/class_law_enforcement_assistance",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Law Enforcement Assistance",
-    description="",
-    response_description="Law Enforcement Assistance"
+    summary="Individuals and cases related to law enforcement assistance",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to law enforcement assistance"
 )
 @limiter.limit(rate_max)
 async def get_law_enforcement_assistance(
@@ -2350,7 +2334,7 @@ async def get_law_enforcement_assistance(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Law Enforcement Assistance"""
+    """Individuals and cases related to law enforcement assistance"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2410,9 +2394,9 @@ async def get_law_enforcement_assistance(
 @router.get(
     "/class_murders",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Murder Cases",
-    description="",
-    response_description="Murder Cases"
+    summary="Individuals and cases related to murder",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to murder"
 )
 @limiter.limit(rate_max)
 async def get_murders(
@@ -2420,7 +2404,7 @@ async def get_murders(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Murder Cases"""
+    """Individuals and cases related to murder"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2480,9 +2464,9 @@ async def get_murders(
 @router.get(
     "/class_kidnap_parental",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Parental Kidnappings",
-    description="",
-    response_description="Parental Kidnappings"
+    summary="Individuals and cases related to parental kidnappings",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to parental kidnappings"
 )
 @limiter.limit(rate_max)
 async def get_kidnap_parental(
@@ -2490,7 +2474,7 @@ async def get_kidnap_parental(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Parental Kidnappings"""
+    """Individuals and cases related to parental kidnappings"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2550,9 +2534,9 @@ async def get_kidnap_parental(
 @router.get(
     "/class_seeking_info",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Seeking Information",
-    description="",
-    response_description="Seeking Information"
+    summary="Individuals and cases for whom additional information is sought",
+    description="Returns records of a given class",
+    response_description="Individuals and cases for whom additional information is sought"
 )
 @limiter.limit(rate_max)
 async def get_seeking_info(
@@ -2560,7 +2544,7 @@ async def get_seeking_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Seeking Information"""
+    """Individuals and cases for whom additional information is sought"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2620,9 +2604,9 @@ async def get_seeking_info(
 @router.get(
     "/class_terror_info",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Terrorism Information",
-    description="",
-    response_description="Terrorism Information"
+    summary="Individuals and cases related to terrorism for whom additional information is sought",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to terrorism for whom additional information is sought"
 )
 @limiter.limit(rate_max)
 async def get_terror_info(
@@ -2630,7 +2614,7 @@ async def get_terror_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Terrorism Information"""
+    """Individuals and cases related to terrorism for whom additional information is sought"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2690,9 +2674,9 @@ async def get_terror_info(
 @router.get(
     "/class_violent_criminal_apprehension_program",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Violent Criminal Apprehension Program (ViCAP)",
-    description="",
-    response_description="Violent Criminal Apprehension Program (ViCAP)"
+    summary="Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)"
 )
 @limiter.limit(rate_max)
 async def get_violent_criminal_apprehension_program(
@@ -2700,7 +2684,7 @@ async def get_violent_criminal_apprehension_program(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Violent Criminal Apprehension Program (ViCAP)"""
+    """Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2760,9 +2744,9 @@ async def get_violent_criminal_apprehension_program(
 @router.get(
     "/class_wanted_terrorists",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Wanted Terrorists",
-    description="",
-    response_description="Wanted Terrorists"
+    summary="Individuals and cases related to wanted terrorists",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to wanted terrorists"
 )
 @limiter.limit(rate_max)
 async def get_wanted_terrorists(
@@ -2770,7 +2754,7 @@ async def get_wanted_terrorists(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Wanted Terrorists"""
+    """Individuals and cases related to wanted terrorists"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2830,9 +2814,9 @@ async def get_wanted_terrorists(
 @router.get(
     "/class_white_collar_crimes",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="White Collar Crimes",
-    description="",
-    response_description="White Collar Crimes"
+    summary="Individuals and cases related to white-collar crimes",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to white-collar crimes"
 )
 @limiter.limit(rate_max)
 async def get_white_collar_crimes(
@@ -2840,7 +2824,7 @@ async def get_white_collar_crimes(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """White Collar Crimes"""
+    """Individuals and cases related to white-collar crimes"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2899,9 +2883,9 @@ async def get_white_collar_crimes(
 @router.get(
     "/class_case_of_the_week",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Get Case of the Week",
-    description="",
-    response_description="Get Case of the Week"
+    summary="Individuals and cases identified by the FBI as Case of the Week",
+    description="Returns records of a given class",
+    response_description="Individuals and cases identified by the FBI as Case of the Week"
 )
 @limiter.limit(rate_max)
 async def get_case_of_the_week(
@@ -2909,7 +2893,7 @@ async def get_case_of_the_week(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Get Case of the Week"""
+    """Individuals and cases identified by the FBI as Case of the Week"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -2969,9 +2953,9 @@ async def get_case_of_the_week(
 @router.get(
     "/class_native_american",
     tags=[TAG_SEARCH_BY_CLASS],
-    summary="Native American Cases",
-    description="",
-    response_description="Native American Cases"
+    summary="Individuals and cases related to Native Americans",
+    description="Returns records of a given class",
+    response_description="Individuals and cases related to Native Americans"
 )
 @limiter.limit(rate_max) 
 async def get_native_american(
@@ -2979,7 +2963,7 @@ async def get_native_american(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Native American Cases"""
+    """Individuals and cases related to Native Americans"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
