@@ -936,9 +936,9 @@ def get_db_connection():
 @router.post(
     "/simple",
     tags=[TAG_SEARCH],
-    summary="Simple Search with Wildcards",
+    summary="Simple search with wildcards",
     description="",
-    response_description="Query parameters, count, and array of records with data_type and data fields"
+    response_description="Query parameters, count, and array of matching recordss"
     )
 @limiter.limit(rate_max)
 async def simple_search(
@@ -950,6 +950,7 @@ async def simple_search(
     """
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
+    
     """
 
     current_role = current_user["role"]
@@ -1049,7 +1050,7 @@ async def simple_search(
     tags=[TAG_SEARCH],
     summary="Advanced Search with Grouped Conditions",
     description="",
-    response_description="Query parameters, count, and array of records with data_type and data fields"
+    response_description="Query parameters, count, and array of matching recordss"
 )
 @limiter.limit(rate_max)
 async def advanced_search(
