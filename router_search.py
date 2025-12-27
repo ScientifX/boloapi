@@ -1,7 +1,7 @@
 import logging
 import psycopg2
 import re
-from config import DB_CONFIG
+from config import DB_CONFIG, API_APP_BASE_URL
 from lookups import COUNTRIES, STATES
 
 from psycopg2.extensions import connection as Connection
@@ -39,6 +39,7 @@ router = APIRouter(prefix="/v1/search")
 TAG_SEARCH = "Search"
 TAG_SEARCH_BY_CLASS = "Search By Class"
 TAG_SEARCH_BY_LIST = "Search By List"
+QUICKSTART_URL = f"{API_APP_BASE_URL}/quickstart.html" if API_APP_BASE_URL else "/quickstart.html"
 
 # ============================================================================
 # VALIDATION HELPER FUNCTIONS
@@ -947,10 +948,10 @@ async def simple_search(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC)) 
     ):
-    """
+    f"""
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
-    
+    See {QUICKSTART_URL} for details.
     """
 
     current_role = current_user["role"]
@@ -1048,7 +1049,7 @@ async def simple_search(
 @router.post(
     "/advanced",
     tags=[TAG_SEARCH],
-    summary="Advanced Search with Grouped Conditions",
+    summary="Advanced search with grouped conditions",
     description="",
     response_description="Query parameters, count, and array of matching recordss"
 )
@@ -1059,7 +1060,11 @@ async def advanced_search(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
     ):
-
+    f"""
+    Execute advanced searches with ehanced operator and grouped condition support.
+    All string comparisons are case-insensitive.
+    See {QUICKSTART_URL} for details.
+    """
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
     billing_cycle = current_user.get("billing_cycle")
