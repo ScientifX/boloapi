@@ -30,6 +30,7 @@ Thumbs.db
 
 # Document cache
 data/bolo_cache/
+data/bolodoc_files.zip
 
 # Database
 *.db
