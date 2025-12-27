@@ -335,7 +335,7 @@ Content-Type: application/json
         {"field": "title", "value": "Murder*"}
     ],
     "logic": "AND",
-    "limit": 10
+    "limit": 25
 }</code></pre>
 
             <h3>Code Examples:</h3>
@@ -409,7 +409,7 @@ def simple_search(access_token):
             {"field": "title", "value": "Murder*"}
         ],
         "logic": "AND",
-        "limit": 10
+        "limit": 25
     }
     
     response = requests.post(
@@ -533,7 +533,7 @@ public class BoloSearch {
             {"field": "title", "value": "Murder*"},
         },
         "logic": "AND",
-        "limit": 10,
+        "limit": 25,
     }
     
     jsonData, _ := json.Marshal(searchRequest)
@@ -657,8 +657,6 @@ public class BoloSearch {
                     <tbody>
                         <tr><td><code>modified</code></td><td>Last modified date in FBI database</td></tr>
                         <tr><td><code>publication</code></td><td>Original publication date</td></tr>
-                        <tr><td><code>first_seen_date</code></td><td>First seen in BoloDoc database</td></tr>
-                        <tr><td><code>last_seen_date</code></td><td>Last seen in BoloDoc database</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -677,45 +675,235 @@ public class BoloSearch {
                     <tbody>
                         <tr><td><code>aliases</code></td><td>Known aliases and alternate names</td></tr>
                         <tr><td><code>dates_of_birth_used</code></td><td>Known dates of birth used</td></tr>
-                        <tr><td><code>field_offices</code></td><td>FBI field offices handling the case</td></tr>
-                        <tr><td><code>languages</code></td><td>Languages spoken</td></tr>
-                        <tr><td><code>legat_names</code></td><td>Legal attache office names</td></tr>
+                        <tr>
+                            <td><code>field_offices</code></td>
+                            <td>
+                                FBI field offices handling the case
+                                <a href="javascript:void(0);" class="value-toggle" onclick="toggleValues('field-offices-values')">show values</a>
+                                <div id="field-offices-values" class="values-container" style="display: none;">
+                                    <div class="values-grid">
+                                        <div>albany</div>
+                                        <div>albuquerque</div>
+                                        <div>anchorage</div>
+                                        <div>atlanta</div>
+                                        <div>baltimore</div>
+                                        <div>birmingham</div>
+                                        <div>boston</div>
+                                        <div>buffalo</div>
+                                        <div>charlotte</div>
+                                        <div>chicago</div>
+                                        <div>cincinnati</div>
+                                        <div>cleveland</div>
+                                        <div>columbia</div>
+                                        <div>dallas</div>
+                                        <div>denver</div>
+                                        <div>detroit</div>
+                                        <div>elpaso</div>
+                                        <div>honolulu</div>
+                                        <div>houston</div>
+                                        <div>indianapolis</div>
+                                        <div>jackson</div>
+                                        <div>kansascity</div>
+                                        <div>lasvegas</div>
+                                        <div>littlerock</div>
+                                        <div>losangeles</div>
+                                        <div>louisville</div>
+                                        <div>memphis</div>
+                                        <div>miami</div>
+                                        <div>milwaukee</div>
+                                        <div>minneapolis</div>
+                                        <div>mobile</div>
+                                        <div>nashville</div>
+                                        <div>newark</div>
+                                        <div>newhaven</div>
+                                        <div>neworleans</div>
+                                        <div>newyork</div>
+                                        <div>norfolk</div>
+                                        <div>oklahomacity</div>
+                                        <div>omaha</div>
+                                        <div>philadelphia</div>
+                                        <div>phoenix</div>
+                                        <div>pittsburgh</div>
+                                        <div>portland</div>
+                                        <div>richmond</div>
+                                        <div>sacramento</div>
+                                        <div>saltlakecity</div>
+                                        <div>sanantonio</div>
+                                        <div>sandiego</div>
+                                        <div>sanfrancisco</div>
+                                        <div>sanjuan</div>
+                                        <div>seattle</div>
+                                        <div>springfield</div>
+                                        <div>stlouis</div>
+                                        <div>tampa</div>
+                                        <div>washingtondc</div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>languages</code></td>
+                            <td>
+                                Languages spoken
+                                <a href="javascript:void(0);" class="value-toggle" onclick="toggleValues('languages-values')">show values</a>
+                                <div id="languages-values" class="values-container" style="display: none;">
+                                    <div class="values-grid">
+                                        <div>Arabic</div>
+                                        <div>Azeri</div>
+                                        <div>Bulgarian</div>
+                                        <div>Cantonese</div>
+                                        <div>Chinese</div>
+                                        <div>English</div>
+                                        <div>Farsi</div>
+                                        <div>French</div>
+                                        <div>Fulani</div>
+                                        <div>German</div>
+                                        <div>Hindi</div>
+                                        <div>Italian</div>
+                                        <div>Japanese</div>
+                                        <div>Korean</div>
+                                        <div>Kurdish</div>
+                                        <div>Mandarin</div>
+                                        <div>Navajo</div>
+                                        <div>Pashto</div>
+                                        <div>Portuguese</div>
+                                        <div>Russian</div>
+                                        <div>Serbo-Croatian</div>
+                                        <div>Somali</div>
+                                        <div>Spanish</div>
+                                        <div>Swedish</div>
+                                        <div>Tausug</div>
+                                        <div>Turkish</div>
+                                        <div>Unknown</div>
+                                        <div>Urdu</div>
+                                        <div>Vietnamese</div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                         <tr><td><code>locations</code></td><td>Known locations</td></tr>
                         <tr><td><code>occupations</code></td><td>Known occupations</td></tr>
-                        <tr><td><code>possible_countries</code></td><td>Countries where person may be located</td></tr>
-                        <tr><td><code>possible_states</code></td><td>US states where person may be located</td></tr>
-                        <tr><td><code>subjects</code></td><td>Crime categories/subjects</td></tr>
-                        <tr><td><code>suspects</code></td><td>Associated suspects</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Special Fields -->
-            <h3 class="mt-4">Special Fields</h3>
-            <div class="table-responsive">
-                <table class="field-table">
-                    <thead>
                         <tr>
-                            <th>Field Name</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <td><code>possible_countries</code></td>
+                            <td>
+                                Countries where person may be located (ISO 3166 codes)
+                                <a href="javascript:void(0);" class="value-toggle" onclick="toggleValues('countries-values')">show values</a>
+                                <div id="countries-values" class="values-container" style="display: none;">
+                                    <div class="values-grid">
+                                        <div>ARE</div>
+                                        <div>ARG</div>
+                                        <div>AUS</div>
+                                        <div>BEL</div>
+                                        <div>BGD</div>
+                                        <div>BRA</div>
+                                        <div>CAN</div>
+                                        <div>CRI</div>
+                                        <div>CUB</div>
+                                        <div>DEU</div>
+                                        <div>DMA</div>
+                                        <div>DNK</div>
+                                        <div>DOM</div>
+                                        <div>ECU</div>
+                                        <div>EGY</div>
+                                        <div>FRA</div>
+                                        <div>GBR</div>
+                                        <div>HND</div>
+                                        <div>HTI</div>
+                                        <div>IND</div>
+                                        <div>IRN</div>
+                                        <div>IRQ</div>
+                                        <div>ISR</div>
+                                        <div>ITA</div>
+                                        <div>JEY</div>
+                                        <div>JOR</div>
+                                        <div>JPN</div>
+                                        <div>KEN</div>
+                                        <div>KWT</div>
+                                        <div>LAO</div>
+                                        <div>LBN</div>
+                                        <div>MEX</div>
+                                        <div>MLI</div>
+                                        <div>NIC</div>
+                                        <div>OMN</div>
+                                        <div>PAK</div>
+                                        <div>PHL</div>
+                                        <div>PRI</div>
+                                        <div>PSE</div>
+                                        <div>ROU</div>
+                                        <div>RUS</div>
+                                        <div>SAU</div>
+                                        <div>SLV</div>
+                                        <div>SOM</div>
+                                        <div>SWE</div>
+                                        <div>SYR</div>
+                                        <div>TUN</div>
+                                        <div>TZA</div>
+                                        <div>UKR</div>
+                                        <div>USA</div>
+                                        <div>VEN</div>
+                                        <div>YEM</div>
+                                        <div>ZAF</div>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>coordinates</code></td><td>JSONB</td><td>Geographic coordinates (lat/lng)</td></tr>
-                        <tr><td><code>full_data</code></td><td>JSONB</td><td>Complete raw data object</td></tr>
+                        <tr>
+                            <td><code>possible_states</code></td>
+                            <td>
+                                US states where person may be located
+                                <a href="javascript:void(0);" class="value-toggle" onclick="toggleValues('states-values')">show values</a>
+                                <div id="states-values" class="values-container" style="display: none;">
+                                    <div class="values-grid">
+                                        <div>US-AL</div>
+                                        <div>US-AR</div>
+                                        <div>US-AZ</div>
+                                        <div>US-CA</div>
+                                        <div>US-CO</div>
+                                        <div>US-CT</div>
+                                        <div>US-DC</div>
+                                        <div>US-FL</div>
+                                        <div>US-GA</div>
+                                        <div>US-HI</div>
+                                        <div>US-IL</div>
+                                        <div>US-IN</div>
+                                        <div>US-KY</div>
+                                        <div>US-LA</div>
+                                        <div>US-MA</div>
+                                        <div>US-MD</div>
+                                        <div>US-ME</div>
+                                        <div>US-MI</div>
+                                        <div>US-MN</div>
+                                        <div>US-MS</div>
+                                        <div>US-NC</div>
+                                        <div>US-NE</div>
+                                        <div>US-NJ</div>
+                                        <div>US-NV</div>
+                                        <div>US-NY</div>
+                                        <div>US-OH</div>
+                                        <div>US-OK</div>
+                                        <div>US-OR</div>
+                                        <div>US-PA</div>
+                                        <div>US-PR</div>
+                                        <div>US-RI</div>
+                                        <div>US-SC</div>
+                                        <div>US-SD</div>
+                                        <div>US-TN</div>
+                                        <div>US-TX</div>
+                                        <div>US-UM</div>
+                                        <div>US-UT</div>
+                                        <div>US-VA</div>
+                                        <div>US-VT</div>
+                                        <div>US-WA</div>
+                                        <div>US-WI</div>
+                                        <div>US-WV</div>
+                                        <div>US-WY</div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr><td><code>subjects</code></td><td>Crime categories/subjects</td></tr>
                     </tbody>
                 </table>
-            </div>
-            
-            <!-- Smart Normalization Note -->
-            <div class="alert alert-info mt-4">
-                <strong>Smart Field Normalization:</strong> The following fields are automatically normalized for easier searching:
-                <ul class="mb-0 mt-2">
-                    <li><code>possible_countries</code> - Accepts country names or codes (e.g., "USA", "United States", "us")</li>
-                    <li><code>possible_states</code> - Accepts state names or abbreviations (e.g., "California", "CA", "calif")</li>
-                    <li><code>field_offices</code> - Automatically normalized to lowercase</li>
-                </ul>
             </div>
         </div>
     </div>
@@ -805,10 +993,10 @@ public class BoloSearch {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td><code>json</code></td><td>All users</td><td>Default JSON format with full metadata</td></tr>
-                        <tr><td><code>csv</code></td><td>PREMIUM only</td><td>Comma-separated values for spreadsheet import</td></tr>
-                        <tr><td><code>txt</code></td><td>PREMIUM only</td><td>Human-readable plain text BOLO format</td></tr>
-                        <tr><td><code>xml</code></td><td>PREMIUM only</td><td>Structured XML for RMS/CAD system integration</td></tr>
+                        <tr><td><code>json</code></td><td>Basic, Premium</td><td>Default JSON format with full metadata</td></tr>
+                        <tr><td><code>csv</code></td><td>Premium</td><td>Comma-separated values for spreadsheet import</td></tr>
+                        <tr><td><code>txt</code></td><td>Premium</td><td>Human-readable plain text BOLO format</td></tr>
+                        <tr><td><code>xml</code></td><td>Premium</td><td>Structured XML for RMS/CAD system integration</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -822,7 +1010,7 @@ Content-Type: application/json
     "filters": [
         {"field": "title", "value": "*murder*"}
     ],
-    "limit": 100
+    "limit": 250
 }</code></pre>
             
             <h3>Code Examples:</h3>
@@ -1028,6 +1216,19 @@ function showTab(event, tabId) {
     document.getElementById(tabId).classList.add('active');
     event.target.classList.add('active');
 }
+
+function toggleValues(elementId) {
+    const container = document.getElementById(elementId);
+    const toggle = event.target;
+    
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        toggle.textContent = 'hide values';
+    } else {
+        container.style.display = 'none';
+        toggle.textContent = 'show values';
+    }
+}
 </script>
 
 <style>
@@ -1196,6 +1397,50 @@ code {
     overflow-x: auto;
 }
 
+/* Value Toggle Styles */
+.value-toggle {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background-color: #e7f3ff;
+    transition: all 0.2s;
+}
+
+.value-toggle:hover {
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.values-container {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.values-grid div {
+    padding: 4px 8px;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid #dee2e6;
+}
+
 @media (max-width: 768px) {
     .tab-buttons {
         flex-wrap: wrap;
@@ -1217,6 +1462,11 @@ code {
     .field-table th,
     .field-table td {
         padding: 0.5rem;
+    }
+    
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 12px;
     }
 }
 </style>

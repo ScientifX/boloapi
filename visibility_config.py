@@ -68,12 +68,20 @@ DOCS_VISIBILITY_CONFIG = {
     
     # ----- Basic visibility (BASIC and above see these) -----
     ("POST", "/v1/search/simple"): UserRole.BASIC,
+    # Reference list endpoints - BASIC visibility
+    ("GET", "/v1/search/list_field_offices"): UserRole.BASIC,
+    ("GET", "/v1/search/list_languages"): UserRole.BASIC,
+    ("GET", "/v1/search/list_nationality"): UserRole.BASIC,
+    ("GET", "/v1/search/list_possible_countries"): UserRole.BASIC,
+    ("GET", "/v1/search/list_possible_states"): UserRole.BASIC,
+    ("GET", "/v1/search/list_race"): UserRole.BASIC,
+    
     
     # ----- Premium visibility (PREMIUM and above see these) -----
     ("POST", "/v1/search/advanced"): UserRole.BASIC,
     ("GET", "/v1/search/top_missing"): UserRole.BASIC,
-    ("GET", "/v1/search/top_reward"): UserRole.BASIC,
-    ("GET", "/v1/search/top_ten"): UserRole.BASIC,
+    ("GET", "/v1/search/class_top_reward"): UserRole.BASIC,
+    ("GET", "/v1/search/class_top_ten"): UserRole.BASIC,
     ("GET", "/v1/search/top_terrorist"): UserRole.BASIC,
 }
 

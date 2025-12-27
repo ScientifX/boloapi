@@ -26,7 +26,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, SWAGGER_UI_CUSTOM_CSS, API_APP_BASE_URL
+from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, API_APP_BASE_URL
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -231,9 +231,7 @@ async def get_docs(request: Request):
     
     # Inject custom CSS for better markdown rendering
     html_body = html.body.decode('utf-8')
-    html_body = html_body.replace('</head>', f'{SWAGGER_UI_CUSTOM_CSS}</head>')
-    
-    print(html_body)
+    # html_body = html_body.replace('</head>', f'{SWAGGER_UI_CUSTOM_CSS}</head>')
     
     # Create response with updated HTML
     response = HTMLResponse(content=html_body)

@@ -33,7 +33,12 @@ rate_max = "500/minute"
 limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 
 # FastAPI Router
-router = APIRouter(prefix="/v1/search", tags=["Search features"])
+router = APIRouter(prefix="/v1/search")
+
+# Tags for Swagger UI organization
+TAG_SEARCH = "Search"
+TAG_SEARCH_BY_CLASS = "Search By Class"
+TAG_SEARCH_BY_LIST = "Search By List"
 
 # ============================================================================
 # VALIDATION HELPER FUNCTIONS
@@ -186,21 +191,16 @@ class FieldTypeMap:
         "modified": FieldDataType.TIMESTAMP,
         "publication": FieldDataType.TIMESTAMP,
         
-        # JSONB fields
-        "coordinates": FieldDataType.JSONB,
-        
         # Text array fields (text[][])
         "aliases": FieldDataType.TEXT_ARRAY,
         "dates_of_birth_used": FieldDataType.TEXT_ARRAY,
         "field_offices": FieldDataType.TEXT_ARRAY,
         "languages": FieldDataType.TEXT_ARRAY,
-        "legat_names": FieldDataType.TEXT_ARRAY,
         "locations": FieldDataType.TEXT_ARRAY,
         "occupations": FieldDataType.TEXT_ARRAY,
         "possible_countries": FieldDataType.TEXT_ARRAY,
         "possible_states": FieldDataType.TEXT_ARRAY,
         "subjects": FieldDataType.TEXT_ARRAY,
-        "suspects": FieldDataType.TEXT_ARRAY,
         
         # String/text fields
         "build": FieldDataType.STRING,
@@ -279,22 +279,17 @@ class AllowedField(str, Enum):
     build = "build"
     caution = "caution"
     complexion = "complexion"
-    coordinates = "coordinates"
     dates_of_birth_used = "dates_of_birth_used"
     description = "description"
     details = "details"
     eyes = "eyes"
     eyes_raw = "eyes_raw"
     field_offices = "field_offices"
-    first_seen_date = "first_seen_date"
-    full_data = "full_data"
     hair = "hair"
     hair_raw = "hair_raw"
     height_max = "height_max"
     height_min = "height_min"
     languages = "languages"
-    last_seen_date = "last_seen_date"
-    legat_names = "legat_names"
     locations = "locations"
     modified = "modified"
     nationality = "nationality"
@@ -319,7 +314,6 @@ class AllowedField(str, Enum):
     sex = "sex"
     status = "status"
     subjects = "subjects"
-    suspects = "suspects"
     title = "title"
     # uid = "uid"
     url = "url"
@@ -941,6 +935,7 @@ def get_db_connection():
 
 @router.post(
     "/simple",
+    tags=[TAG_SEARCH],
     summary="Simple Search with Wildcards",
     description="",
     response_description="Query parameters, count, and array of records with data_type and data fields"
@@ -1051,6 +1046,7 @@ async def simple_search(
 
 @router.post(
     "/advanced",
+    tags=[TAG_SEARCH],
     summary="Advanced Search with Grouped Conditions",
     description="",
     response_description="Query parameters, count, and array of records with data_type and data fields"
@@ -1146,11 +1142,364 @@ async def advanced_search(
 
 
 # =============================================================================
+# REFERENCE LIST ENDPOINTS
+# =============================================================================
+
+@router.get(
+    "/list_field_offices",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List Common Field Offices",
+    description="""
+    Get a list of distinct FBI field offices from the BoloDoc database.
+    
+    Returns an alphabetically sorted list of field office names.
+    """,
+    response_description="List of field office names"
+)
+@limiter.limit(rate_max)
+async def list_field_offices(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of all distinct field offices"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT elem AS field_office
+                    FROM vw_bolo
+                    CROSS JOIN LATERAL unnest(field_offices) AS elem
+                    ORDER BY elem
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        field_offices = [row['field_office'] for row in results if row and 'field_office' in row]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_field_offices",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(field_offices),
+            "field_offices": field_offices, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List field offices error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving field offices: {str(e)}"
+        )
+
+
+@router.get(
+    "/list_languages",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List Common Languages",
+    description="""
+    Get a list of common languages from the BoloDoc database.
+    
+    Returns an alphabetically sorted list of languages (single-word entries only).
+    """,
+    response_description="List of languages"
+)
+@limiter.limit(rate_max)
+async def list_languages(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of all distinct languages"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT elem AS language
+                    FROM vw_bolo
+                    CROSS JOIN LATERAL unnest(languages) AS elem
+                    ORDER BY elem
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        languages = [row['language'] for row in results if row and 'language' in row and ' ' not in row['language']]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_languages",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(languages),
+            "languages": languages, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List languages error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving languages: {str(e)}"
+        )
+
+
+@router.get(
+    "/list_nationality",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List Common Nationalities",
+    description="""
+    Get a list of common possible nationalities from the BoloDoc database.
+    
+    Returns an alphabetically sorted list of countries of subjects' nationalities
+    """,
+    response_description="List of possible countries"
+)
+@limiter.limit(rate_max)
+async def list_nationality(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of nationalities"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT nationality
+                    FROM vw_bolo
+                    ORDER BY nationality
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        nationality = [row['nationality'] for row in results if row and 'nationality' in row]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_nationality",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(nationality),
+            "list_nationality": nationality, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List nationality error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving nationality list: {str(e)}"
+        )
+
+@router.get(
+    "/list_possible_countries",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List Common Possible Countries",
+    description="""
+    Get a list of common possible countries from the BoloDoc database.
+    
+    Returns an alphabetically sorted list of countries where subjects may be located.
+    """,
+    response_description="List of possible countries"
+)
+@limiter.limit(rate_max)
+async def list_possible_countries(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of all distinct possible countries"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT elem AS country
+                    FROM vw_bolo
+                    CROSS JOIN LATERAL unnest(possible_countries) AS elem
+                    ORDER BY elem
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        countries = [row['country'] for row in results if row and 'country' in row]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_possible_countries",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(countries),
+            "possible_countries": countries, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List possible countries error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving possible countries: {str(e)}"
+        )
+
+
+@router.get(
+    "/list_possible_states",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List Common Possible States",
+    description="""
+    Get a list of common possible US states from the BoloDoc database.
+    
+    Returns an alphabetically sorted list of US states where subjects may be located.
+    """,
+    response_description="List of possible states"
+)
+@limiter.limit(rate_max)
+async def list_possible_states(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of all distinct possible states"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT elem AS state
+                    FROM vw_bolo
+                    CROSS JOIN LATERAL unnest(possible_states) AS elem
+                    ORDER BY elem
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        states = [row['state'] for row in results if row and 'state' in row]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_possible_states",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(states),
+            "possible_states": states, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List possible states error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving possible states: {str(e)}"
+        )
+        
+@router.get(
+    "/list_race",
+    tags=[TAG_SEARCH_BY_LIST],
+    summary="List of subject races",
+    description="""    
+    Returns an alphabetically sorted list of subjects' races.
+    """,
+    response_description="List of subject races"
+)
+@limiter.limit(rate_max)
+async def list_race(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
+):
+    """Get list of subject races"""
+    current_role = current_user["role"]
+    user_id = current_user.get("user_id")
+    
+    # Determine limit based on role
+    actual_limit = 25 if current_role == UserRole.BASIC else 5000
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                query = """
+                    SELECT DISTINCT race
+                    FROM vw_bolo
+                    ORDER BY race
+                    LIMIT %s
+                """
+                cur.execute(query, (actual_limit,))
+                results = cur.fetchall()
+        
+        # Extract values safely
+        races = [row['race'] for row in results if row and 'race' in row]
+        
+        # Get role value safely
+        role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
+        
+        return {
+            "endpoint": "list_race",
+            "role": role_str,
+            "limit": actual_limit,
+            "count": len(races),
+            "possible_states": races, 
+            "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
+        }
+        
+    except Exception as e:
+        logger.error(f"List races error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving list of subject races: {str(e)}"
+        )
+
+
+# =============================================================================
 # CLASSIFICATION-BASED SEARCH ENDPOINTS
 # =============================================================================
 
 @router.get(
-    "/top_ten",
+    "/class_top_ten",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="FBI Ten Most Wanted Fugitives",
     description="",
     response_description="Ten Most Wanted Fugitives"
@@ -1193,7 +1542,7 @@ async def get_top_ten(
         
         result_dict = {
             "query": {
-                "endpoint": "top_ten",
+                "endpoint": "class_top_ten",
                 "classification": "topten"
             },
             "role": current_role.value,
@@ -1211,7 +1560,8 @@ async def get_top_ten(
 
 
 @router.get(
-    "/top_reward",
+    "/class_top_reward",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="High Reward Cases ($1M+)",
     description="",
     response_description="Fugitives and cases with high-dollar rewards >= USD$1 Million"
@@ -1263,7 +1613,7 @@ async def get_top_reward(
         
         result_dict = {
             "query": {
-                "endpoint": "top_reward",
+                "endpoint": "class_top_reward",
                 "classification": "top_reward",
                 "limit": actual_limit
             },
@@ -1282,7 +1632,8 @@ async def get_top_reward(
 
 
 @router.get(
-    "/additional_info",
+    "/class_additional_info",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Additional/Miscellaneous Cases",
     description="",
     response_description="Additional/Miscellaneous Cases"
@@ -1332,7 +1683,7 @@ async def get_additional_info(
         
         result_dict = {
             "query": {
-                "endpoint": "additional_info",
+                "endpoint": "class_additional_info",
                 "classification": "additional",
                 "limit": actual_limit
             },
@@ -1351,7 +1702,8 @@ async def get_additional_info(
 
 
 @router.get(
-    "/crimes_against_children",
+    "/class_crimes_against_children",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Crimes Against Children",
     description="",
     response_description="Crimes Against Children"
@@ -1401,7 +1753,7 @@ async def get_crimes_against_children(
         
         result_dict = {
             "query": {
-                "endpoint": "crimes_against_children",
+                "endpoint": "class_crimes_against_children",
                 "classification": "cac",
                 "limit": actual_limit
             },
@@ -1420,7 +1772,8 @@ async def get_crimes_against_children(
 
 
 @router.get(
-    "/criminal_enterprise_investigations",
+    "/class_criminal_enterprise_investigations",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Criminal Enterprise Investigations",
     description="",
     response_description="Criminal Enterprise Investigations"
@@ -1470,7 +1823,7 @@ async def get_criminal_enterprise_investigations(
         
         result_dict = {
             "query": {
-                "endpoint": "criminal_enterprise_investigations",
+                "endpoint": "class_criminal_enterprise_investigations",
                 "classification": "cei",
                 "limit": actual_limit
             },
@@ -1489,7 +1842,8 @@ async def get_criminal_enterprise_investigations(
 
 
 @router.get(
-    "/counterintelligence",
+    "/class_counterintelligence",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Counterintelligence Cases",
     description="",
     response_description="Counterintelligence Cases"
@@ -1539,7 +1893,7 @@ async def get_counterintelligence(
         
         result_dict = {
             "query": {
-                "endpoint": "counterintelligence",
+                "endpoint": "class_counterintelligence",
                 "classification": "counterintelligence",
                 "limit": actual_limit
             },
@@ -1558,7 +1912,8 @@ async def get_counterintelligence(
 
 
 @router.get(
-    "/cyber_crimes",
+    "/class_cyber_crimes",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Cyber Crimes",
     description="",
     response_description="Cyber Crimes"
@@ -1608,7 +1963,7 @@ async def get_cyber_crimes(
         
         result_dict = {
             "query": {
-                "endpoint": "cyber_crimes",
+                "endpoint": "class_cyber_crimes",
                 "classification": "cyber",
                 "limit": actual_limit
             },
@@ -1627,7 +1982,8 @@ async def get_cyber_crimes(
 
 
 @router.get(
-    "/domestic_terrorism",
+    "/class_domestic_terrorism",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Domestic Terrorism Cases",
     description="",
     response_description="Domestic Terrorism Cases"
@@ -1677,7 +2033,7 @@ async def get_domestic_terrorism(
         
         result_dict = {
             "query": {
-                "endpoint": "domestic_terrorism",
+                "endpoint": "class_domestic_terrorism",
                 "classification": "dt",
                 "limit": actual_limit
             },
@@ -1696,7 +2052,8 @@ async def get_domestic_terrorism(
 
 
 @router.get(
-    "/endangered_child_alert_program",
+    "/class_endangered_child_alert_program",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Endangered Child Alert Program (ECAP)",
     description="",
     response_description="Endangered Child Alert Program (ECAP)"
@@ -1746,7 +2103,7 @@ async def get_endangered_child_alert_program(
         
         result_dict = {
             "query": {
-                "endpoint": "endangered_child_alert_program",
+                "endpoint": "class_endangered_child_alert_program",
                 "classification": "ecap",
                 "limit": actual_limit
             },
@@ -1765,7 +2122,8 @@ async def get_endangered_child_alert_program(
 
 
 @router.get(
-    "/human_trafficking",
+    "/class_human_trafficking",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Human Trafficking Cases",
     description="",
     response_description="Human Trafficking Cases"
@@ -1815,7 +2173,7 @@ async def get_human_trafficking(
         
         result_dict = {
             "query": {
-                "endpoint": "human_trafficking",
+                "endpoint": "class_human_trafficking",
                 "classification": "human-trafficking",
                 "limit": actual_limit
             },
@@ -1834,7 +2192,8 @@ async def get_human_trafficking(
 
 
 @router.get(
-    "/kidnap_missing",
+    "/class_kidnap_missing",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Kidnappings and Missing Persons",
     description="",
     response_description="Kidnappings and Missing Persons"
@@ -1884,7 +2243,7 @@ async def get_kidnap_missing(
         
         result_dict = {
             "query": {
-                "endpoint": "kidnap_missing",
+                "endpoint": "class_kidnap_missing",
                 "classification": "kidnap",
                 "limit": actual_limit
             },
@@ -1903,7 +2262,8 @@ async def get_kidnap_missing(
 
 
 @router.get(
-    "/known_bank_robbers",
+    "/class_known_bank_robbers",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Known Bank Robbers",
     description="",
     response_description="Known Bank Robbers"
@@ -1953,7 +2313,7 @@ async def get_known_bank_robbers(
         
         result_dict = {
             "query": {
-                "endpoint": "known_bank_robbers",
+                "endpoint": "class_known_bank_robbers",
                 "classification": "known-bank-robbers",
                 "limit": actual_limit
             },
@@ -1972,7 +2332,8 @@ async def get_known_bank_robbers(
 
 
 @router.get(
-    "/law_enforcement_assistance",
+    "/class_law_enforcement_assistance",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Law Enforcement Assistance",
     description="",
     response_description="Law Enforcement Assistance"
@@ -2022,7 +2383,7 @@ async def get_law_enforcement_assistance(
         
         result_dict = {
             "query": {
-                "endpoint": "law_enforcement_assistance",
+                "endpoint": "class_law_enforcement_assistance",
                 "classification": "law-enforcement-assistance",
                 "limit": actual_limit
             },
@@ -2041,7 +2402,8 @@ async def get_law_enforcement_assistance(
 
 
 @router.get(
-    "/murders",
+    "/class_murders",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Murder Cases",
     description="",
     response_description="Murder Cases"
@@ -2091,7 +2453,7 @@ async def get_murders(
         
         result_dict = {
             "query": {
-                "endpoint": "murders",
+                "endpoint": "class_murders",
                 "classification": "murders",
                 "limit": actual_limit
             },
@@ -2110,7 +2472,8 @@ async def get_murders(
 
 
 @router.get(
-    "/kidnap_parental",
+    "/class_kidnap_parental",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Parental Kidnappings",
     description="",
     response_description="Parental Kidnappings"
@@ -2160,7 +2523,7 @@ async def get_kidnap_parental(
         
         result_dict = {
             "query": {
-                "endpoint": "kidnap_parental",
+                "endpoint": "class_kidnap_parental",
                 "classification": "parental-kidnappings",
                 "limit": actual_limit
             },
@@ -2179,7 +2542,8 @@ async def get_kidnap_parental(
 
 
 @router.get(
-    "/seeking_info",
+    "/class_seeking_info",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Seeking Information",
     description="",
     response_description="Seeking Information"
@@ -2229,7 +2593,7 @@ async def get_seeking_info(
         
         result_dict = {
             "query": {
-                "endpoint": "seeking_info",
+                "endpoint": "class_seeking_info",
                 "classification": "seeking-info",
                 "limit": actual_limit
             },
@@ -2248,7 +2612,8 @@ async def get_seeking_info(
 
 
 @router.get(
-    "/terror_info",
+    "/class_terror_info",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Terrorism Information",
     description="",
     response_description="Terrorism Information"
@@ -2298,7 +2663,7 @@ async def get_terror_info(
         
         result_dict = {
             "query": {
-                "endpoint": "terror_info",
+                "endpoint": "class_terror_info",
                 "classification": "terrorinfo",
                 "limit": actual_limit
             },
@@ -2317,7 +2682,8 @@ async def get_terror_info(
 
 
 @router.get(
-    "/violent_criminal_apprehension_program",
+    "/class_violent_criminal_apprehension_program",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Violent Criminal Apprehension Program (ViCAP)",
     description="",
     response_description="Violent Criminal Apprehension Program (ViCAP)"
@@ -2367,7 +2733,7 @@ async def get_violent_criminal_apprehension_program(
         
         result_dict = {
             "query": {
-                "endpoint": "violent_criminal_apprehension_program",
+                "endpoint": "class_violent_criminal_apprehension_program",
                 "classification": "vicap",
                 "limit": actual_limit
             },
@@ -2386,7 +2752,8 @@ async def get_violent_criminal_apprehension_program(
 
 
 @router.get(
-    "/wanted_terrorists",
+    "/class_wanted_terrorists",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Wanted Terrorists",
     description="",
     response_description="Wanted Terrorists"
@@ -2436,7 +2803,7 @@ async def get_wanted_terrorists(
         
         result_dict = {
             "query": {
-                "endpoint": "wanted_terrorists",
+                "endpoint": "class_wanted_terrorists",
                 "classification": "wanted_terrorists",
                 "limit": actual_limit
             },
@@ -2455,7 +2822,8 @@ async def get_wanted_terrorists(
 
 
 @router.get(
-    "/white_collar_crimes",
+    "/class_white_collar_crimes",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="White Collar Crimes",
     description="",
     response_description="White Collar Crimes"
@@ -2505,7 +2873,7 @@ async def get_white_collar_crimes(
         
         result_dict = {
             "query": {
-                "endpoint": "white_collar_crimes",
+                "endpoint": "class_white_collar_crimes",
                 "classification": "wcc",
                 "limit": actual_limit
             },
@@ -2523,7 +2891,8 @@ async def get_white_collar_crimes(
         )
 
 @router.get(
-    "/case_of_the_week",
+    "/class_case_of_the_week",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Get Case of the Week",
     description="",
     response_description="Get Case of the Week"
@@ -2573,7 +2942,7 @@ async def get_case_of_the_week(
         
         result_dict = {
             "query": {
-                "endpoint": "case_of_the_week",
+                "endpoint": "class_case_of_the_week",
                 "classification": "case_of_the_week",
                 "limit": actual_limit
             },
@@ -2592,7 +2961,8 @@ async def get_case_of_the_week(
     
 
 @router.get(
-    "/native_american",
+    "/class_native_american",
+    tags=[TAG_SEARCH_BY_CLASS],
     summary="Native American Cases",
     description="",
     response_description="Native American Cases"
@@ -2642,7 +3012,7 @@ async def get_native_american(
         
         result_dict = {
             "query": {
-                "endpoint": "native_american",
+                "endpoint": "class_native_american",
                 "classification": "native_american",
                 "limit": actual_limit
             },
@@ -2661,6 +3031,7 @@ async def get_native_american(
 
 @router.get(
     "/",
+    tags=[TAG_SEARCH],
     summary="API Information",
     description="Get information about this API and available endpoints"
 )
@@ -2675,29 +3046,29 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         },
         "classification_endpoints": {
             "description": "FBI wanted persons by classification category",
-            "access_note": "top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual subscription only",
+            "access_note": "class_top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual subscription only",
             "endpoints": {
-                "/top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
-                "/top_reward": "High reward cases $1M+ (PREMIUM annual subscription only)",
-                "/additional_info": "Additional Information (PREMIUM annual subscription only)",
-                "/crimes_against_children": "Crimes Against Children (PREMIUM annual subscription only)",
-                "/criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual subscription only)",
-                "/counterintelligence": "Counterintelligence (PREMIUM annual subscription only)",
-                "/cyber_crimes": "Cyber Crimes (PREMIUM annual subscription only)",
-                "/domestic_terrorism": "Domestic Terrorism (PREMIUM annual subscription only)",
-                "/endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
-                "/human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
-                "/kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
-                "/known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
-                "/law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
-                "/murders": "Murders (PREMIUM annual subscription only)",
-                "/kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
-                "/seeking_info": "Seeking Information (PREMIUM annual subscription only)",
-                "/terror_info": "Terrorism Information (PREMIUM annual subscription only)",
-                "/violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual subscription only)",
-                "/wanted_terrorists": "Wanted Terrorists (PREMIUM annual subscription only)",
-                "/white_collar_crimes": "White Collar Crimes (PREMIUM annual subscription only)",
-                "/native_american": "Native American Cases (PREMIUM annual subscription only)"
+                "/class_top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
+                "/class_top_reward": "High reward cases $1M+ (PREMIUM annual subscription only)",
+                "/class_additional_info": "Additional Information (PREMIUM annual subscription only)",
+                "/class_crimes_against_children": "Crimes Against Children (PREMIUM annual subscription only)",
+                "/class_criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual subscription only)",
+                "/class_counterintelligence": "Counterintelligence (PREMIUM annual subscription only)",
+                "/class_cyber_crimes": "Cyber Crimes (PREMIUM annual subscription only)",
+                "/class_domestic_terrorism": "Domestic Terrorism (PREMIUM annual subscription only)",
+                "/class_endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
+                "/class_human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
+                "/class_kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
+                "/class_known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
+                "/class_law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
+                "/class_murders": "Murders (PREMIUM annual subscription only)",
+                "/class_kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
+                "/class_seeking_info": "Seeking Information (PREMIUM annual subscription only)",
+                "/class_terror_info": "Terrorism Information (PREMIUM annual subscription only)",
+                "/class_violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual subscription only)",
+                "/class_wanted_terrorists": "Wanted Terrorists (PREMIUM annual subscription only)",
+                "/class_white_collar_crimes": "White Collar Crimes (PREMIUM annual subscription only)",
+                "/class_native_american": "Native American Cases (PREMIUM annual subscription only)"
             }
         },
         "access_levels": {
@@ -2741,6 +3112,7 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
 
 @router.get(
     "/documents_info",
+    tags=[TAG_SEARCH],
     summary="Documents Archive Information",
     description="""
     Get information about the available BOLO documents archive.
@@ -2805,6 +3177,7 @@ async def get_documents_info(
 
 @router.get(
     "/documents_download",
+    tags=[TAG_SEARCH],
     summary="Download Documents Archive",
     description="""
     Download the complete BOLO documents archive (ZIP file).
