@@ -37,7 +37,7 @@ router = APIRouter(prefix="/v1/search")
 
 # Tags for Swagger UI organization
 TAG_SEARCH = "Search"
-TAG_SEARCH_BY_CLASS = "Search By Class"
+TAG_SEARCH_BY_CATEGORY = "Search By Category"
 TAG_SEARCH_BY_LIST = "Search By List"
 QUICKSTART_URL = f"{API_APP_BASE_URL}/quickstart.html" if API_APP_BASE_URL else "/quickstart.html"
 
@@ -1488,8 +1488,8 @@ async def list_race(
 # =============================================================================
 
 @router.get(
-    "/class_top_ten",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_top_ten",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="FBI ten most wanted fugitives",
     description="Returns records of a given class",
     response_description="FBI ten most wanted fugitives"
@@ -1532,7 +1532,7 @@ async def get_top_ten(
         
         result_dict = {
             "query": {
-                "endpoint": "class_top_ten",
+                "endpoint": "category_top_ten",
                 "classification": "topten"
             },
             "role": current_role.value,
@@ -1550,8 +1550,8 @@ async def get_top_ten(
 
 
 @router.get(
-    "/class_top_reward",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_top_reward",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Wanted individuals and cases with high-dollar rewards >= USD$1 Million",
     description="Returns records of a given class",
     response_description="Wanted individuals and cases with high-dollar rewards >= USD$1 Million"
@@ -1603,7 +1603,7 @@ async def get_top_reward(
         
         result_dict = {
             "query": {
-                "endpoint": "class_top_reward",
+                "endpoint": "category_top_reward",
                 "classification": "top_reward",
                 "limit": actual_limit
             },
@@ -1622,11 +1622,11 @@ async def get_top_reward(
 
 
 @router.get(
-    "/class_additional_info",
-    tags=[TAG_SEARCH_BY_CLASS],
-    summary="Additional and miscellaneous FBI cases",
+    "/category_additional",
+    tags=[TAG_SEARCH_BY_CATEGORY],
+    summary="Additional violent individuals and cases",
     description="Returns records of a given class",
-    response_description="Additional and miscellaneous FBI cases"
+    response_description="Additional violent individuals and cases"
 )
 @limiter.limit(rate_max)
 async def get_additional_info(
@@ -1634,7 +1634,7 @@ async def get_additional_info(
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
-    """Additional and miscellaneous FBI cases"""
+    """Additional violent individuals and cases"""
     current_role = current_user["role"]
     billing_cycle = current_user.get("billing_cycle")
     
@@ -1673,7 +1673,7 @@ async def get_additional_info(
         
         result_dict = {
             "query": {
-                "endpoint": "class_additional_info",
+                "endpoint": "category_additional",
                 "classification": "additional",
                 "limit": actual_limit
             },
@@ -1692,8 +1692,8 @@ async def get_additional_info(
 
 
 @router.get(
-    "/class_crimes_against_children",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_crimes_against_children",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to crimes against children",
     description="Returns records of a given class",
     response_description="Individuals and cases related to crimes against children"
@@ -1743,7 +1743,7 @@ async def get_crimes_against_children(
         
         result_dict = {
             "query": {
-                "endpoint": "class_crimes_against_children",
+                "endpoint": "category_crimes_against_children",
                 "classification": "cac",
                 "limit": actual_limit
             },
@@ -1762,8 +1762,8 @@ async def get_crimes_against_children(
 
 
 @router.get(
-    "/class_criminal_enterprise_investigations",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_criminal_enterprise_investigations",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to criminal enterprise investigations",
     description="Returns records of a given class",
     response_description="Individuals and cases related to criminal enterprise investigations"
@@ -1813,7 +1813,7 @@ async def get_criminal_enterprise_investigations(
         
         result_dict = {
             "query": {
-                "endpoint": "class_criminal_enterprise_investigations",
+                "endpoint": "category_criminal_enterprise_investigations",
                 "classification": "cei",
                 "limit": actual_limit
             },
@@ -1832,8 +1832,8 @@ async def get_criminal_enterprise_investigations(
 
 
 @router.get(
-    "/class_counterintelligence",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_counterintelligence",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to counterintelligence",
     description="Returns records of a given class",
     response_description="Individuals and cases related to counterintelligences"
@@ -1883,7 +1883,7 @@ async def get_counterintelligence(
         
         result_dict = {
             "query": {
-                "endpoint": "class_counterintelligence",
+                "endpoint": "category_counterintelligence",
                 "classification": "counterintelligence",
                 "limit": actual_limit
             },
@@ -1902,8 +1902,8 @@ async def get_counterintelligence(
 
 
 @router.get(
-    "/class_cyber_crimes",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_cyber_crimes",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to cyber crimes",
     description="Returns records of a given class",
     response_description="Individuals and cases related to cyber crimes"
@@ -1953,7 +1953,7 @@ async def get_cyber_crimes(
         
         result_dict = {
             "query": {
-                "endpoint": "class_cyber_crimes",
+                "endpoint": "category_cyber_crimes",
                 "classification": "cyber",
                 "limit": actual_limit
             },
@@ -1972,8 +1972,8 @@ async def get_cyber_crimes(
 
 
 @router.get(
-    "/class_domestic_terrorism",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_domestic_terrorism",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to domestic terrorism",
     description="Returns records of a given class",
     response_description="Individuals and cases related to domestic terrorism"
@@ -2023,7 +2023,7 @@ async def get_domestic_terrorism(
         
         result_dict = {
             "query": {
-                "endpoint": "class_domestic_terrorism",
+                "endpoint": "category_domestic_terrorism",
                 "classification": "dt",
                 "limit": actual_limit
             },
@@ -2042,8 +2042,8 @@ async def get_domestic_terrorism(
 
 
 @router.get(
-    "/class_endangered_child_alert_program",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_endangered_child_alert_program",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to the Endangered Child Alert Program (ECAP)",
     description="Returns records of a given class",
     response_description="Individuals and cases related to the Endangered Child Alert Program (ECAP)"
@@ -2093,7 +2093,7 @@ async def get_endangered_child_alert_program(
         
         result_dict = {
             "query": {
-                "endpoint": "class_endangered_child_alert_program",
+                "endpoint": "category_endangered_child_alert_program",
                 "classification": "ecap",
                 "limit": actual_limit
             },
@@ -2112,8 +2112,8 @@ async def get_endangered_child_alert_program(
 
 
 @router.get(
-    "/class_human_trafficking",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_human_trafficking",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to human trafficking",
     description="Returns records of a given class",
     response_description="Individuals and cases related to human trafficking"
@@ -2163,7 +2163,7 @@ async def get_human_trafficking(
         
         result_dict = {
             "query": {
-                "endpoint": "class_human_trafficking",
+                "endpoint": "category_human_trafficking",
                 "classification": "human-trafficking",
                 "limit": actual_limit
             },
@@ -2182,8 +2182,8 @@ async def get_human_trafficking(
 
 
 @router.get(
-    "/class_kidnap_missing",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_kidnap_missing",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to kidnappings and missing persons",
     description="Returns records of a given class",
     response_description="Individuals and cases related to kidnappings and missing persons"
@@ -2233,7 +2233,7 @@ async def get_kidnap_missing(
         
         result_dict = {
             "query": {
-                "endpoint": "class_kidnap_missing",
+                "endpoint": "category_kidnap_missing",
                 "classification": "kidnap",
                 "limit": actual_limit
             },
@@ -2252,8 +2252,8 @@ async def get_kidnap_missing(
 
 
 @router.get(
-    "/class_known_bank_robbers",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_known_bank_robbers",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to known bank robbers",
     description="Returns records of a given class",
     response_description="Individuals and cases related to known bank robbers"
@@ -2303,7 +2303,7 @@ async def get_known_bank_robbers(
         
         result_dict = {
             "query": {
-                "endpoint": "class_known_bank_robbers",
+                "endpoint": "category_known_bank_robbers",
                 "classification": "known-bank-robbers",
                 "limit": actual_limit
             },
@@ -2322,8 +2322,8 @@ async def get_known_bank_robbers(
 
 
 @router.get(
-    "/class_law_enforcement_assistance",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_law_enforcement_assistance",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to law enforcement assistance",
     description="Returns records of a given class",
     response_description="Individuals and cases related to law enforcement assistance"
@@ -2373,7 +2373,7 @@ async def get_law_enforcement_assistance(
         
         result_dict = {
             "query": {
-                "endpoint": "class_law_enforcement_assistance",
+                "endpoint": "category_law_enforcement_assistance",
                 "classification": "law-enforcement-assistance",
                 "limit": actual_limit
             },
@@ -2392,8 +2392,8 @@ async def get_law_enforcement_assistance(
 
 
 @router.get(
-    "/class_murders",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_murders",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to murder",
     description="Returns records of a given class",
     response_description="Individuals and cases related to murder"
@@ -2443,7 +2443,7 @@ async def get_murders(
         
         result_dict = {
             "query": {
-                "endpoint": "class_murders",
+                "endpoint": "category_murders",
                 "classification": "murders",
                 "limit": actual_limit
             },
@@ -2462,8 +2462,8 @@ async def get_murders(
 
 
 @router.get(
-    "/class_kidnap_parental",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_kidnap_parental",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to parental kidnappings",
     description="Returns records of a given class",
     response_description="Individuals and cases related to parental kidnappings"
@@ -2513,7 +2513,7 @@ async def get_kidnap_parental(
         
         result_dict = {
             "query": {
-                "endpoint": "class_kidnap_parental",
+                "endpoint": "category_kidnap_parental",
                 "classification": "parental-kidnappings",
                 "limit": actual_limit
             },
@@ -2532,8 +2532,8 @@ async def get_kidnap_parental(
 
 
 @router.get(
-    "/class_seeking_info",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_seeking_info",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases for whom additional information is sought",
     description="Returns records of a given class",
     response_description="Individuals and cases for whom additional information is sought"
@@ -2583,7 +2583,7 @@ async def get_seeking_info(
         
         result_dict = {
             "query": {
-                "endpoint": "class_seeking_info",
+                "endpoint": "category_seeking_info",
                 "classification": "seeking-info",
                 "limit": actual_limit
             },
@@ -2602,8 +2602,8 @@ async def get_seeking_info(
 
 
 @router.get(
-    "/class_terror_info",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_terror_info",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to terrorism for whom additional information is sought",
     description="Returns records of a given class",
     response_description="Individuals and cases related to terrorism for whom additional information is sought"
@@ -2653,7 +2653,7 @@ async def get_terror_info(
         
         result_dict = {
             "query": {
-                "endpoint": "class_terror_info",
+                "endpoint": "category_terror_info",
                 "classification": "terrorinfo",
                 "limit": actual_limit
             },
@@ -2672,8 +2672,8 @@ async def get_terror_info(
 
 
 @router.get(
-    "/class_violent_criminal_apprehension_program",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_violent_criminal_apprehension_program",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)",
     description="Returns records of a given class",
     response_description="Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)"
@@ -2723,7 +2723,7 @@ async def get_violent_criminal_apprehension_program(
         
         result_dict = {
             "query": {
-                "endpoint": "class_violent_criminal_apprehension_program",
+                "endpoint": "category_violent_criminal_apprehension_program",
                 "classification": "vicap",
                 "limit": actual_limit
             },
@@ -2742,8 +2742,8 @@ async def get_violent_criminal_apprehension_program(
 
 
 @router.get(
-    "/class_wanted_terrorists",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_wanted_terrorists",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to wanted terrorists",
     description="Returns records of a given class",
     response_description="Individuals and cases related to wanted terrorists"
@@ -2793,7 +2793,7 @@ async def get_wanted_terrorists(
         
         result_dict = {
             "query": {
-                "endpoint": "class_wanted_terrorists",
+                "endpoint": "category_wanted_terrorists",
                 "classification": "wanted_terrorists",
                 "limit": actual_limit
             },
@@ -2812,8 +2812,8 @@ async def get_wanted_terrorists(
 
 
 @router.get(
-    "/class_white_collar_crimes",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_white_collar_crimes",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to white-collar crimes",
     description="Returns records of a given class",
     response_description="Individuals and cases related to white-collar crimes"
@@ -2863,7 +2863,7 @@ async def get_white_collar_crimes(
         
         result_dict = {
             "query": {
-                "endpoint": "class_white_collar_crimes",
+                "endpoint": "category_white_collar_crimes",
                 "classification": "wcc",
                 "limit": actual_limit
             },
@@ -2881,8 +2881,8 @@ async def get_white_collar_crimes(
         )
 
 @router.get(
-    "/class_case_of_the_week",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_case_of_the_week",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases identified by the FBI as Case of the Week",
     description="Returns records of a given class",
     response_description="Individuals and cases identified by the FBI as Case of the Week"
@@ -2932,7 +2932,7 @@ async def get_case_of_the_week(
         
         result_dict = {
             "query": {
-                "endpoint": "class_case_of_the_week",
+                "endpoint": "category_case_of_the_week",
                 "classification": "case_of_the_week",
                 "limit": actual_limit
             },
@@ -2951,8 +2951,8 @@ async def get_case_of_the_week(
     
 
 @router.get(
-    "/class_native_american",
-    tags=[TAG_SEARCH_BY_CLASS],
+    "/category_native_american",
+    tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to Native Americans",
     description="Returns records of a given class",
     response_description="Individuals and cases related to Native Americans"
@@ -3002,7 +3002,7 @@ async def get_native_american(
         
         result_dict = {
             "query": {
-                "endpoint": "class_native_american",
+                "endpoint": "category_native_american",
                 "classification": "native_american",
                 "limit": actual_limit
             },
@@ -3036,29 +3036,29 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         },
         "classification_endpoints": {
             "description": "FBI wanted persons by classification category",
-            "access_note": "class_top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual subscription only",
+            "access_note": "category_top_ten available to PREMIUM (any billing cycle); all others require PREMIUM annual subscription only",
             "endpoints": {
-                "/class_top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
-                "/class_top_reward": "High reward cases $1M+ (PREMIUM annual subscription only)",
-                "/class_additional_info": "Additional Information (PREMIUM annual subscription only)",
-                "/class_crimes_against_children": "Crimes Against Children (PREMIUM annual subscription only)",
-                "/class_criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual subscription only)",
-                "/class_counterintelligence": "Counterintelligence (PREMIUM annual subscription only)",
-                "/class_cyber_crimes": "Cyber Crimes (PREMIUM annual subscription only)",
-                "/class_domestic_terrorism": "Domestic Terrorism (PREMIUM annual subscription only)",
-                "/class_endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
-                "/class_human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
-                "/class_kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
-                "/class_known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
-                "/class_law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
-                "/class_murders": "Murders (PREMIUM annual subscription only)",
-                "/class_kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
-                "/class_seeking_info": "Seeking Information (PREMIUM annual subscription only)",
-                "/class_terror_info": "Terrorism Information (PREMIUM annual subscription only)",
-                "/class_violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual subscription only)",
-                "/class_wanted_terrorists": "Wanted Terrorists (PREMIUM annual subscription only)",
-                "/class_white_collar_crimes": "White Collar Crimes (PREMIUM annual subscription only)",
-                "/class_native_american": "Native American Cases (PREMIUM annual subscription only)"
+                "/category_top_ten": "FBI Ten Most Wanted Fugitives (PREMIUM any billing)",
+                "/category_top_reward": "High reward cases $1M+ (PREMIUM annual subscription only)",
+                "/category_additional": "Additional Information (PREMIUM annual subscription only)",
+                "/category_crimes_against_children": "Crimes Against Children (PREMIUM annual subscription only)",
+                "/category_criminal_enterprise_investigations": "Criminal Enterprise Investigations (PREMIUM annual subscription only)",
+                "/category_counterintelligence": "Counterintelligence (PREMIUM annual subscription only)",
+                "/category_cyber_crimes": "Cyber Crimes (PREMIUM annual subscription only)",
+                "/category_domestic_terrorism": "Domestic Terrorism (PREMIUM annual subscription only)",
+                "/category_endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
+                "/category_human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
+                "/category_kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
+                "/category_known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
+                "/category_law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
+                "/category_murders": "Murders (PREMIUM annual subscription only)",
+                "/category_kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
+                "/category_seeking_info": "Seeking Information (PREMIUM annual subscription only)",
+                "/category_terror_info": "Terrorism Information (PREMIUM annual subscription only)",
+                "/category_violent_criminal_apprehension_program": "ViCAP - Violent Criminal Apprehension Program (PREMIUM annual subscription only)",
+                "/category_wanted_terrorists": "Wanted Terrorists (PREMIUM annual subscription only)",
+                "/category_white_collar_crimes": "White Collar Crimes (PREMIUM annual subscription only)",
+                "/category_native_american": "Native American Cases (PREMIUM annual subscription only)"
             }
         },
         "access_levels": {

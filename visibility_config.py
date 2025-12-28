@@ -80,8 +80,8 @@ DOCS_VISIBILITY_CONFIG = {
     # ----- Premium visibility (PREMIUM and above see these) -----
     ("POST", "/v1/search/advanced"): UserRole.BASIC,
     ("GET", "/v1/search/top_missing"): UserRole.BASIC,
-    ("GET", "/v1/search/class_top_reward"): UserRole.BASIC,
-    ("GET", "/v1/search/class_top_ten"): UserRole.BASIC,
+    ("GET", "/v1/search/category_top_reward"): UserRole.BASIC,
+    ("GET", "/v1/search/category_top_ten"): UserRole.BASIC,
     ("GET", "/v1/search/top_terrorist"): UserRole.BASIC,
 }
 
