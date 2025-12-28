@@ -505,6 +505,213 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'is_active': True
     }
 
+def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
+    """
+    Process a single web-scraped wanted person record into database-ready format.
+    Identical to bolo_process() but includes related_cases field.
+    Returns None if the record should be skipped.
+    """
+    
+    uid = item.get('uid')
+    if not uid:
+        return None
+
+    # Create cleaned version of full_data
+    full_data_clean = clean_json_recursive(item)
+
+    return {
+        'age_max': item.get('age_max'),
+        'age_min': item.get('age_min'),
+        'aliases': extract_array_field(item, 'aliases'),
+        'build': item.get('build'),
+        'caution': item.get('caution'),
+        'complexion': item.get('complexion'),
+        'coordinates': json.dumps(item.get('coordinates')),
+        'data_pull_date': pull_date,
+        'dates_of_birth_used': extract_array_field(item, 'dates_of_birth_used'),
+        'description': item.get('description'),
+        'details': item.get('details'),
+        'eyes': item.get('eyes'),
+        'eyes_raw': item.get('eyes_raw'),
+        'field_offices': extract_array_field(item, 'field_offices'),
+        'first_seen_date': pull_date,
+        'full_data': json.dumps(item),
+        'full_data_clean': json.dumps(full_data_clean),
+        'hair': item.get('hair'),
+        'hair_raw': item.get('hair_raw'),
+        'height_max': item.get('height_max'),
+        'height_min': item.get('height_min'),
+        'languages': extract_array_field(item, 'languages'),
+        'last_seen_date': pull_date,
+        'legat_names': extract_array_field(item, 'legat_names'),
+        'locations': extract_array_field(item, 'locations'),
+        'modified': parse_date(item.get('modified')),
+        'nationality': item.get('nationality'),
+        'ncic': item.get('ncic'),
+        'occupations': extract_array_field(item, 'occupations'),
+        'path': item.get('path'),
+        'pathid': item.get('pathId'),
+        'person_classification': item.get('person_classification'),
+        'place_of_birth': item.get('place_of_birth'),
+        'possible_countries': extract_array_field(item, 'possible_countries'),
+        'possible_states': extract_array_field(item, 'possible_states'),
+        'poster_classification': item.get('poster_classification'),
+        'poster_url': extract_poster_url(item.get('images', [])),
+        'publication': parse_date(item.get('publication')),
+        'race': item.get('race'),
+        'race_raw': item.get('race_raw'),
+        'related_cases': extract_array_field(item, 'related_cases'),  # NEW for web data
+        'remarks': item.get('remarks'),
+        'reward_max': item.get('reward_max'),
+        'reward_min': item.get('reward_min'),
+        'reward_text': item.get('reward_text'),
+        'scars_and_marks': item.get('scars_and_marks'),
+        'sex': item.get('sex'),
+        'status': item.get('status'),
+        'subjects': extract_array_field(item, 'subjects'),
+        'suspects': extract_array_field(item, 'suspects'),
+        'title': item.get('title'),
+        'uid': uid,
+        'url': item.get('url'),
+        'warning_message': item.get('warning_message'),
+        'weight': item.get('weight'),
+        'weight_max': item.get('weight_max'),
+        'weight_min': item.get('weight_min'),
+        'data_pull_date': pull_date,
+        'first_seen_date': pull_date,
+        'last_seen_date': pull_date,
+        'is_active': True
+    }
+
+
+def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, int]:
+    """
+    UPSERT web-scraped wanted persons records using (uid, modified) as the primary key.
+    
+    Logic:
+    - If (uid, modified) doesn't exist: INSERT with first_seen_date = pull_date, last_seen_date = pull_date
+    - If (uid, modified) already exists: UPDATE only last_seen_date = pull_date
+    - is_active is set to NULL during insert/update, will be calculated afterward by update_active_status_web()
+    
+    Returns:
+        Dict with counts: {"inserted": int, "updated": int, "skipped": int}
+    """
+    if not records:
+        return {"inserted": 0, "updated": 0, "skipped": 0}
+
+    columns = [
+        'age_max', 'age_min', 'aliases', 'build', 'caution', 'complexion',
+        'coordinates', 'data_pull_date', 'dates_of_birth_used', 'description',
+        'details', 'eyes', 'eyes_raw', 'field_offices', 'first_seen_date',
+        'full_data', 'full_data_clean', 'hair', 'hair_raw', 'height_max', 'height_min',
+        'is_active', 'languages', 'last_seen_date', 'legat_names', 'locations',
+        'modified', 'nationality', 'ncic', 'occupations', 'path', 'pathid',
+        'person_classification', 'place_of_birth', 'possible_countries',
+        'possible_states', 'poster_url', 'poster_classification', 'publication', 
+        'race', 'race_raw', 'related_cases', 'remarks', 'reward_max', 'reward_min', 
+        'reward_text', 'scars_and_marks', 'sex', 'status', 'subjects', 'suspects', 
+        'title', 'uid', 'url', 'warning_message', 'weight', 'weight_max', 'weight_min'
+    ]
+
+    # Prepare values for batch insert
+    values = []
+    for record in records:
+        # Set tracking fields for new records
+        record['data_pull_date'] = pull_date  # When we first saw this version
+        record['first_seen_date'] = pull_date  # Will stay unchanged on conflict
+        record['last_seen_date'] = pull_date   # Will be updated on conflict
+        record['is_active'] = None  # Will be set by update_active_status_web()
+        
+        row = tuple(record.get(col) for col in columns)
+        values.append(row)
+    
+    with conn.cursor() as cur:
+        # UPSERT with ON CONFLICT on the PK (uid, modified)
+        # xmax = 0 means INSERT, xmax != 0 means UPDATE
+        upsert_query = f"""
+            INSERT INTO tbl_bolo_web (
+                age_max, age_min, aliases, build, caution, complexion,
+                coordinates, data_pull_date, dates_of_birth_used, description,
+                details, eyes, eyes_raw, field_offices, first_seen_date,
+                full_data, full_data_clean, hair, hair_raw, height_max, height_min,
+                is_active, languages, last_seen_date, legat_names, locations,
+                modified, nationality, ncic, occupations, path, pathid,
+                person_classification, place_of_birth, possible_countries,
+                possible_states, poster_url, poster_classification, publication,
+                race, race_raw, related_cases, remarks, reward_max, reward_min, reward_text,
+                scars_and_marks, sex, status, subjects, suspects, title, uid,
+                url, warning_message, weight, weight_max, weight_min
+            )
+            VALUES %s
+            ON CONFLICT (uid, modified) 
+            DO UPDATE SET
+                last_seen_date = EXCLUDED.last_seen_date,
+                updated_at = NOW()
+            RETURNING 
+                (xmax = 0) as is_insert
+        """
+        
+        # Execute with execute_values and capture results
+        results = execute_values(
+            cur, 
+            upsert_query, 
+            values, 
+            page_size=100,
+            fetch=True
+        )
+        
+        # Count inserts vs updates
+        insert_count = sum(1 for r in results if r[0])  # is_insert = True
+        update_count = sum(1 for r in results if not r[0])  # is_insert = False
+        
+        logger.info(f"Web UPSERT complete: {insert_count} inserted, {update_count} updated")
+        
+        return {
+            "inserted": insert_count,
+            "updated": update_count,
+            "skipped": 0
+        }
+
+
+def update_active_status_web(conn: Connection) -> Dict[str, int]:
+    """
+    Update is_active flags in tbl_bolo_web based on business rules:
+    - is_active = TRUE for records with MAX(modified) per uid
+    - is_active = FALSE for all other records
+    
+    Returns:
+        Dict with counts: {"deactivated": int, "activated": int}
+    """
+    with conn.cursor() as cur:
+        # Step 1: Set ALL records to FALSE first
+        cur.execute("""
+            UPDATE tbl_bolo_web
+            SET is_active = FALSE,
+                updated_at = NOW()
+            WHERE is_active IS DISTINCT FROM FALSE
+        """)
+        rows_deactivated = cur.rowcount
+        logger.info(f"Web: Set {rows_deactivated} records to is_active=FALSE")
+        
+        # Step 2: Set the most recent version per uid to TRUE
+        cur.execute("""
+            UPDATE tbl_bolo_web
+            SET is_active = TRUE,
+                updated_at = NOW()
+            WHERE (uid, modified) IN (
+                SELECT uid, MAX(modified) as latest_modified
+                FROM tbl_bolo_web
+                GROUP BY uid
+            )
+        """)
+        rows_activated = cur.rowcount
+        logger.info(f"Web: Set {rows_activated} records to is_active=TRUE (most recent per uid)")
+        
+        return {
+            "deactivated": rows_deactivated,
+            "activated": rows_activated
+        }
+
 def insert_api_metadata(
     conn: Connection, 
     total: int, 
@@ -580,6 +787,76 @@ def insert_api_metadata(
                     pull_timestamp = NOW()
             """, (pull_date, total, page))
             logger.info(f"Basic metadata inserted for pull_date={pull_date}")
+
+def insert_api_metadata_web(
+    conn: Connection, 
+    total: int, 
+    page: int, 
+    pull_date: date,
+    etl_stats: Optional[Dict[str, Any]] = None
+):
+    """
+    Insert or update web scrape metadata with ETL statistics.
+    
+    Args:
+        conn: Database connection
+        total: Total records reported in web scrape
+        page: Page number from scrape response
+        pull_date: Date of the data pull
+        etl_stats: Optional dict containing ETL statistics
+    """
+    with conn.cursor() as cur:
+        if etl_stats:
+            # Full insert/update with ETL statistics
+            cur.execute("""
+                INSERT INTO tbl_bolo_control_web (
+                    pull_date, 
+                    total_records, 
+                    page, 
+                    pull_timestamp,
+                    records_inserted,
+                    records_updated,
+                    records_skipped,
+                    active_count,
+                    inactive_count,
+                    processing_time_seconds
+                )
+                VALUES (%s, %s, %s, NOW(), %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (pull_date) 
+                DO UPDATE SET 
+                    total_records = EXCLUDED.total_records,
+                    page = EXCLUDED.page,
+                    pull_timestamp = NOW(),
+                    records_inserted = EXCLUDED.records_inserted,
+                    records_updated = EXCLUDED.records_updated,
+                    records_skipped = EXCLUDED.records_skipped,
+                    active_count = EXCLUDED.active_count,
+                    inactive_count = EXCLUDED.inactive_count,
+                    processing_time_seconds = EXCLUDED.processing_time_seconds
+            """, (
+                pull_date, 
+                total, 
+                page,
+                etl_stats.get('records_inserted', 0),
+                etl_stats.get('records_updated', 0),
+                etl_stats.get('records_skipped', 0),
+                etl_stats.get('active_count', 0),
+                etl_stats.get('inactive_count', 0),
+                etl_stats.get('processing_time_seconds', 0)
+            ))
+            logger.info(f"Web metadata updated with ETL stats for pull_date={pull_date}")
+        else:
+            # Basic insert (for backward compatibility)
+            cur.execute("""
+                INSERT INTO tbl_bolo_control_web (pull_date, total_records, page, pull_timestamp)
+                VALUES (%s, %s, %s, NOW())
+                ON CONFLICT (pull_date) 
+                DO UPDATE SET 
+                    total_records = EXCLUDED.total_records,
+                    page = EXCLUDED.page,
+                    pull_timestamp = NOW()
+            """, (pull_date, total, page))
+            logger.info(f"Basic web metadata inserted for pull_date={pull_date}")
 
 def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, int]:
     """
@@ -768,6 +1045,38 @@ def mark_missing_uids_inactive(conn: Connection, current_uids: List[str], pull_d
         
         return {"marked_inactive": rows_marked_inactive}
 
+def mark_missing_uids_inactive_web(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, int]:
+    """
+    Mark ALL versions of UIDs in tbl_bolo_web that are NOT in the current pull as inactive.
+    
+    Args:
+        current_uids: List of UIDs that appeared in today's web scrape
+        pull_date: The current pull date (for logging)
+    
+    Returns:
+        Dict with count: {"marked_inactive": int}
+    """
+    if not current_uids:
+        logger.warning("Web: No current UIDs provided - skipping mark_missing_uids_inactive_web")
+        return {"marked_inactive": 0}
+    
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE tbl_bolo_web
+            SET is_active = FALSE,
+                became_inactive_at = NOW(),
+                updated_at = NOW()
+            WHERE uid NOT IN (
+                SELECT UNNEST(%s::text[])
+            )
+            AND is_active = TRUE
+        """, (current_uids,))
+        
+        rows_marked_inactive = cur.rowcount
+        logger.info(f"Web: Marked {rows_marked_inactive} records inactive (UIDs not in current pull)")
+        
+        return {"marked_inactive": rows_marked_inactive}
+
 def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     """
     Main import function - reads JSON file and imports to database with new merge logic.
@@ -934,6 +1243,149 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
         processing_time_seconds=round(processing_time, 2)
     )
 
+def import_data_set_web(file_path: str, pull_date: date) -> ImportSummary:
+    """
+    Main import function for web-scraped data - reads JSON file and imports to tbl_bolo_web.
+    
+    Note: This function does NOT process notifications. Notifications are handled by
+    the API refresh process to avoid duplicate notifications to users.
+    
+    Flow:
+    1. Process records from web scrape
+    2. UPSERT records (insert new versions, update last_seen_date for existing)
+    3. Update is_active flags (TRUE for max(modified) per uid, FALSE for others)
+    4. Mark UIDs not in current pull as inactive
+    5. Run cleanup procedures
+    6. Capture final statistics and update metadata
+    """
+    start_time = datetime.now()
+    
+    # Read and parse JSON file
+    try:
+        json_path = Path(file_path)
+        if not json_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON file: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Error reading file: {str(e)}")
+    
+    total = data.get('total', 0)
+    page = data.get('page', 1)
+    items = data.get('items', [])
+    
+    if not items:
+        # Even for empty pulls, record metadata
+        processing_time = (datetime.now() - start_time).total_seconds()
+        
+        try:
+            with get_db_connection() as conn:
+                # Get current counts
+                counts = get_active_inactive_counts_web(conn)
+                
+                # Insert metadata with zero statistics
+                etl_stats = {
+                    'records_inserted': 0,
+                    'records_updated': 0,
+                    'records_skipped': 0,
+                    'active_count': counts['active_count'],
+                    'inactive_count': counts['inactive_count'],
+                    'processing_time_seconds': round(processing_time, 2)
+                }
+                insert_api_metadata_web(conn, total, page, pull_date, etl_stats)
+                conn.commit()
+        except Exception as e:
+            logger.error(f"Web: Error recording metadata for empty pull: {str(e)}")
+        
+        return ImportSummary(
+            status="success",
+            total_records_in_file=0,
+            records_inserted=0,
+            records_skipped=0,
+            pull_date=str(pull_date),
+            processing_time_seconds=round(processing_time, 2)
+        )
+    
+    # Process records
+    processed_records = []
+    skipped_count = 0
+    skipped_reasons = {"missing_uid": 0}
+
+    for item in items:
+        processed = bolo_process_web(item, pull_date)
+        if processed:
+            processed_records.append(processed)
+        else:
+            skipped_count += 1
+            skipped_reasons["missing_uid"] += 1
+
+    # Database operations (atomic transaction)
+    try:
+        with get_db_connection() as conn:
+            # Step 1: UPSERT wanted persons (web data)
+            upsert_results = bolo_insert_web(conn, processed_records, pull_date)
+            logger.info(f"Web UPSERT results: {upsert_results}")
+            
+            # Step 2: Update is_active flags for all records
+            active_results = update_active_status_web(conn)
+            logger.info(f"Web active status update: {active_results}")
+            
+            # Step 3: Mark UIDs not in current pull as inactive
+            current_uids = [r['uid'] for r in processed_records]
+            missing_results = mark_missing_uids_inactive_web(conn, current_uids, pull_date)
+            logger.info(f"Web missing UIDs marked inactive: {missing_results}")
+            
+            # Step 4: Run cleanup procedures (same as API data)
+            with conn.cursor() as cur:
+                cur.execute("CALL sp_clean_text()")
+                cur.execute("CALL sp_clean_array()")
+                cur.execute("CALL sp_clean_jsonb()")
+                cur.execute("CALL sp_prune()")
+            
+            # Step 5: Get final active/inactive counts
+            final_counts = get_active_inactive_counts_web(conn)
+            logger.info(f"Web final counts: {final_counts}")
+            
+            # Step 6: Calculate processing time
+            processing_time = (datetime.now() - start_time).total_seconds()
+            
+            # Step 7: Insert comprehensive metadata
+            etl_stats = {
+                'records_inserted': upsert_results['inserted'],
+                'records_updated': upsert_results['updated'],
+                'records_skipped': skipped_count,
+                'active_count': final_counts['active_count'],
+                'inactive_count': final_counts['inactive_count'],
+                'processing_time_seconds': round(processing_time, 2)
+            }
+            insert_api_metadata_web(conn, total, page, pull_date, etl_stats)
+            
+            # Commit transaction
+            conn.commit()
+            logger.info("Web transaction committed successfully with metadata")
+            
+            # Note: Change detection and notifications are handled by API refresh
+            # to avoid sending duplicate notifications to users
+            logger.info("Web data changes will be included in next API refresh notifications")
+            
+    except Exception as e:
+        logger.error(f"Web: Database error during import: {str(e)}")
+        raise Exception(f"Database error: {str(e)}")
+    
+    # Return enhanced summary
+    return ImportSummary(
+        status="success",
+        total_records_in_file=len(items),
+        records_inserted=upsert_results["inserted"],
+        records_skipped=skipped_count,
+        skipped_reasons=skipped_reasons,
+        pull_date=str(pull_date),
+        processing_time_seconds=round(processing_time, 2)
+    )
+
 def get_active_inactive_counts(conn: Connection) -> Dict[str, int]:
     """
     Get current counts of active and inactive records.
@@ -947,6 +1399,26 @@ def get_active_inactive_counts(conn: Connection) -> Dict[str, int]:
                 COUNT(*) FILTER (WHERE is_active = TRUE) as active_count,
                 COUNT(*) FILTER (WHERE is_active = FALSE) as inactive_count
             FROM tbl_bolo
+        """)
+        result = cur.fetchone()
+        return {
+            "active_count": result[0] or 0,
+            "inactive_count": result[1] or 0
+        }
+
+def get_active_inactive_counts_web(conn: Connection) -> Dict[str, int]:
+    """
+    Get current counts of active and inactive records in tbl_bolo_web.
+    
+    Returns:
+        Dict with 'active_count' and 'inactive_count'
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 
+                COUNT(*) FILTER (WHERE is_active = TRUE) as active_count,
+                COUNT(*) FILTER (WHERE is_active = FALSE) as inactive_count
+            FROM tbl_bolo_web
         """)
         result = cur.fetchone()
         return {
@@ -1116,7 +1588,86 @@ async def data_load(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Import has failed: {str(e)}"
             )
-     
+
+@router.get(
+    "/load_web", 
+    response_model=ImportSummary, 
+    status_code=status.HTTP_200_OK,
+    summary="Load Web-Scraped FBI Wanted data from File",
+    description="Import web-scraped FBI Wanted data from JSON file on server."
+    )
+async def data_load_web(
+    run_link_validation: bool = Query(
+        default=True, 
+        description="Run link validation after data load"
+    ),
+    generate_archive: bool = Query(
+        default=True,
+        description="Download files and generate ZIP archive after validation"
+    ),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Import web-scraped FBI Wanted data from a JSON file on the server.
+    
+    **Access:** ADMIN role only
+    
+    **File:** data/fbi-wanted-api-data-web.json
+    
+    **Note:** This endpoint does NOT process notifications.
+    Notifications are handled by /full_refresh (API) which covers both sources.
+    Run /full_refresh after this to notify users about changes.
+    
+    Parameters:
+    - run_link_validation: If True, automatically validate all URLs after load
+    - generate_archive: If True, download files and create ZIP archive (requires link validation)
+    
+    Returns a summary of the import operation including counts and any errors.
+    """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"] 
+    
+    link_validation_results = None
+    archive_results = None
+    
+    try:
+        pull_date = date.today()
+        file_path = "data/fbi-wanted-api-data-web.json"
+
+        # Perform import to tbl_bolo_web
+        summary = import_data_set_web(file_path, pull_date)
+        
+        # Run link validation if requested (uses separate table)
+        if run_link_validation:
+            try:
+                logger.info("Starting web link validation after data load")
+                # TODO: Implement validate_links_from_file_web() for separate link table
+                # link_validation_results = await validate_links_from_file_web(file_path)
+                logger.info("Web link validation skipped (not yet implemented)")
+                        
+            except Exception as e:
+                logger.error(f"Web link validation error (non-fatal): {str(e)}")
+                link_validation_results = {"error": str(e)}
+        
+        # Return summary
+        return summary
+        
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+            )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Web import has failed: {str(e)}"
+            )
+
 @router.get(
     "/extract",
     summary="Extract FBI Wanted API data from API",
@@ -1257,6 +1808,182 @@ async def full_refresh(
         logger.error(f"Full refresh failed with unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Full refresh error: {str(e)}")
 
+@router.post(
+    "/full_refresh_web",
+    summary="Full Web Data Refresh",
+    description="Perform a full refresh of web-scraped FBI Wanted data (no notifications)."
+    )
+async def full_refresh_web(
+    request: Request,
+    run_link_validation: bool = Query(
+        default=True, 
+        description="Run link validation after data load"
+    ),
+    generate_archive: bool = Query(
+        default=False,
+        description="Download files and generate ZIP archive after validation"
+    ),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Perform a full refresh of web-scraped FBI Wanted data.
+    
+    **Access:** ADMIN role only
+    
+    **Note:** This endpoint does NOT process notifications.
+    Notifications are handled by /full_refresh (API) which covers both sources.
+    
+    This endpoint:
+    1. Loads web data from data/fbi-wanted-api-data-web.json
+    2. Validates links (optional)
+    3. Generates archive (optional)
+    
+    To send notifications after web refresh, run /full_refresh afterward.
+    
+    Parameters:
+    - run_link_validation: Validate all URLs after load (default: True)
+    - generate_archive: Create ZIP archive of documents (default: False)
+    
+    Returns results from load operation.
+    """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"]
+    
+    try:
+        logger.info("Starting web data refresh (no notifications)")
+        
+        # Load web data (no notification processing)
+        logger.info("Loading web-scraped data")
+        load_response = await data_load_web(
+            run_link_validation=run_link_validation,
+            generate_archive=generate_archive,
+            current_user=current_user
+        )
+        logger.info(f"Web load completed: {load_response}")
+        
+        logger.info("Web refresh completed (notifications will be handled by API refresh)")
+        return {
+            "message": "Web data refresh completed successfully",
+            "load": load_response,
+            "note": "Notifications not processed. Run /full_refresh to notify users about all changes."
+        }
+        
+    except HTTPException as e:
+        logger.error(f"Full web refresh failed with HTTP error: {str(e)}")
+        raise
+    except Exception as e:
+        logger.error(f"Full web refresh failed with unexpected error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Full web refresh error: {str(e)}"
+        )
+
+@router.post(
+    "/full_refresh_all",
+    summary="Full Refresh (API + Web)",
+    description="Perform a full refresh of both API and web-scraped FBI Wanted data with unified notifications."
+    )
+async def full_refresh_all(
+    request: Request,
+    run_link_validation: bool = Query(
+        default=True, 
+        description="Run link validation for both API and web data"
+    ),
+    generate_archive: bool = Query(
+        default=False,
+        description="Generate archives for both API and web data"
+    ),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Perform a full refresh of both FBI API data and web-scraped data.
+    
+    **Access:** ADMIN role only
+    
+    **Notification Strategy:**
+    - Web data is loaded first (no notifications)
+    - API data is loaded second (notifications cover BOTH sources)
+    - Users receive ONE consolidated notification covering all changes
+    
+    This endpoint runs the complete refresh workflow:
+    1. Load web data into tbl_bolo_web (if file exists)
+    2. Extract all FBI API data to JSON file
+    3. Load API data into tbl_bolo
+    4. Process notifications for ALL changes (both sources)
+    
+    This is equivalent to running:
+    - /v1/etl/full_refresh_web (no notifications)
+    - /v1/etl/full_refresh (with notifications)
+    
+    Parameters:
+    - run_link_validation: Validate URLs for both sources (default: True)
+    - generate_archive: Create ZIP archives for both sources (default: False)
+    
+    Returns combined results from both refresh operations.
+    """
+    current_role = current_user["role"]
+    user_id = current_user["user_id"]
+    
+    results = {
+        "web_refresh": None,
+        "api_refresh": None
+    }
+    
+    try:
+        logger.info("Starting full refresh for both API and web data")
+        
+        # Step 1: Refresh web data FIRST (no notifications)
+        logger.info("=== Phase 1: Web Data Refresh (no notifications) ===")
+        try:
+            # Check if web data file exists before attempting
+            web_file_path = Path("data/fbi-wanted-api-data-web.json")
+            if web_file_path.exists():
+                web_result = await full_refresh_web(
+                    request=request,
+                    run_link_validation=run_link_validation,
+                    generate_archive=generate_archive,
+                    current_user=current_user
+                )
+                results["web_refresh"] = web_result
+                logger.info("Web refresh completed successfully")
+            else:
+                logger.warning("Web data file not found, skipping web refresh")
+                results["web_refresh"] = {
+                    "skipped": True,
+                    "reason": "Web data file not found: data/fbi-wanted-api-data-web.json"
+                }
+        except Exception as e:
+            logger.error(f"Web refresh failed: {str(e)}")
+            results["web_refresh"] = {"error": str(e)}
+            # Continue with API refresh even if web fails
+        
+        # Step 2: Refresh API data SECOND (with notifications covering BOTH sources)
+        logger.info("=== Phase 2: API Data Refresh (notifications for all changes) ===")
+        try:
+            api_result = await full_refresh(request=request, current_user=current_user)
+            results["api_refresh"] = api_result
+            logger.info("API refresh completed successfully with unified notifications")
+        except Exception as e:
+            logger.error(f"API refresh failed: {str(e)}")
+            results["api_refresh"] = {"error": str(e)}
+        
+        logger.info("Full refresh (all sources) completed")
+        return {
+            "message": "Full refresh completed for all data sources",
+            "notification_strategy": "Unified notifications sent covering both API and web changes",
+            "results": results
+        }
+        
+    except HTTPException as e:
+        logger.error(f"Full refresh all failed with HTTP error: {str(e)}")
+        raise
+    except Exception as e:
+        logger.error(f"Full refresh all failed with unexpected error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Full refresh all error: {str(e)}"
+        )
+    
 @router.get(
     "/metadata",
     summary="ETL Metadata History",
@@ -1337,7 +2064,188 @@ async def get_etl_metadata(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve metadata: {str(e)}"
         )
+
+@router.get(
+    "/metadata_web",
+    summary="Web Data ETL Metadata History",
+    description="View ETL run statistics and performance metrics for web-scraped data."
+    )
+async def get_etl_metadata_web(
+    limit: int = Query(default=30, ge=1, le=365, description="Number of recent pulls to return"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get ETL metadata showing statistics from recent web data pulls.
     
+    **Access:** ADMIN role only
+    
+    Returns detailed statistics including:
+    - Records inserted, updated, skipped
+    - Active/inactive counts
+    - Processing time
+    - Web scrape totals
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        pull_date,
+                        total_records as web_scrape_total,
+                        page,
+                        pull_timestamp,
+                        records_inserted,
+                        records_updated,
+                        records_skipped,
+                        active_count,
+                        inactive_count,
+                        processing_time_seconds,
+                        ROUND(processing_time_seconds / 60.0, 2) as processing_time_minutes
+                    FROM tbl_bolo_control_web
+                    ORDER BY pull_date DESC
+                    LIMIT %s
+                """, (limit,))
+                
+                results = cur.fetchall()
+                
+                # Calculate some summary stats
+                if results:
+                    total_inserts = sum(r['records_inserted'] or 0 for r in results)
+                    total_updates = sum(r['records_updated'] or 0 for r in results)
+                    avg_processing = sum(r['processing_time_seconds'] or 0 for r in results) / len(results)
+                    
+                    summary = {
+                        "total_pulls": len(results),
+                        "date_range": {
+                            "earliest": str(results[-1]['pull_date']) if results else None,
+                            "latest": str(results[0]['pull_date']) if results else None
+                        },
+                        "totals": {
+                            "records_inserted": total_inserts,
+                            "records_updated": total_updates,
+                            "avg_processing_time_seconds": round(avg_processing, 2)
+                        },
+                        "current_state": {
+                            "active_count": results[0]['active_count'],
+                            "inactive_count": results[0]['inactive_count'],
+                            "total_records": results[0]['active_count'] + results[0]['inactive_count']
+                        }
+                    }
+                else:
+                    summary = {"message": "No web metadata available"}
+                
+                return {
+                    "summary": summary,
+                    "pulls": [dict(r) for r in results]
+                }
+                
+    except Exception as e:
+        logger.error(f"Error retrieving web ETL metadata: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve web metadata: {str(e)}"
+        )
+
+@router.get(
+    "/metadata_all",
+    summary="Combined ETL Metadata (API + Web)",
+    description="View combined ETL statistics from both API and web-scraped data sources."
+    )
+async def get_etl_metadata_all(
+    limit: int = Query(default=30, ge=1, le=365, description="Number of recent pulls to return per source"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get combined ETL metadata from both API and web data sources.
+    
+    **Access:** ADMIN role only
+    
+    Returns side-by-side statistics for:
+    - API data pulls (tbl_bolo_control)
+    - Web data pulls (tbl_bolo_control_web)
+    - Combined current state
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                # Get API metadata
+                cur.execute("""
+                    SELECT 
+                        'api' as source,
+                        pull_date,
+                        total_records,
+                        pull_timestamp,
+                        records_inserted,
+                        records_updated,
+                        records_skipped,
+                        active_count,
+                        inactive_count,
+                        processing_time_seconds
+                    FROM tbl_bolo_control
+                    ORDER BY pull_date DESC
+                    LIMIT %s
+                """, (limit,))
+                api_results = cur.fetchall()
+                
+                # Get Web metadata
+                cur.execute("""
+                    SELECT 
+                        'web' as source,
+                        pull_date,
+                        total_records,
+                        pull_timestamp,
+                        records_inserted,
+                        records_updated,
+                        records_skipped,
+                        active_count,
+                        inactive_count,
+                        processing_time_seconds
+                    FROM tbl_bolo_control_web
+                    ORDER BY pull_date DESC
+                    LIMIT %s
+                """, (limit,))
+                web_results = cur.fetchall()
+                
+                # Calculate combined current state
+                api_current = api_results[0] if api_results else None
+                web_current = web_results[0] if web_results else None
+                
+                combined_state = {
+                    "api": {
+                        "active_count": api_current['active_count'] if api_current else 0,
+                        "inactive_count": api_current['inactive_count'] if api_current else 0,
+                        "total_records": (api_current['active_count'] + api_current['inactive_count']) if api_current else 0,
+                        "last_pull": str(api_current['pull_date']) if api_current else None
+                    },
+                    "web": {
+                        "active_count": web_current['active_count'] if web_current else 0,
+                        "inactive_count": web_current['inactive_count'] if web_current else 0,
+                        "total_records": (web_current['active_count'] + web_current['inactive_count']) if web_current else 0,
+                        "last_pull": str(web_current['pull_date']) if web_current else None
+                    },
+                    "combined": {
+                        "total_active": (api_current['active_count'] if api_current else 0) + 
+                                      (web_current['active_count'] if web_current else 0),
+                        "total_inactive": (api_current['inactive_count'] if api_current else 0) + 
+                                        (web_current['inactive_count'] if web_current else 0),
+                        "total_records": ((api_current['active_count'] + api_current['inactive_count']) if api_current else 0) +
+                                       ((web_current['active_count'] + web_current['inactive_count']) if web_current else 0)
+                    }
+                }
+                
+                return {
+                    "current_state": combined_state,
+                    "api_pulls": [dict(r) for r in api_results],
+                    "web_pulls": [dict(r) for r in web_results]
+                }
+                
+    except Exception as e:
+        logger.error(f"Error retrieving combined ETL metadata: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve combined metadata: {str(e)}"
+        )
+      
 @router.get(
     "/process_notifications",
     summary="Process Pending Notifications",

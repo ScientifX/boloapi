@@ -1014,7 +1014,7 @@ async def simple_search(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
                     SELECT {data_field}
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     WHERE {where_clause}
                     LIMIT %s
                 """
@@ -1110,7 +1110,7 @@ async def advanced_search(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
                     SELECT {data_field}
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     WHERE {where_clause}
                     LIMIT %s
                 """
@@ -1175,7 +1175,7 @@ async def list_field_offices(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT elem AS field_office
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     CROSS JOIN LATERAL unnest(field_offices) AS elem
                     WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
@@ -1231,7 +1231,7 @@ async def list_languages(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT elem AS language
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     CROSS JOIN LATERAL unnest(languages) AS elem
                     WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
@@ -1287,7 +1287,7 @@ async def list_nationality(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT nationality
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     WHERE nationality IS NOT NULL AND TRIM(nationality) <> ''
                     ORDER BY nationality
                     LIMIT %s
@@ -1341,7 +1341,7 @@ async def list_possible_countries(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT elem AS country
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     CROSS JOIN LATERAL unnest(possible_countries) AS elem
                     WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
@@ -1397,7 +1397,7 @@ async def list_possible_states(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT elem AS state
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     CROSS JOIN LATERAL unnest(possible_states) AS elem
                     WHERE elem IS NOT NULL AND TRIM(elem) <> ''
                     ORDER BY elem
@@ -1452,7 +1452,7 @@ async def list_race(
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = """
                     SELECT DISTINCT race
-                    FROM vw_bolo
+                    FROM vw_bolo_full
                     WHERE race IS NOT NULL AND TRIM(race) <> ''
                     ORDER BY race
                     LIMIT %s

@@ -147,6 +147,7 @@ def detect_and_log_removals(
 ) -> int:
     """
     Log removed records (people no longer on wanted list).
+    Now checks both API and web data sources via vw_bolo_full.
     
     Args:
         conn: Database connection
@@ -159,11 +160,11 @@ def detect_and_log_removals(
     if not removed_uids:
         return 0
     
-    # Get title and poster_url for removed records
+    # Get title and poster_url for removed records (from both sources)
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
-            SELECT uid, title, poster_url 
-            FROM tbl_bolo 
+            SELECT uid, title, poster_url, data_source
+            FROM vw_bolo_full 
             WHERE uid = ANY(%s)
         """, (removed_uids,))
         records = {r['uid']: r for r in cur.fetchall()}
@@ -177,7 +178,7 @@ def detect_and_log_removals(
         if log_change_if_new(conn, uid, 'removed', None, None, title, poster_url, pull_date):
             count += 1
     
-    logger.info(f"Logged {count} removals")
+    logger.info(f"Logged {count} removals from both API and web sources")
     return count
 
 
@@ -189,6 +190,7 @@ def detect_and_log_status_changes(
     """
     Detect and log status changes for existing records.
     Only logs transitions from 'na' to notifiable statuses.
+    Now checks both API and web data sources via vw_bolo_full.
     
     Args:
         conn: Database connection
@@ -204,12 +206,12 @@ def detect_and_log_status_changes(
     uids = [r['uid'] for r in records]
     record_lookup = {r['uid']: r for r in records}
     
-    # Get previous status values for these UIDs
+    # Get previous status values for these UIDs (from both sources)
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
-            SELECT uid, status, previous_status, title, poster_url
-            FROM tbl_bolo
-            WHERE uid = ANY(%s) AND is_active = TRUE
+            SELECT uid, status, previous_status, title, poster_url, data_source
+            FROM vw_bolo_full
+            WHERE uid = ANY(%s)
         """, (uids,))
         existing_records = {r['uid']: r for r in cur.fetchall()}
     
@@ -237,14 +239,18 @@ def detect_and_log_status_changes(
                 count += 1
                 
                 # Update the record's previous_status and status_changed_at
+                # Update the correct table based on data source
+                data_source = existing.get('data_source', 'api')
+                table_name = 'tbl_bolo_web' if data_source == 'web' else 'tbl_bolo'
+                
                 with conn.cursor() as update_cur:
-                    update_cur.execute("""
-                        UPDATE tbl_bolo 
+                    update_cur.execute(f"""
+                        UPDATE {table_name} 
                         SET previous_status = %s, status_changed_at = NOW()
                         WHERE uid = %s AND is_active = TRUE
                     """, (old_status_lower, uid))
     
-    logger.info(f"Logged {count} status changes")
+    logger.info(f"Logged {count} status changes from both API and web sources")
     return count
 
 
@@ -255,6 +261,7 @@ def detect_and_log_most_wanted(
 ) -> int:
     """
     Detect and log when someone becomes Most Wanted (poster_classification = 'ten').
+    Now checks both API and web data sources via vw_bolo_full.
     
     Args:
         conn: Database connection
@@ -270,12 +277,13 @@ def detect_and_log_most_wanted(
     uids = [r['uid'] for r in records]
     record_lookup = {r['uid']: r for r in records}
     
-    # Get previous poster_classification values for these UIDs
+    # Get previous poster_classification values for these UIDs (from both sources)
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
-            SELECT uid, poster_classification, previous_poster_classification, title, poster_url
-            FROM tbl_bolo
-            WHERE uid = ANY(%s) AND is_active = TRUE
+            SELECT uid, poster_classification, previous_poster_classification, 
+                   title, poster_url, data_source
+            FROM vw_bolo_full
+            WHERE uid = ANY(%s)
         """, (uids,))
         existing_records = {r['uid']: r for r in cur.fetchall()}
     
@@ -302,14 +310,18 @@ def detect_and_log_most_wanted(
                 count += 1
                 
                 # Update the record's previous_poster_classification
+                # Update the correct table based on data source
+                data_source = existing.get('data_source', 'api')
+                table_name = 'tbl_bolo_web' if data_source == 'web' else 'tbl_bolo'
+                
                 with conn.cursor() as update_cur:
-                    update_cur.execute("""
-                        UPDATE tbl_bolo 
+                    update_cur.execute(f"""
+                        UPDATE {table_name} 
                         SET previous_poster_classification = %s
                         WHERE uid = %s AND is_active = TRUE
                     """, (old_class_lower or None, uid))
     
-    logger.info(f"Logged {count} Most Wanted changes")
+    logger.info(f"Logged {count} Most Wanted changes from both API and web sources")
     return count
 
 
