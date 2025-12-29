@@ -24,6 +24,7 @@ from fastapi import APIRouter
 # Import auth utilities
 from auth import UserRole
 from jwt_auth import require_jwt_role
+from array_utils import extract_and_clean_array
 from notification_service import detect_all_changes, process_pending_notifications
 from link_validation_service import (
     validate_links_from_file, 
@@ -176,13 +177,8 @@ def parse_date(date_str: Optional[str]) -> Optional[datetime]:
             return None
 
 def extract_array_field(data: Dict, field: str) -> Optional[List[str]]:
-    """Extract array field, converting None to empty list for PostgreSQL"""
-    value = data.get(field)
-    if value is None:
-        return None
-    if isinstance(value, list):
-        return [str(item) for item in value if item is not None]
-    return None
+    """Extract array field with cleaning for PostgreSQL."""
+    return extract_and_clean_array(data, field)
 
 def extract_poster_url(images: List[Dict]) -> Optional[str]:
     """Extract the first original image URL as the poster URL"""
@@ -386,6 +382,8 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
         # Normalize quotes
         for old_quote, new_quote in quote_map.items():
             no_invisible = no_invisible.replace(old_quote, new_quote)
+            # Remove remaining double quotes from array elements
+            no_invisible = no_invisible.replace('"', '')
         
         # Normalize dashes
         for old_dash, new_dash in dash_map.items():
