@@ -190,7 +190,7 @@ def detect_and_log_status_changes(
     """
     Detect and log status changes for existing records.
     Only logs transitions from 'na' to notifiable statuses.
-    Now checks both API and web data sources via vw_bolo_full.
+    Now checks both API and web data sources by querying both tables.
     
     Args:
         conn: Database connection
@@ -206,14 +206,28 @@ def detect_and_log_status_changes(
     uids = [r['uid'] for r in records]
     record_lookup = {r['uid']: r for r in records}
     
-    # Get previous status values for these UIDs (from both sources)
+    # Get previous status values from BOTH tables
+    # We need to check both because vw_bolo_full doesn't have previous_status
+    existing_records = {}
+    
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Check API table
         cur.execute("""
-            SELECT uid, status, previous_status, title, poster_url, data_source
-            FROM vw_bolo_full
-            WHERE uid = ANY(%s)
+            SELECT uid, status, previous_status, title, poster_url, 'api' as data_source
+            FROM tbl_bolo
+            WHERE uid = ANY(%s) AND is_active = TRUE
         """, (uids,))
-        existing_records = {r['uid']: r for r in cur.fetchall()}
+        for r in cur.fetchall():
+            existing_records[r['uid']] = dict(r)
+        
+        # Check web table (overwrites API if same UID - web takes precedence)
+        cur.execute("""
+            SELECT uid, status, previous_status, title, poster_url, 'web' as data_source
+            FROM tbl_bolo_web
+            WHERE uid = ANY(%s) AND is_active = TRUE
+        """, (uids,))
+        for r in cur.fetchall():
+            existing_records[r['uid']] = dict(r)
     
     count = 0
     for uid, new_record in record_lookup.items():
@@ -261,7 +275,7 @@ def detect_and_log_most_wanted(
 ) -> int:
     """
     Detect and log when someone becomes Most Wanted (poster_classification = 'ten').
-    Now checks both API and web data sources via vw_bolo_full.
+    Now checks both API and web data sources by querying both tables.
     
     Args:
         conn: Database connection
@@ -277,15 +291,30 @@ def detect_and_log_most_wanted(
     uids = [r['uid'] for r in records]
     record_lookup = {r['uid']: r for r in records}
     
-    # Get previous poster_classification values for these UIDs (from both sources)
+    # Get previous poster_classification values from BOTH tables
+    # We need to check both because vw_bolo_full doesn't have previous_poster_classification
+    existing_records = {}
+    
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Check API table
         cur.execute("""
             SELECT uid, poster_classification, previous_poster_classification, 
-                   title, poster_url, data_source
-            FROM vw_bolo_full
-            WHERE uid = ANY(%s)
+                   title, poster_url, 'api' as data_source
+            FROM tbl_bolo
+            WHERE uid = ANY(%s) AND is_active = TRUE
         """, (uids,))
-        existing_records = {r['uid']: r for r in cur.fetchall()}
+        for r in cur.fetchall():
+            existing_records[r['uid']] = dict(r)
+        
+        # Check web table (overwrites API if same UID - web takes precedence)
+        cur.execute("""
+            SELECT uid, poster_classification, previous_poster_classification,
+                   title, poster_url, 'web' as data_source
+            FROM tbl_bolo_web
+            WHERE uid = ANY(%s) AND is_active = TRUE
+        """, (uids,))
+        for r in cur.fetchall():
+            existing_records[r['uid']] = dict(r)
     
     count = 0
     for uid, new_record in record_lookup.items():

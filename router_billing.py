@@ -1418,6 +1418,16 @@ async def get_billing_info(
 # ============================================================================
 
 @router.get(
+    "",
+    response_class=HTMLResponse,
+    include_in_schema=False
+)
+@limiter.limit(rate_max)
+async def billing_redirect(request: Request):
+    """Redirect /v1/billing to /v1/billing/ for consistency"""
+    return RedirectResponse(url="/v1/billing/", status_code=301)
+
+@router.get(
     "/",
     response_class=HTMLResponse,
     summary="Billing Dashboard Page",

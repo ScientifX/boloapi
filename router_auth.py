@@ -21,7 +21,7 @@ from slowapi.util import get_remote_address
 
 from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, APP_GLOBALS
 from auth import UserRole
-from jwt_auth import require_jwt_role, get_current_user_from_token
+from jwt_auth import require_jwt_role, require_browser_auth, get_current_user_from_token
 from security_utils import (
     generate_api_key_and_hash,
     generate_activation_token,
@@ -830,12 +830,16 @@ async def logout_page(request: Request):
 
 @router.get("/profile")
 @limiter.limit(rate_max)
-async def profile_page(request: Request, current_user: dict = Depends(require_jwt_role(UserRole.BASIC))):
+async def profile_page(
+    request: Request, 
+    current_user: Optional[dict] = Depends(require_browser_auth(UserRole.BASIC))
+):
     """Display user profile page with current data"""
+    # If not authenticated, redirect to login page
+    if not current_user:
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+    
     try:
-        # Try to get authenticated user - will raise HTTPException if not authenticated
-        current_user = get_current_user_from_token(request, None)
-        
         user = get_user_by_id(current_user["user_id"])
         
         if not user:
@@ -900,11 +904,6 @@ async def profile_page(request: Request, current_user: dict = Depends(require_jw
             "api_key_preview": api_key_preview
         })
         
-    except HTTPException as e:
-        # If authentication failed, redirect to login (for browser)
-        # API calls will still get JSON error from other endpoints
-        logger.info(f"Profile page auth failed, redirecting to login: {e.detail}")
-        return RedirectResponse(url="/v1/auth/login", status_code=303)
     except Exception as e:
         logger.error(f"Profile page error: {str(e)}")
         return RedirectResponse(url="/v1/auth/login", status_code=303)
