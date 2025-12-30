@@ -32,8 +32,8 @@ from config import (
     BILLING_TEST_MODE
 )
 from auth import UserRole
-from jwt_auth import require_jwt_role, require_browser_auth
-from email_utils import (
+from auth_jwt import require_jwt_role, require_browser_auth
+from utils_email import (
     send_subscription_welcome_email,
     send_payment_receipt_email,
     send_payment_failed_email,
@@ -1867,7 +1867,7 @@ if BILLING_TEST_MODE:
         Send or preview a billing email for testing purposes.
         If preview_only=true, returns the rendered HTML instead of sending.
         """
-        from email_utils import (
+        from utils_email import (
             send_subscription_welcome_email,
             send_payment_receipt_email,
             send_payment_failed_email,

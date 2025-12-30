@@ -23,7 +23,7 @@ from fastapi import Request
 from fastapi.openapi.utils import get_openapi
 
 from auth import UserRole, ROLE_HIERARCHY
-from jwt_utils import decode_access_token, JWTError
+from utils_jwt import decode_access_token, JWTError
 
 
 # ============================================================================

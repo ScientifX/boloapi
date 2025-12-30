@@ -37,13 +37,13 @@ import router_billing
 import router_analytics
 
 from auth_middleware import TemplateAuthMiddleware
-from docs_config import (
+from config_docs import (
     get_role_filtered_openapi,
     get_viewer_role_from_request,
     register_visibility_override,
 	)
-from jwt_auth import require_jwt_role
-import visibility_config
+from auth_jwt import require_jwt_role
+import config_visibility
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

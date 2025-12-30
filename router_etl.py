@@ -23,10 +23,10 @@ from fastapi import APIRouter
 
 # Import auth utilities
 from auth import UserRole
-from jwt_auth import require_jwt_role
-from array_utils import extract_and_clean_array
-from notification_service import detect_all_changes, process_pending_notifications
-from link_validation_service import (
+from auth_jwt import require_jwt_role
+from utils_array import extract_and_clean_array
+from service_nottification import detect_all_changes, process_pending_notifications
+from service_link_validation import (
     validate_links_from_file, 
     get_link_check_summary, 
     get_failed_links,

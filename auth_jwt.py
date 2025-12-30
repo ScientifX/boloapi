@@ -7,7 +7,7 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from auth import UserRole, has_role
-from jwt_utils import decode_access_token, JWTError
+from utils_jwt import decode_access_token, JWTError
 
 # HTTP Bearer token scheme
 security = HTTPBearer(

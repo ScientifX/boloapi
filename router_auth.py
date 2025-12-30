@@ -13,16 +13,17 @@ from typing import Optional
 import logging
 
 from fastapi import APIRouter, HTTPException, Request, status, Query, Depends
-from fastapi.responses import Response, RedirectResponse, JSONResponse
+from fastapi.responses import Response, RedirectResponse, JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, APP_GLOBALS
 from auth import UserRole
-from jwt_auth import require_jwt_role, require_browser_auth, get_current_user_from_token
-from security_utils import (
+from auth_jwt import require_jwt_role, require_browser_auth, get_current_user_from_token
+from utils_security import (
     generate_api_key_and_hash,
     generate_activation_token,
     verify_api_key,
@@ -31,8 +32,8 @@ from security_utils import (
     verify_password,
     validate_password_strength
     )
-from jwt_utils import create_access_token
-from email_utils import (
+from utils_jwt import create_access_token
+from utils_email import (
     send_activation_email,
     send_api_key_email,
     send_welcome_email,
@@ -40,8 +41,8 @@ from email_utils import (
     send_password_changed_email,
     EmailConfig
     )
-from response_utils import render_or_json, render_error
-from captcha_utils import (
+from utils_response import render_or_json, render_error
+from utils_captcha import (
     generate_captcha_token,
     set_captcha_cookie,
     validate_captcha,
@@ -770,7 +771,7 @@ async def change_password(
     request: Request,
     password_req: ChangePasswordRequest,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
+    ):
     """Change password (authenticated)"""
     try:
         user = get_user_by_id(current_user["user_id"])
@@ -824,6 +825,41 @@ async def logout_page(request: Request):
     
     return response
 
+# ====================================================================
+# ANALYTICS ENDPOINTS
+# ====================================================================
+# Add this to router_auth.py, after your profile route
+
+@router.get(
+    "/analytics",
+    response_class=HTMLResponse,
+    summary="Analytics Dashboard Page",
+    description="User analytics dashboard showing API usage statistics",
+    include_in_schema=False  # Hide from API docs since it's a web page
+)
+@limiter.limit(rate_max)
+async def analytics_page(
+    request: Request,
+    current_user: Optional[dict] = Depends(require_browser_auth(UserRole.BASIC))
+):
+    """
+    Analytics Dashboard - View search history and usage statistics.
+    Requires authentication - redirects to login if not authenticated.
+    """
+    # If not authenticated, redirect to login page
+    if not current_user:
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+    
+    return templates.TemplateResponse(
+        "auth/analytics.html",
+        {
+            "request": request,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name
+        }
+    )
+    
 # ====================================================================
 # PROFILE ENDPOINTS
 # ====================================================================

@@ -10,7 +10,7 @@
 #   - ADMIN users see all endpoints
 # Generated from routes.xlsx
 from auth import UserRole
-from docs_config import register_visibility_override
+from config_docs import register_visibility_override
 DOCS_VISIBILITY_CONFIG = {
     # ----- Public Pages (visible to everyone) -----
     ("POST", "/v1/auth/token"): UserRole.PUBLIC,
@@ -21,7 +21,13 @@ DOCS_VISIBILITY_CONFIG = {
     
     # Root app admin endpoint
     ("GET", "/routes"): UserRole.ADMIN,
-    
+
+    # Analytics endpoints - ADMIN only
+    ("GET", "/v1/analytics/my_searches"): UserRole.ADMIN,
+    ("GET", "/v1/analytics/my_stats"): UserRole.ADMIN,
+    ("GET", "/v1/analytics/admin/overview"): UserRole.ADMIN,
+    ("GET", "/v1/analytics/admin/users/{user_id}/searches"): UserRole.ADMIN,
+
     # Auth endpoints - all admin visibility
     ("GET", "/v1/auth/activate"): UserRole.ADMIN,
     ("GET", "/v1/auth/change_password"): UserRole.ADMIN,

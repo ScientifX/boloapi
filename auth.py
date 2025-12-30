@@ -33,7 +33,7 @@ def get_current_role(request: Request) -> UserRole:
     Get the current user role from session.
     Defaults to PUBLIC if no role is set.
     
-    NOTE: This is for session-based auth only. For JWT auth, use jwt_auth.py
+    NOTE: This is for session-based auth only. For JWT auth, use auth_jwt.py
     """
     role_str = request.session.get(SESSION_ROLE_KEY, UserRole.PUBLIC.value)
     try:
@@ -52,7 +52,7 @@ def require_role(required_role: UserRole):
     Returns the current user role if authorized.
     Raises 403 if unauthorized.
     
-    NOTE: This is for session-based auth only. For JWT auth, use jwt_auth.require_jwt_role()
+    NOTE: This is for session-based auth only. For JWT auth, use auth_jwt.require_jwt_role()
     """
     async def role_checker(request: Request) -> UserRole:
         current_role = get_current_role(request)

@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 from auth import UserRole
-from jwt_auth import require_jwt_role
+from auth_jwt import require_jwt_role
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

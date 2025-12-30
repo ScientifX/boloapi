@@ -21,10 +21,10 @@ from datetime import datetime
 from contextlib import contextmanager
 
 from auth import UserRole, get_data_field_for_role, validate_limit_for_role
-from jwt_auth import require_jwt_role
-from format_utils import ResponseFormat, format_response, validate_format_access
-from link_validation_service import get_archive_info, get_archive_file_path
-from search_analytics_utils import track_search_analytics
+from auth_jwt import require_jwt_role
+from utils_format import ResponseFormat, format_response, validate_format_access
+from service_link_validation import get_archive_info, get_archive_file_path
+from utils_search_analytics import track_search_analytics
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

@@ -13,7 +13,7 @@ from psycopg2.extras import RealDictCursor
 from psycopg2.extensions import connection as Connection
 
 from config import DB_CONFIG
-from email_utils import send_bolo_notification_email
+from utils_email import send_bolo_notification_email
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

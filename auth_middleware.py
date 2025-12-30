@@ -4,7 +4,7 @@ Checks JWT cookie and sets user_authenticated state for Jinja2 templates
 """
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
-from jwt_utils import decode_access_token, JWTError
+from utils_jwt import decode_access_token, JWTError
 
 
 class TemplateAuthMiddleware(BaseHTTPMiddleware):
