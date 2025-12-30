@@ -34,6 +34,8 @@ import router_etl
 import router_search
 import router_auth
 import router_billing
+import router_analytics
+
 from auth_middleware import TemplateAuthMiddleware
 from docs_config import (
     get_role_filtered_openapi,
@@ -173,6 +175,7 @@ if router_billing.test_router:
 app.include_router(router_etl.router) 
 app.include_router(router_search.router)
 app.include_router(router_auth.router) 
+app.include_router(router_analytics.router, tags=["Analytics"])
 
 
 # ============================================================================

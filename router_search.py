@@ -1,6 +1,6 @@
 import logging
 import psycopg2
-import re
+import re, time
 from config import DB_CONFIG, API_APP_BASE_URL
 from lookups import COUNTRIES, STATES
 
@@ -24,6 +24,7 @@ from auth import UserRole, get_data_field_for_role, validate_limit_for_role
 from jwt_auth import require_jwt_role
 from format_utils import ResponseFormat, format_response, validate_format_access
 from link_validation_service import get_archive_info, get_archive_file_path
+from search_analytics_utils import track_search_analytics
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -942,6 +943,7 @@ def get_db_connection():
     response_description="Query parameters, count, and array of matching recordss"
     )
 @limiter.limit(rate_max)
+@track_search_analytics 
 async def simple_search(
     request: Request, 
     search_request: SimpleSearchRequest,
@@ -1054,6 +1056,7 @@ async def simple_search(
     response_description="Query parameters, count, and array of matching recordss"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def advanced_search(
     request: Request, 
     search_request: AdvancedSearchRequest,
@@ -1159,6 +1162,7 @@ async def advanced_search(
     response_description="List of FBI field office locations"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_field_offices(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1215,6 +1219,7 @@ async def list_field_offices(
     response_description="List of languages spoken by wanted individuals"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_languages(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1271,6 +1276,7 @@ async def list_languages(
     response_description="List of nationalities of wanted individuals"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_nationality(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1325,6 +1331,7 @@ async def list_nationality(
     response_description="List of possible countries associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_possible_countries(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1381,6 +1388,7 @@ async def list_possible_countries(
     response_description="List of possible USA states associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_possible_states(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1436,6 +1444,7 @@ async def list_possible_states(
     response_description="List of races of origin associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def list_race(
     request: Request,
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
@@ -1495,6 +1504,7 @@ async def list_race(
     response_description="FBI ten most wanted fugitives"
     )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_top_ten(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1557,6 +1567,7 @@ async def get_top_ten(
     response_description="Wanted individuals and cases with high-dollar rewards >= USD$1 Million"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_top_reward(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
@@ -1629,6 +1640,7 @@ async def get_top_reward(
     response_description="Additional violent individuals and cases"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_additional_info(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1699,6 +1711,7 @@ async def get_additional_info(
     response_description="Individuals and cases related to crimes against children"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_crimes_against_children(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1769,6 +1782,7 @@ async def get_crimes_against_children(
     response_description="Individuals and cases related to criminal enterprise investigations"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_criminal_enterprise_investigations(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1839,6 +1853,7 @@ async def get_criminal_enterprise_investigations(
     response_description="Individuals and cases related to counterintelligences"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_counterintelligence(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1909,6 +1924,7 @@ async def get_counterintelligence(
     response_description="Individuals and cases related to cyber crimes"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_cyber_crimes(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -1979,6 +1995,7 @@ async def get_cyber_crimes(
     response_description="Individuals and cases related to domestic terrorism"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_domestic_terrorism(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2049,6 +2066,7 @@ async def get_domestic_terrorism(
     response_description="Individuals and cases related to the Endangered Child Alert Program (ECAP)"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_endangered_child_alert_program(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2119,6 +2137,7 @@ async def get_endangered_child_alert_program(
     response_description="Individuals and cases related to human trafficking"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_human_trafficking(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2189,6 +2208,7 @@ async def get_human_trafficking(
     response_description="Individuals and cases related to kidnappings and missing persons"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_kidnap_missing(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2259,6 +2279,7 @@ async def get_kidnap_missing(
     response_description="Individuals and cases related to known bank robbers"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_known_bank_robbers(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2329,6 +2350,7 @@ async def get_known_bank_robbers(
     response_description="Individuals and cases related to law enforcement assistance"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_law_enforcement_assistance(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2399,6 +2421,7 @@ async def get_law_enforcement_assistance(
     response_description="Individuals and cases related to murder"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_murders(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2469,6 +2492,7 @@ async def get_murders(
     response_description="Individuals and cases related to parental kidnappings"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_kidnap_parental(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2539,6 +2563,7 @@ async def get_kidnap_parental(
     response_description="Individuals and cases for whom additional information is sought"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_seeking_info(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2609,6 +2634,7 @@ async def get_seeking_info(
     response_description="Individuals and cases related to terrorism for whom additional information is sought"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_terror_info(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2679,6 +2705,7 @@ async def get_terror_info(
     response_description="Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_violent_criminal_apprehension_program(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2749,6 +2776,7 @@ async def get_violent_criminal_apprehension_program(
     response_description="Individuals and cases related to wanted terrorists"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_wanted_terrorists(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2819,6 +2847,7 @@ async def get_wanted_terrorists(
     response_description="Individuals and cases related to white-collar crimes"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_white_collar_crimes(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2888,6 +2917,7 @@ async def get_white_collar_crimes(
     response_description="Individuals and cases identified by the FBI as Case of the Week"
 )
 @limiter.limit(rate_max)
+@track_search_analytics
 async def get_case_of_the_week(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
@@ -2957,7 +2987,8 @@ async def get_case_of_the_week(
     description="Returns records of a given class",
     response_description="Individuals and cases related to Native Americans"
 )
-@limiter.limit(rate_max) 
+@limiter.limit(rate_max)
+@track_search_analytics 
 async def get_native_american(
     request: Request,
     format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
