@@ -3,86 +3,62 @@
   "items": [
     {
       "possible_states": null,
-      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
-      "field_offices": [
-        "losangeles"
-      ],
+      "warning_message": null,
+      "field_offices": null,
       "details": null,
       "locations": null,
       "age_range": null,
       "path": "/wanted/cei/bianca-canastillo-madrid",
       "occupations": null,
-      "eyes_raw": "Brown",
+      "eyes_raw": null,
       "scars_and_marks": null,
-      "weight": "170 pounds",
+      "weight": null,
       "poster_classification": "default",
       "possible_countries": null,
-      "eyes": "brown",
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/download.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/madridspanish.pdf/@@download/file/madridSpanish.pdf",
-          "name": "EN ESPAÑOL"
-        }
-      ],
-      "modified": "2025-12-28T00:17:53+00:00",
+      "eyes": null,
+      "files": [],
+      "modified": null,
       "age_min": null,
-      "caution": "Bianca Canastillo-Madrid is wanted in connection with her role in the Wedding Criminal Enterprise, led by Ten Most Wanted Fugitive, Ryan James Wedding.  To eliminate threats and otherwise advance the interests of the Wedding Criminal Enterprise, Canastillo-Madrid is wanted for her alleged involvement in money laundering facilitation for the Enterprise.  On October 28, 2025, a federal arrest warrant was issued for Canastillo-Madrid in the United States District Court, Central District of California, Los Angeles, California, after she was charged with Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; and Conspiracy to Launder Monetary Instruments.",
-      "description": "Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Launder Monetary Instruments",
+      "caution": null,
+      "description": null,
       "person_classification": "Main",
-      "hair": "brown",
+      "hair": null,
       "reward_max": 0,
       "title": "BIANCA CANASTILLO-MADRID",
       "coordinates": [],
       "place_of_birth": null,
       "languages": null,
-      "race_raw": "White (Hispanic)",
+      "race_raw": null,
       "reward_min": 0,
       "complexion": null,
-      "aliases": [
-        "Bianca Canastillo Madrid, Bianca Madrid, \"~cady\", \"Claudio\", \"Claudi Old New Is Candy\", \"TK8658TT\", \"B9R3SBWT\","
-      ],
+      "aliases": null,
       "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid",
       "ncic": null,
-      "height_min": 65,
-      "race": "white (hispanic)",
-      "publication": "2025-11-18T18:50:43+00:00",
-      "weight_max": 170,
+      "height_min": null,
+      "race": null,
+      "publication": null,
+      "weight_max": null,
       "subjects": [
         "Fugitives"
       ],
-      "images": [
-        {
-          "original": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image",
-          "large": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image/large",
-          "thumb": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image/thumb",
-          "caption": null
-        }
-      ],
+      "images": [],
       "suspects": null,
       "remarks": null,
       "reward_text": null,
       "nationality": null,
       "legat_names": null,
-      "dates_of_birth_used": [
-        "July 21, 1988"
-      ],
+      "dates_of_birth_used": null,
       "status": "na",
       "build": null,
-      "weight_min": 170,
-      "hair_raw": "Brown",
+      "weight_min": null,
+      "hair_raw": null,
       "uid": "fed97070a34223fdb145d7a06799b72a",
-      "sex": "Female",
-      "height_max": 65,
+      "sex": null,
+      "height_max": null,
       "additional_information": null,
       "age_max": null,
       "pathId": "https://api.fbi.gov/@wanted-person/fed97070a34223fdb145d7a06799b72a",
-      "related_cases": [
-        "https://www.fbi.gov/wanted/topten/ryan-james-wedding"
-      ]
+      "related_cases": null
     },
     {
       "possible_states": null,
@@ -107,7 +83,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:27+00:00",
+      "modified": "2025-12-30T00:08:28+00:00",
       "age_min": null,
       "caution": "Brandon James Thomas is wanted for his alleged involvement in the fraudulent application for, and receipt of, Payment Protection Program (PPP) loans and Economic Injury Disaster Loans (EIDL) which are administered by the Small Business Administration (SBA).  In total, Thomas and others allegedly applied for and received 17 PPP and 9 EIDL loans resulting in a loss of over $2 million to the SBA.  On November 7, 2025, a federal arrest warrant was issued for Thomas in the United States District Court, Middle District of Florida, Tampa, Florida, after he was charged with Conspiracy to Commit Wire Fraud and Wire Fraud.",
       "description": "Conspiracy to Commit Wire Fraud; Wire Fraud",
@@ -192,7 +168,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:06:59+00:00",
+      "modified": "2025-12-30T00:07:01+00:00",
       "age_min": null,
       "caution": "Camron Lee is wanted for his alleged involvement in the murder of his female partner at their residence in Sacramento, California, on July 8, 2024.  Mateo Lee, born January 31, 2022, and Athena Lee, born July 26, 2020, who resided with the victim, were not at the home and may be with Lee.  He was last seen crossing into Mexico on July 8, 2024.  The FBI is offering a separate reward of up to $25,000 for information that will lead to the location and recovery of Mateo and Athena.  On July 29, 2024, the State of California, Sacramento Superior and Municipal Court, County of Sacramento, issued an arrest warrant for Lee after he was charged with four counts of possession of an assault weapon.  On August 20, 2024, a federal arrest warrant was issued for Lee in the United States District Court, Eastern District of California, Sacramento, California, after he was charged with Unlawful Flight to Avoid Prosecution.  On March 5, 2025, the State of California, Sacramento Superior and Municipal Court, County of Sacramento, issued an arrest warrant for Lee after he was charged with murder.",
       "description": "Unlawful Flight to Avoid Prosecution - Possession of an Assault Weapon, Murder",
@@ -273,7 +249,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:17:50+00:00",
+      "modified": "2025-12-30T00:18:03+00:00",
       "age_min": null,
       "caution": "Carlos Andres Rivera Varela is an alleged high-ranking leader of Jalisco New Generation Cartel (CJNG), a major transnational cartel and designated foreign terrorist organization based in Mexico. Rivera Varela and others allegedly directed an international complex fraud scheme targeting American timeshare owners in Mexico. Over the past decade, this operation allegedly laundered hundreds of millions in alternative revenue to finance CJNG’s drug and weapons trade. Rivera Varela is also an alleged leader of elite sicario hitmen units responsible for extreme violence and high-profile assassinations with access to military-grade weaponry.  On October 28, 2025, a federal arrest warrant was issued for Rivera Varela in the United States District Court, Eastern District of New York, Brooklyn, New York, after he was charged with Money Laundering Conspiracy and Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization.",
       "description": "Money Laundering Conspiracy; Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization",
@@ -355,7 +331,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:11:53+00:00",
+      "modified": "2025-12-30T00:11:54+00:00",
       "age_min": null,
       "caution": "Zhanpeng Huang, Xiaojun Huang, Meixiang Yao, and Yuqing Feng are wanted for their alleged involvement with a scheme to facilitate the flow of illegal drugs and cutting agents to the United States.  It is alleged that businesses, purporting to operate as online pharmacies or chemical companies that sell legitimate pharmaceuticals and chemical compounds around the world, knowingly and illegally marketed and exported to the United States controlled substances and other compounds intended for domestic drug traffickers to use as mixing agents (also known as “cut”) to increase the yield and potency of fentanyl distributed in the United States.  These four individuals, located in China and affiliated with the Guangzhou Tengyue Chemical Company, LTD., allegedly assisted various companies and other entities with distributing \"cut\" to the United States and collecting the proceeds of these sales from individuals in the United States for ultimate deposit in financial institutions located overseas.  This allegedly occurred between approximately January of 2022, and approximately August of 2025, in southern Ohio and elsewhere.  Federal arrest warrants were issued for these individuals on September 2, 2025, in the United States District Court, Southern District of Ohio, Western Division at Dayton, Ohio, after they were charged with Conspiracy to Distribute and to Possess with Intent to Distribute Controlled Substances and Conspiring to Launder Money Internationally. ",
       "description": "Conspiracy to Distribute and to Possess with Intent to Distribute Controlled Substances and Conspiring to Launder Money Internationally",
@@ -430,7 +406,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:18:13+00:00",
+      "modified": "2025-12-30T00:18:26+00:00",
       "age_min": null,
       "caution": "These individuals are wanted for their alleged involvement with a scheme to facilitate the flow of illegal drugs and cutting agents to the United States.  It is alleged that businesses, purporting to operate as online pharmacies or chemical companies that sell legitimate pharmaceuticals and chemical compounds around the world, knowingly and illegally marketed and exported to the United States controlled substances and other compounds intended for domestic drug traffickers to use as mixing agents (also known as “cut”) to increase the yield and potency of fentanyl distributed in the United States.  These twelve individuals, located in China and affiliated with the Guangzhou Tengyue Chemical Company, LTD., allegedly assisted various companies and other entities with distributing \"cut\" to the United States and collecting the proceeds of these sales from individuals in the United States for ultimate deposit in financial institutions located overseas.  This allegedly occurred between approximately January of 2022, and approximately August of 2025, in southern Ohio and elsewhere.  Federal arrest warrants were issued for these individuals on September 2, 2025, in the United States District Court, Southern District of Ohio, Western Division at Dayton, Ohio, after they were charged with Conspiracy to Distribute and to Possess with Intent to Distribute Controlled Substances and Conspiring to Launder Money Internationally.",
       "description": "Conspiracy to Distribute and to Possess with Intent to Distribute Controlled Substances and Conspiring to Launder Money Internationally",
@@ -505,7 +481,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:57+00:00",
+      "modified": "2025-12-30T00:08:01+00:00",
       "age_min": null,
       "caution": "Daniel Jones is wanted for his alleged involvement in the distribution and possession with intent to contribute controlled substances, as well as using and carrying firearms, in the East Harlem neighborhood of Manhattan in New York City, from 2022 through 2025.  On December 12, 2025, a federal arrest warrant was issued for Jones in the United States District Court, Southern District of New York, New York, New York, after he was charged with Conspiracy to Distribute Controlled Substances, and Using and Carrying a Firearm During and in Relation to, or Possessing a Firearm in Furtherance of, a Drug Trafficking Crime, and Aiding and Abetting.",
       "description": "Conspiracy to Distribute Controlled Substances; Using and Carrying a Firearm During and in Relation to, or Possessing a Firearm in Furtherance of, a Drug Trafficking Crime, and Aiding and Abetting",
@@ -582,7 +558,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:18:12+00:00",
+      "modified": "2025-12-30T00:18:26+00:00",
       "age_min": null,
       "caution": "Elaine Angene Escoe is wanted for her alleged involvement in a conspiracy to commit wire fraud and money laundering in connection with a scheme to fraudulently obtain over $34 million in federal COVID-19 relief funds.  Escoe and others allegedly submitted more than 90 fraudulent applications for funds from the Paycheck Protection Program (PPP), Economic Injury Disaster Loans (EIDL), Restaurant Revitalization Fund (RRF), and Shuttered Venue Operators Grant (SVOG) between May of 2020, and November of 2021.  The applications allegedly contained false information regarding employee counts, payroll expenses, and business revenues.  The scheme resulted in the wrongful disbursement of approximately $29.1 million in PPP funds, $1.2 million in RRF funds, and $3.8 million in SVOG funds.  After the funds were disbursed, Escoe and others allegedly directed payments to each other and to businesses they controlled, withdrew large sums in cash, and used blank, signed checks to conceal the origin and nature of the proceeds.  A federal arrest warrant was issued for Escoe on May 22, 2025, in the United States District Court, Southern District of Florida, West Palm Beach, Florida, after she was charged with Conspiracy to Commit Wire Fraud; Conspiracy to Commit Money Laundering; Wire Fraud; Concealment Money Laundering; and Transactional Money Laundering. She was notified of her scheduled court appearance for June 5, 2025, but failed to appear. Escoe was last seen on June 3, 2025, in Palm Beach County, Florida.",
       "description": "Conspiracy to Commit Wire Fraud; Conspiracy to Commit Money Laundering; Wire Fraud; Concealment Money Laundering; Transactional Money Laundering",
@@ -659,7 +635,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:09:02+00:00",
+      "modified": "2025-12-30T00:09:04+00:00",
       "age_min": null,
       "caution": "Esthepen Delossantos Pebenito, also known as “Pepe”, is wanted for his alleged involvement in the distribution of methamphetamine in Anchorage, Alaska, in 2019.  On July 22, 2021, a federal arrest warrant was issued for Pebenito in the United States District Court for the District of Alaska, Anchorage, Alaska, after he was charged with Distribution of Controlled Substances. ",
       "description": "Distribution of Controlled Substances",
@@ -748,7 +724,7 @@
           "name": "Nan Kreyòl Ayisyen"
         }
       ],
-      "modified": "2025-12-28T00:10:34+00:00",
+      "modified": "2025-12-30T00:10:35+00:00",
       "age_min": null,
       "caution": "Jimmy Cherizier, also known as Barbecue, BBQ, or Babekyou, allegedly conspired with individuals in the United States, Haiti, and elsewhere to violate and cause violations of United States sanctions. Cherizier, a Haitian national, and former officer in the Haitian National Police, is currently the leader of the gang alliance Viv Ansanm.  On December 10, 2020, Cherizier was sanctioned by the U.S. Treasury Department’s Office of Foreign Assets Control, pursuant to Executive Order (E.O.) 13818, which builds upon and implements the Global Magnitsky Human Rights Accountability Act, and targets perpetrators of serious human rights abuse and corruption.  A federal arrest warrant was issued for Cherizier in the United States District Court for the District of Columbia, Washington, D.C., after he was charged with conspiracy to violate the International Emergency Economic Powers Act.",
       "description": "Conspiracy to Violate the International Emergency Economic Powers Act",
@@ -827,7 +803,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:11:12+00:00",
+      "modified": "2025-12-30T00:11:14+00:00",
       "age_min": null,
       "caution": "Jordan Guy MacDonald Goudreau is wanted for failing to appear at a bond revocation hearing at the United States Federal Courthouse in Tampa, Florida, on October 31, 2025.  Goudreau, a former member of the US Special Forces, was charged in July of 2024 in a 14-count indictment for charges related to export control violations involving firearms.  The indictment alleges Goudreau exported firearms, night vision devices, laser sights, and other equipment from the United States to Colombia to carry out an armed incursion into Venezuela to remove leaders from power.  A federal arrest warrant was issued for Goudreau on October 31, 2025, in the United States District Court for the Middle District of Florida, Tampa, Florida, after he was charged with Failure to Appear.",
       "description": "Failure to Appear (Conspiracy to Violate the Arms Export Control Act; Smuggling; Arms Export Control Act Violation; Export Control Reform Act Violation; Violation of the National Firearms Act; Unlawful Possession of a Machine Gun)",
@@ -909,7 +885,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:07:54+00:00",
+      "modified": "2025-12-30T00:07:57+00:00",
       "age_min": null,
       "caution": "Juan Jose Ponce Felix is wanted for his alleged involvement in narcotics trafficking, hostage taking, and money laundering as part of the Sinaloa Drug Trafficking Organization.  On October 15, 2015, Juan Jose Ponce Felix was indicted in the United States District Court, Central District of California, Los Angeles, California, and an arrest warrant was issued for his arrest based on the following charges: Racketeer Influenced and Corrupt Organizations (RICO) Conspiracy; Violent Crime in Aid of Racketeering; Conspiracy to Distribute Controlled Substances; Conspiracy to Import Controlled Substances: Hostage Taking Conspiracy and Hostage Taking; Conspiracy to Launder Money; Carry and Use of a Firearm in Furtherance of a Crime of Violence or Drug Trafficking Crime; and Criminal Forfeiture.",
       "description": "Racketeer Influenced and Corrupt Organizations (RICO) Conspiracy; Violent Crime in Aid of Racketeering; Conspiracy to Distribute Controlled Substances; Conspiracy to Import Controlled Substances; Hostage Taking Conspiracy and Hostage Taking; Conspiracy to Launder Money; Carry and Use of a Firearm in Furtherance of a Crime of Violence or Drug Trafficking Crime; Criminal Forfeiture",
@@ -990,7 +966,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:17:50+00:00",
+      "modified": "2025-12-30T00:18:04+00:00",
       "age_min": null,
       "caution": "Julio Cesar Montero Pinzon is an alleged high-ranking leader of Jalisco New Generation Cartel (CJNG), a major transnational cartel and designated foreign terrorist organization based in Mexico. Montero Pinzon allegedly directed an international complex fraud scheme targeting American timeshare owners in Mexico. Over the past decade, this operation allegedly laundered hundreds of millions in alternative revenue to finance CJNG’s drug and weapons trade. Montero Pinzon is also an alleged leader of elite sicario hitmen units responsible for extreme violence and high-profile assassinations with access to military-grade weaponry.  On October 27, 2025, a federal arrest warrant was issued for Montero Pinzon in the United States District Court, Eastern District of New York, Brooklyn, New York, after he was charged with Money Laundering Conspiracy; Wire Fraud Conspiracy; and Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization.",
       "description": "Money Laundering Conspiracy; Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization; Wire Fraud Conspiracy",
@@ -1090,7 +1066,7 @@
           "name": "用中文（表達 Chinese (Traditional)"
         }
       ],
-      "modified": "2025-12-28T00:10:21+00:00",
+      "modified": "2025-12-30T00:10:22+00:00",
       "age_min": null,
       "caution": "Mahmood Rashid Amur Al Habsi is charged with violating the International Emergency Economic Powers Act and the Iranian Transactions and Sanctions Regulations, conspiring to commit money laundering, and money laundering stemming from an alleged scheme to export Iranian petroleum to Chinese government-owned refineries. It is alleged that Al Habsi, along with co-conspirators, illegally used the U.S. financial system to facilitate the sale of over a hundred million dollars’ worth of oil to benefit the IRGC-QF, Iran’s primary conduit for providing lethal support to terrorist organizations abroad.  The alleged scheme relied on the use of the U.S. financial system and was facilitated by Turkish, Omani, and U.S. persons and entities, all in violation of U.S. sanctions against Iran.  The indictment also alleges that Al Habsi, acting through one of his companies, procured a $16.5 million loan in June 2020 from U.S. financial companies to purchase an oil tanker, later named M/T Oman Pride. Beginning in July 2020, M/T Oman Pride transferred Iranian oil to third-party vessels for sale to Chinese government-owned refineries and companies in China.  On January 25, 2024, a federal arrest warrant was issued for Al Habsi in the United States District Court for the District of Columbia, Washington, D.C., after he was charged with International Emergency Economic Powers Act Violations; Iranian Transactions and Sanctions Regulations; Conspiracy to Commit Money Laundering; and Laundering of Monetary Instruments.",
       "description": "International Emergency Economic Powers Act Violations; Iranian Transactions and Sanctions Regulations; Conspiracy to Commit Money Laundering; Laundering of Monetary Instruments",
@@ -1173,7 +1149,7 @@
           "name": "باللغة العربية"
         }
       ],
-      "modified": "2025-12-28T00:06:58+00:00",
+      "modified": "2025-12-30T00:07:00+00:00",
       "age_min": null,
       "caution": "Mary Carole McDonnell is wanted for her alleged involvement in a fraud scheme in Los Angeles and Orange Counties in California.  Beginning in approximately July of 2017, and continuing to May of 2018, McDonnell is alleged to have knowingly, and with the intent to defraud, devised and participated in a scheme to obtain money, funds, assets, and property owned by Banc of California. Through this scheme, McDonnell allegedly and fraudulently obtained a total of approximately $14.7 million from the bank to which she knew she was not entitled and has not paid back.  It is alleged that McDonnell also defrauded additional financial institutions in a similar fashion, with an estimated loss of over $15 million.  McDonnell falsely claims to be an heir to the McDonnell Aircraft Family, with an $80 million secret trust to which she will have access.  On December 12, 2018, a federal arrest warrant was issued for McDonnell in the United States District Court, Central District of California, Santa Ana, California, after she was charged with Bank Fraud and Aggravated Identity Theft.  It is believed McDonnell is currently in Dubai. ",
       "description": "Bank Fraud and Aggravated Identity Theft",
@@ -1250,7 +1226,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:07+00:00",
+      "modified": "2025-12-30T00:17:19+00:00",
       "age_min": null,
       "caution": "Olumide Adebiyi Adediran is wanted for Violation of Conditions of Release.  In August of 2001, Adediran allegedly entered a bank in Champaign, Illinois, and attempted to retrieve funds from a deposited fraudulent check.  He also allegedly used stolen information of United States citizens to open bank and charge accounts.  Adediran fled the Central District of Illinois at the end of December 2001, shortly before his trial in the Central District of Illinois was set to begin on federal charges of Bank Fraud, Identification Document Fraud, and Credit Card Fraud.  On January 2, 2002, a federal arrest warrant was issued for Adediran in the United States District Court, Central District of Illinois, Urbana, Illinois, after he was charged with Violation of Conditions of Release.",
       "description": "Violation of Conditions of Release (Bank Fraud; Fraud and Related Activity in Connection with Identification Documents, Authentication Features, and Information; Fraudulent Presentment and Related Unauthorized Credit Card Transactions Made by Access Device)",
@@ -1327,7 +1303,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:57+00:00",
+      "modified": "2025-12-30T00:08:00+00:00",
       "age_min": null,
       "caution": "Richard Farquharson is wanted for his alleged involvement in the distribution and possession with intent to contribute controlled substances, as well as using and carrying firearms, in the East Harlem neighborhood of Manhattan in New York City, from 2022 through 2025.  On December 12, 2025, a federal arrest warrant was issued for Farquharson in the United States District Court, Southern District of New York, New York, New York, after he was charged with Conspiracy to Distribute Controlled Substances, and Using and Carrying a Firearm During and in Relation to, or Possessing a Firearm in Furtherance of, a Drug Trafficking Crime, and Aiding and Abetting.",
       "description": "Conspiracy to Distribute Controlled Substances; Using and Carrying a Firearm During and in Relation to, or Possessing a Firearm in Furtherance of, a Drug Trafficking Crime, and Aiding and Abetting",
@@ -1404,7 +1380,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:09:37+00:00",
+      "modified": "2025-12-30T00:09:40+00:00",
       "age_min": null,
       "caution": "Ronald Scott Watson, a convicted felon, is wanted for his alleged involvement in the attack on the United States Immigration and Customs Enforcement (“ICE”) building located in downtown Atlanta, Georgia, during the summer of 2020.  On July 25, 2020, shortly before midnight, a crowd gathered at the Atlanta ICE building and protested outside a fenced area.  At the same time, several masked individuals wearing dark clothing breached the fences and vandalized the building.  The rioters used rocks, cinder blocks, modified fireworks, Molotov cocktails, lighter fluid bottles, and other materials to cause more than $78,000 in damage. Watson has been identified as allegedly being part of this group.  A federal arrest warrant was issued for Watson on July 23, 2025, in the United States District Court, Northern District of Georgia, Atlanta, Georgia, after he was charged with Maliciously Damage, and Attempt to Damage, by Means of Fire or an Explosive, a Building and Other Personal and Real Property, in Whole or in Part Owned and Possessed by, and Leased to, the United States.",
       "description": "Maliciously Damage, and Attempt to Damage, by Means of Fire or an Explosive, a Building and Other Personal and Real Property, in Whole or in Part Owned and Possessed by, and Leased to, the United States",
@@ -1489,7 +1465,7 @@
           "name": "باللغة العربية"
         }
       ],
-      "modified": "2025-12-28T00:10:52+00:00",
+      "modified": "2025-12-30T00:10:54+00:00",
       "age_min": null,
       "caution": "Saidul Hasan Chowdhury is wanted for his alleged involvement in the sexual assault of a minor child which occurred in approximately October of 2008, in Queens, New York.  The crime was reported in 2024, and Chowdhury was subsequently arrested in May of 2024. At that time, he was charged with Course of Sexual Conduct Against a Child in the First Degree, and Rape in the Second Degree, both in violation of New York Penal Law.  Chowdhury was released on bond, and then fled the United States to Saudi Arabia in May of 2024, where he is believed to be located.  On March 10, 2025, a federal arrest warrant was issued for Chowdhury by the United States District Court, Eastern District Court of New York, Brooklyn, New York, after Chowdhury was charged with unlawful flight to avoid prosecution. ",
       "description": "Unlawful Flight to Avoid Prosecution - Course of Sexual Conduct Against a Child in the First Degree, Rape in the Second Degree",
@@ -1570,7 +1546,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:07:56+00:00",
+      "modified": "2025-12-30T00:07:59+00:00",
       "age_min": null,
       "caution": "Samuel Ramirez, Jr. is wanted for his alleged involvement in the murders of two female victims on May 21, 2023, at the Stars Bar and Grill in Federal Way, Washington.  A third person was also injured in the shooting.  After the homicide, Ramirez, Jr. fled to Lake Havasu City, Arizona, and was driven into Tijuana, Mexico, by his parents on May 23, 2023.  On May 24, 2023, the King County Superior Court, State of Washington, issued an arrest warrant for Ramirez, Jr. after he was charged with Murder in the Second Degree, Murder in the First Degree, and Attempted Murder in the First Degree.  On November 14, 2025, a federal arrest warrant was issued for Ramirez, Jr. in the United States District Court, Western District of Washington, Seattle, Washington, after he was charged with Unlawful Flight to Avoid Prosecution.",
       "description": "Unlawful Flight to Avoid Prosecution - Murder in the Second Degree, Murder in the First Degree, Attempted Murder in the First Degree",
@@ -1663,7 +1639,7 @@
           "name": "用中文（表達 Chinese (Traditional)"
         }
       ],
-      "modified": "2025-12-28T00:10:39+00:00",
+      "modified": "2025-12-30T00:10:41+00:00",
       "age_min": null,
       "caution": "Shaoyun Wang is charged with violating the International Emergency Economic Powers Act and the Iranian Transactions and Sanctions Regulations, conspiring to commit money laundering, and money laundering stemming from an alleged scheme to export Iranian petroleum to Chinese government-owned refineries. It is alleged that Wang, together with her co-conspirators, illegally used the U.S. financial system to facilitate the sale of over a hundred million dollars’ worth of oil to benefit the IRGC-QF, Iran’s primary conduit for providing lethal support to terrorist organizations abroad.  The alleged scheme relied on the use of the U.S. financial system and was facilitated by Turkish, Omani, and U.S. persons and entities, all in violation of U.S. sanctions against Iran.  Wang allegedly engaged with senior IRGC officials to affect the purchases. The alleged scheme resulted in millions of dollars’ worth of transactions that were processed by U.S. banks and facilitated by U.S. persons.  On January 25, 2024, a federal arrest warrant was issued for Wang in the United States District Court for the District of Columbia, Washington, D.C., after she was charged with International Emergency Economic Powers Act Violations; Iranian Transactions and Sanctions Regulations; Conspiracy to Commit Money Laundering; and Laundering of Monetary Instruments.",
       "description": "International Emergency Economic Powers Act Violations; Iranian Transactions and Sanctions Regulations; Conspiracy to Commit Money Laundering; Laundering of Monetary Instruments",
@@ -1747,7 +1723,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:17:52+00:00",
+      "modified": "2025-12-30T00:18:06+00:00",
       "age_min": null,
       "caution": "Tommy Demorizi is wanted in connection with his role in the Wedding Criminal Enterprise, led by Ten Most Wanted Fugitive, Ryan James Wedding.  To eliminate threats and otherwise advance the interests of the Wedding Criminal Enterprise, Demorizi is wanted for allegedly assisting the Enterprise with locating a witness who was later murdered.  On October 28, 2025, a federal arrest warrant was issued for Demorizi in the United States District Court, Central District of California, Los Angeles, California, after he was charged with Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Commit Murder in Connection with a Continuing Criminal Enterprise and Drug Crime and Murder in Connection with a Continuing Criminal Enterprise and Drug Crime; Conspiracy to Tamper with a Witness, Victim, or an Informant and Tampering with a Witness, Victim, or Informant; and Conspiracy to Retaliate Against a Witness, Victim, or an Informant and Retaliation Against a Witness, Victim, or an Informant.",
       "description": "Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Commit Murder in Connection with a Continuing Criminal Enterprise and Drug Crime and Murder in Connection with a Continuing Criminal Enterprise and Drug Crime; Conspiracy to Tamper with a Witness, Victim, or an Informant and Tampering with a Witness, Victim, or Informant; Conspiracy to Retaliate Against a Witness, Victim, or an Informant and Retaliation Against a Witness, Victim, or an Informant",
@@ -1828,7 +1804,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:09:01+00:00",
+      "modified": "2025-12-30T00:09:03+00:00",
       "age_min": null,
       "caution": null,
       "description": "Kidnapping; Federal Drug Trafficking",
@@ -1910,7 +1886,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:09:01+00:00",
+      "modified": "2025-12-30T00:09:03+00:00",
       "age_min": null,
       "caution": null,
       "description": "Kidnapping; Federal Drug Trafficking",
@@ -1992,7 +1968,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:09:01+00:00",
+      "modified": "2025-12-30T00:09:04+00:00",
       "age_min": null,
       "caution": null,
       "description": "Kidnapping; Federal Drug Trafficking",
@@ -2074,7 +2050,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:09:00+00:00",
+      "modified": "2025-12-30T00:09:03+00:00",
       "age_min": null,
       "caution": null,
       "description": "Kidnapping; Federal Drug Trafficking",
@@ -2156,7 +2132,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:17:51+00:00",
+      "modified": "2025-12-30T00:18:04+00:00",
       "age_min": null,
       "caution": "Multiple unknown suspects are wanted in connection with their role in the Wedding Criminal Enterprise, led by Ten Most Wanted Fugitive, Ryan James Wedding.  To eliminate threats and otherwise advance the interests of the Wedding Criminal Enterprise, Wedding allegedly issued orders to murder various individuals, including an order for the unknown suspects to kill a certain victim on January 31, 2025, at a restaurant in Medellín, Colombia.  Unknown Suspect #1, a motorcyclist, allegedly followed the victim to the restaurant in Medellín before the victim was murdered. Unknown Suspect #2, a motorcyclist, allegedly entered the restaurant, approached the table where the victim was eating, and shot the victim approximately five times in the head, killing the victim. Unknown Suspect #3, a driver, allegedly brought Unknown Suspect #2 to the restaurant prior to the murder and, following the murder, met with Unknown Suspect #2 at a rendezvous point and further aided him in his flight. Unknown Suspect #4, a photographer, was allegedly at the restaurant before the victim arrived and, after the murder, photographed the victim's body. Unknown Suspect #5, a driver, allegedly picked up Unknown Suspect #4 from the restaurant after the murder and further aided him in his flight.  On October 28, 2025, federal arrest warrants were issued for the unknown suspects in the United States District Court, Central District of California, Los Angeles, California, after they were charged with Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Commit Murder in Connection with a Continuing Criminal Enterprise and Drug Crime and Murder in Connection with a Continuing Criminal Enterprise and Drug Crime; Conspiracy to Tamper with a Witness, Victim, or an Informant and Tampering with a Witness, Victim, or Informant; and Conspiracy to Retaliate Against a Witness, Victim, or an Informant and Retaliation Against a Witness, Victim, or an Informant.",
       "description": "Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Commit Murder in Connection with a Continuing Criminal Enterprise and Drug Crime and Murder in Connection with a Continuing Criminal Enterprise and Drug Crime; Conspiracy to Tamper with a Witness, Victim, or an Informant and Tampering with a Witness, Victim, or Informant; Conspiracy to Retaliate Against a Witness, Victim, or an Informant and Retaliation Against a Witness, Victim, or an Informant",
@@ -2236,7 +2212,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:09:00+00:00",
+      "modified": "2025-12-30T00:09:02+00:00",
       "age_min": null,
       "caution": null,
       "description": "Kidnapping; Federal Drug Trafficking",
@@ -2314,7 +2290,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:15+00:00",
+      "modified": "2025-12-30T00:17:28+00:00",
       "age_min": null,
       "caution": "Vanessa O’Rourke is wanted for allegedly fraudulently representing to her family and friends that she had been diagnosed with a terminal form of brain cancer known as a glioblastoma, and told them she needed money to aid in her medical treatment and to support her while she was ill.  Between October of 2015 and July of 2016, O'Rourke further represented to family and friends that she needed to travel to Australia to participate in an experimental treatment for her purported cancer.  Through her false and fraudulent pretenses, her family and others provided money and support.  In or around April of 2016, O'Rourke traveled to Australia, where she engaged in a variety of leisure activities and did not receive any medical treatment.  Upon her return to the United States, O'Rourke enlisted her friends and family to organize two fundraisers on her behalf.  A webpage was established and a benefit event held at a local restaurant in Pennsylvania, both resulting in numerous people providing donations for her purported cancer treatment.  O'Rourke utilized those funds to travel to Australia again in or around 2016, where she again engaged in various leisure activities and received no medical treatment for her nonexistent illness.  O'Rourke was indicted on 15 counts of wire fraud in the United States District Court for the Eastern District of Pennsylvania on May 3, 2018, and a federal warrant was issued for her arrest. ",
       "description": "Wire Fraud (Fifteen Counts)",
@@ -2400,7 +2376,7 @@
           "name": "на українській мові"
         }
       ],
-      "modified": "2025-12-28T00:10:37+00:00",
+      "modified": "2025-12-30T00:10:39+00:00",
       "age_min": null,
       "caution": "Volodymyr Viktorovych Tymoshchuk is an alleged ransomware administrator of at least three different ransomware variants.  From December of 2018, through October of 2021, Tymoshchuk and his co-conspirators allegedly deployed LockerGoga, MegaCortex, and Nefilim ransomware, which compromised the computer networks of hundreds of companies around the world, including more than 250 companies in the United States, in order to extort ransom payments from the victim companies.  On May 7, 2024, a federal arrest warrant was issued for Tymoshchuk in the United States District Court, Eastern District of New York, Brooklyn, New York, after he was charged with two counts of Conspiracy to Commit Fraud and Related Activity in Connection with Computers; multiple counts of Intentional Damage to a Protected Computer; Unauthorized Access to a Protected Computer; and Transmitting a Threat to Disclose Confidential Information. ",
       "description": "Conspiracy to Commit Fraud and Related Activity in Connection with Computers; Intentional Damage to a Protected Computer; Unauthorized Access to a Protected Computer; Transmitting a Threat to Disclose Confidential Information",
@@ -2484,7 +2460,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:07:38+00:00",
+      "modified": "2025-12-30T00:07:40+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victims\nGila River Indian Community, Arizona\nJuly 25, 2020",
@@ -2557,7 +2533,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:10:58+00:00",
+      "modified": "2025-12-30T00:11:01+00:00",
       "age_min": null,
       "caution": null,
       "description": "Suspicious Death\nNovember 25, 2020\nTulalip Reservation\nWashington State",
@@ -2610,10 +2586,8 @@
     {
       "possible_states": null,
       "warning_message": null,
-      "field_offices": [
-        "oklahomacity"
-      ],
-      "details": "<p>The Federal Bureau of Investigation in Oklahoma City, Oklahoma, and the Bureau of Indian Affairs, OJS Missing and Murdered Unit, are seeking information regarding the death of Warren William \"Thomas\" Fultz. He went missing from his home in Okmulgee, Oklahoma, on September 29, 2021.  On October 3, 2021, the truck that Fultz was last seen driving was found abandoned in Haskell, Oklahoma.  On October 16, 2021, the remains of Fultz were located in a wooded area in Boynton, Oklahoma.</p>\n<p> </p>",
+      "field_offices": null,
+      "details": null,
       "locations": null,
       "age_range": null,
       "path": "/wanted/seeking-info/warren-william-thomas-fultz",
@@ -2624,16 +2598,11 @@
       "poster_classification": "default",
       "possible_countries": null,
       "eyes": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/download.pdf",
-          "name": "English"
-        }
-      ],
-      "modified": "2025-12-28T00:08:58+00:00",
+      "files": [],
+      "modified": "2016-05-25T20:17:16+00:00",
       "age_min": null,
       "caution": null,
-      "description": "Murder Victim\nMuscogee Creek Nation, Oklahoma\nSeptember to October 2021",
+      "description": null,
       "person_classification": "Main",
       "hair": null,
       "reward_max": 0,
@@ -2649,19 +2618,12 @@
       "ncic": null,
       "height_min": null,
       "race": null,
-      "publication": "2025-07-14T15:38:30+00:00",
+      "publication": "2016-04-24T20:00:46+00:00",
       "weight_max": null,
       "subjects": [
         "Indian Country"
       ],
-      "images": [
-        {
-          "original": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image",
-          "large": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image/large",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image/thumb",
-          "caption": null
-        }
-      ],
+      "images": [],
       "suspects": null,
       "remarks": null,
       "reward_text": null,
@@ -2703,7 +2665,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:50+00:00",
+      "modified": "2025-12-30T00:18:03+00:00",
       "age_min": null,
       "caution": null,
       "description": "October 5, 2025\nPendleton, Oregon",
@@ -2784,7 +2746,7 @@
           "name": "باللغة العربية"
         }
       ],
-      "modified": "2025-12-28T00:18:11+00:00",
+      "modified": "2025-12-30T00:18:25+00:00",
       "age_min": null,
       "caution": null,
       "description": "August 2018\nSana'a, Yemen",
@@ -2839,73 +2801,57 @@
     {
       "possible_states": null,
       "warning_message": null,
-      "field_offices": [
-        "boston"
-      ],
-      "details": "<p>The FBI's Boston Field Office and the Webster Police Department in Massachusetts, are investigating the suspicious disappearance of Andrew Amato and are continuing to ask the public for its assistance in locating him or his remains.  Andrew was reported missing on September 30, 1978.  He was last seen around 11:00 a.m. by his sister and cousin playing in the woods near his Richard Avenue home in Webster, Massachusetts.  Andrew, also known as Andy, was 4 years old at the time of his disappearance and was wearing a maroon-colored snorkel jacket, jeans, a white Mickey Mouse t-shirt, and brown shoes with a jogger stripe.</p>\n<p> </p>",
+      "field_offices": null,
+      "details": null,
       "locations": null,
       "age_range": null,
       "path": "/wanted/kidnap/andrew-amato",
       "occupations": null,
-      "eyes_raw": "Blue",
-      "scars_and_marks": "Amato has a 1-inch scar on the right side of his head at the hairline and a mole behind his right ear.",
-      "weight": "38 pounds (at the time of disappearance)",
+      "eyes_raw": null,
+      "scars_and_marks": null,
+      "weight": null,
       "poster_classification": "missing",
       "possible_countries": null,
-      "eyes": "blue",
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/kidnap/andrew-amato/download.pdf",
-          "name": "English"
-        }
-      ],
-      "modified": "2025-12-28T00:17:07+00:00",
+      "eyes": null,
+      "files": [],
+      "modified": "2016-05-25T20:17:16+00:00",
       "age_min": null,
       "caution": null,
-      "description": "September 30, 1978\nWebster, Massachusetts",
+      "description": null,
       "person_classification": "Main",
-      "hair": "blond",
-      "reward_max": 25000,
+      "hair": null,
+      "reward_max": 0,
       "title": "ANDREW AMATO",
       "coordinates": [],
-      "place_of_birth": "Webster, Massachusetts",
+      "place_of_birth": null,
       "languages": null,
-      "race_raw": "White",
-      "reward_min": 25000,
+      "race_raw": null,
+      "reward_min": 0,
       "complexion": null,
       "aliases": null,
       "url": "https://www.fbi.gov/wanted/kidnap/andrew-amato",
       "ncic": null,
-      "height_min": 42,
-      "race": "white",
-      "publication": "2025-09-18T13:24:46+00:00",
-      "weight_max": 38,
+      "height_min": null,
+      "race": null,
+      "publication": "2016-04-24T20:00:46+00:00",
+      "weight_max": null,
       "subjects": [
         "Kidnappings/Missing Persons"
       ],
-      "images": [
-        {
-          "original": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image",
-          "large": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image/large",
-          "thumb": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image/thumb",
-          "caption": null
-        }
-      ],
+      "images": [],
       "suspects": null,
       "remarks": null,
-      "reward_text": "Reward:\nThe FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of the person or persons responsible for the disappearance of Andrew Amato.",
-      "nationality": "American",
+      "reward_text": null,
+      "nationality": null,
       "legat_names": null,
-      "dates_of_birth_used": [
-        "February 1, 1974"
-      ],
+      "dates_of_birth_used": null,
       "status": "na",
       "build": null,
-      "weight_min": 38,
-      "hair_raw": "Blond",
+      "weight_min": null,
+      "hair_raw": null,
       "uid": "d0b903d27390ad0c9910e625e633bd54",
-      "sex": "Male",
-      "height_max": 42,
+      "sex": null,
+      "height_max": null,
       "additional_information": null,
       "age_max": null,
       "pathId": "https://api.fbi.gov/@wanted-person/d0b903d27390ad0c9910e625e633bd54",
@@ -2942,7 +2888,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:07:00+00:00",
+      "modified": "2025-12-30T00:07:02+00:00",
       "age_min": null,
       "caution": null,
       "description": "July 8, 2024\nSacramento, California",
@@ -3017,7 +2963,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:11:11+00:00",
+      "modified": "2025-12-30T00:11:14+00:00",
       "age_min": null,
       "caution": null,
       "description": "October 29, 2025\nMargate, Florida",
@@ -3094,7 +3040,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:27+00:00",
+      "modified": "2025-12-30T00:08:28+00:00",
       "age_min": null,
       "caution": null,
       "description": "Calera, Alabama\n2015",
@@ -3181,7 +3127,7 @@
           "name": "دری"
         }
       ],
-      "modified": "2025-12-28T00:11:24+00:00",
+      "modified": "2025-12-30T00:11:27+00:00",
       "age_min": null,
       "caution": null,
       "description": "August 10, 2022\nKabul, Afghanistan",
@@ -3268,7 +3214,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:07:00+00:00",
+      "modified": "2025-12-30T00:07:02+00:00",
       "age_min": null,
       "caution": null,
       "description": "July 8, 2024\nSacramento, California",
@@ -3343,7 +3289,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:27+00:00",
+      "modified": "2025-12-30T00:08:29+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nSavannah, Georgia\nDecember 10, 2025",
@@ -3416,7 +3362,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:22:47+00:00",
+      "modified": "2025-12-30T00:23:04+00:00",
       "age_min": null,
       "caution": null,
       "description": "Homicide and Armed Robbery Victim\nColumbus, Georgia\nDecember 6, 2021",
@@ -3489,7 +3435,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:33+00:00",
+      "modified": "2025-12-30T00:07:35+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nChesapeake, Virginia\nOctober 9, 2025",
@@ -3562,7 +3508,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:54+00:00",
+      "modified": "2025-12-30T00:18:07+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nTopeka, Kansas\nAugust 19, 2025",
@@ -3639,7 +3585,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:08:32+00:00",
+      "modified": "2025-12-30T00:08:33+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nCarolina, Puerto Rico\nOctober 28, 2025",
@@ -3712,7 +3658,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:33+00:00",
+      "modified": "2025-12-30T00:07:35+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Individuals\nLos Angeles, California\nJune 8, 2025",
@@ -3789,7 +3735,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:02:05+00:00",
+      "modified": "2025-12-30T00:01:57+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nUnited States and Mexico International Border\nJanuary 22, 2025",
@@ -3862,7 +3808,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:13:16+00:00",
+      "modified": "2025-12-30T00:13:20+00:00",
       "age_min": null,
       "caution": null,
       "description": "Chicago, Illinois\nOctober 4, 2025",
@@ -3935,7 +3881,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:10:01+00:00",
+      "modified": "2025-12-30T00:10:01+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nFrederick, Maryland\nAugust 2, 2025",
@@ -4008,7 +3954,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:39+00:00",
+      "modified": "2025-12-30T00:07:41+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victim\nShreveport, Louisiana\nJanuary 22, 2025",
@@ -4081,7 +4027,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:22:06+00:00",
+      "modified": "2025-12-30T00:22:24+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Individual\nTucson, Arizona\nJune 11, 2025",
@@ -4154,7 +4100,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:47+00:00",
+      "modified": "2025-12-30T00:08:49+00:00",
       "age_min": null,
       "caution": null,
       "description": "Homicide Victim\nSpringfield, Illinois\nOctober 9, 2025",
@@ -4227,7 +4173,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:06:59+00:00",
+      "modified": "2025-12-30T00:07:01+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nLas Vegas, Nevada\nNovember 13, 2025",
@@ -4300,7 +4246,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:32+00:00",
+      "modified": "2025-12-30T00:07:34+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Individuals\nLos Angeles, California\nJune 8, 2025",
@@ -4373,7 +4319,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:11:27+00:00",
+      "modified": "2025-12-30T00:11:29+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Individuals\nLos Angeles, California\nJune 8, 2025",
@@ -4446,7 +4392,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:22:33+00:00",
+      "modified": "2025-12-30T00:22:51+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victim\nBardstown, Kentucky\nJuly 3, 2015",
@@ -4519,7 +4465,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:39+00:00",
+      "modified": "2025-12-30T00:07:41+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victim\nBrawley, California\nMarch 2, 2025",
@@ -4592,7 +4538,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:22:54+00:00",
+      "modified": "2025-12-30T00:23:12+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nSt. Louis, Missouri\nSeptember 19, 2024",
@@ -4665,7 +4611,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:10:59+00:00",
+      "modified": "2025-12-30T00:11:01+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspect\nClayton, Missouri\nAugust 5, 2025",
@@ -4738,7 +4684,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:59+00:00",
+      "modified": "2025-12-30T00:09:01+00:00",
       "age_min": null,
       "caution": null,
       "description": "Black Hills Energy Site\nLexington, Nebraska\nSeptember 4, 2024",
@@ -4811,7 +4757,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:18:10+00:00",
+      "modified": "2025-12-30T00:18:24+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victim\nMilwaukee, Wisconsin\nJune 13, 2025",
@@ -4884,7 +4830,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:49+00:00",
+      "modified": "2025-12-30T00:07:52+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nOctober 11, 2025",
@@ -4957,7 +4903,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:07+00:00",
+      "modified": "2025-12-30T00:17:19+00:00",
       "age_min": null,
       "caution": null,
       "description": "Suspicious Death\nOrlando, Florida to Emporia, Virginia\nMay 30, 2025, to Early June of 2025",
@@ -5032,7 +4978,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:15:31+00:00",
+      "modified": "2025-12-30T00:15:42+00:00",
       "age_min": null,
       "caution": null,
       "description": "Homicide Victim\nNew Windsor, New York\nDecember 5, 2001",
@@ -5107,7 +5053,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:21+00:00",
+      "modified": "2025-12-30T00:16:32+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nPhiladelphia, Pennsylvania\nOctober 17, 2025",
@@ -5184,7 +5130,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:11:02+00:00",
+      "modified": "2025-12-30T00:11:04+00:00",
       "age_min": null,
       "caution": null,
       "description": "Camarillo, California\nJuly 10, 2025",
@@ -5257,7 +5203,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:08+00:00",
+      "modified": "2025-12-30T00:17:21+00:00",
       "age_min": null,
       "caution": null,
       "description": "Unknown Suspects\nPhiladelphia, Pennsylvania\nNovember 22, 2024",
@@ -5330,7 +5276,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:10:56+00:00",
+      "modified": "2025-12-30T00:10:58+00:00",
       "age_min": null,
       "caution": null,
       "description": "Murder Victim\nSalisbury, Maryland\nAugust 5, 2024",
@@ -5407,7 +5353,7 @@
           "name": "EN ESPAÑOL"
         }
       ],
-      "modified": "2025-12-28T00:17:51+00:00",
+      "modified": "2025-12-30T00:18:05+00:00",
       "age_min": null,
       "caution": null,
       "description": "Medellín, Colombia\nJanuary 31, 2025",
@@ -5503,7 +5449,7 @@
           "name": "Türkçe'de"
         }
       ],
-      "modified": "2025-12-28T00:10:24+00:00",
+      "modified": "2025-12-30T00:10:24+00:00",
       "age_min": null,
       "caution": null,
       "description": null,
@@ -5596,7 +5542,7 @@
           "name": "دری"
         }
       ],
-      "modified": "2025-12-28T00:11:20+00:00",
+      "modified": "2025-12-30T00:11:23+00:00",
       "age_min": null,
       "caution": null,
       "description": null,
@@ -5689,7 +5635,7 @@
           "name": "Türkçe'de"
         }
       ],
-      "modified": "2025-12-28T00:10:52+00:00",
+      "modified": "2025-12-30T00:10:55+00:00",
       "age_min": null,
       "caution": null,
       "description": null,
@@ -5768,7 +5714,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:07:56+00:00",
+      "modified": "2025-12-30T00:08:00+00:00",
       "age_min": null,
       "caution": null,
       "description": null,
@@ -5865,7 +5811,7 @@
           "name": "Türkçe'de"
         }
       ],
-      "modified": "2025-12-28T00:10:23+00:00",
+      "modified": "2025-12-30T00:10:24+00:00",
       "age_min": null,
       "caution": null,
       "description": null,
@@ -5942,7 +5888,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:18:11+00:00",
+      "modified": "2025-12-30T00:18:25+00:00",
       "age_min": 24,
       "caution": null,
       "description": "November 22, 2014\nWaco, Texas",
@@ -6013,7 +5959,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:56+00:00",
+      "modified": "2025-12-30T00:17:07+00:00",
       "age_min": 48,
       "caution": null,
       "description": "August 1, 2012\nWaco, Texas",
@@ -6084,7 +6030,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:57+00:00",
+      "modified": "2025-12-30T00:17:08+00:00",
       "age_min": 74,
       "caution": null,
       "description": "April 15, 2019\nWaco, Texas",
@@ -6155,7 +6101,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:10:00+00:00",
+      "modified": "2025-12-30T00:10:01+00:00",
       "age_min": 32,
       "caution": null,
       "description": "May 4, 2024\nBaltimore, Maryland",
@@ -6226,7 +6172,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:18:11+00:00",
+      "modified": "2025-12-30T00:18:24+00:00",
       "age_min": 20,
       "caution": null,
       "description": "January 18, 1983\nWaco, Texas",
@@ -6297,7 +6243,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:55+00:00",
+      "modified": "2025-12-30T00:17:06+00:00",
       "age_min": 60,
       "caution": null,
       "description": "July 4, 2007\nWaco, Texas",
@@ -6368,7 +6314,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:56+00:00",
+      "modified": "2025-12-30T00:17:08+00:00",
       "age_min": 28,
       "caution": null,
       "description": "September 20, 1999\nClifton, New Jersey",
@@ -6439,7 +6385,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:12:14+00:00",
+      "modified": "2025-12-30T00:12:16+00:00",
       "age_min": 41,
       "caution": null,
       "description": "April 3, 1995\nWaco, Texas",
@@ -6510,7 +6456,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:47+00:00",
+      "modified": "2025-12-30T00:08:49+00:00",
       "age_min": 71,
       "caution": null,
       "description": "March 10, 2022\nJonesboro, Georgia",
@@ -6581,7 +6527,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:09:02+00:00",
+      "modified": "2025-12-30T00:09:04+00:00",
       "age_min": 47,
       "caution": null,
       "description": "January 2, 2025\nLowell, Massachusetts",
@@ -6652,7 +6598,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:12:14+00:00",
+      "modified": "2025-12-30T00:12:16+00:00",
       "age_min": null,
       "caution": null,
       "description": "Lithia Springs, Georgia\nMay 17, 2025",
@@ -6723,7 +6669,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:02:05+00:00",
+      "modified": "2025-12-30T00:01:56+00:00",
       "age_min": 43,
       "caution": null,
       "description": "Yreka, California\nSeptember 30, 2000",
@@ -6794,7 +6740,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:22:07+00:00",
+      "modified": "2025-12-30T00:22:25+00:00",
       "age_min": 40,
       "caution": null,
       "description": "May 12, 2019\nScipio, Utah",
@@ -6865,7 +6811,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:28+00:00",
+      "modified": "2025-12-30T00:16:40+00:00",
       "age_min": 85,
       "caution": null,
       "description": "Mays Landing, New Jersey\nMarch 28, 2019",
@@ -6936,7 +6882,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:56+00:00",
+      "modified": "2025-12-30T00:17:08+00:00",
       "age_min": 26,
       "caution": null,
       "description": "Massac County, Illinois\nMarch 30, 1984",
@@ -7007,7 +6953,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:16:55+00:00",
+      "modified": "2025-12-30T00:17:07+00:00",
       "age_min": 42,
       "caution": null,
       "description": "December 6, 2008\nWaco, Texas",
@@ -7078,7 +7024,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:08:59+00:00",
+      "modified": "2025-12-30T00:09:01+00:00",
       "age_min": 13,
       "caution": null,
       "description": "Glens Falls, New York\nAugust 18, 1971",
@@ -7149,7 +7095,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:02:06+00:00",
+      "modified": "2025-12-30T00:01:58+00:00",
       "age_min": 39,
       "caution": null,
       "description": "August 7, 2021\nAtlanta, Georgia",
@@ -7220,7 +7166,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:08+00:00",
+      "modified": "2025-12-30T00:17:20+00:00",
       "age_min": 17,
       "caution": null,
       "description": "July 10, 2012\nBroken Arrow, Oklahoma",
@@ -7291,7 +7237,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:13:09+00:00",
+      "modified": "2025-12-30T00:13:14+00:00",
       "age_min": null,
       "caution": null,
       "description": "Smyrna, Georgia\nJuly 16, 2020",
@@ -7362,7 +7308,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:52+00:00",
+      "modified": "2025-12-30T00:18:06+00:00",
       "age_min": null,
       "caution": null,
       "description": "York, Pennsylvania\nSeptember 24, 1973",
@@ -7433,7 +7379,7 @@
           "name": "English"
         }
       ],
-      "modified": "2025-12-28T00:17:06+00:00",
+      "modified": "2025-12-30T00:17:18+00:00",
       "age_min": 28,
       "caution": null,
       "description": "May 5, 2025\nMaple Shade, New Jersey",
