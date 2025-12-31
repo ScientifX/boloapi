@@ -3,62 +3,86 @@
   "items": [
     {
       "possible_states": null,
-      "warning_message": null,
-      "field_offices": null,
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "field_offices": [
+        "losangeles"
+      ],
       "details": null,
       "locations": null,
       "age_range": null,
       "path": "/wanted/cei/bianca-canastillo-madrid",
       "occupations": null,
-      "eyes_raw": null,
+      "eyes_raw": "Brown",
       "scars_and_marks": null,
-      "weight": null,
+      "weight": "170 pounds",
       "poster_classification": "default",
       "possible_countries": null,
-      "eyes": null,
-      "files": [],
-      "modified": null,
+      "eyes": "brown",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/madridspanish.pdf/@@download/file/madridSpanish.pdf",
+          "name": "EN ESPAÑOL"
+        }
+      ],
+      "modified": "2025-12-30T00:18:06+00:00",
       "age_min": null,
-      "caution": null,
-      "description": null,
+      "caution": "Bianca Canastillo-Madrid is wanted in connection with her role in the Wedding Criminal Enterprise, led by Ten Most Wanted Fugitive, Ryan James Wedding.  To eliminate threats and otherwise advance the interests of the Wedding Criminal Enterprise, Canastillo-Madrid is wanted for her alleged involvement in money laundering facilitation for the Enterprise.  On October 28, 2025, a federal arrest warrant was issued for Canastillo-Madrid in the United States District Court, Central District of California, Los Angeles, California, after she was charged with Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; and Conspiracy to Launder Monetary Instruments.",
+      "description": "Conspiracy to Distribute and Possess with Intent to Distribute Cocaine; Conspiracy to Export Cocaine; Conspiracy to Launder Monetary Instruments",
       "person_classification": "Main",
-      "hair": null,
+      "hair": "brown",
       "reward_max": 0,
       "title": "BIANCA CANASTILLO-MADRID",
       "coordinates": [],
       "place_of_birth": null,
       "languages": null,
-      "race_raw": null,
+      "race_raw": "White (Hispanic)",
       "reward_min": 0,
       "complexion": null,
-      "aliases": null,
+      "aliases": [
+        "Bianca Canastillo Madrid, Bianca Madrid, \"~cady\", \"Claudio\", \"Claudi Old New Is Candy\", \"TK8658TT\", \"B9R3SBWT\","
+      ],
       "url": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid",
       "ncic": null,
-      "height_min": null,
-      "race": null,
-      "publication": null,
-      "weight_max": null,
+      "height_min": 65,
+      "race": "white (hispanic)",
+      "publication": "2025-11-18T18:50:43+00:00",
+      "weight_max": 170,
       "subjects": [
         "Fugitives"
       ],
-      "images": [],
+      "images": [
+        {
+          "original": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image/large",
+          "thumb": "https://www.fbi.gov/wanted/cei/bianca-canastillo-madrid/@@images/image/thumb",
+          "caption": null
+        }
+      ],
       "suspects": null,
       "remarks": null,
       "reward_text": null,
       "nationality": null,
       "legat_names": null,
-      "dates_of_birth_used": null,
+      "dates_of_birth_used": [
+        "July 21, 1988"
+      ],
       "status": "na",
       "build": null,
-      "weight_min": null,
-      "hair_raw": null,
+      "weight_min": 170,
+      "hair_raw": "Brown",
       "uid": "fed97070a34223fdb145d7a06799b72a",
-      "sex": null,
-      "height_max": null,
+      "sex": "Female",
+      "height_max": 65,
       "additional_information": null,
       "age_max": null,
       "pathId": "https://api.fbi.gov/@wanted-person/fed97070a34223fdb145d7a06799b72a",
-      "related_cases": null
+      "related_cases": [
+        "https://www.fbi.gov/wanted/topten/ryan-james-wedding"
+      ]
     },
     {
       "possible_states": null,
@@ -224,89 +248,62 @@
     },
     {
       "possible_states": null,
-      "warning_message": "SHOULD BE CONSIDERED ARMED AND EXTREMELY DANGEROUS",
-      "field_offices": [
-        "newyork"
-      ],
+      "warning_message": null,
+      "field_offices": null,
       "details": null,
       "locations": null,
       "age_range": null,
       "path": "/wanted/cei/carlos-andres-rivera-varela",
       "occupations": null,
-      "eyes_raw": "Brown",
+      "eyes_raw": null,
       "scars_and_marks": null,
-      "weight": "Approximately 185 pounds",
+      "weight": null,
       "poster_classification": "default",
       "possible_countries": null,
-      "eyes": "brown",
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela/download.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela/varelaspanish.pdf/@@download/file/varelaSpanish.pdf",
-          "name": "EN ESPAÑOL"
-        }
-      ],
-      "modified": "2025-12-30T00:18:03+00:00",
+      "eyes": null,
+      "files": [],
+      "modified": null,
       "age_min": null,
-      "caution": "Carlos Andres Rivera Varela is an alleged high-ranking leader of Jalisco New Generation Cartel (CJNG), a major transnational cartel and designated foreign terrorist organization based in Mexico. Rivera Varela and others allegedly directed an international complex fraud scheme targeting American timeshare owners in Mexico. Over the past decade, this operation allegedly laundered hundreds of millions in alternative revenue to finance CJNG’s drug and weapons trade. Rivera Varela is also an alleged leader of elite sicario hitmen units responsible for extreme violence and high-profile assassinations with access to military-grade weaponry.  On October 28, 2025, a federal arrest warrant was issued for Rivera Varela in the United States District Court, Eastern District of New York, Brooklyn, New York, after he was charged with Money Laundering Conspiracy and Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization.",
-      "description": "Money Laundering Conspiracy; Providing Material Support, Attempting to Provide Material Support, and Conspiracy to Provide Material Support to a Foreign Terrorist Organization",
+      "caution": null,
+      "description": null,
       "person_classification": "Main",
-      "hair": "brown",
-      "reward_max": 245000,
+      "hair": null,
+      "reward_max": 0,
       "title": "CARLOS ANDRES RIVERA VARELA",
       "coordinates": [],
-      "place_of_birth": "Colombia",
-      "languages": [
-        "Spanish",
-        "English"
-      ],
-      "race_raw": "White (Hispanic)",
-      "reward_min": 245000,
+      "place_of_birth": null,
+      "languages": null,
+      "race_raw": null,
+      "reward_min": 0,
       "complexion": null,
-      "aliases": [
-        "\"La Firma\", \"El Colombiano\", \"More\", \"Morro\""
-      ],
+      "aliases": null,
       "url": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela",
       "ncic": null,
-      "height_min": 70,
-      "race": "white (hispanic)",
-      "publication": "2025-11-06T15:56:49+00:00",
-      "weight_max": 185,
+      "height_min": null,
+      "race": null,
+      "publication": null,
+      "weight_max": null,
       "subjects": [
         "Fugitives"
       ],
-      "images": [
-        {
-          "original": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela/@@images/image",
-          "large": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela/@@images/image/large",
-          "thumb": "https://www.fbi.gov/wanted/cei/carlos-andres-rivera-varela/@@images/image/thumb",
-          "caption": null
-        }
-      ],
+      "images": [],
       "suspects": null,
-      "remarks": "Rivera Varela is a dual Colombian and Mexican citizen.  He has ties to Jalisco, Mexico.",
-      "reward_text": "Reward:\nThe FBI is offering a reward of up to $245,000 for information  leading to the arrest and conviction of Carlos Andres Rivera Varela.",
+      "remarks": null,
+      "reward_text": null,
       "nationality": null,
       "legat_names": null,
-      "dates_of_birth_used": [
-        "June 19, 1986"
-      ],
+      "dates_of_birth_used": null,
       "status": "na",
       "build": null,
-      "weight_min": 185,
-      "hair_raw": "Brown",
+      "weight_min": null,
+      "hair_raw": null,
       "uid": "7887d87bdc9d374862a2aa125f25c783",
-      "sex": "Male",
-      "height_max": 70,
+      "sex": null,
+      "height_max": null,
       "additional_information": null,
       "age_max": null,
       "pathId": "https://api.fbi.gov/@wanted-person/7887d87bdc9d374862a2aa125f25c783",
-      "related_cases": [
-        "https://www.fbi.gov/wanted/cei/julio-cesar-montero-pinzon"
-      ]
+      "related_cases": null
     },
     {
       "possible_states": null,
@@ -2586,8 +2583,10 @@
     {
       "possible_states": null,
       "warning_message": null,
-      "field_offices": null,
-      "details": null,
+      "field_offices": [
+        "oklahomacity"
+      ],
+      "details": "<p>The Federal Bureau of Investigation in Oklahoma City, Oklahoma, and the Bureau of Indian Affairs, OJS Missing and Murdered Unit, are seeking information regarding the death of Warren William \"Thomas\" Fultz. He went missing from his home in Okmulgee, Oklahoma, on September 29, 2021.  On October 3, 2021, the truck that Fultz was last seen driving was found abandoned in Haskell, Oklahoma.  On October 16, 2021, the remains of Fultz were located in a wooded area in Boynton, Oklahoma.</p>\n<p> </p>",
       "locations": null,
       "age_range": null,
       "path": "/wanted/seeking-info/warren-william-thomas-fultz",
@@ -2598,11 +2597,16 @@
       "poster_classification": "default",
       "possible_countries": null,
       "eyes": null,
-      "files": [],
-      "modified": "2016-05-25T20:17:16+00:00",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-12-30T00:09:01+00:00",
       "age_min": null,
       "caution": null,
-      "description": null,
+      "description": "Murder Victim\nMuscogee Creek Nation, Oklahoma\nSeptember to October 2021",
       "person_classification": "Main",
       "hair": null,
       "reward_max": 0,
@@ -2618,12 +2622,19 @@
       "ncic": null,
       "height_min": null,
       "race": null,
-      "publication": "2016-04-24T20:00:46+00:00",
+      "publication": "2025-07-14T15:38:30+00:00",
       "weight_max": null,
       "subjects": [
         "Indian Country"
       ],
-      "images": [],
+      "images": [
+        {
+          "original": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image/large",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/warren-william-thomas-fultz/@@images/image/thumb",
+          "caption": null
+        }
+      ],
       "suspects": null,
       "remarks": null,
       "reward_text": null,
@@ -2801,57 +2812,73 @@
     {
       "possible_states": null,
       "warning_message": null,
-      "field_offices": null,
-      "details": null,
+      "field_offices": [
+        "boston"
+      ],
+      "details": "<p>The FBI's Boston Field Office and the Webster Police Department in Massachusetts, are investigating the suspicious disappearance of Andrew Amato and are continuing to ask the public for its assistance in locating him or his remains.  Andrew was reported missing on September 30, 1978.  He was last seen around 11:00 a.m. by his sister and cousin playing in the woods near his Richard Avenue home in Webster, Massachusetts.  Andrew, also known as Andy, was 4 years old at the time of his disappearance and was wearing a maroon-colored snorkel jacket, jeans, a white Mickey Mouse t-shirt, and brown shoes with a jogger stripe.</p>\n<p> </p>",
       "locations": null,
       "age_range": null,
       "path": "/wanted/kidnap/andrew-amato",
       "occupations": null,
-      "eyes_raw": null,
-      "scars_and_marks": null,
-      "weight": null,
+      "eyes_raw": "Blue",
+      "scars_and_marks": "Amato has a 1-inch scar on the right side of his head at the hairline and a mole behind his right ear.",
+      "weight": "38 pounds (at the time of disappearance)",
       "poster_classification": "missing",
       "possible_countries": null,
-      "eyes": null,
-      "files": [],
-      "modified": "2016-05-25T20:17:16+00:00",
+      "eyes": "blue",
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/andrew-amato/download.pdf",
+          "name": "English"
+        }
+      ],
+      "modified": "2025-12-30T00:17:20+00:00",
       "age_min": null,
       "caution": null,
-      "description": null,
+      "description": "September 30, 1978\nWebster, Massachusetts",
       "person_classification": "Main",
-      "hair": null,
-      "reward_max": 0,
+      "hair": "blond",
+      "reward_max": 25000,
       "title": "ANDREW AMATO",
       "coordinates": [],
-      "place_of_birth": null,
+      "place_of_birth": "Webster, Massachusetts",
       "languages": null,
-      "race_raw": null,
-      "reward_min": 0,
+      "race_raw": "White",
+      "reward_min": 25000,
       "complexion": null,
       "aliases": null,
       "url": "https://www.fbi.gov/wanted/kidnap/andrew-amato",
       "ncic": null,
-      "height_min": null,
-      "race": null,
-      "publication": "2016-04-24T20:00:46+00:00",
-      "weight_max": null,
+      "height_min": 42,
+      "race": "white",
+      "publication": "2025-09-18T13:24:46+00:00",
+      "weight_max": 38,
       "subjects": [
         "Kidnappings/Missing Persons"
       ],
-      "images": [],
+      "images": [
+        {
+          "original": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image/large",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/andrew-amato/@@images/image/thumb",
+          "caption": null
+        }
+      ],
       "suspects": null,
       "remarks": null,
-      "reward_text": null,
-      "nationality": null,
+      "reward_text": "Reward:\nThe FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of the person or persons responsible for the disappearance of Andrew Amato.",
+      "nationality": "American",
       "legat_names": null,
-      "dates_of_birth_used": null,
+      "dates_of_birth_used": [
+        "February 1, 1974"
+      ],
       "status": "na",
       "build": null,
-      "weight_min": null,
-      "hair_raw": null,
+      "weight_min": 38,
+      "hair_raw": "Blond",
       "uid": "d0b903d27390ad0c9910e625e633bd54",
-      "sex": null,
-      "height_max": null,
+      "sex": "Male",
+      "height_max": 42,
       "additional_information": null,
       "age_max": null,
       "pathId": "https://api.fbi.gov/@wanted-person/d0b903d27390ad0c9910e625e633bd54",
