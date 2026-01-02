@@ -28,6 +28,7 @@ from utils_array import extract_and_clean_array
 from service_nottification import detect_all_changes, process_pending_notifications
 from service_link_validation import (
     validate_links_from_file, 
+    validate_links_from_file_web,
     get_link_check_summary, 
     get_failed_links,
     get_cache_stats,
@@ -207,7 +208,7 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
     control_chars = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+')
     
     # HTML tags pattern
-    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Â', re.IGNORECASE)
+    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Ã‚', re.IGNORECASE)
     
     # Email pattern
     email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
@@ -1639,9 +1640,22 @@ async def data_load_web(
         if run_link_validation:
             try:
                 logger.info("Starting web link validation after data load")
-                # TODO: Implement validate_links_from_file_web() for separate link table
-                # link_validation_results = await validate_links_from_file_web(file_path)
-                logger.info("Web link validation skipped (not yet implemented)")
+                link_validation_results = await validate_links_from_file_web(file_path)
+                logger.info(f"Web link validation complete: {link_validation_results.get('total_urls_extracted', 0)} URLs checked")
+                
+                # Generate archive if requested (only after successful validation)
+                if generate_archive:
+                    try:
+                        logger.info("Starting file download and archive generation for web data")
+                        with get_db_connection() as conn:
+                            download_results = await download_files_for_archive(conn)
+                        logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
+                        
+                        archive_results = create_documents_archive()
+                        logger.info(f"Archive created: {archive_results.get('archive_path')}")
+                    except Exception as e:
+                        logger.error(f"Web archive generation error (non-fatal): {str(e)}")
+                        archive_results = {"error": str(e)}
                         
             except Exception as e:
                 logger.error(f"Web link validation error (non-fatal): {str(e)}")

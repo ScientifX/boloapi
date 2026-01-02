@@ -257,6 +257,84 @@ def extract_all_urls_from_data(data: Dict[str, Any]) -> List[Tuple[str, str, str
     return all_urls
 
 
+def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, str]]:
+    """
+    Extract all URLs from a single web-scraped BOLO record.
+    Includes support for related_cases which is unique to web data.
+    
+    Returns:
+        List of tuples: (uid, field_name, url)
+    """
+    urls = []
+    uid = item.get('uid')
+    
+    if not uid:
+        return urls
+    
+    # 1. pathId - direct URL field
+    path_id = item.get('pathId')
+    if is_valid_url(path_id):
+        urls.append((uid, 'path_id', path_id))
+    
+    # 2. url - direct URL field
+    url = item.get('url')
+    if is_valid_url(url):
+        urls.append((uid, 'url', url))
+    
+    # 3. files[].url - array of file objects
+    files = item.get('files') or []
+    for idx, file_obj in enumerate(files):
+        if isinstance(file_obj, dict):
+            file_url = file_obj.get('url')
+            if is_valid_url(file_url):
+                urls.append((uid, f'files_{idx}_url', file_url))
+    
+    # 4. images[] - array of image objects with large, thumb, original
+    images = item.get('images') or []
+    for idx, image_obj in enumerate(images):
+        if isinstance(image_obj, dict):
+            # large
+            large_url = image_obj.get('large')
+            if is_valid_url(large_url):
+                urls.append((uid, f'images_{idx}_large', large_url))
+            
+            # thumb
+            thumb_url = image_obj.get('thumb')
+            if is_valid_url(thumb_url):
+                urls.append((uid, f'images_{idx}_thumb', thumb_url))
+            
+            # original
+            original_url = image_obj.get('original')
+            if is_valid_url(original_url):
+                urls.append((uid, f'images_{idx}_original', original_url))
+    
+    # 5. related_cases[] - unique to web data
+    related_cases = item.get('related_cases') or []
+    for idx, case_url in enumerate(related_cases):
+        if is_valid_url(case_url):
+            urls.append((uid, f'related_cases_{idx}', case_url))
+    
+    return urls
+
+
+def extract_all_urls_from_data_web(data: Dict[str, Any]) -> List[Tuple[str, str, str]]:
+    """
+    Extract all URLs from web-scraped FBI data.
+    
+    Returns:
+        List of tuples: (uid, field_name, url)
+    """
+    all_urls = []
+    items = data.get('items', [])
+    
+    for item in items:
+        urls = extract_urls_from_record_web(item)
+        all_urls.extend(urls)
+    
+    logger.info(f"Extracted {len(all_urls)} URLs from {len(items)} web records")
+    return all_urls
+
+
 # =============================================================================
 # CACHE MANAGEMENT
 # =============================================================================
@@ -629,14 +707,121 @@ def get_validated_urls(conn: Connection) -> Set[str]:
         return {row[0] for row in cur.fetchall()}
 
 
+def save_validation_results_web(conn: Connection, results: List[Dict[str, Any]]) -> Dict[str, int]:
+    """
+    Save web validation results to tbl_bolo_link_check_web using UPSERT.
+    Maps API validation result format to web table schema.
+    """
+    if not results:
+        return {'inserted': 0, 'updated': 0}
+    
+    values = []
+    for r in results:
+        # Map field names to url_type
+        # Extract file_name if this is a files_ field
+        field = r['field']
+        file_name = None
+        
+        if field.startswith('files_'):
+            url_type = 'file'
+            # Try to extract filename from URL
+            url_parts = r['actual_url'].split('/')
+            if url_parts:
+                file_name = url_parts[-1]
+        elif field.startswith('images_'):
+            url_type = 'poster'
+        elif field.startswith('related_cases_'):
+            url_type = 'related_case'
+        elif field == 'url':
+            url_type = 'profile'
+        else:
+            url_type = field
+        
+        # Map result to is_valid
+        is_valid = (r['result'] == 'success')
+        
+        values.append((
+            r['uid'],
+            r['actual_url'],
+            url_type,
+            file_name,
+            r['response_code'],
+            is_valid,
+            r.get('content_type'),
+            None  # error_message - we'll use result if not success
+        ))
+    
+    with conn.cursor() as cur:
+        upsert_query = """
+            INSERT INTO tbl_bolo_link_check_web (
+                uid, url, url_type, file_name, http_status, is_valid, 
+                content_type, error_message, check_timestamp
+            )
+            VALUES %s
+            ON CONFLICT (uid, url, url_type, COALESCE(file_name, ''))
+            DO UPDATE SET
+                http_status = EXCLUDED.http_status,
+                is_valid = EXCLUDED.is_valid,
+                content_type = EXCLUDED.content_type,
+                error_message = EXCLUDED.error_message,
+                check_timestamp = NOW()
+            RETURNING (xmax = 0) as is_insert
+        """
+        
+        results_returned = execute_values(
+            cur,
+            upsert_query,
+            values,
+            template="(%s, %s, %s, %s, %s, %s, %s, %s, NOW())",
+            page_size=100,
+            fetch=True
+        )
+        
+        insert_count = sum(1 for r in results_returned if r[0])
+        update_count = sum(1 for r in results_returned if not r[0])
+        
+        return {'inserted': insert_count, 'updated': update_count}
+
+
+def update_cache_info_web(
+    conn: Connection,
+    url: str,
+    cache_path: str,
+    file_size: int,
+    content_type: Optional[str] = None
+) -> None:
+    """Update cache information for a web URL in the database."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE tbl_bolo_link_check_web
+            SET 
+                content_length = %s,
+                content_type = COALESCE(%s, content_type),
+                check_timestamp = NOW()
+            WHERE url = %s
+        """, (file_size, content_type, url))
+
+
+def get_validated_urls_web(conn: Connection) -> Set[str]:
+    """Get set of all web URLs that returned HTTP 200."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT url 
+            FROM tbl_bolo_link_check_web 
+            WHERE http_status = 200
+        """)
+        return {row[0] for row in cur.fetchall()}
+
+
 def get_cached_files_by_uid(conn: Connection) -> Dict[str, List[Dict]]:
     """
-    Get all cached files grouped by UID.
-    Returns dict: {uid: [{field, actual_url, cache_path, file_size}, ...]}
+    Get all cached files grouped by UID from BOTH API and web sources.
+    Returns dict: {uid: [{field, actual_url, cache_path, file_size, source}, ...]}
     """
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Get files from API data
         cur.execute("""
-            SELECT uid, field, actual_url, cache_path, file_size, content_type
+            SELECT uid, field, actual_url, cache_path, file_size, content_type, 'api' as source
             FROM tbl_bolo_link_check
             WHERE cache_path IS NOT NULL
               AND response_code = 200
@@ -645,7 +830,29 @@ def get_cached_files_by_uid(conn: Connection) -> Dict[str, List[Dict]]:
         
         results = defaultdict(list)
         for row in cur.fetchall():
-            results[row['uid']].append(dict(row))
+            row_dict = dict(row)
+            results[row_dict['uid']].append(row_dict)
+        
+        # Get files from web data
+        # Note: tbl_bolo_link_check_web doesn't have cache_path column yet
+        # We'll need to map url to cache using the same hashing logic
+        cur.execute("""
+            SELECT uid, url_type as field, url as actual_url, content_length as file_size, 
+                   content_type, 'web' as source
+            FROM tbl_bolo_link_check_web
+            WHERE http_status = 200
+              AND is_valid = TRUE
+            ORDER BY uid, url_type
+        """)
+        
+        for row in cur.fetchall():
+            row_dict = dict(row)
+            # Generate cache path using same logic as API files
+            cache_filename = get_cache_filename(row_dict['actual_url'])
+            cache_path = CACHE_DIR / cache_filename
+            if cache_path.exists():
+                row_dict['cache_path'] = str(cache_path.relative_to(DATA_DIR))
+            results[row_dict['uid']].append(row_dict)
         
         return dict(results)
 
@@ -814,13 +1021,80 @@ async def validate_links_from_file(file_path: str) -> Dict[str, Any]:
     }
 
 
+async def validate_links_from_file_web(file_path: str) -> Dict[str, Any]:
+    """
+    Validate all links from a web-scraped JSON data file.
+    Saves results to tbl_bolo_link_check_web instead of tbl_bolo_link_check.
+    """
+    start_time = datetime.now()
+    
+    # Load JSON data
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading web JSON file: {str(e)}")
+        raise
+    
+    # Extract all URLs using web-specific extractor
+    all_urls = extract_all_urls_from_data_web(data)
+    
+    if not all_urls:
+        return {
+            'status': 'success',
+            'message': 'No URLs found to validate in web data',
+            'total_urls': 0,
+            'processing_time_seconds': 0
+        }
+    
+    # Count Plone URLs (will be marked but not requested)
+    plone_count = sum(1 for _, _, url in all_urls if is_plone_url(url))
+    
+    # Validate URLs asynchronously
+    logger.info(f"Starting web validation of {len(all_urls)} URLs ({plone_count} Plone URLs will be marked)")
+    validation_results = await validate_urls_batch(all_urls)
+    
+    # Save results to web table
+    with get_db_connection() as conn:
+        db_results = save_validation_results_web(conn, validation_results)
+        conn.commit()
+    
+    # Calculate summary statistics
+    processing_time = (datetime.now() - start_time).total_seconds()
+    
+    result_counts = defaultdict(int)
+    for r in validation_results:
+        result_counts[r['result']] += 1
+    
+    response_codes = defaultdict(int)
+    for r in validation_results:
+        if r['response_code']:
+            response_codes[r['response_code']] += 1
+    
+    return {
+        'status': 'success',
+        'total_urls_extracted': len(all_urls),
+        'plone_urls_marked': plone_count,
+        'urls_validated': len(all_urls) - plone_count,
+        'total_records': len(data.get('items', [])),
+        'results': dict(result_counts),
+        'database': db_results,
+        'response_codes': dict(sorted(response_codes.items())),
+        'processing_time_seconds': round(processing_time, 2)
+    }
+
+
 # =============================================================================
 # ARCHIVE GENERATION
 # =============================================================================
 
 def get_person_info(conn: Connection, uid: str) -> Optional[Dict[str, Any]]:
-    """Get person details from tbl_bolo for info.txt generation."""
+    """
+    Get person details for info.txt generation.
+    Checks both tbl_bolo_web and tbl_bolo, preferring web data if available.
+    """
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Try web data first (most recent scrape, more complete)
         cur.execute("""
             SELECT 
                 uid, title, aliases, dates_of_birth_used, place_of_birth,
@@ -828,7 +1102,26 @@ def get_person_info(conn: Connection, uid: str) -> Optional[Dict[str, Any]]:
                 weight_min, weight_max, scars_and_marks,
                 poster_classification, reward_text, reward_max,
                 warning_message, description, caution, remarks,
-                status, nationality, url, modified
+                status, nationality, url, modified, 'web' as data_source
+            FROM tbl_bolo_web
+            WHERE uid = %s AND is_active = TRUE
+            ORDER BY modified DESC
+            LIMIT 1
+        """, (uid,))
+        
+        row = cur.fetchone()
+        if row:
+            return dict(row)
+        
+        # Fallback to API data if web data not available
+        cur.execute("""
+            SELECT 
+                uid, title, aliases, dates_of_birth_used, place_of_birth,
+                sex, race, hair, eyes, height_min, height_max, 
+                weight_min, weight_max, scars_and_marks,
+                poster_classification, reward_text, reward_max,
+                warning_message, description, caution, remarks,
+                status, nationality, url, modified, 'api' as data_source
             FROM tbl_bolo
             WHERE uid = %s AND is_active = TRUE
             ORDER BY modified DESC
@@ -871,6 +1164,8 @@ def format_weight(min_lbs: Optional[int], max_lbs: Optional[int]) -> str:
 
 def generate_info_txt(person: Dict[str, Any]) -> str:
     """Generate info.txt content for a person."""
+    data_source = person.get('data_source', 'unknown').upper()
+    
     lines = [
         "=" * 60,
         "FBI WANTED PERSON",
@@ -878,6 +1173,7 @@ def generate_info_txt(person: Dict[str, Any]) -> str:
         f"Name: {person.get('title', 'Unknown')}",
         f"UID: {person.get('uid', 'Unknown')}",
         f"Status: {person.get('status', 'Unknown')}",
+        f"Data Source: {data_source}",
         ""
     ]
     
@@ -1005,7 +1301,9 @@ def generate_manifest(
     files_by_type: Dict[str, int],
     total_size: int,
     classifications: Dict[str, int],
-    folder_structure: List[Dict[str, Any]]
+    folder_structure: List[Dict[str, Any]],
+    api_count: int = 0,
+    web_count: int = 0
 ) -> str:
     """Generate manifest.txt content for the archive root."""
     lines = [
@@ -1013,7 +1311,7 @@ def generate_manifest(
         "FBI BOLO DOCUMENTS ARCHIVE",
         "=" * 70,
         f"Generated: {generation_time.strftime('%Y-%m-%d %H:%M:%S')} UTC",
-        f"Source: BoloDoc.com via FBI Wanted API",
+        f"Source: BoloDoc.com via FBI API and Web Scraping",
         "",
         "-" * 70,
         "SUMMARY",
@@ -1021,6 +1319,10 @@ def generate_manifest(
         f"Total Persons: {persons_count:,}",
         f"Total Files: {sum(files_by_type.values()):,}",
         f"Total Size: {total_size / (1024*1024):.2f} MB",
+        "",
+        "Data Sources:",
+        f"  API Data: {api_count:,} files",
+        f"  Web Data: {web_count:,} files",
         "",
         "-" * 70,
         "FILES BY TYPE",
@@ -1063,35 +1365,51 @@ def generate_manifest(
 
 async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
     """
-    Download all validated files to cache.
+    Download all validated files to cache from BOTH API and web sources.
     Uses existing cache when available.
     """
     start_time = datetime.now()
     
-    # Get all URLs that need files
+    # Get all URLs that need files from API table
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT uid, field, actual_url, cache_path
+            SELECT uid, field, actual_url, cache_path, 'api' as source
             FROM tbl_bolo_link_check
             WHERE response_code = 200
               AND result = 'success'
         """)
-        urls_to_process = cur.fetchall()
+        api_urls = cur.fetchall()
+        
+        # Get all URLs that need files from web table
+        cur.execute("""
+            SELECT uid, url_type as field, url as actual_url, 'web' as source
+            FROM tbl_bolo_link_check_web
+            WHERE http_status = 200
+              AND is_valid = TRUE
+        """)
+        web_urls = cur.fetchall()
     
-    if not urls_to_process:
+    # Combine both sources
+    all_urls = list(api_urls) + list(web_urls)
+    
+    if not all_urls:
         return {
             "status": "no_files",
-            "message": "No validated URLs to download"
+            "message": "No validated URLs to download from either source"
         }
     
-    # Get set of already validated URLs
-    validated_urls = get_validated_urls(conn)
+    # Get sets of validated URLs from both sources
+    validated_urls_api = get_validated_urls(conn)
+    validated_urls_web = get_validated_urls_web(conn)
+    validated_urls = validated_urls_api | validated_urls_web
     
     # Track statistics
     from_cache = 0
     downloaded = 0
     failed = 0
     total_bytes = 0
+    api_count = 0
+    web_count = 0
     
     ensure_cache_dir()
     
@@ -1100,7 +1418,13 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
         follow_redirects=True
     ) as client:
         
-        for uid, field, url, existing_cache_path in urls_to_process:
+        for row in all_urls:
+            uid = row[0]
+            field = row[1]
+            url = row[2]
+            source = row[3] if len(row) > 3 else 'api'
+            existing_cache_path = row[3] if source == 'api' and len(row) > 4 else None
+            
             result = await download_file_with_cache(client, url, validated_urls)
             
             if result['success']:
@@ -1111,14 +1435,28 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
                 
                 total_bytes += result['file_size']
                 
+                # Track by source
+                if source == 'api':
+                    api_count += 1
+                else:
+                    web_count += 1
+                
                 # Update database with cache info
-                if result['cache_path'] and not existing_cache_path:
-                    update_cache_info(
-                        conn, url,
-                        result['cache_path'],
-                        result['file_size'],
-                        result.get('content_type')
-                    )
+                if result['cache_path']:
+                    if source == 'api' and not existing_cache_path:
+                        update_cache_info(
+                            conn, url,
+                            result['cache_path'],
+                            result['file_size'],
+                            result.get('content_type')
+                        )
+                    elif source == 'web':
+                        update_cache_info_web(
+                            conn, url,
+                            result['cache_path'],
+                            result['file_size'],
+                            result.get('content_type')
+                        )
             else:
                 failed += 1
             
@@ -1136,6 +1474,8 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
         "files_downloaded": downloaded,
         "files_failed": failed,
         "total_files": from_cache + downloaded,
+        "api_files": api_count,
+        "web_files": web_count,
         "total_bytes": total_bytes,
         "total_mb": round(total_bytes / (1024 * 1024), 2),
         "processing_time_seconds": round(processing_time, 2),
@@ -1146,6 +1486,7 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
 def create_documents_archive() -> Dict[str, Any]:
     """
     Create the ZIP archive with per-person folders.
+    Includes files from both API and web sources.
     """
     start_time = datetime.now()
     generation_time = datetime.utcnow()
@@ -1154,7 +1495,7 @@ def create_documents_archive() -> Dict[str, Any]:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     
     with get_db_connection() as conn:
-        # Get cached files grouped by UID
+        # Get cached files grouped by UID (from both sources)
         files_by_uid = get_cached_files_by_uid(conn)
         
         if not files_by_uid:
@@ -1169,12 +1510,14 @@ def create_documents_archive() -> Dict[str, Any]:
         total_size = 0
         classifications = defaultdict(int)
         folder_structure = []
+        api_file_count = 0
+        web_file_count = 0
         
         # Create ZIP file
         with zipfile.ZipFile(ARCHIVE_PATH, 'w', zipfile.ZIP_DEFLATED) as zf:
             
             for uid, files in files_by_uid.items():
-                # Get person info
+                # Get person info (from web or api)
                 person = get_person_info(conn, uid)
                 if not person:
                     continue
@@ -1199,7 +1542,20 @@ def create_documents_archive() -> Dict[str, Any]:
                 
                 # Add cached files
                 for file_info in files:
-                    cache_path = DATA_DIR / file_info['cache_path']
+                    # Track source
+                    source = file_info.get('source', 'api')
+                    if source == 'api':
+                        api_file_count += 1
+                    else:
+                        web_file_count += 1
+                    
+                    # Get cache path
+                    if 'cache_path' in file_info and file_info['cache_path']:
+                        cache_path = DATA_DIR / file_info['cache_path']
+                    else:
+                        # For web files without cache_path, construct it
+                        cache_filename = get_cache_filename(file_info['actual_url'])
+                        cache_path = CACHE_DIR / cache_filename
                     
                     if not cache_path.exists():
                         continue
@@ -1209,14 +1565,30 @@ def create_documents_archive() -> Dict[str, Any]:
                     field = file_info['field']
                     
                     # Create meaningful filename
-                    if 'files_' in field:
-                        base_name = f"document_{field.split('_')[1]}"
-                    elif 'images_' in field:
-                        idx = field.split('_')[1]
-                        img_type = field.split('_')[2] if len(field.split('_')) > 2 else 'image'
-                        base_name = f"{img_type}_{idx}"
+                    if 'files_' in field or field == 'file':
+                        if 'files_' in field:
+                            base_name = f"document_{field.split('_')[1]}"
+                        else:
+                            base_name = "document"
+                    elif 'images_' in field or field == 'poster':
+                        if 'images_' in field:
+                            idx = field.split('_')[1]
+                            img_type = field.split('_')[2] if len(field.split('_')) > 2 else 'image'
+                            base_name = f"{img_type}_{idx}"
+                        else:
+                            base_name = "poster"
+                    elif 'related_case' in field:
+                        if 'related_cases_' in field:
+                            idx = field.split('_')[-1]
+                            base_name = f"related_case_{idx}"
+                        else:
+                            base_name = "related_case"
                     else:
                         base_name = field
+                    
+                    # Add source indicator to filename
+                    if source == 'web':
+                        base_name = f"{base_name}_web"
                     
                     archive_filename = f"{base_name}{ext}"
                     archive_path = f"{folder_name}/{archive_filename}"
@@ -1225,6 +1597,9 @@ def create_documents_archive() -> Dict[str, Any]:
                     zf.write(cache_path, archive_path)
                     
                     file_size = file_info.get('file_size', 0)
+                    if file_size == 0 and cache_path.exists():
+                        file_size = cache_path.stat().st_size
+                    
                     files_by_type[ext] += 1
                     total_size += file_size
                     folder_files.append(archive_filename)
@@ -1241,7 +1616,9 @@ def create_documents_archive() -> Dict[str, Any]:
                 dict(files_by_type),
                 total_size,
                 dict(classifications),
-                folder_structure
+                folder_structure,
+                api_file_count,
+                web_file_count
             )
             zf.writestr('manifest.txt', manifest_content.encode('utf-8'))
     
@@ -1255,6 +1632,8 @@ def create_documents_archive() -> Dict[str, Any]:
         "archive_size_mb": round(archive_size / (1024 * 1024), 2),
         "persons_count": persons_count,
         "total_files": sum(files_by_type.values()),
+        "api_files": api_file_count,
+        "web_files": web_file_count,
         "files_by_type": dict(files_by_type),
         "classifications": dict(classifications),
         "generation_time": generation_time.isoformat(),
