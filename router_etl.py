@@ -5,6 +5,7 @@ import csv
 import asyncio
 import os
 import re
+import hashlib
 
 from config import DB_CONFIG
 from typing import Literal
@@ -55,6 +56,7 @@ class ImportRequest(BaseModel):
     file_path: str = Field(..., description="Absolute path to the JSON file on the server")
     pull_date: Optional[str] = Field(None, description="Date of the data pull (YYYY-MM-DD). Defaults to today.")
 
+VOLATILE_HASH_FIELDS = {'modified', '@id'}
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
 # Set up logging
@@ -176,6 +178,20 @@ def parse_date(date_str: Optional[str]) -> Optional[datetime]:
             return datetime.strptime(date_str, "%Y-%m-%d")
         except ValueError:
             return None
+
+def compute_content_hash(full_data_clean: dict) -> str:
+    """
+    Compute SHA-256 hash of cleaned data, excluding volatile fields
+    that may change without meaningful content updates.
+    """
+    # Create copy without volatile fields
+    hashable_data = {k: v for k, v in full_data_clean.items() 
+                     if k not in VOLATILE_HASH_FIELDS}
+    
+    # Stable JSON serialization with sorted keys
+    json_str = json.dumps(hashable_data, sort_keys=True, default=str)
+    
+    return hashlib.sha256(json_str.encode('utf-8')).hexdigest()
 
 def extract_array_field(data: Dict, field: str) -> Optional[List[str]]:
     """Extract array field with cleaning for PostgreSQL."""
@@ -428,9 +444,14 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
     
 def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
-    Process a single wanted person record into database-ready format
-    Returns None if the record should be skipped
+    Process a single wanted person record into database-ready format.
+    Now includes content_hash computation for version tracking.
+    
+    Returns None if the record should be skipped (missing uid).
     """
+    from router_etl import (
+        extract_array_field, extract_poster_url, parse_date, clean_json_recursive
+    )
     
     uid = item.get('uid')
     if not uid:
@@ -438,8 +459,9 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
 
     # Create cleaned version of full_data
     full_data_clean = clean_json_recursive(item)
-
-    # print(full_data_clean)
+    
+    # Compute content hash for version tracking
+    content_hash = compute_content_hash(full_data_clean)
 
     return {
         'age_max': item.get('age_max'),
@@ -448,6 +470,7 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'build': item.get('build'),
         'caution': item.get('caution'),
         'complexion': item.get('complexion'),
+        'content_hash': content_hash,  # NEW
         'coordinates': json.dumps(item.get('coordinates')),
         'data_pull_date': pull_date,
         'dates_of_birth_used': extract_array_field(item, 'dates_of_birth_used'),
@@ -498,18 +521,20 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'weight': item.get('weight'),
         'weight_max': item.get('weight_max'),
         'weight_min': item.get('weight_min'),
-        'data_pull_date': pull_date,
-        'first_seen_date': pull_date,
-        'last_seen_date': pull_date,
         'is_active': True
     }
+
 
 def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single web-scraped wanted person record into database-ready format.
-    Identical to bolo_process() but includes related_cases field.
-    Returns None if the record should be skipped.
+    Now includes content_hash computation and related_cases field.
+    
+    Returns None if the record should be skipped (missing uid).
     """
+    from router_etl import (
+        extract_array_field, extract_poster_url, parse_date, clean_json_recursive
+    )
     
     uid = item.get('uid')
     if not uid:
@@ -517,6 +542,9 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
 
     # Create cleaned version of full_data
     full_data_clean = clean_json_recursive(item)
+    
+    # Compute content hash for version tracking
+    content_hash = compute_content_hash(full_data_clean)
 
     return {
         'age_max': item.get('age_max'),
@@ -525,6 +553,7 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'build': item.get('build'),
         'caution': item.get('caution'),
         'complexion': item.get('complexion'),
+        'content_hash': content_hash,  # NEW
         'coordinates': json.dumps(item.get('coordinates')),
         'data_pull_date': pull_date,
         'dates_of_birth_used': extract_array_field(item, 'dates_of_birth_used'),
@@ -559,7 +588,7 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'publication': parse_date(item.get('publication')),
         'race': item.get('race'),
         'race_raw': item.get('race_raw'),
-        'related_cases': extract_array_field(item, 'related_cases'),  # NEW for web data
+        'related_cases': extract_array_field(item, 'related_cases'),
         'remarks': item.get('remarks'),
         'reward_max': item.get('reward_max'),
         'reward_min': item.get('reward_min'),
@@ -576,140 +605,413 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'weight': item.get('weight'),
         'weight_max': item.get('weight_max'),
         'weight_min': item.get('weight_min'),
-        'data_pull_date': pull_date,
-        'first_seen_date': pull_date,
-        'last_seen_date': pull_date,
         'is_active': True
     }
 
 
-def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, int]:
+def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, Any]:
     """
-    UPSERT web-scraped wanted persons records using (uid, modified) as the primary key.
+    Insert/update wanted persons records using hash-based versioning.
     
-    Logic:
-    - If (uid, modified) doesn't exist: INSERT with first_seen_date = pull_date, last_seen_date = pull_date
-    - If (uid, modified) already exists: UPDATE only last_seen_date = pull_date
-    - is_active is set to NULL during insert/update, will be calculated afterward by update_active_status_web()
+    Primary key: (uid, content_hash)
+    
+    Logic for each record:
+    1. If (uid, content_hash) exists: Just update last_seen_date (content unchanged)
+    2. If hash is new for this uid:
+       a. Close current version (set valid_to)
+       b. Insert new version with incremented version_number
+       c. Set change_type = NEW (if first version) or MODIFIED (if subsequent)
+    3. Track if uid was previously REMOVED and is now returning (change_type = RETURNED)
     
     Returns:
-        Dict with counts: {"inserted": int, "updated": int, "skipped": int}
+        Dict with counts: {
+            "inserted": int,      # New content versions inserted
+            "updated": int,       # Existing versions touched (last_seen_date only)
+            "skipped": int,       # Records skipped (shouldn't happen normally)
+            "new_uids": list,     # UIDs that are completely new
+            "modified_uids": list # UIDs with content changes
+        }
     """
     if not records:
-        return {"inserted": 0, "updated": 0, "skipped": 0}
+        return {"inserted": 0, "updated": 0, "skipped": 0, "new_uids": [], "modified_uids": []}
 
-    columns = [
-        'age_max', 'age_min', 'aliases', 'build', 'caution', 'complexion',
-        'coordinates', 'data_pull_date', 'dates_of_birth_used', 'description',
-        'details', 'eyes', 'eyes_raw', 'field_offices', 'first_seen_date',
-        'full_data', 'full_data_clean', 'hair', 'hair_raw', 'height_max', 'height_min',
-        'is_active', 'languages', 'last_seen_date', 'legat_names', 'locations',
-        'modified', 'nationality', 'ncic', 'occupations', 'path', 'pathid',
-        'person_classification', 'place_of_birth', 'possible_countries',
-        'possible_states', 'poster_url', 'poster_classification', 'publication', 
-        'race', 'race_raw', 'related_cases', 'remarks', 'reward_max', 'reward_min', 
-        'reward_text', 'scars_and_marks', 'sex', 'status', 'subjects', 'suspects', 
-        'title', 'uid', 'url', 'warning_message', 'weight', 'weight_max', 'weight_min'
-    ]
-
-    # Prepare values for batch insert
-    values = []
-    for record in records:
-        # Set tracking fields for new records
-        record['data_pull_date'] = pull_date  # When we first saw this version
-        record['first_seen_date'] = pull_date  # Will stay unchanged on conflict
-        record['last_seen_date'] = pull_date   # Will be updated on conflict
-        record['is_active'] = None  # Will be set by update_active_status_web()
-        
-        row = tuple(record.get(col) for col in columns)
-        values.append(row)
+    inserted_count = 0
+    updated_count = 0
+    new_uids = []
+    modified_uids = []
+    returned_uids = []
     
-    with conn.cursor() as cur:
-        # UPSERT with ON CONFLICT on the PK (uid, modified)
-        # xmax = 0 means INSERT, xmax != 0 means UPDATE
-        upsert_query = f"""
-            INSERT INTO tbl_bolo_web (
-                age_max, age_min, aliases, build, caution, complexion,
-                coordinates, data_pull_date, dates_of_birth_used, description,
-                details, eyes, eyes_raw, field_offices, first_seen_date,
-                full_data, full_data_clean, hair, hair_raw, height_max, height_min,
-                is_active, languages, last_seen_date, legat_names, locations,
-                modified, nationality, ncic, occupations, path, pathid,
-                person_classification, place_of_birth, possible_countries,
-                possible_states, poster_url, poster_classification, publication,
-                race, race_raw, related_cases, remarks, reward_max, reward_min, reward_text,
-                scars_and_marks, sex, status, subjects, suspects, title, uid,
-                url, warning_message, weight, weight_max, weight_min
-            )
-            VALUES %s
-            ON CONFLICT (uid, modified) 
-            DO UPDATE SET
-                last_seen_date = EXCLUDED.last_seen_date,
-                updated_at = NOW()
-            RETURNING 
-                (xmax = 0) as is_insert
-        """
-        
-        # Execute with execute_values and capture results
-        results = execute_values(
-            cur, 
-            upsert_query, 
-            values, 
-            page_size=100,
-            fetch=True
-        )
-        
-        # Count inserts vs updates
-        insert_count = sum(1 for r in results if r[0])  # is_insert = True
-        update_count = sum(1 for r in results if not r[0])  # is_insert = False
-        
-        logger.info(f"Web UPSERT complete: {insert_count} inserted, {update_count} updated")
-        
-        return {
-            "inserted": insert_count,
-            "updated": update_count,
-            "skipped": 0
-        }
-
-
-def update_active_status_web(conn: Connection) -> Dict[str, int]:
-    """
-    Update is_active flags in tbl_bolo_web based on business rules:
-    - is_active = TRUE for records with MAX(modified) per uid
-    - is_active = FALSE for all other records
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        for record in records:
+            uid = record['uid']
+            content_hash = record['content_hash']
+            
+            # Check if this exact content already exists
+            cur.execute("""
+                SELECT uid, content_hash, version_number, valid_to, change_type
+                FROM tbl_bolo 
+                WHERE uid = %s AND content_hash = %s
+            """, (uid, content_hash))
+            existing = cur.fetchone()
+            
+            if existing:
+                # Content unchanged - just update last_seen_date
+                cur.execute("""
+                    UPDATE tbl_bolo 
+                    SET last_seen_date = %s, updated_at = NOW()
+                    WHERE uid = %s AND content_hash = %s
+                """, (pull_date, uid, content_hash))
+                updated_count += 1
+                logger.debug(f"Updated last_seen_date for {uid} (content unchanged)")
+            else:
+                # New content for this uid - need to create new version
+                
+                # Get current version info for this uid
+                cur.execute("""
+                    SELECT uid, content_hash, version_number, change_type
+                    FROM tbl_bolo 
+                    WHERE uid = %s AND valid_to IS NULL
+                    ORDER BY version_number DESC
+                    LIMIT 1
+                """, (uid,))
+                current_version = cur.fetchone()
+                
+                # Check if this uid was previously removed (for RETURNED detection)
+                cur.execute("""
+                    SELECT 1 FROM tbl_bolo 
+                    WHERE uid = %s AND change_type = 'REMOVED'
+                    LIMIT 1
+                """, (uid,))
+                was_removed = cur.fetchone() is not None
+                
+                if current_version:
+                    # Close current version
+                    cur.execute("""
+                        UPDATE tbl_bolo 
+                        SET valid_to = %s, 
+                            is_active = FALSE,
+                            updated_at = NOW()
+                        WHERE uid = %s AND content_hash = %s
+                    """, (pull_date, uid, current_version['content_hash']))
+                    
+                    new_version_number = current_version['version_number'] + 1
+                    
+                    # Determine change type
+                    if was_removed:
+                        change_type = 'RETURNED'
+                        returned_uids.append(uid)
+                    else:
+                        change_type = 'MODIFIED'
+                        modified_uids.append(uid)
+                else:
+                    # First version for this uid
+                    new_version_number = 1
+                    change_type = 'NEW'
+                    new_uids.append(uid)
+                
+                # Insert new version
+                cur.execute("""
+                    INSERT INTO tbl_bolo (
+                        uid, content_hash, version_number, valid_from, valid_to,
+                        change_type, is_active, first_seen_date, last_seen_date, data_pull_date,
+                        age_max, age_min, aliases, build, caution, complexion,
+                        coordinates, dates_of_birth_used, description, details,
+                        eyes, eyes_raw, field_offices, full_data, full_data_clean,
+                        hair, hair_raw, height_max, height_min, languages,
+                        legat_names, locations, modified, nationality, ncic,
+                        occupations, path, pathid, person_classification,
+                        place_of_birth, possible_countries, possible_states,
+                        poster_classification, poster_url, publication, race, race_raw,
+                        remarks, reward_max, reward_min, reward_text,
+                        scars_and_marks, sex, status, subjects, suspects,
+                        title, url, warning_message, weight, weight_max, weight_min
+                    ) VALUES (
+                        %s, %s, %s, %s, NULL,
+                        %s, TRUE, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s
+                    )
+                """, (
+                    uid, content_hash, new_version_number, pull_date,
+                    change_type, pull_date, pull_date, pull_date,
+                    record.get('age_max'), record.get('age_min'), record.get('aliases'),
+                    record.get('build'), record.get('caution'), record.get('complexion'),
+                    record.get('coordinates'), record.get('dates_of_birth_used'),
+                    record.get('description'), record.get('details'),
+                    record.get('eyes'), record.get('eyes_raw'), record.get('field_offices'),
+                    record.get('full_data'), record.get('full_data_clean'),
+                    record.get('hair'), record.get('hair_raw'),
+                    record.get('height_max'), record.get('height_min'),
+                    record.get('languages'), record.get('legat_names'),
+                    record.get('locations'), record.get('modified'),
+                    record.get('nationality'), record.get('ncic'),
+                    record.get('occupations'), record.get('path'), record.get('pathid'),
+                    record.get('person_classification'), record.get('place_of_birth'),
+                    record.get('possible_countries'), record.get('possible_states'),
+                    record.get('poster_classification'), record.get('poster_url'),
+                    record.get('publication'), record.get('race'), record.get('race_raw'),
+                    record.get('remarks'), record.get('reward_max'),
+                    record.get('reward_min'), record.get('reward_text'),
+                    record.get('scars_and_marks'), record.get('sex'),
+                    record.get('status'), record.get('subjects'), record.get('suspects'),
+                    record.get('title'), record.get('url'),
+                    record.get('warning_message'), record.get('weight'),
+                    record.get('weight_max'), record.get('weight_min')
+                ))
+                
+                inserted_count += 1
+                logger.debug(f"Inserted version {new_version_number} for {uid} ({change_type})")
     
-    Returns:
-        Dict with counts: {"deactivated": int, "activated": int}
+    logger.info(f"UPSERT complete: {inserted_count} inserted, {updated_count} updated, "
+                f"{len(new_uids)} new UIDs, {len(modified_uids)} modified, {len(returned_uids)} returned")
+    
+    return {
+        "inserted": inserted_count,
+        "updated": updated_count,
+        "skipped": 0,
+        "new_uids": new_uids,
+        "modified_uids": modified_uids,
+        "returned_uids": returned_uids
+    }
+
+
+def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, Any]:
+    """
+    Insert/update web-scraped wanted persons records using hash-based versioning.
+    
+    Same logic as bolo_insert() but for tbl_bolo_web.
+    Includes related_cases field.
+    """
+    if not records:
+        return {"inserted": 0, "updated": 0, "skipped": 0, "new_uids": [], "modified_uids": []}
+
+    inserted_count = 0
+    updated_count = 0
+    new_uids = []
+    modified_uids = []
+    returned_uids = []
+    
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        for record in records:
+            uid = record['uid']
+            content_hash = record['content_hash']
+            
+            # Check if this exact content already exists
+            cur.execute("""
+                SELECT uid, content_hash, version_number, valid_to, change_type
+                FROM tbl_bolo_web 
+                WHERE uid = %s AND content_hash = %s
+            """, (uid, content_hash))
+            existing = cur.fetchone()
+            
+            if existing:
+                # Content unchanged - just update last_seen_date
+                cur.execute("""
+                    UPDATE tbl_bolo_web 
+                    SET last_seen_date = %s, updated_at = NOW()
+                    WHERE uid = %s AND content_hash = %s
+                """, (pull_date, uid, content_hash))
+                updated_count += 1
+            else:
+                # New content for this uid - need to create new version
+                
+                # Get current version info for this uid
+                cur.execute("""
+                    SELECT uid, content_hash, version_number, change_type
+                    FROM tbl_bolo_web 
+                    WHERE uid = %s AND valid_to IS NULL
+                    ORDER BY version_number DESC
+                    LIMIT 1
+                """, (uid,))
+                current_version = cur.fetchone()
+                
+                # Check if this uid was previously removed
+                cur.execute("""
+                    SELECT 1 FROM tbl_bolo_web 
+                    WHERE uid = %s AND change_type = 'REMOVED'
+                    LIMIT 1
+                """, (uid,))
+                was_removed = cur.fetchone() is not None
+                
+                if current_version:
+                    # Close current version
+                    cur.execute("""
+                        UPDATE tbl_bolo_web 
+                        SET valid_to = %s, 
+                            is_active = FALSE,
+                            updated_at = NOW()
+                        WHERE uid = %s AND content_hash = %s
+                    """, (pull_date, uid, current_version['content_hash']))
+                    
+                    new_version_number = current_version['version_number'] + 1
+                    
+                    if was_removed:
+                        change_type = 'RETURNED'
+                        returned_uids.append(uid)
+                    else:
+                        change_type = 'MODIFIED'
+                        modified_uids.append(uid)
+                else:
+                    new_version_number = 1
+                    change_type = 'NEW'
+                    new_uids.append(uid)
+                
+                # Insert new version (includes related_cases)
+                cur.execute("""
+                    INSERT INTO tbl_bolo_web (
+                        uid, content_hash, version_number, valid_from, valid_to,
+                        change_type, is_active, first_seen_date, last_seen_date, data_pull_date,
+                        age_max, age_min, aliases, build, caution, complexion,
+                        coordinates, dates_of_birth_used, description, details,
+                        eyes, eyes_raw, field_offices, full_data, full_data_clean,
+                        hair, hair_raw, height_max, height_min, languages,
+                        legat_names, locations, modified, nationality, ncic,
+                        occupations, path, pathid, person_classification,
+                        place_of_birth, possible_countries, possible_states,
+                        poster_classification, poster_url, publication, race, race_raw,
+                        related_cases, remarks, reward_max, reward_min, reward_text,
+                        scars_and_marks, sex, status, subjects, suspects,
+                        title, url, warning_message, weight, weight_max, weight_min
+                    ) VALUES (
+                        %s, %s, %s, %s, NULL,
+                        %s, TRUE, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s
+                    )
+                """, (
+                    uid, content_hash, new_version_number, pull_date,
+                    change_type, pull_date, pull_date, pull_date,
+                    record.get('age_max'), record.get('age_min'), record.get('aliases'),
+                    record.get('build'), record.get('caution'), record.get('complexion'),
+                    record.get('coordinates'), record.get('dates_of_birth_used'),
+                    record.get('description'), record.get('details'),
+                    record.get('eyes'), record.get('eyes_raw'), record.get('field_offices'),
+                    record.get('full_data'), record.get('full_data_clean'),
+                    record.get('hair'), record.get('hair_raw'),
+                    record.get('height_max'), record.get('height_min'),
+                    record.get('languages'), record.get('legat_names'),
+                    record.get('locations'), record.get('modified'),
+                    record.get('nationality'), record.get('ncic'),
+                    record.get('occupations'), record.get('path'), record.get('pathid'),
+                    record.get('person_classification'), record.get('place_of_birth'),
+                    record.get('possible_countries'), record.get('possible_states'),
+                    record.get('poster_classification'), record.get('poster_url'),
+                    record.get('publication'), record.get('race'), record.get('race_raw'),
+                    record.get('related_cases'), record.get('remarks'),
+                    record.get('reward_max'), record.get('reward_min'),
+                    record.get('reward_text'), record.get('scars_and_marks'),
+                    record.get('sex'), record.get('status'),
+                    record.get('subjects'), record.get('suspects'),
+                    record.get('title'), record.get('url'),
+                    record.get('warning_message'), record.get('weight'),
+                    record.get('weight_max'), record.get('weight_min')
+                ))
+                
+                inserted_count += 1
+    
+    logger.info(f"Web UPSERT complete: {inserted_count} inserted, {updated_count} updated")
+    
+    return {
+        "inserted": inserted_count,
+        "updated": updated_count,
+        "skipped": 0,
+        "new_uids": new_uids,
+        "modified_uids": modified_uids,
+        "returned_uids": returned_uids
+    }
+
+
+def update_active_status(conn: Connection) -> Dict[str, int]:
+    """
+    Ensure is_active flags are consistent with valid_to.
+    
+    With hash-based versioning, is_active should be:
+    - TRUE only for records where valid_to IS NULL AND change_type != 'REMOVED'
+    - FALSE for all other records
+    
+    This is mostly a consistency check since the insert/update logic
+    should handle this correctly.
     """
     with conn.cursor() as cur:
-        # Step 1: Set ALL records to FALSE first
+        # Set FALSE where it should be FALSE
         cur.execute("""
-            UPDATE tbl_bolo_web
+            UPDATE tbl_bolo
             SET is_active = FALSE,
                 updated_at = NOW()
-            WHERE is_active IS DISTINCT FROM FALSE
+            WHERE is_active = TRUE
+              AND (valid_to IS NOT NULL OR change_type = 'REMOVED')
         """)
         rows_deactivated = cur.rowcount
-        logger.info(f"Web: Set {rows_deactivated} records to is_active=FALSE")
         
-        # Step 2: Set the most recent version per uid to TRUE
+        # Set TRUE where it should be TRUE
         cur.execute("""
-            UPDATE tbl_bolo_web
+            UPDATE tbl_bolo
             SET is_active = TRUE,
                 updated_at = NOW()
-            WHERE (uid, modified) IN (
-                SELECT uid, MAX(modified) as latest_modified
-                FROM tbl_bolo_web
-                GROUP BY uid
-            )
+            WHERE is_active = FALSE
+              AND valid_to IS NULL
+              AND change_type != 'REMOVED'
         """)
         rows_activated = cur.rowcount
-        logger.info(f"Web: Set {rows_activated} records to is_active=TRUE (most recent per uid)")
+        
+        logger.info(f"Active status sync: {rows_deactivated} deactivated, {rows_activated} activated")
         
         return {
             "deactivated": rows_deactivated,
             "activated": rows_activated
         }
+
+
+def update_active_status_web(conn: Connection) -> Dict[str, int]:
+    """
+    Ensure is_active flags are consistent with valid_to for tbl_bolo_web.
+    Same logic as update_active_status().
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE tbl_bolo_web
+            SET is_active = FALSE,
+                updated_at = NOW()
+            WHERE is_active = TRUE
+              AND (valid_to IS NOT NULL OR change_type = 'REMOVED')
+        """)
+        rows_deactivated = cur.rowcount
+        
+        cur.execute("""
+            UPDATE tbl_bolo_web
+            SET is_active = TRUE,
+                updated_at = NOW()
+            WHERE is_active = FALSE
+              AND valid_to IS NULL
+              AND change_type != 'REMOVED'
+        """)
+        rows_activated = cur.rowcount
+        
+        logger.info(f"Web active status sync: {rows_deactivated} deactivated, {rows_activated} activated")
+        
+        return {
+            "deactivated": rows_deactivated,
+            "activated": rows_activated
+        }
+
 
 def insert_api_metadata(
     conn: Connection, 
@@ -717,7 +1019,7 @@ def insert_api_metadata(
     page: int, 
     pull_date: date,
     etl_stats: Optional[Dict[str, Any]] = None
-):
+    ):
     """
     Insert or update API pull metadata with ETL statistics.
     
@@ -786,6 +1088,7 @@ def insert_api_metadata(
                     pull_timestamp = NOW()
             """, (pull_date, total, page))
             logger.info(f"Basic metadata inserted for pull_date={pull_date}")
+
 
 def insert_api_metadata_web(
     conn: Connection, 
@@ -857,137 +1160,7 @@ def insert_api_metadata_web(
             """, (pull_date, total, page))
             logger.info(f"Basic web metadata inserted for pull_date={pull_date}")
 
-def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date) -> Dict[str, int]:
-    """
-    UPSERT wanted persons records using (uid, modified) as the primary key.
-    
-    Logic:
-    - If (uid, modified) doesn't exist: INSERT with first_seen_date = pull_date, last_seen_date = pull_date
-    - If (uid, modified) already exists: UPDATE only last_seen_date = pull_date
-    - is_active is set to NULL during insert/update, will be calculated afterward by update_active_status()
-    
-    Returns:
-        Dict with counts: {"inserted": int, "updated": int, "skipped": int}
-    """
-    if not records:
-        return {"inserted": 0, "updated": 0, "skipped": 0}
 
-    columns = [
-        'age_max', 'age_min', 'aliases', 'build', 'caution', 'complexion',
-        'coordinates', 'data_pull_date', 'dates_of_birth_used', 'description',
-        'details', 'eyes', 'eyes_raw', 'field_offices', 'first_seen_date',
-        'full_data', 'full_data_clean', 'hair', 'hair_raw', 'height_max', 'height_min',
-        'is_active', 'languages', 'last_seen_date', 'legat_names', 'locations',
-        'modified', 'nationality', 'ncic', 'occupations', 'path', 'pathid',
-        'person_classification', 'place_of_birth', 'possible_countries',
-        'possible_states', 'poster_url', 'poster_classification', 'publication', 
-        'race', 'race_raw', 'remarks', 'reward_max', 'reward_min', 'reward_text', 
-        'scars_and_marks', 'sex', 'status', 'subjects', 'suspects', 'title', 'uid', 
-        'url', 'warning_message', 'weight', 'weight_max', 'weight_min'
-    ]
-
-    # Prepare values for batch insert
-    values = []
-    for record in records:
-        # Set tracking fields for new records
-        record['data_pull_date'] = pull_date  # When we first saw this version
-        record['first_seen_date'] = pull_date  # Will stay unchanged on conflict
-        record['last_seen_date'] = pull_date   # Will be updated on conflict
-        record['is_active'] = None  # Will be set by update_active_status()
-        
-        row = tuple(record.get(col) for col in columns)
-        values.append(row)
-    
-    with conn.cursor() as cur:
-        # UPSERT with ON CONFLICT on the new PK (uid, modified)
-        # xmax = 0 means INSERT, xmax != 0 means UPDATE
-        upsert_query = f"""
-            INSERT INTO tbl_bolo (
-                age_max, age_min, aliases, build, caution, complexion,
-                coordinates, data_pull_date, dates_of_birth_used, description,
-                details, eyes, eyes_raw, field_offices, first_seen_date,
-                full_data, full_data_clean, hair, hair_raw, height_max, height_min,
-                is_active, languages, last_seen_date, legat_names, locations,
-                modified, nationality, ncic, occupations, path, pathid,
-                person_classification, place_of_birth, possible_countries,
-                possible_states, poster_url, poster_classification, publication,
-                race, race_raw, remarks, reward_max, reward_min, reward_text,
-                scars_and_marks, sex, status, subjects, suspects, title, uid,
-                url, warning_message, weight, weight_max, weight_min
-            )
-            VALUES %s
-            ON CONFLICT (uid, modified) 
-            DO UPDATE SET
-                last_seen_date = EXCLUDED.last_seen_date,
-                updated_at = NOW()
-            RETURNING 
-                (xmax = 0) as is_insert
-        """
-        
-        # Execute with execute_values and capture results
-        results = execute_values(
-            cur, 
-            upsert_query, 
-            values, 
-            page_size=100,
-            fetch=True
-        )
-        
-        # Count inserts vs updates
-        insert_count = sum(1 for r in results if r[0])  # is_insert = True
-        update_count = sum(1 for r in results if not r[0])  # is_insert = False
-        
-        logger.info(f"UPSERT complete: {insert_count} inserted, {update_count} updated")
-        
-        return {
-            "inserted": insert_count,
-            "updated": update_count,
-            "skipped": 0
-        }
-
-def update_active_status(conn: Connection) -> Dict[str, int]:
-    """
-    Update is_active flags based on business rules:
-    - is_active = TRUE for records with MAX(modified) per uid
-    - is_active = FALSE for all other records
-    
-    This handles the edge case where we insert an old 'modified' date
-    for a uid that already has a newer version - the old one will correctly
-    be set to FALSE.
-    
-    Returns:
-        Dict with counts: {"deactivated": int, "activated": int}
-    """
-    with conn.cursor() as cur:
-        # Step 1: Set ALL records to FALSE first
-        cur.execute("""
-            UPDATE tbl_bolo
-            SET is_active = FALSE,
-                updated_at = NOW()
-            WHERE is_active IS DISTINCT FROM FALSE
-        """)
-        rows_deactivated = cur.rowcount
-        logger.info(f"Set {rows_deactivated} records to is_active=FALSE")
-        
-        # Step 2: Set the most recent version per uid to TRUE
-        cur.execute("""
-            UPDATE tbl_bolo
-            SET is_active = TRUE,
-                updated_at = NOW()
-            WHERE (uid, modified) IN (
-                SELECT uid, MAX(modified) as latest_modified
-                FROM tbl_bolo
-                GROUP BY uid
-            )
-        """)
-        rows_activated = cur.rowcount
-        logger.info(f"Set {rows_activated} records to is_active=TRUE (most recent per uid)")
-        
-        return {
-            "deactivated": rows_deactivated,
-            "activated": rows_activated
-        }
-    
 def update_record_status(conn: Connection, current_uids: List[str], pull_date: date):
     """
     Mark records as inactive if they're not in the current pull
@@ -1011,70 +1184,175 @@ def update_record_status(conn: Connection, current_uids: List[str], pull_date: d
         cur.execute("CALL sp_clean_jsonb()")
         cur.execute("CALL sp_prune()")
 
-def mark_missing_uids_inactive(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, int]:
+
+def mark_missing_uids_inactive(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, Any]:
     """
-    Mark ALL versions of UIDs that are NOT in the current pull as inactive.
-    This handles the case where someone is completely removed from the FBI list.
+    Mark UIDs not in current pull as REMOVED by inserting tombstone records.
+    
+    For each uid that was active but is now missing:
+    1. Close the current version (set valid_to, is_active = FALSE)
+    2. Insert a new REMOVED tombstone version
     
     Args:
-        current_uids: List of UIDs that appeared in today's pull
-        pull_date: The current pull date (for logging)
-    
+        conn: Database connection
+        current_uids: List of UIDs present in today's pull
+        pull_date: Current pull date
+        
     Returns:
-        Dict with count: {"marked_inactive": int}
+        Dict with counts and lists of removed UIDs
     """
     if not current_uids:
         logger.warning("No current UIDs provided - skipping mark_missing_uids_inactive")
-        return {"marked_inactive": 0}
+        return {"marked_inactive": 0, "removed_uids": []}
     
-    with conn.cursor() as cur:
+    removed_uids = []
+    
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Find UIDs that are currently active but not in current pull
         cur.execute("""
-            UPDATE tbl_bolo
-            SET is_active = FALSE,
-                became_inactive_at = NOW(),
-                updated_at = NOW()
-            WHERE uid NOT IN (
-                SELECT UNNEST(%s::text[])
-            )
-            AND is_active = TRUE
+            SELECT DISTINCT uid, content_hash, version_number, title, full_data, full_data_clean
+            FROM tbl_bolo 
+            WHERE valid_to IS NULL 
+              AND is_active = TRUE
+              AND change_type != 'REMOVED'
+              AND uid NOT IN (SELECT UNNEST(%s::text[]))
         """, (current_uids,))
         
-        rows_marked_inactive = cur.rowcount
-        logger.info(f"Marked {rows_marked_inactive} records inactive (UIDs not in current pull)")
+        missing_records = cur.fetchall()
         
-        return {"marked_inactive": rows_marked_inactive}
+        for record in missing_records:
+            uid = record['uid']
+            current_hash = record['content_hash']
+            current_version = record['version_number']
+            
+            # Close current version
+            cur.execute("""
+                UPDATE tbl_bolo 
+                SET valid_to = %s, 
+                    is_active = FALSE,
+                    became_inactive_at = NOW(),
+                    updated_at = NOW()
+                WHERE uid = %s AND content_hash = %s
+            """, (pull_date, uid, current_hash))
+            
+            # Generate a unique hash for the tombstone (based on removal date)
+            tombstone_data = {
+                'uid': uid,
+                'removed_date': str(pull_date),
+                'previous_version': current_version
+            }
+            tombstone_hash = hashlib.sha256(
+                json.dumps(tombstone_data, sort_keys=True).encode('utf-8')
+            ).hexdigest()
+            
+            # Handle JSONB fields - ensure they're JSON strings for insertion
+            full_data_str = json.dumps(record['full_data']) if isinstance(record['full_data'], dict) else record['full_data']
+            full_data_clean_str = json.dumps(record['full_data_clean']) if isinstance(record['full_data_clean'], dict) else record['full_data_clean']
+            
+            # Insert REMOVED tombstone
+            cur.execute("""
+                INSERT INTO tbl_bolo (
+                    uid, content_hash, version_number, valid_from, valid_to,
+                    change_type, is_active, first_seen_date, last_seen_date, data_pull_date,
+                    title, full_data, full_data_clean, became_inactive_at
+                ) VALUES (
+                    %s, %s, %s, %s, NULL,
+                    'REMOVED', FALSE, %s, %s, %s,
+                    %s, %s, %s, NOW()
+                )
+                ON CONFLICT (uid, content_hash) DO NOTHING
+            """, (
+                uid, tombstone_hash, current_version + 1, pull_date,
+                pull_date, pull_date, pull_date,
+                record['title'], full_data_str, full_data_clean_str
+            ))
+            
+            removed_uids.append(uid)
+            logger.info(f"Marked {uid} as REMOVED (was version {current_version})")
+    
+    logger.info(f"Marked {len(removed_uids)} UIDs as REMOVED from wanted list")
+    
+    return {
+        "marked_inactive": len(removed_uids),
+        "removed_uids": removed_uids
+    }
 
-def mark_missing_uids_inactive_web(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, int]:
+
+def mark_missing_uids_inactive_web(conn: Connection, current_uids: List[str], pull_date: date) -> Dict[str, Any]:
     """
-    Mark ALL versions of UIDs in tbl_bolo_web that are NOT in the current pull as inactive.
-    
-    Args:
-        current_uids: List of UIDs that appeared in today's web scrape
-        pull_date: The current pull date (for logging)
-    
-    Returns:
-        Dict with count: {"marked_inactive": int}
+    Mark UIDs not in current web pull as REMOVED by inserting tombstone records.
+    Same logic as mark_missing_uids_inactive() but for tbl_bolo_web.
     """
     if not current_uids:
         logger.warning("Web: No current UIDs provided - skipping mark_missing_uids_inactive_web")
-        return {"marked_inactive": 0}
+        return {"marked_inactive": 0, "removed_uids": []}
     
-    with conn.cursor() as cur:
+    removed_uids = []
+    
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
-            UPDATE tbl_bolo_web
-            SET is_active = FALSE,
-                became_inactive_at = NOW(),
-                updated_at = NOW()
-            WHERE uid NOT IN (
-                SELECT UNNEST(%s::text[])
-            )
-            AND is_active = TRUE
+            SELECT DISTINCT uid, content_hash, version_number, title, full_data, full_data_clean
+            FROM tbl_bolo_web 
+            WHERE valid_to IS NULL 
+              AND is_active = TRUE
+              AND change_type != 'REMOVED'
+              AND uid NOT IN (SELECT UNNEST(%s::text[]))
         """, (current_uids,))
         
-        rows_marked_inactive = cur.rowcount
-        logger.info(f"Web: Marked {rows_marked_inactive} records inactive (UIDs not in current pull)")
+        missing_records = cur.fetchall()
         
-        return {"marked_inactive": rows_marked_inactive}
+        for record in missing_records:
+            uid = record['uid']
+            current_hash = record['content_hash']
+            current_version = record['version_number']
+            
+            cur.execute("""
+                UPDATE tbl_bolo_web 
+                SET valid_to = %s, 
+                    is_active = FALSE,
+                    became_inactive_at = NOW(),
+                    updated_at = NOW()
+                WHERE uid = %s AND content_hash = %s
+            """, (pull_date, uid, current_hash))
+            
+            tombstone_data = {
+                'uid': uid,
+                'removed_date': str(pull_date),
+                'previous_version': current_version
+            }
+            tombstone_hash = hashlib.sha256(
+                json.dumps(tombstone_data, sort_keys=True).encode('utf-8')
+            ).hexdigest()
+            
+            # Handle JSONB fields - ensure they're JSON strings for insertion
+            full_data_str = json.dumps(record['full_data']) if isinstance(record['full_data'], dict) else record['full_data']
+            full_data_clean_str = json.dumps(record['full_data_clean']) if isinstance(record['full_data_clean'], dict) else record['full_data_clean']
+            
+            cur.execute("""
+                INSERT INTO tbl_bolo_web (
+                    uid, content_hash, version_number, valid_from, valid_to,
+                    change_type, is_active, first_seen_date, last_seen_date, data_pull_date,
+                    title, full_data, full_data_clean, became_inactive_at
+                ) VALUES (
+                    %s, %s, %s, %s, NULL,
+                    'REMOVED', FALSE, %s, %s, %s,
+                    %s, %s, %s, NOW()
+                )
+                ON CONFLICT (uid, content_hash) DO NOTHING
+            """, (
+                uid, tombstone_hash, current_version + 1, pull_date,
+                pull_date, pull_date, pull_date,
+                record['title'], full_data_str, full_data_clean_str
+            ))
+            
+            removed_uids.append(uid)
+    
+    logger.info(f"Web: Marked {len(removed_uids)} UIDs as REMOVED")
+    
+    return {
+        "marked_inactive": len(removed_uids),
+        "removed_uids": removed_uids
+    }
 
 def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
     """
@@ -1242,6 +1520,7 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
         processing_time_seconds=round(processing_time, 2)
     )
 
+
 def import_data_set_web(file_path: str, pull_date: date) -> ImportSummary:
     """
     Main import function for web-scraped data - reads JSON file and imports to tbl_bolo_web.
@@ -1385,45 +1664,47 @@ def import_data_set_web(file_path: str, pull_date: date) -> ImportSummary:
         processing_time_seconds=round(processing_time, 2)
     )
 
+
 def get_active_inactive_counts(conn: Connection) -> Dict[str, int]:
     """
     Get current counts of active and inactive records.
-    
-    Returns:
-        Dict with 'active_count' and 'inactive_count'
+    Updated to use valid_to instead of just is_active for accuracy.
     """
     with conn.cursor() as cur:
         cur.execute("""
             SELECT 
-                COUNT(*) FILTER (WHERE is_active = TRUE) as active_count,
-                COUNT(*) FILTER (WHERE is_active = FALSE) as inactive_count
+                COUNT(*) FILTER (WHERE valid_to IS NULL AND change_type != 'REMOVED') as active_count,
+                COUNT(*) FILTER (WHERE valid_to IS NOT NULL OR change_type = 'REMOVED') as inactive_count,
+                COUNT(DISTINCT uid) as unique_uids
             FROM tbl_bolo
         """)
         result = cur.fetchone()
         return {
             "active_count": result[0] or 0,
-            "inactive_count": result[1] or 0
+            "inactive_count": result[1] or 0,
+            "unique_uids": result[2] or 0
         }
+
 
 def get_active_inactive_counts_web(conn: Connection) -> Dict[str, int]:
     """
     Get current counts of active and inactive records in tbl_bolo_web.
-    
-    Returns:
-        Dict with 'active_count' and 'inactive_count'
     """
     with conn.cursor() as cur:
         cur.execute("""
             SELECT 
-                COUNT(*) FILTER (WHERE is_active = TRUE) as active_count,
-                COUNT(*) FILTER (WHERE is_active = FALSE) as inactive_count
+                COUNT(*) FILTER (WHERE valid_to IS NULL AND change_type != 'REMOVED') as active_count,
+                COUNT(*) FILTER (WHERE valid_to IS NOT NULL OR change_type = 'REMOVED') as inactive_count,
+                COUNT(DISTINCT uid) as unique_uids
             FROM tbl_bolo_web
         """)
         result = cur.fetchone()
         return {
             "active_count": result[0] or 0,
-            "inactive_count": result[1] or 0
+            "inactive_count": result[1] or 0,
+            "unique_uids": result[2] or 0
         }
+
 
 async def fetch_page_with_retry(client: httpx.AsyncClient, url: str, params: dict, page: int, max_retries: int = 3) -> dict:
     """
@@ -2664,3 +2945,98 @@ async def generate_full_archive(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Archive generation failed: {str(e)}"
             )
+
+# =============================================================================
+# UTILITY FUNCTIONS FOR HISTORY QUERIES
+# =============================================================================
+
+def get_person_version_history(conn: Connection, uid: str, table: str = 'tbl_bolo') -> List[Dict]:
+    """
+    Get complete version history for a specific person.
+    
+    Args:
+        conn: Database connection
+        uid: Person's unique identifier
+        table: Which table to query ('tbl_bolo' or 'tbl_bolo_web')
+        
+    Returns:
+        List of version records ordered by version_number descending
+    """
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(f"""
+            SELECT 
+                version_number,
+                change_type,
+                valid_from,
+                valid_to,
+                status,
+                reward_max,
+                poster_classification,
+                title,
+                modified as fbi_modified,
+                first_seen_date,
+                last_seen_date,
+                content_hash
+            FROM {table}
+            WHERE uid = %s
+            ORDER BY version_number DESC
+        """, (uid,))
+        return [dict(row) for row in cur.fetchall()]
+
+
+def get_changes_by_date(conn: Connection, change_date: date, table: str = 'tbl_bolo') -> Dict[str, List[str]]:
+    """
+    Get all changes that occurred on a specific date, grouped by change type.
+    
+    Args:
+        conn: Database connection
+        change_date: Date to query
+        table: Which table to query
+        
+    Returns:
+        Dict mapping change_type to list of UIDs
+    """
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(f"""
+            SELECT change_type, uid, title
+            FROM {table}
+            WHERE valid_from = %s
+            ORDER BY change_type, title
+        """, (change_date,))
+        
+        results = {'NEW': [], 'MODIFIED': [], 'REMOVED': [], 'RETURNED': []}
+        for row in cur.fetchall():
+            change_type = row['change_type']
+            if change_type in results:
+                results[change_type].append({'uid': row['uid'], 'title': row['title']})
+        
+        return results
+
+
+def get_daily_change_summary(conn: Connection, days: int = 30, table: str = 'tbl_bolo') -> List[Dict]:
+    """
+    Get daily summary of changes for the last N days.
+    
+    Args:
+        conn: Database connection
+        days: Number of days to look back
+        table: Which table to query
+        
+    Returns:
+        List of daily summaries with counts by change type
+    """
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(f"""
+            SELECT 
+                valid_from as change_date,
+                COUNT(*) FILTER (WHERE change_type = 'NEW') as new_count,
+                COUNT(*) FILTER (WHERE change_type = 'MODIFIED') as modified_count,
+                COUNT(*) FILTER (WHERE change_type = 'REMOVED') as removed_count,
+                COUNT(*) FILTER (WHERE change_type = 'RETURNED') as returned_count,
+                COUNT(*) as total_changes
+            FROM {table}
+            WHERE valid_from >= CURRENT_DATE - INTERVAL '%s days'
+            GROUP BY valid_from
+            ORDER BY valid_from DESC
+        """, (days,))
+        return [dict(row) for row in cur.fetchall()]
