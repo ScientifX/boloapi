@@ -134,6 +134,35 @@ def is_plone_url(url: str) -> bool:
     url_lower = url.lower()
     return '@@images' in url_lower
 
+def should_skip_url(url: str) -> bool:
+    """
+    Check if URL should be skipped during validation/download.
+    
+    Skips:
+    - API endpoints (/@wanted-person/) - return JSON, not documents
+    - Plone internal routing (/@@download/) - duplicates of normal URLs
+    - Authentication redirects (/acl_users/) - not downloadable
+    - Other API markers (/@) - internal paths
+    
+    Returns:
+        True if URL should be skipped, False if it should be processed
+    """
+    skip_patterns = [
+        '/@wanted-person/',    # API endpoints returning JSON
+        '/@',                  # Generic API markers  
+        '/@@download/',        # Plone CMS internal routing
+        '/@@',                 # Plone traversal markers
+        '/acl_users/',         # Authentication redirects
+        '/require_login',      # Login pages
+        '=https%3a',           # URLs in the query string
+    ]
+    
+    url_lower = url.lower()
+    for pattern in skip_patterns:
+        if pattern.lower() in url_lower:
+            return True
+    
+    return False
 
 def get_url_hash(url: str) -> str:
     """Generate MD5 hash of URL for cache filename."""
@@ -160,6 +189,69 @@ def get_cache_filename(url: str) -> str:
     url_hash = get_url_hash(url)
     ext = get_extension_from_url(url)
     return f"{url_hash}{ext}"
+
+
+def calculate_content_hash(record: dict) -> str:
+    """
+    Generate SHA256 hash from actual content fields only.
+    
+    Excludes timestamps and server-generated metadata that changes
+    on every page load but doesn't represent real content changes.
+    
+    This solves the problem where web-scraped records show as "modified"
+    on every run because the server timestamp updates, even when
+    actual content hasn't changed.
+    
+    Args:
+        record: Full record dictionary (from API or web scrape)
+        
+    Returns:
+        SHA256 hex digest of content (64 character string)
+    """
+    # Extract only substantive content fields
+    content_fields = {
+        'title': record.get('title', ''),
+        'description': record.get('description', ''),
+        'subjects': sorted(record.get('subjects', []) if record.get('subjects') else []),
+        'warning_message': record.get('warning_message', ''),
+        'reward_text': record.get('reward_text', ''),
+        'caution': record.get('caution', ''),
+        'details': record.get('details', ''),
+        'remarks': record.get('remarks', ''),
+        'field_offices': sorted(record.get('field_offices', []) if record.get('field_offices') else []),
+        'person_classification': record.get('person_classification', ''),
+        'status': record.get('status', ''),
+        'age_range': record.get('age_range', ''),
+        'sex': record.get('sex', ''),
+        'race': record.get('race', ''),
+        'nationality': record.get('nationality', ''),
+        'hair': record.get('hair', ''),
+        'eyes': record.get('eyes', ''),
+        'height_min': record.get('height_min'),
+        'height_max': record.get('height_max'),
+        'weight_min': record.get('weight_min'),
+        'weight_max': record.get('weight_max'),
+        'build': record.get('build', ''),
+        'complexion': record.get('complexion', ''),
+        'scars_and_marks': record.get('scars_and_marks', ''),
+        'occupations': sorted(record.get('occupations', []) if record.get('occupations') else []),
+        'languages': sorted(record.get('languages', []) if record.get('languages') else []),
+        # File and image URLs (not timestamps, just URLs)
+        'images': sorted([
+            img.get('original', '') or img.get('large', '') or img.get('thumb', '')
+            for img in record.get('images', []) if img
+        ]),
+        'files': sorted([
+            f.get('url', '')
+            for f in record.get('files', []) if f
+        ]),
+    }
+    
+    # Create stable JSON representation (sorted keys, consistent format)
+    content_json = json.dumps(content_fields, sort_keys=True, default=str)
+    
+    # Generate and return hash
+    return hashlib.sha256(content_json.encode('utf-8')).hexdigest()
 
 
 def sanitize_folder_name(name: str) -> str:
@@ -201,14 +293,14 @@ def extract_urls_from_record(item: Dict[str, Any]) -> List[Tuple[str, str, str]]
     
     # 1. pathId - direct URL field
     path_id = item.get('pathId')
-    if is_valid_url(path_id):
+    if is_valid_url(path_id) and not should_skip_url(path_id):
         urls.append((uid, 'path_id', path_id))
     
     # 2. url - direct URL field
     url = item.get('url')
-    if is_valid_url(url):
+    if is_valid_url(url) and not should_skip_url(url):
         urls.append((uid, 'url', url))
-    
+
     # 3. files[].url - array of file objects
     files = item.get('files') or []
     for idx, file_obj in enumerate(files):
@@ -273,12 +365,12 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
     
     # 1. pathId - direct URL field
     path_id = item.get('pathId')
-    if is_valid_url(path_id):
+    if is_valid_url(path_id) and not should_skip_url(path_id):
         urls.append((uid, 'path_id', path_id))
     
     # 2. url - direct URL field
     url = item.get('url')
-    if is_valid_url(url):
+    if is_valid_url(url) and not should_skip_url(url):
         urls.append((uid, 'url', url))
     
     # 3. files[].url - array of file objects
@@ -286,7 +378,7 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
     for idx, file_obj in enumerate(files):
         if isinstance(file_obj, dict):
             file_url = file_obj.get('url')
-            if is_valid_url(file_url):
+            if is_valid_url(file_url) and not should_skip_url(file_url):
                 urls.append((uid, f'files_{idx}_url', file_url))
     
     # 4. images[] - array of image objects with large, thumb, original
@@ -295,23 +387,23 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
         if isinstance(image_obj, dict):
             # large
             large_url = image_obj.get('large')
-            if is_valid_url(large_url):
+            if is_valid_url(large_url) and not should_skip_url(large_url):
                 urls.append((uid, f'images_{idx}_large', large_url))
             
             # thumb
             thumb_url = image_obj.get('thumb')
-            if is_valid_url(thumb_url):
+            if is_valid_url(thumb_url) and not should_skip_url(thumb_url):
                 urls.append((uid, f'images_{idx}_thumb', thumb_url))
             
             # original
             original_url = image_obj.get('original')
-            if is_valid_url(original_url):
+            if is_valid_url(original_url) and not should_skip_url(original_url):
                 urls.append((uid, f'images_{idx}_original', original_url))
     
     # 5. related_cases[] - unique to web data
     related_cases = item.get('related_cases') or []
     for idx, case_url in enumerate(related_cases):
-        if is_valid_url(case_url):
+        if is_valid_url(case_url) and not should_skip_url(case_url):
             urls.append((uid, f'related_cases_{idx}', case_url))
     
     return urls
@@ -973,25 +1065,42 @@ async def validate_links_from_file(file_path: str) -> Dict[str, Any]:
         logger.error(f"Error loading JSON file: {str(e)}")
         raise
     
-    # Extract all URLs
+    items = data.get('items', [])
+    logger.info(f"Loaded {len(items)} records from {file_path}")
+    
+    # Extract all URLs (filtering happens inside extract_urls_from_record)
+    # URLs with @, @@, /acl_users/, etc. are automatically skipped
     all_urls = extract_all_urls_from_data(data)
     
     if not all_urls:
+        logger.warning("No valid URLs found after extraction and filtering")
         return {
             'status': 'success',
-            'message': 'No URLs found to validate',
+            'message': 'No URLs found to validate (all filtered or none present)',
             'total_urls': 0,
+            'total_records': len(items),
             'processing_time_seconds': 0
         }
     
-    # Count Plone URLs (will be marked but not requested)
+    # Count Plone URLs (will be marked as plone_url=true but not validated)
+    # These return 403 from automated requests but work in browsers
     plone_count = sum(1 for _, _, url in all_urls if is_plone_url(url))
+    
+    # Calculate actual validation count
+    urls_to_validate = len(all_urls) - plone_count
+    
+    # Log validation plan
+    logger.info(f"Extracted {len(all_urls)} URLs from {len(items)} records")
+    logger.info(f"  - {plone_count} Plone URLs (will be marked but not validated)")
+    logger.info(f"  - {urls_to_validate} URLs will be validated")
+    logger.info("Note: URLs with @, @@, /acl_users/ were filtered during extraction")
     
     # Validate URLs asynchronously
     logger.info(f"Starting validation of {len(all_urls)} URLs ({plone_count} Plone URLs will be marked)")
     validation_results = await validate_urls_batch(all_urls)
     
     # Save results to database
+    logger.info(f"Saving {len(validation_results)} validation results to database")
     with get_db_connection() as conn:
         db_results = save_validation_results(conn, validation_results)
         conn.commit()
@@ -999,25 +1108,35 @@ async def validate_links_from_file(file_path: str) -> Dict[str, Any]:
     # Calculate summary statistics
     processing_time = (datetime.now() - start_time).total_seconds()
     
+    # Count results by type
     result_counts = defaultdict(int)
     for r in validation_results:
         result_counts[r['result']] += 1
     
+    # Count response codes
     response_codes = defaultdict(int)
     for r in validation_results:
         if r['response_code']:
             response_codes[r['response_code']] += 1
     
+    # Log summary
+    logger.info(f"Validation complete in {processing_time:.2f}s")
+    logger.info(f"Results: {dict(result_counts)}")
+    
     return {
         'status': 'success',
         'total_urls_extracted': len(all_urls),
         'plone_urls_marked': plone_count,
-        'urls_validated': len(all_urls) - plone_count,
-        'total_records': len(data.get('items', [])),
+        'urls_validated': urls_to_validate,
+        'total_records': len(items),
         'results': dict(result_counts),
         'database': db_results,
         'response_codes': dict(sorted(response_codes.items())),
-        'processing_time_seconds': round(processing_time, 2)
+        'processing_time_seconds': round(processing_time, 2),
+        'notes': {
+            'filtered_patterns': 'URLs with @, @@, /acl_users/, /require_login filtered at extraction',
+            'plone_handling': 'Plone URLs marked but not validated (return 403 for bots)'
+        }
     }
 
 
@@ -1036,25 +1155,44 @@ async def validate_links_from_file_web(file_path: str) -> Dict[str, Any]:
         logger.error(f"Error loading web JSON file: {str(e)}")
         raise
     
+    items = data.get('items', [])
+    logger.info(f"Loaded {len(items)} web-scraped records from {file_path}")
+    
     # Extract all URLs using web-specific extractor
+    # Filtering happens inside extract_urls_from_record_web()
+    # URLs with @, @@, /acl_users/, etc. are automatically skipped
     all_urls = extract_all_urls_from_data_web(data)
     
     if not all_urls:
+        logger.warning("No valid URLs found in web data after extraction and filtering")
         return {
             'status': 'success',
-            'message': 'No URLs found to validate in web data',
+            'message': 'No URLs found to validate in web data (all filtered or none present)',
             'total_urls': 0,
+            'total_records': len(items),
             'processing_time_seconds': 0
         }
     
-    # Count Plone URLs (will be marked but not requested)
+    # Count Plone URLs (will be marked as plone_url=true but not validated)
+    # These return 403 from automated requests but work in browsers
     plone_count = sum(1 for _, _, url in all_urls if is_plone_url(url))
+    
+    # Calculate actual validation count
+    urls_to_validate = len(all_urls) - plone_count
+    
+    # Log validation plan
+    logger.info(f"Extracted {len(all_urls)} URLs from {len(items)} web records")
+    logger.info(f"  - {plone_count} Plone URLs (will be marked but not validated)")
+    logger.info(f"  - {urls_to_validate} URLs will be validated")
+    logger.info("Note: URLs with @, @@, /acl_users/ were filtered during extraction")
+    logger.info("Web data includes related_cases[] which may have additional URLs")
     
     # Validate URLs asynchronously
     logger.info(f"Starting web validation of {len(all_urls)} URLs ({plone_count} Plone URLs will be marked)")
     validation_results = await validate_urls_batch(all_urls)
     
-    # Save results to web table
+    # Save results to web-specific table
+    logger.info(f"Saving {len(validation_results)} validation results to tbl_bolo_link_check_web")
     with get_db_connection() as conn:
         db_results = save_validation_results_web(conn, validation_results)
         conn.commit()
@@ -1062,25 +1200,36 @@ async def validate_links_from_file_web(file_path: str) -> Dict[str, Any]:
     # Calculate summary statistics
     processing_time = (datetime.now() - start_time).total_seconds()
     
+    # Count results by type
     result_counts = defaultdict(int)
     for r in validation_results:
         result_counts[r['result']] += 1
     
+    # Count response codes
     response_codes = defaultdict(int)
     for r in validation_results:
         if r['response_code']:
             response_codes[r['response_code']] += 1
     
+    # Log summary
+    logger.info(f"Web validation complete in {processing_time:.2f}s")
+    logger.info(f"Results: {dict(result_counts)}")
+    
     return {
         'status': 'success',
         'total_urls_extracted': len(all_urls),
         'plone_urls_marked': plone_count,
-        'urls_validated': len(all_urls) - plone_count,
-        'total_records': len(data.get('items', [])),
+        'urls_validated': urls_to_validate,
+        'total_records': len(items),
         'results': dict(result_counts),
         'database': db_results,
         'response_codes': dict(sorted(response_codes.items())),
-        'processing_time_seconds': round(processing_time, 2)
+        'processing_time_seconds': round(processing_time, 2),
+        'notes': {
+            'filtered_patterns': 'URLs with @, @@, /acl_users/, /require_login filtered at extraction',
+            'plone_handling': 'Plone URLs marked but not validated (return 403 for bots)',
+            'web_specific': 'Includes related_cases[] unique to web scraping'
+        }
     }
 
 
