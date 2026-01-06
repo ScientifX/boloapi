@@ -26,6 +26,7 @@ from fastapi import APIRouter
 from auth import UserRole
 from auth_jwt import require_jwt_role
 from utils_array import extract_and_clean_array
+from utils_warning_enrichment import enrich_with_warning_components
 from service_nottification import detect_all_changes, process_pending_notifications
 from service_link_validation import (
     validate_links_from_file, 
@@ -445,12 +446,12 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
 def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single wanted person record into database-ready format.
-    Now includes content_hash computation for version tracking.
+    Now includes warning component enrichment in full_data_clean.
     
     Returns None if the record should be skipped (missing uid).
     """
     from router_etl import (
-        extract_array_field, extract_poster_url, parse_date, clean_json_recursive
+        extract_array_field, extract_poster_url, parse_date, clean_json_recursive, compute_content_hash
     )
     
     uid = item.get('uid')
@@ -460,7 +461,10 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     # Create cleaned version of full_data
     full_data_clean = clean_json_recursive(item)
     
-    # Compute content hash for version tracking
+    # ENHANCED: Add warning components to full_data_clean
+    full_data_clean = enrich_with_warning_components(full_data_clean)
+    
+    # Compute content hash for version tracking (after enrichment)
     content_hash = compute_content_hash(full_data_clean)
 
     return {
@@ -470,7 +474,7 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'build': item.get('build'),
         'caution': item.get('caution'),
         'complexion': item.get('complexion'),
-        'content_hash': content_hash,  # NEW
+        'content_hash': content_hash,
         'coordinates': json.dumps(item.get('coordinates')),
         'data_pull_date': pull_date,
         'dates_of_birth_used': extract_array_field(item, 'dates_of_birth_used'),
@@ -481,7 +485,7 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'field_offices': extract_array_field(item, 'field_offices'),
         'first_seen_date': pull_date,
         'full_data': json.dumps(item),
-        'full_data_clean': json.dumps(full_data_clean),
+        'full_data_clean': json.dumps(full_data_clean),  # Now includes warning_components
         'hair': item.get('hair'),
         'hair_raw': item.get('hair_raw'),
         'height_max': item.get('height_max'),
@@ -528,12 +532,12 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
 def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     """
     Process a single web-scraped wanted person record into database-ready format.
-    Now includes content_hash computation and related_cases field.
+    Now includes warning component enrichment in full_data_clean.
     
     Returns None if the record should be skipped (missing uid).
     """
     from router_etl import (
-        extract_array_field, extract_poster_url, parse_date, clean_json_recursive
+        extract_array_field, extract_poster_url, parse_date, clean_json_recursive, compute_content_hash
     )
     
     uid = item.get('uid')
@@ -543,7 +547,10 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
     # Create cleaned version of full_data
     full_data_clean = clean_json_recursive(item)
     
-    # Compute content hash for version tracking
+    # ENHANCED: Add warning components to full_data_clean
+    full_data_clean = enrich_with_warning_components(full_data_clean)
+    
+    # Compute content hash for version tracking (after enrichment)
     content_hash = compute_content_hash(full_data_clean)
 
     return {
@@ -553,7 +560,7 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'build': item.get('build'),
         'caution': item.get('caution'),
         'complexion': item.get('complexion'),
-        'content_hash': content_hash,  # NEW
+        'content_hash': content_hash,
         'coordinates': json.dumps(item.get('coordinates')),
         'data_pull_date': pull_date,
         'dates_of_birth_used': extract_array_field(item, 'dates_of_birth_used'),
@@ -564,7 +571,7 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'field_offices': extract_array_field(item, 'field_offices'),
         'first_seen_date': pull_date,
         'full_data': json.dumps(item),
-        'full_data_clean': json.dumps(full_data_clean),
+        'full_data_clean': json.dumps(full_data_clean),  # Now includes warning_components
         'hair': item.get('hair'),
         'hair_raw': item.get('hair_raw'),
         'height_max': item.get('height_max'),
