@@ -134,27 +134,21 @@ def is_plone_url(url: str) -> bool:
     url_lower = url.lower()
     return '@@images' in url_lower
 
+
 def should_skip_url(url: str) -> bool:
     """
-    Check if URL should be skipped during validation/download.
-    
-    Skips:
-    - API endpoints (/@wanted-person/) - return JSON, not documents
-    - Plone internal routing (/@@download/) - duplicates of normal URLs
-    - Authentication redirects (/acl_users/) - not downloadable
-    - Other API markers (/@) - internal paths
-    
-    Returns:
-        True if URL should be skipped, False if it should be processed
+    Skip API endpoints, Plone routing, AND:
+    - URLs without valid file extensions
+    - URLs with redirect parameters
     """
+    # 1. Pattern-based skipping (same as before)
     skip_patterns = [
-        '/@wanted-person/',    # API endpoints returning JSON
-        '/@',                  # Generic API markers  
-        '/@@download/',        # Plone CMS internal routing
-        '/@@',                 # Plone traversal markers
-        '/acl_users/',         # Authentication redirects
-        '/require_login',      # Login pages
-        '=https%3a',           # URLs in the query string
+        '/@wanted-person/',
+        '/@',
+        '/@@download/',
+        '/@@',
+        '/acl_users/',
+        '/require_login',
     ]
     
     url_lower = url.lower()
@@ -162,7 +156,105 @@ def should_skip_url(url: str) -> bool:
         if pattern.lower() in url_lower:
             return True
     
-    return False
+    # 2. Check for redirect parameters (NEW)
+    redirect_params = [
+        'came_from=http',
+        'came_from=https',
+        'came_from=http%3a',   # URL-encoded
+        'came_from=https%3a',
+        'redirect_url=',
+        'return_to=http',
+        'return_to=https',
+        'next=http',
+        'next=https',
+    ]
+    
+    for param in redirect_params:
+        if param in url_lower:
+            return True
+    
+    # 3. Check file extension (NEW)
+    url_path = url.split('?')[0].split('#')[0]  # Remove query/fragment
+    
+    if '.' in url_path:
+        ext = url_path.rsplit('.', 1)[-1].lower()
+        
+        # Valid extensions we want to download
+        valid_extensions = {
+            'pdf', 'txt', 'log',   # Documents
+            'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'svg',  # Images
+        }
+        
+        if ext in valid_extensions:
+            return False  # Keep it
+    
+    # No valid extension - skip it
+    return True
+
+
+def get_valid_file_extensions() -> set:
+    """
+    Return set of valid file extensions for download.
+    Used by should_skip_url() to determine downloadable content.
+    """
+    return {
+        # Documents
+        'pdf', 'txt', 'log', 
+        # Images
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'svg',
+    }
+
+
+def has_redirect_in_query(url: str) -> bool:
+    """
+    Check if URL has authentication/redirect parameters in query string.
+    These typically return 403 Forbidden when accessed by bots.
+    
+    Examples:
+    - https://www.fbi.gov/login?came_from=https%3A%2F%2Fwww.fbi.gov%2Fwanted
+    - https://example.com/path?redirect_url=http://...
+    - https://example.com/page?return_to=https://...
+    
+    Returns:
+        True if URL has redirect parameters, False otherwise
+    """
+    url_lower = url.lower()
+    
+    redirect_params = [
+        'came_from=http',
+        'came_from=https',
+        'came_from=http%3a',   # URL-encoded
+        'came_from=https%3a',
+        'redirect_url=',
+        'return_to=http',
+        'return_to=https',
+        'next=http',
+        'next=https',
+    ]
+    
+    return any(param in url_lower for param in redirect_params)
+
+
+def get_file_extension(url: str) -> str:
+    """
+    Extract file extension from URL.
+    Removes query string and fragment before extracting extension.
+    
+    Args:
+        url: Full URL
+        
+    Returns:
+        File extension without dot (e.g., 'pdf', 'jpg'), or empty string if none
+    """
+    # Remove query string and fragment
+    url_path = url.split('?')[0].split('#')[0]
+    
+    # Get extension
+    if '.' in url_path:
+        return url_path.rsplit('.', 1)[-1].lower()
+    
+    return ''
+
 
 def get_url_hash(url: str) -> str:
     """Generate MD5 hash of URL for cache filename."""
