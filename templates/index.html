@@ -163,11 +163,10 @@
 /* Features Section */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-top: 40px;
 }
-
 .feature-item {
     display: flex;
     align-items: flex-start;
@@ -370,7 +369,6 @@
     font-size: 1.1em;
 }
 
-/* CTA Section */
 .cta-section {
     background: linear-gradient(135deg, #3d4461 0%, #2a3148 100%);
     color: white;
@@ -436,6 +434,18 @@
         font-size: 1.1em;
     }
 }
+
+@media (max-width: 900px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 {% endblock %}
 
@@ -484,39 +494,55 @@
 -->
 <!-- Features Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Why Choose {{ app_name }}?</h2>
-    <p class="section-subtitle">We handle the complexity so you can focus on building great applications</p>
+    <h2 class="section-title">Why Pay For What the FBI Gives Away Free?</h2>
+    <p class="section-subtitle">Because the raw FBI API costs you hours of frustration. We solved the hard problems already.</p>
     
     <div class="features-grid">        
         <div class="feature-item">
             <div class="feature-icon">✨</div>
             <div class="feature-content">
-                <h4>Data Cleaning & Normalization</h4>
-                <p>Standardized fields, deduplicated records, enriched metadata</p>
+                <h4>Hours of Data Cleanup - Already Done</h4>
+                <p>Inconsistent dates, duplicate records, messy text? We normalize everything so you get clean, query-ready data every time.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🔍</div>
             <div class="feature-content">
-                <h4>Powerful Search</h4>
-                <p>Simple wildcards or complex boolean logic with field-specific operators</p>
+                <h4>Find People, Not Just Records</h4>
+                <p>Search by partial name, physical description, location, or offense type. Get targeted results instead of paginating through hundreds of records.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🔐</div>
             <div class="feature-content">
-                <h4>Secure Authentication</h4>
-                <p>JWT token-based auth with role-based access controls</p>
+                <h4>Records Disappear - We Track That</h4>
+                <p>The FBI removes records without notice. Our historical tracking proves what was listed yesterday, last month, or last year.</p>
             </div>
         </div>
         
         <div class="feature-item">
-            <div class="feature-icon">📚</div>
+            <div class="feature-icon">🔔</div>
             <div class="feature-content">
-                <h4>Complete Documentation</h4>
-                <p>Interactive API docs with code examples</p>
+                <h4>Never Miss a Change</h4>
+                <p>Premium subscribers get email alerts when records change - new fugitives, removals, and updates delivered before you have to go looking.</p>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-content">
+                <h4>Works When FBI.gov Doesn't</h4>
+                <p>Maintenance windows, rate limits, surprise outages? Your API key works 24/7 against our always-available database.</p>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-content">
+                <h4>API to Results in 5 Minutes</h4>
+                <p>Copy-paste examples in Python, JavaScript, and cURL. Interactive docs let you test queries before writing a single line of code.</p>
             </div>
         </div>
     </div>
@@ -531,7 +557,7 @@
         <div class="step-card">
             <div class="step-number">1</div>
             <h3><a href="/v1/auth/signup">Sign Up</a></h3>
-            <p>Just bring your emal address, and receive an activation link instantly</p>
+            <p>Just bring your email address, and receive an activation link instantly</p>
         </div>
         
         <div class="step-card">
