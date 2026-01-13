@@ -623,7 +623,7 @@ async def login(request: Request, login_req: LoginRequest):
             "token_type": "bearer",
             "expires_in": int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             "role": user_role.value,
-            "redirect_url": request.url.scheme + "://" + request.client.host + ":8000" + "/v1/auth/profile"
+            "redirect_url": "/v1/auth/profile"  # Use relative URL for proper proxy handling
         }
         
         response = JSONResponse(content=response_data)
