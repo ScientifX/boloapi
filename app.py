@@ -9,7 +9,8 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.exceptions import RequestValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import HTMLResponse 
+from starlette.responses import HTMLResponse
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware 
 
 # Rate limiting libraries
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -90,6 +91,9 @@ app = FastAPI(
     redoc_url=None,
     openapi_url=None,
 	)
+
+# Trust proxy headers for correct HTTPS URL generation on Railway
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
