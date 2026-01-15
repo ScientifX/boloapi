@@ -156,6 +156,8 @@ async def get_my_searches(
                         endpoint,
                         http_method,
                         query_params,
+                        search_fields,
+                        filters_applied,
                         search_type,
                         results_count,
                         response_format,

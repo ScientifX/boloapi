@@ -281,15 +281,38 @@
             const timestamp = dateObj.getTime();
             const endpoint = search.endpoint.split('/').pop() || search.endpoint;
             
-            // Format query params as JSON string
-            const queryParamsStr = search.query_params ? 
-                JSON.stringify(search.query_params, null, 2) : 
-                '{}';
+            // Build comprehensive search payload from all available data
+            let searchPayload = {};
+            
+            // Add filters if present
+            if (search.filters_applied && Object.keys(search.filters_applied).length > 0) {
+                searchPayload = { ...searchPayload, ...search.filters_applied };
+            }
+            
+            // Add search fields if present
+            if (search.search_fields && Object.keys(search.search_fields).length > 0) {
+                searchPayload = { ...searchPayload, ...search.search_fields };
+            }
+            
+            // Add query params if present (but filter out common ones like format)
+            if (search.query_params && Object.keys(search.query_params).length > 0) {
+                const relevantParams = { ...search.query_params };
+                // Remove format as it's already shown in the Format column
+                delete relevantParams.format;
+                if (Object.keys(relevantParams).length > 0) {
+                    searchPayload = { ...searchPayload, ...relevantParams };
+                }
+            }
+            
+            // Format as JSON string
+            const searchPayloadStr = Object.keys(searchPayload).length > 0 ? 
+                JSON.stringify(searchPayload, null, 2) : 
+                'No search parameters';
             
             return [
                 '', // Expand/collapse column - will be populated by createdRow
                 `<div class="date-collapsed">${dateOnly}</div><div class="date-expanded" style="display:none;">${dateOnly}<br><span class="time-text">${timeOnly}</span></div>`,
-                `<div class="endpoint-name"><span class="endpoint-badge">${endpoint}</span></div><div class="endpoint-params" style="display:none;"><pre class="json-params">${queryParamsStr}</pre></div>`,
+                `<div class="endpoint-name"><span class="endpoint-badge">${endpoint}</span></div><div class="endpoint-params" style="display:none;"><pre class="json-params">${searchPayloadStr}</pre></div>`,
                 search.search_type || 'N/A',
                 search.response_format,
                 search.results_count !== null && search.results_count !== undefined ? search.results_count : 'N/A',
@@ -307,7 +330,7 @@
         dataTable = $('#recentSearches').DataTable({
             data: tableData,
             order: [[7, 'desc']], // Sort by hidden timestamp column
-            pageLength: 25,
+            pageLength: 10,
             lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
             createdRow: function(row, data, dataIndex) {
                 // Add expand/collapse button to first cell
@@ -330,7 +353,8 @@
                 },
                 {
                     targets: 1, // Date column
-                    orderable: true
+                    orderable: true,
+                    orderData: [7] // Sort using the hidden timestamp column
                 },
                 {
                     targets: 2, // Endpoint column
