@@ -81,6 +81,7 @@
                         <th>Format</th>
                         <th>Results</th>
                         <th>Response Time</th>
+                        <th style="display:none;">Timestamp</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -141,24 +142,29 @@
             dailyChart.destroy();
         }
         
-        // Ensure today is always included
+        // Work with a copy of the data to avoid modifying the original
+        let chartData = [...data];
+        
+        // Ensure today is always included - use local date not UTC
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayStr = today.toISOString().split('T')[0];
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
         
         // Check if today exists in data
-        const hasTodayData = data.some(d => d.date === todayStr);
+        const hasTodayData = chartData.some(d => d.date === todayStr);
         
-        // Add today with 0 searches if not present
+        // Add today with actual searches if from backend, or 0 if not present
         if (!hasTodayData) {
-            data.push({ date: todayStr, searches: 0 });
+            chartData.push({ date: todayStr, searches: 0 });
         }
         
         // Sort by date to ensure proper order
-        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        const labels = data.map(d => new Date(d.date).toLocaleDateString());
-        const searches = data.map(d => d.searches);
+        const labels = chartData.map(d => new Date(d.date).toLocaleDateString());
+        const searches = chartData.map(d => d.searches);
         
         dailyChart = new Chart(ctx, {
             type: 'line',
@@ -253,6 +259,13 @@
                     legend: {
                         display: false
                     }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            autoSkip: false
+                        }
+                    }
                 }
             }
         });
@@ -270,7 +283,7 @@
                 `<span class="endpoint-badge">${endpoint}</span>`,
                 search.search_type || 'N/A',
                 search.response_format,
-                search.results_count,
+                search.results_count !== null && search.results_count !== undefined ? search.results_count : 'N/A',
                 `${search.response_time_ms}ms`,
                 timestamp // Hidden column for sorting
             ];
