@@ -51,23 +51,12 @@
                 <div class="value" id="avgResponseTime">0</div>
                 <div class="label">milliseconds</div>
             </div>
-            
-            <div class="stat-card">
-                <h3>Active Days</h3>
-                <div class="value" id="activeDays">0</div>
-                <div class="label">Days with activity</div>
-            </div>
         </div>
         
         <div class="chart-grid">
             <div class="chart-container">
                 <h3>Daily Activity</h3>
                 <canvas id="dailyChart"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3>Search Types</h3>
-                <canvas id="searchTypesChart"></canvas>
             </div>
             
             <div class="chart-container">
@@ -101,7 +90,7 @@
 </div>
 
 <script>
-    let dailyChart, searchTypesChart, formatsChart, endpointsChart;
+    let dailyChart, formatsChart, endpointsChart;
     
     async function loadAnalytics() {
         const timeRange = document.getElementById('timeRange').value;
@@ -128,11 +117,8 @@
                 (stats.overall.total_results || 0).toLocaleString();
             document.getElementById('avgResponseTime').textContent = 
                 Math.round(stats.overall.avg_response_time_ms);
-            document.getElementById('activeDays').textContent = 
-                stats.overall.active_days;
             
             updateDailyChart(stats.daily_activity);
-            updateSearchTypesChart(stats.search_types);
             updateFormatsChart(stats.format_preferences);
             updateEndpointsChart(stats.top_endpoints);
             
@@ -155,16 +141,32 @@
             dailyChart.destroy();
         }
         
+        // Ensure today is always included
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString().split('T')[0];
+        
+        // Check if today exists in data
+        const hasTodayData = data.some(d => d.date === todayStr);
+        
+        // Add today with 0 searches if not present
+        if (!hasTodayData) {
+            data.push({ date: todayStr, searches: 0 });
+        }
+        
+        // Sort by date to ensure proper order
+        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
         const labels = data.map(d => new Date(d.date).toLocaleDateString());
         const searches = data.map(d => d.searches);
         
         dailyChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels.reverse(),
+                labels: labels,
                 datasets: [{
                     label: 'Searches',
-                    data: searches.reverse(),
+                    data: searches,
                     borderColor: '#667eea',
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     tension: 0.4,
@@ -184,38 +186,6 @@
                         beginAtZero: true
                     }
                 }
-            }
-        });
-    }
-    
-    function updateSearchTypesChart(data) {
-        const ctx = document.getElementById('searchTypesChart').getContext('2d');
-        
-        if (searchTypesChart) {
-            searchTypesChart.destroy();
-        }
-        
-        const labels = data.map(d => d.search_type || 'other');
-        const counts = data.map(d => d.count);
-        
-        searchTypesChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: counts,
-                    backgroundColor: [
-                        '#667eea',
-                        '#764ba2',
-                        '#f093fb',
-                        '#4facfe',
-                        '#43e97b'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true
             }
         });
     }
@@ -259,8 +229,11 @@
             endpointsChart.destroy();
         }
         
-        const labels = data.map(d => d.endpoint.split('/').pop());
-        const counts = data.map(d => d.count);
+        // Limit to top 10 endpoints
+        const topTen = data.slice(0, 10);
+        
+        const labels = topTen.map(d => d.endpoint.split('/').pop());
+        const counts = topTen.map(d => d.count);
         
         endpointsChart = new Chart(ctx, {
             type: 'bar',
@@ -287,7 +260,9 @@
     
     function updateRecentSearchesTable(searches) {
         const tableData = searches.map(search => {
-            const time = new Date(search.request_timestamp).toLocaleString();
+            const dateObj = new Date(search.request_timestamp);
+            const time = dateObj.toLocaleString();
+            const timestamp = dateObj.getTime();
             const endpoint = search.endpoint.split('/').pop() || search.endpoint;
             
             return [
@@ -296,7 +271,8 @@
                 search.search_type || 'N/A',
                 search.response_format,
                 search.results_count,
-                `${search.response_time_ms}ms`
+                `${search.response_time_ms}ms`,
+                timestamp // Hidden column for sorting
             ];
         });
         
@@ -312,7 +288,7 @@
         $('#recentSearches').DataTable({
             data: tableData,
             order: [[0, 'desc']], // Sort by Date (first column) descending
-            pageLength: 25,
+            pageLength: 10,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             language: {
                 search: "Search:",
@@ -329,6 +305,17 @@
             },
             columnDefs: [
                 {
+                    targets: 0, // Date column
+                    type: 'num',
+                    orderData: [6], // Use hidden timestamp column for sorting
+                    render: function(data, type, row) {
+                        if (type === 'sort' || type === 'type') {
+                            return row[6]; // Return timestamp for sorting
+                        }
+                        return data; // Return formatted date for display
+                    }
+                },
+                {
                     targets: 1, // Endpoint column
                     orderable: true
                 },
@@ -341,6 +328,11 @@
                         }
                         return data;
                     }
+                },
+                {
+                    targets: 6, // Hidden timestamp column
+                    visible: false,
+                    searchable: false
                 }
             ]
         });
