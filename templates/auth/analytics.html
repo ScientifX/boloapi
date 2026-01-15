@@ -75,6 +75,7 @@
             <table id="recentSearches" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th class="expand-column"></th>
                         <th>Date</th>
                         <th>Endpoint</th>
                         <th>Type</th>
@@ -92,6 +93,7 @@
 
 <script>
     let dailyChart, formatsChart, endpointsChart;
+    let dataTable;
     
     async function loadAnalytics() {
         const timeRange = document.getElementById('timeRange').value;
@@ -274,13 +276,20 @@
     function updateRecentSearchesTable(searches) {
         const tableData = searches.map(search => {
             const dateObj = new Date(search.request_timestamp);
-            const time = dateObj.toLocaleString();
+            const dateOnly = dateObj.toLocaleDateString();
+            const timeOnly = dateObj.toLocaleTimeString();
             const timestamp = dateObj.getTime();
             const endpoint = search.endpoint.split('/').pop() || search.endpoint;
             
+            // Format query params as JSON string
+            const queryParamsStr = search.query_params ? 
+                JSON.stringify(search.query_params, null, 2) : 
+                '{}';
+            
             return [
-                time,
-                `<span class="endpoint-badge">${endpoint}</span>`,
+                '', // Expand/collapse column - will be populated by createdRow
+                `<div class="date-collapsed">${dateOnly}</div><div class="date-expanded" style="display:none;">${dateOnly}<br><span class="time-text">${timeOnly}</span></div>`,
+                `<div class="endpoint-name"><span class="endpoint-badge">${endpoint}</span></div><div class="endpoint-params" style="display:none;"><pre class="json-params">${queryParamsStr}</pre></div>`,
                 search.search_type || 'N/A',
                 search.response_format,
                 search.results_count !== null && search.results_count !== undefined ? search.results_count : 'N/A',
@@ -290,50 +299,57 @@
         });
         
         // Destroy existing DataTable if it exists
-        if ($.fn.DataTable.isDataTable('#recentSearches')) {
-            $('#recentSearches').DataTable().destroy();
+        if (dataTable) {
+            dataTable.destroy();
         }
         
-        // Clear table body
-        $('#recentSearches tbody').empty();
-        
         // Initialize DataTable
-        $('#recentSearches').DataTable({
+        dataTable = $('#recentSearches').DataTable({
             data: tableData,
-            order: [[0, 'desc']], // Sort by Date (first column) descending
-            pageLength: 10,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
-                info: "Showing _START_ to _END_ of _TOTAL_ searches",
-                infoEmpty: "No searches found",
-                infoFiltered: "(filtered from _MAX_ total searches)",
-                paginate: {
-                    first: "First",
-                    last: "Last",
-                    next: "Next",
-                    previous: "Previous"
-                }
+            order: [[7, 'desc']], // Sort by hidden timestamp column
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            createdRow: function(row, data, dataIndex) {
+                // Add expand/collapse button to first cell
+                const expandCell = $(row).find('td:first');
+                expandCell.html('<span class="expand-icon">+</span>');
+                expandCell.addClass('expand-cell');
+                
+                // Add click handler
+                expandCell.on('click', function() {
+                    toggleRowExpansion($(row));
+                });
             },
             columnDefs: [
                 {
-                    targets: 0, // Date column
-                    type: 'num',
-                    orderData: [6], // Use hidden timestamp column for sorting
-                    render: function(data, type, row) {
-                        if (type === 'sort' || type === 'type') {
-                            return row[6]; // Return timestamp for sorting
-                        }
-                        return data; // Return formatted date for display
-                    }
+                    targets: 0, // Expand/collapse column
+                    orderable: false,
+                    searchable: false,
+                    width: '30px',
+                    className: 'dt-center'
                 },
                 {
-                    targets: 1, // Endpoint column
+                    targets: 1, // Date column
                     orderable: true
                 },
                 {
-                    targets: 5, // Response Time column
+                    targets: 2, // Endpoint column
+                    orderable: false
+                },
+                {
+                    targets: 3, // Type column
+                    orderable: true
+                },
+                {
+                    targets: 4, // Format column
+                    orderable: true
+                },
+                {
+                    targets: 5, // Results column
+                    orderable: true
+                },
+                {
+                    targets: 6, // Response Time column
                     type: 'num',
                     render: function(data, type, row) {
                         if (type === 'sort' || type === 'type') {
@@ -343,12 +359,33 @@
                     }
                 },
                 {
-                    targets: 6, // Hidden timestamp column
+                    targets: 7, // Hidden timestamp column
                     visible: false,
                     searchable: false
                 }
             ]
         });
+    }
+    
+    function toggleRowExpansion(row) {
+        const expandIcon = row.find('.expand-icon');
+        const isExpanded = expandIcon.text() === '-';
+        
+        if (isExpanded) {
+            // Collapse
+            expandIcon.text('+');
+            row.find('.date-expanded').hide();
+            row.find('.date-collapsed').show();
+            row.find('.endpoint-params').hide();
+            row.removeClass('expanded-row');
+        } else {
+            // Expand
+            expandIcon.text('-');
+            row.find('.date-collapsed').hide();
+            row.find('.date-expanded').show();
+            row.find('.endpoint-params').show();
+            row.addClass('expanded-row');
+        }
     }
     
     loadAnalytics();
@@ -581,6 +618,64 @@ table.dataTable.display tbody tr.even {
     font-size: 0.85em;
     color: #667eea;
     font-family: monospace;
+}
+
+/* Expand/collapse specific styles */
+.expand-cell {
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.expand-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    border: 2px solid #667eea;
+    border-radius: 4px;
+    color: #667eea;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.expand-icon:hover {
+    background: #667eea;
+    color: white;
+}
+
+.expand-column {
+    width: 30px !important;
+}
+
+.time-text {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.json-params {
+    margin: 8px 0 0 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.85em;
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.endpoint-name {
+    margin-bottom: 0;
+}
+
+.endpoint-params {
+    margin-top: 0;
+}
+
+tr.expanded-row {
+    background-color: #f8f9ff !important;
 }
 
 @media (max-width: 1200px) {
