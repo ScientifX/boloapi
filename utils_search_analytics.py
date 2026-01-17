@@ -75,6 +75,10 @@ def log_search_analytics(
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
+                # Get current UTC timestamp explicitly
+                from datetime import datetime, timezone
+                utc_now = datetime.now(timezone.utc)
+                
                 cur.execute("""
                     INSERT INTO base.tbl_search_analytics (
                         user_id,
@@ -92,9 +96,10 @@ def log_search_analytics(
                         billing_cycle,
                         ip_address,
                         user_agent,
-                        referer
+                        referer,
+                        request_timestamp
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
                 """, (
                     user_id,
@@ -112,7 +117,8 @@ def log_search_analytics(
                     billing_cycle,
                     ip_address,
                     user_agent[:500] if user_agent else None,
-                    referer[:500] if referer else None
+                    referer[:500] if referer else None,
+                    utc_now
                 ))
                 conn.commit()
                 

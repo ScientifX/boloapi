@@ -61,42 +61,72 @@ class TimeRange(str, Enum):
     ALL_TIME = "all_time"
 
 
-def get_date_range(time_range: TimeRange) -> tuple:
+def get_date_range(time_range: TimeRange, timezone_offset_minutes: int = 0) -> tuple:
     """
-    Convert TimeRange enum to start and end datetime objects.
-    Returns (start_date, end_date) tuple.
+    Convert TimeRange enum to start and end datetime objects in UTC.
+    
+    Args:
+        time_range: The time range enum value
+        timezone_offset_minutes: User's timezone offset in minutes from UTC (negative for west, positive for east)
+                                JavaScript's getTimezoneOffset() returns positive for west, negative for east,
+                                so we negate it here to match standard UTC offset convention
+    
+    Returns:
+        (start_date, end_date) tuple in UTC timezone
     """
-    now = datetime.now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    from datetime import timezone as dt_timezone
+    
+    # Convert timezone offset to timedelta (negate because JS returns opposite sign)
+    user_tz = dt_timezone(timedelta(minutes=-timezone_offset_minutes))
+    
+    # Get current time in user's timezone
+    now_user = datetime.now(user_tz)
+    
+    # Get start of today in user's timezone
+    today_start_user = now_user.replace(hour=0, minute=0, second=0, microsecond=0)
     
     if time_range == TimeRange.TODAY:
-        return today_start, now
+        start_user = today_start_user
+        end_user = now_user
     
     elif time_range == TimeRange.YESTERDAY:
-        yesterday = today_start - timedelta(days=1)
-        return yesterday, today_start
+        yesterday_user = today_start_user - timedelta(days=1)
+        start_user = yesterday_user
+        end_user = today_start_user
     
     elif time_range == TimeRange.LAST_7_DAYS:
-        return today_start - timedelta(days=7), now
+        start_user = today_start_user - timedelta(days=7)
+        end_user = now_user
     
     elif time_range == TimeRange.LAST_30_DAYS:
-        return today_start - timedelta(days=30), now
+        start_user = today_start_user - timedelta(days=30)
+        end_user = now_user
     
     elif time_range == TimeRange.LAST_90_DAYS:
-        return today_start - timedelta(days=90), now
+        start_user = today_start_user - timedelta(days=90)
+        end_user = now_user
     
     elif time_range == TimeRange.THIS_MONTH:
-        month_start = today_start.replace(day=1)
-        return month_start, now
+        month_start_user = today_start_user.replace(day=1)
+        start_user = month_start_user
+        end_user = now_user
     
     elif time_range == TimeRange.LAST_MONTH:
-        first_of_this_month = today_start.replace(day=1)
-        last_month_end = first_of_this_month - timedelta(days=1)
-        last_month_start = last_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        return last_month_start, first_of_this_month
+        first_of_this_month_user = today_start_user.replace(day=1)
+        last_month_end_user = first_of_this_month_user - timedelta(days=1)
+        last_month_start_user = last_month_end_user.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_user = last_month_start_user
+        end_user = first_of_this_month_user
     
     else:  # ALL_TIME
-        return datetime(2020, 1, 1), now
+        start_user = datetime(2020, 1, 1, tzinfo=user_tz)
+        end_user = now_user
+    
+    # Convert to UTC for database queries
+    start_utc = start_user.astimezone(dt_timezone.utc).replace(tzinfo=None)
+    end_utc = end_user.astimezone(dt_timezone.utc).replace(tzinfo=None)
+    
+    return start_utc, end_utc
 
 
 # ============================================================================
@@ -113,6 +143,7 @@ def get_date_range(time_range: TimeRange) -> tuple:
     **Access:** BASIC, PREMIUM, ADMIN
     
     Returns recent searches with timestamps, endpoints used, and results counts.
+    Timezone filtering is based on user's local timezone for accurate date range filtering.
     """
 )
 @limiter.limit(rate_max)
@@ -121,6 +152,7 @@ async def get_my_searches(
     time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
     limit: int = Query(50, ge=1, le=500, description="Maximum number of records to return"),
     page: int = Query(1, ge=1, description="Page number for pagination"),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """
@@ -132,7 +164,7 @@ async def get_my_searches(
     - Summary statistics
     """
     user_id = current_user["user_id"]
-    start_date, end_date = get_date_range(time_range)
+    start_date, end_date = get_date_range(time_range, timezone_offset)
     offset = (page - 1) * limit
     
     try:
@@ -230,12 +262,14 @@ async def get_my_searches(
     **Access:** BASIC, PREMIUM, ADMIN
     
     Returns aggregated statistics including most used endpoints, popular search types, and usage trends.
+    Timezone filtering is based on user's local timezone for accurate date range filtering.
     """
 )
 @limiter.limit(rate_max)
 async def get_my_stats(
     request: Request,
     time_range: TimeRange = Query(TimeRange.LAST_30_DAYS, description="Time range for statistics"),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """
@@ -250,7 +284,7 @@ async def get_my_stats(
     - Performance metrics
     """
     user_id = current_user["user_id"]
-    start_date, end_date = get_date_range(time_range)
+    start_date, end_date = get_date_range(time_range, timezone_offset)
     
     try:
         with get_db_connection() as conn:
@@ -379,12 +413,14 @@ async def get_my_stats(
     **Access:** ADMIN only
     
     Returns aggregated statistics across all users.
+    Timezone filtering is based on user's local timezone for accurate date range filtering.
     """
 )
 @limiter.limit(rate_max)
 async def get_admin_overview(
     request: Request,
     time_range: TimeRange = Query(TimeRange.LAST_30_DAYS, description="Time range for analytics"),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
 ):
     """
@@ -397,7 +433,7 @@ async def get_admin_overview(
     - Usage by role
     - Performance metrics
     """
-    start_date, end_date = get_date_range(time_range)
+    start_date, end_date = get_date_range(time_range, timezone_offset)
     
     try:
         with get_db_connection() as conn:
@@ -516,6 +552,8 @@ async def get_admin_overview(
     View search history for a specific user.
     
     **Access:** ADMIN only
+    
+    Timezone filtering is based on user's local timezone for accurate date range filtering.
     """
 )
 @limiter.limit(rate_max)
@@ -525,6 +563,7 @@ async def get_user_searches_admin(
     time_range: TimeRange = Query(TimeRange.LAST_30_DAYS, description="Time range for analytics"),
     limit: int = Query(50, ge=1, le=500),
     page: int = Query(1, ge=1),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
 ):
     """
@@ -532,7 +571,7 @@ async def get_user_searches_admin(
     
     Similar to /my_searches but allows admins to view any user's history.
     """
-    start_date, end_date = get_date_range(time_range)
+    start_date, end_date = get_date_range(time_range, timezone_offset)
     offset = (page - 1) * limit
     
     try:

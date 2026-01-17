@@ -947,7 +947,7 @@ def get_db_connection():
 async def simple_search(
     request: Request, 
     search_request: SimpleSearchRequest,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC)) 
     ):
     f"""
@@ -1060,7 +1060,7 @@ async def simple_search(
 async def advanced_search(
     request: Request, 
     search_request: AdvancedSearchRequest,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
     ):
     f"""
@@ -1507,7 +1507,7 @@ async def list_race(
 @track_search_analytics
 async def get_top_ten(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI ten most wanted fugitives"""
@@ -1571,7 +1571,7 @@ async def get_top_ten(
 async def get_top_reward(
     request: Request,
     limit: int = Query(default=25, ge=1, le=5000, description="Maximum results to return"),
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Wanted individuals and cases with high-dollar rewards >= USD$1 Million"""
@@ -1643,7 +1643,7 @@ async def get_top_reward(
 @track_search_analytics
 async def get_additional_info(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Additional violent individuals and cases"""
@@ -1714,7 +1714,7 @@ async def get_additional_info(
 @track_search_analytics
 async def get_crimes_against_children(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to crimes against children"""
@@ -1785,7 +1785,7 @@ async def get_crimes_against_children(
 @track_search_analytics
 async def get_criminal_enterprise_investigations(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to criminal enterprise investigations"""
@@ -1856,7 +1856,7 @@ async def get_criminal_enterprise_investigations(
 @track_search_analytics
 async def get_counterintelligence(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to counterintelligence"""
@@ -1927,7 +1927,7 @@ async def get_counterintelligence(
 @track_search_analytics
 async def get_cyber_crimes(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to cyber crimes"""
@@ -1998,7 +1998,7 @@ async def get_cyber_crimes(
 @track_search_analytics
 async def get_domestic_terrorism(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to domestic terrorism"""
@@ -2069,7 +2069,7 @@ async def get_domestic_terrorism(
 @track_search_analytics
 async def get_endangered_child_alert_program(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to the Endangered Child Alert Program (ECAP)"""
@@ -2140,7 +2140,7 @@ async def get_endangered_child_alert_program(
 @track_search_analytics
 async def get_human_trafficking(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to human trafficking"""
@@ -2211,7 +2211,7 @@ async def get_human_trafficking(
 @track_search_analytics
 async def get_kidnap_missing(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to kidnappings and missing persons"""
@@ -2282,7 +2282,7 @@ async def get_kidnap_missing(
 @track_search_analytics
 async def get_known_bank_robbers(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to known bank robbers"""
@@ -2353,7 +2353,7 @@ async def get_known_bank_robbers(
 @track_search_analytics
 async def get_law_enforcement_assistance(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to law enforcement assistance"""
@@ -2424,7 +2424,7 @@ async def get_law_enforcement_assistance(
 @track_search_analytics
 async def get_murders(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to murder"""
@@ -2495,7 +2495,7 @@ async def get_murders(
 @track_search_analytics
 async def get_kidnap_parental(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to parental kidnappings"""
@@ -2566,7 +2566,7 @@ async def get_kidnap_parental(
 @track_search_analytics
 async def get_seeking_info(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases for whom additional information is sought"""
@@ -2637,7 +2637,7 @@ async def get_seeking_info(
 @track_search_analytics
 async def get_terror_info(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to terrorism for whom additional information is sought"""
@@ -2708,7 +2708,7 @@ async def get_terror_info(
 @track_search_analytics
 async def get_violent_criminal_apprehension_program(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to the Violent Criminal Apprehension Program (ViCAP)"""
@@ -2779,7 +2779,7 @@ async def get_violent_criminal_apprehension_program(
 @track_search_analytics
 async def get_wanted_terrorists(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to wanted terrorists"""
@@ -2850,7 +2850,7 @@ async def get_wanted_terrorists(
 @track_search_analytics
 async def get_white_collar_crimes(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to white-collar crimes"""
@@ -2920,7 +2920,7 @@ async def get_white_collar_crimes(
 @track_search_analytics
 async def get_case_of_the_week(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases identified by the FBI as Case of the Week"""
@@ -2991,7 +2991,7 @@ async def get_case_of_the_week(
 @track_search_analytics 
 async def get_native_american(
     request: Request,
-    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, or xml"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Individuals and cases related to Native Americans"""
