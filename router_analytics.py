@@ -355,19 +355,27 @@ async def get_my_stats(
                 formats = cur.fetchall()
                 
                 # Daily activity (last 30 days max for chart)
+                # Convert UTC timestamps to user's timezone for accurate date grouping
                 chart_start = max(start_date, end_date - timedelta(days=30))
+                
+                # Calculate timezone offset as minutes
+                # JavaScript's getTimezoneOffset() is positive for west (behind UTC), negative for east
+                # We need to subtract this offset from UTC to get local time
+                # For PST (UTC-8), getTimezoneOffset() returns 480, so we subtract 480 minutes to get local time
+                offset_minutes = -timezone_offset
+                
                 cur.execute("""
                     SELECT 
-                        DATE(request_timestamp) as date,
+                        DATE(request_timestamp + (%s || ' minutes')::INTERVAL) as date,
                         COUNT(*) as searches,
                         SUM(results_count) as results
                     FROM base.tbl_search_analytics
                     WHERE user_id = %s
                         AND request_timestamp >= %s
                         AND request_timestamp <= %s
-                    GROUP BY DATE(request_timestamp)
+                    GROUP BY DATE(request_timestamp + (%s || ' minutes')::INTERVAL)
                     ORDER BY date DESC
-                """, (user_id, chart_start, end_date))
+                """, (offset_minutes, user_id, chart_start, end_date, offset_minutes))
                 
                 daily_activity = cur.fetchall()
                 
@@ -502,18 +510,23 @@ async def get_admin_overview(
                 search_types = cur.fetchall()
                 
                 # Daily trends
+                # Convert UTC timestamps to user's timezone for accurate date grouping
+                # JavaScript's getTimezoneOffset() is positive for west, negative for east
+                # We subtract the offset to get local time
+                offset_minutes = -timezone_offset
+                
                 cur.execute("""
                     SELECT 
-                        DATE(request_timestamp) as date,
+                        DATE(request_timestamp + (%s || ' minutes')::INTERVAL) as date,
                         COUNT(*) as searches,
                         COUNT(DISTINCT user_id) as active_users,
                         SUM(results_count) as results
                     FROM base.tbl_search_analytics
                     WHERE request_timestamp >= %s
                         AND request_timestamp <= %s
-                    GROUP BY DATE(request_timestamp)
+                    GROUP BY DATE(request_timestamp + (%s || ' minutes')::INTERVAL)
                     ORDER BY date DESC
-                """, (start_date, end_date))
+                """, (offset_minutes, start_date, end_date, offset_minutes))
                 
                 daily_trends = cur.fetchall()
                 

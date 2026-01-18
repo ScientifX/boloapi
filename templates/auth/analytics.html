@@ -105,12 +105,15 @@
         content.style.display = 'none';
         error.style.display = 'none';
         
+        // Get user's timezone offset
+        const timezoneOffset = new Date().getTimezoneOffset();
+        
         try {
-            const statsResponse = await fetch(`/v1/analytics/my_stats?time_range=${timeRange}`);
+            const statsResponse = await fetch(`/v1/analytics/my_stats?time_range=${timeRange}&timezone_offset=${timezoneOffset}`);
             if (!statsResponse.ok) throw new Error('Failed to load stats');
             const stats = await statsResponse.json();
             
-            const searchesResponse = await fetch(`/v1/analytics/my_searches?time_range=last_30_days&limit=500`);
+            const searchesResponse = await fetch(`/v1/analytics/my_searches?time_range=last_30_days&limit=500&timezone_offset=${timezoneOffset}`);
             if (!searchesResponse.ok) throw new Error('Failed to load searches');
             const searches = await searchesResponse.json();
             
@@ -165,7 +168,13 @@
         // Sort by date to ensure proper order
         chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        const labels = chartData.map(d => new Date(d.date).toLocaleDateString());
+        // Format labels - parse dates as local dates to avoid timezone shifts
+        const labels = chartData.map(d => {
+            // Parse date string as local date (YYYY-MM-DD)
+            const [year, month, day] = d.date.split('-').map(Number);
+            const localDate = new Date(year, month - 1, day);
+            return localDate.toLocaleDateString();
+        });
         const searches = chartData.map(d => d.searches);
         
         dailyChart = new Chart(ctx, {
