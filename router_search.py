@@ -1167,11 +1167,14 @@ async def advanced_search(
 @track_search_analytics
 async def list_field_offices(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of FBI field office locations"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1196,7 +1199,7 @@ async def list_field_offices(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_field_offices",
             "role": role_str,
             "limit": actual_limit,
@@ -1204,6 +1207,9 @@ async def list_field_offices(
             "field_offices": field_offices, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(field_offices)
+        return format_response(result_dict, format, "bolo_field_offices")
         
     except Exception as e:
         logger.error(f"List field offices error: {str(e)}", exc_info=True)
@@ -1224,11 +1230,14 @@ async def list_field_offices(
 @track_search_analytics
 async def list_languages(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """Get list of all distinct languages"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1253,7 +1262,7 @@ async def list_languages(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_languages",
             "role": role_str,
             "limit": actual_limit,
@@ -1261,6 +1270,9 @@ async def list_languages(
             "languages": languages, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(languages)
+        return format_response(result_dict, format, "bolo_languages")
         
     except Exception as e:
         logger.error(f"List languages error: {str(e)}", exc_info=True)
@@ -1281,11 +1293,14 @@ async def list_languages(
 @track_search_analytics
 async def list_nationality(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of nationalities of wanted individuals"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1309,7 +1324,7 @@ async def list_nationality(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_nationality",
             "role": role_str,
             "limit": actual_limit,
@@ -1317,6 +1332,9 @@ async def list_nationality(
             "list_nationality": nationality, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(nationality)
+        return format_response(result_dict, format, "bolo_nationality")
         
     except Exception as e:
         logger.error(f"List nationality error: {str(e)}", exc_info=True)
@@ -1336,11 +1354,14 @@ async def list_nationality(
 @track_search_analytics
 async def list_possible_countries(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of possible countries associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1365,7 +1386,7 @@ async def list_possible_countries(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_possible_countries",
             "role": role_str,
             "limit": actual_limit,
@@ -1373,6 +1394,9 @@ async def list_possible_countries(
             "possible_countries": countries, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(countries)
+        return format_response(result_dict, format, "bolo_possible_countries")
         
     except Exception as e:
         logger.error(f"List possible countries error: {str(e)}", exc_info=True)
@@ -1393,11 +1417,14 @@ async def list_possible_countries(
 @track_search_analytics
 async def list_possible_states(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of possible USA states associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1422,7 +1449,7 @@ async def list_possible_states(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_possible_states",
             "role": role_str,
             "limit": actual_limit,
@@ -1430,6 +1457,9 @@ async def list_possible_states(
             "possible_states": states, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(states)
+        return format_response(result_dict, format, "bolo_possible_states")
         
     except Exception as e:
         logger.error(f"List possible states error: {str(e)}", exc_info=True)
@@ -1449,11 +1479,14 @@ async def list_possible_states(
 @track_search_analytics
 async def list_race(
     request: Request,
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of races of origin associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
+    
+    validate_format_access(current_role, format)
     
     # Determine limit based on role
     actual_limit = 25 if current_role == UserRole.BASIC else 5000
@@ -1477,7 +1510,7 @@ async def list_race(
         # Get role value safely
         role_str = current_role.value if hasattr(current_role, 'value') else str(current_role)
         
-        return {
+        result_dict = {
             "endpoint": "list_race",
             "role": role_str,
             "limit": actual_limit,
@@ -1485,6 +1518,9 @@ async def list_race(
             "races": races, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
+        
+        request.state.results_count = len(races)
+        return format_response(result_dict, format, "bolo_races")
         
     except Exception as e:
         logger.error(f"List races error: {str(e)}", exc_info=True)
