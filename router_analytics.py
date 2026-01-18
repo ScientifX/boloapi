@@ -142,7 +142,7 @@ def get_date_range(time_range: TimeRange, timezone_offset_minutes: int = 0) -> t
     
     **Access:** BASIC, PREMIUM, ADMIN
     
-    Returns recent searches with timestamps, endpoints used, and results counts.
+    Returns up to 500 most recent searches with timestamps, endpoints used, and results counts.
     Timezone filtering is based on user's local timezone for accurate date range filtering.
     """
 )
@@ -150,38 +150,24 @@ def get_date_range(time_range: TimeRange, timezone_offset_minutes: int = 0) -> t
 async def get_my_searches(
     request: Request,
     time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
-    limit: int = Query(50, ge=1, le=500, description="Maximum number of records to return"),
-    page: int = Query(1, ge=1, description="Page number for pagination"),
     timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """
-    Get the authenticated user's search history.
+    Get the authenticated user's search history (up to 500 most recent).
     
     Returns:
     - List of searches with timestamps, endpoints, parameters, and results
-    - Pagination info
     - Summary statistics
     """
     user_id = current_user["user_id"]
     start_date, end_date = get_date_range(time_range, timezone_offset)
-    offset = (page - 1) * limit
+    limit = 500  # Fixed cap at 500 searches
     
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                # Get total count
-                cur.execute("""
-                    SELECT COUNT(*) as total
-                    FROM base.tbl_search_analytics
-                    WHERE user_id = %s
-                        AND request_timestamp >= %s
-                        AND request_timestamp <= %s
-                """, (user_id, start_date, end_date))
-                
-                total = cur.fetchone()["total"]
-                
-                # Get paginated results
+                # Get results (limited to 500)
                 cur.execute("""
                     SELECT 
                         analytics_id,
@@ -201,8 +187,8 @@ async def get_my_searches(
                         AND request_timestamp >= %s
                         AND request_timestamp <= %s
                     ORDER BY request_timestamp DESC
-                    LIMIT %s OFFSET %s
-                """, (user_id, start_date, end_date, limit, offset))
+                    LIMIT %s
+                """, (user_id, start_date, end_date, limit))
                 
                 searches = cur.fetchall()
                 
@@ -224,12 +210,6 @@ async def get_my_searches(
                 
                 return {
                     "searches": searches,
-                    "pagination": {
-                        "total": total,
-                        "page": page,
-                        "limit": limit,
-                        "pages": (total + limit - 1) // limit
-                    },
                     "summary": {
                         "total_searches": summary["total_searches"],
                         "total_results": summary["total_results"],
@@ -268,7 +248,7 @@ async def get_my_searches(
 @limiter.limit(rate_max)
 async def get_my_stats(
     request: Request,
-    time_range: TimeRange = Query(TimeRange.LAST_30_DAYS, description="Time range for statistics"),
+    time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for statistics"),
     timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC (from JavaScript's getTimezoneOffset())"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):

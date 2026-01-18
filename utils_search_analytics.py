@@ -201,10 +201,39 @@ def track_search_analytics(func):
         # Call the original endpoint function
         response = await func(request, *args, current_user=current_user, **kwargs)
         
-        # Extract results count
+        # Extract results count from various sources
         results_count = 0
-        if isinstance(response, dict) and 'resultcount' in response:
-            results_count = response['resultcount']
+        
+        # Priority 1: Check if endpoint stored count in request.state
+        if hasattr(request.state, 'results_count'):
+            results_count = request.state.results_count
+        
+        # Priority 2: Response is a dict (JSON format responses)
+        elif isinstance(response, dict):
+            # Try different field names that endpoints might use
+            if 'resultcount' in response:
+                results_count = response['resultcount']
+            elif 'count' in response:
+                results_count = response['count']
+            elif 'items' in response and isinstance(response['items'], list):
+                results_count = len(response['items'])
+            elif isinstance(response.get('field_offices'), list):
+                results_count = len(response['field_offices'])
+            elif isinstance(response.get('languages'), list):
+                results_count = len(response['languages'])
+            elif isinstance(response.get('nationalities'), list):
+                results_count = len(response['nationalities'])
+            elif isinstance(response.get('countries'), list):
+                results_count = len(response['countries'])
+            elif isinstance(response.get('states'), list):
+                results_count = len(response['states'])
+            elif isinstance(response.get('races'), list):
+                results_count = len(response['races'])
+        
+        # Priority 3: Response is a FastAPI Response object (non-JSON formats)
+        # For these, count should be in request.state or we can't determine it
+        elif hasattr(response, '__class__') and 'Response' in response.__class__.__name__:
+            results_count = 0  # Already handled by Priority 1 if set
         
         # CAPTURE BOTH query params AND request body separately
         query_params = dict(request.query_params)

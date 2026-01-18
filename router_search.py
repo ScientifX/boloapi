@@ -1043,6 +1043,7 @@ async def simple_search(
             "items": items
         }
         result_dict["query"]["endpoint"] = "simple"
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_simple_search")
             
     except Exception as e:
@@ -1143,6 +1144,7 @@ async def advanced_search(
             "items": items
         }
         result_dict["query"]["endpoint"] = "advanced"
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_advanced_search")
     
     except Exception as e:
@@ -1549,6 +1551,7 @@ async def get_top_ten(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_top_ten")
     
     except Exception as e:
@@ -1622,6 +1625,7 @@ async def get_top_reward(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_top_reward")
     
     except Exception as e:
@@ -1693,6 +1697,7 @@ async def get_additional_info(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_additional_info")
     
     except Exception as e:
@@ -1764,6 +1769,7 @@ async def get_crimes_against_children(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_crimes_against_children")
     
     except Exception as e:
@@ -1835,6 +1841,7 @@ async def get_criminal_enterprise_investigations(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_criminal_enterprise_investigations")
     
     except Exception as e:
@@ -1906,6 +1913,7 @@ async def get_counterintelligence(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_counterintelligence")
     
     except Exception as e:
@@ -1977,6 +1985,7 @@ async def get_cyber_crimes(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_cyber_crimes")
     
     except Exception as e:
@@ -2048,6 +2057,7 @@ async def get_domestic_terrorism(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_domestic_terrorism")
     
     except Exception as e:
@@ -2119,6 +2129,7 @@ async def get_endangered_child_alert_program(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_ecap")
     
     except Exception as e:
@@ -2190,6 +2201,7 @@ async def get_human_trafficking(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_human_trafficking")
     
     except Exception as e:
@@ -2261,6 +2273,7 @@ async def get_kidnap_missing(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_kidnap_missing")
     
     except Exception as e:
@@ -2332,6 +2345,7 @@ async def get_known_bank_robbers(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_known_bank_robbers")
     
     except Exception as e:
@@ -2403,6 +2417,7 @@ async def get_law_enforcement_assistance(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_law_enforcement_assistance")
     
     except Exception as e:
@@ -2474,6 +2489,7 @@ async def get_murders(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_murders")
     
     except Exception as e:
@@ -2545,6 +2561,7 @@ async def get_kidnap_parental(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_kidnap_parental")
     
     except Exception as e:
@@ -2616,6 +2633,7 @@ async def get_seeking_info(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_seeking_info")
     
     except Exception as e:
@@ -2687,6 +2705,7 @@ async def get_terror_info(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_terror_info")
     
     except Exception as e:
@@ -2758,6 +2777,7 @@ async def get_violent_criminal_apprehension_program(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_vicap")
     
     except Exception as e:
@@ -2829,6 +2849,7 @@ async def get_wanted_terrorists(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_wanted_terrorists")
     
     except Exception as e:
@@ -2900,6 +2921,7 @@ async def get_white_collar_crimes(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_white_collar_crimes")
     
     except Exception as e:
@@ -2970,6 +2992,7 @@ async def get_case_of_the_week(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_white_collar_crimes")
     
     except Exception as e:
@@ -3041,6 +3064,7 @@ async def get_native_american(
             "resultcount": len(items),
             "items": items
         }
+        request.state.results_count = len(items)  # Store for analytics
         return format_response(result_dict, format, "bolo_native_american")
     
     except Exception as e:

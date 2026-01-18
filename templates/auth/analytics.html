@@ -113,9 +113,16 @@
             if (!statsResponse.ok) throw new Error('Failed to load stats');
             const stats = await statsResponse.json();
             
-            const searchesResponse = await fetch(`/v1/analytics/my_searches?time_range=last_30_days&limit=500&timezone_offset=${timezoneOffset}`);
+            console.log('Stats time range:', timeRange);
+            console.log('Stats total searches:', stats.overall.total_searches);
+            
+            const searchesResponse = await fetch(`/v1/analytics/my_searches?time_range=${timeRange}&timezone_offset=${timezoneOffset}`);
             if (!searchesResponse.ok) throw new Error('Failed to load searches');
             const searches = await searchesResponse.json();
+            
+            console.log('Searches time range:', timeRange);
+            console.log('Searches returned:', searches.searches.length);
+            console.log('Searches summary total:', searches.summary.total_searches);
             
             document.getElementById('totalSearches').textContent = 
                 stats.overall.total_searches.toLocaleString();
@@ -128,7 +135,7 @@
             updateFormatsChart(stats.format_preferences);
             updateEndpointsChart(stats.top_endpoints);
             
-            updateRecentSearchesTable(searches.searches);
+            updateRecentSearchesTable(searches);
             
             loading.style.display = 'none';
             content.style.display = 'block';
@@ -282,7 +289,18 @@
         });
     }
     
-    function updateRecentSearchesTable(searches) {
+    function updateRecentSearchesTable(searchesData) {
+        const searches = searchesData.searches;
+        const summary = searchesData.summary;
+        
+        // Update table header to show actual total
+        const tableHeader = document.querySelector('.table-container h3');
+        if (searches.length >= 500 && summary.total_searches > 500) {
+            tableHeader.innerHTML = `Recent Searches <span style="font-size: 0.8em; color: #666; font-weight: normal;">(showing 500 most recent of ${summary.total_searches.toLocaleString()} total)</span>`;
+        } else {
+            tableHeader.innerHTML = `Recent Searches <span style="font-size: 0.8em; color: #666; font-weight: normal;">(${searches.length.toLocaleString()} searches)</span>`;
+        }
+        
         const tableData = searches.map(search => {
             const dateObj = new Date(search.request_timestamp);
             const dateOnly = dateObj.toLocaleDateString();
@@ -341,6 +359,7 @@
             order: [[7, 'desc']], // Sort by hidden timestamp column
             pageLength: 10,
             lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            info: true,
             createdRow: function(row, data, dataIndex) {
                 // Add expand/collapse button to first cell
                 const expandCell = $(row).find('td:first');
