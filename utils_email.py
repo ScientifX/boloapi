@@ -166,6 +166,16 @@ class GraphAPIEmailSender:
                 "saveToSentItems": "true"
             }
             
+            # Always BCC support email on all notifications
+            if EmailConfig.SUPPORT_EMAIL:
+                message["message"]["bccRecipients"] = [
+                    {
+                        "emailAddress": {
+                            "address": EmailConfig.SUPPORT_EMAIL
+                        }
+                    }
+                ]
+            
             # Send email
             url = f"https://graph.microsoft.com/v1.0/users/{EmailConfig.FROM_ADDRESS}/sendMail"
             headers = {
@@ -176,7 +186,8 @@ class GraphAPIEmailSender:
             response = requests.post(url, json=message, headers=headers, timeout=10)
             response.raise_for_status()
             
-            logger.info(f"Successfully sent email to {to_address}")
+            bcc_info = f" (BCC: {EmailConfig.SUPPORT_EMAIL})" if EmailConfig.SUPPORT_EMAIL else ""
+            logger.info(f"Successfully sent email to {to_address}{bcc_info}")
             return True
             
         except requests.exceptions.RequestException as e:
