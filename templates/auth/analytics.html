@@ -66,6 +66,11 @@
             
             <div class="chart-container">
                 <h3>Top Endpoints</h3>
+                <div class="search-type-legend">
+                    <span class="legend-item"><span class="legend-color" style="background: #764ba2;"></span> Category</span>
+                    <span class="legend-item"><span class="legend-color" style="background: #17a2b8;"></span> List</span>
+                    <span class="legend-item"><span class="legend-color" style="background: #e67e22;"></span> Simple/Advanced</span>
+                </div>
                 <canvas id="endpointsChart"></canvas>
             </div>
         </div>
@@ -246,6 +251,18 @@
         });
     }
     
+    function getSearchTypeColor(endpoint) {
+        // Determine color based on endpoint type
+        if (endpoint.includes('category_')) {
+            return '#764ba2'; // Purple - Category
+        } else if (endpoint.includes('list_')) {
+            return '#17a2b8'; // Teal - List
+        } else if (endpoint.includes('simple') || endpoint.includes('advanced')) {
+            return '#e67e22'; // Coral - Simple/Advanced
+        }
+        return '#667eea'; // Default blue for any other endpoints
+    }
+    
     function updateEndpointsChart(data) {
         const ctx = document.getElementById('endpointsChart').getContext('2d');
         
@@ -258,6 +275,7 @@
         
         const labels = topTen.map(d => d.endpoint.split('/').pop());
         const counts = topTen.map(d => d.count);
+        const colors = topTen.map(d => getSearchTypeColor(d.endpoint));
         
         endpointsChart = new Chart(ctx, {
             type: 'bar',
@@ -266,7 +284,7 @@
                 datasets: [{
                     label: 'Calls',
                     data: counts,
-                    backgroundColor: '#764ba2'
+                    backgroundColor: colors
                 }]
             },
             options: {
@@ -335,11 +353,13 @@
             const searchPayloadStr = Object.keys(searchPayload).length > 0 ? 
                 JSON.stringify(searchPayload, null, 2) : 
                 'No search parameters';
+            // Determine badge color based on endpoint type
+            const badgeColor = getSearchTypeColor(search.endpoint);
             
             return [
                 '', // Expand/collapse column - will be populated by createdRow
                 `<div class="date-collapsed">${dateOnly}</div><div class="date-expanded" style="display:none;">${dateOnly}<br><span class="time-text">${timeOnly}</span></div>`,
-                `<div class="endpoint-name"><span class="endpoint-badge">${endpoint}</span></div><div class="endpoint-params" style="display:none;"><pre class="json-params">${searchPayloadStr}</pre></div>`,
+                `<div class="endpoint-name"><span class="endpoint-badge" style="background-color: ${badgeColor}20; color: ${badgeColor}; border: 1px solid ${badgeColor}40;">${endpoint}</span></div><div class="endpoint-params" style="display:none;"><pre class="json-params">${searchPayloadStr}</pre></div>`,
                 search.search_type || 'N/A',
                 search.response_format,
                 search.results_count !== null && search.results_count !== undefined ? search.results_count : 'N/A',
@@ -665,11 +685,32 @@ table.dataTable.display tbody tr.even {
 .endpoint-badge {
     display: inline-block;
     padding: 4px 8px;
-    background: #e8eaf6;
     border-radius: 4px;
     font-size: 0.85em;
-    color: #667eea;
     font-family: monospace;
+    font-weight: 500;
+}
+
+/* Search type legend */
+.search-type-legend {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.85em;
+    color: #666;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
 }
 
 /* Expand/collapse specific styles */
