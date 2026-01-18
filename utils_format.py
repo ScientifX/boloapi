@@ -986,7 +986,7 @@ def format_response(
     
     Args:
         result_dict: The search result dictionary
-        response_format: The desired output format (JSON, CSV, TXT, XML)
+        response_format: The desired output format (JSON, CSV, TXT, XML, Parquet)
         filename_prefix: Prefix for the download filename
         
     Returns:

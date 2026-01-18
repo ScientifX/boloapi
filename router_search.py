@@ -1480,7 +1480,7 @@ async def list_race(
             "role": role_str,
             "limit": actual_limit,
             "count": len(races),
-            "possible_states": races, 
+            "races": races, 
             "note": "Result set may not reflect all values. Basic subscribers get max 25 records"
         }
         
