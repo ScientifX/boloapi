@@ -192,6 +192,7 @@ class FieldTypeMap:
         # Timestamp fields
         "modified": FieldDataType.TIMESTAMP,
         "publication": FieldDataType.TIMESTAMP,
+        "was_captured": FieldDataType.TIMESTAMP,
         
         # Text array fields (text[][])
         "aliases": FieldDataType.TEXT_ARRAY,
@@ -320,6 +321,7 @@ class AllowedField(str, Enum):
     # uid = "uid"
     url = "url"
     warning_message = "warning_message"
+    was_captured = "was_captured"
     weight = "weight"
     weight_max = "weight_max"
     weight_min = "weight_min"

@@ -225,7 +225,7 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
     control_chars = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+')
     
     # HTML tags pattern
-    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Ã‚', re.IGNORECASE)
+    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Ãƒâ€š', re.IGNORECASE)
     
     # Email pattern
     email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
@@ -522,6 +522,7 @@ def bolo_process(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'uid': uid,
         'url': item.get('url'),
         'warning_message': item.get('warning_message'),
+        'was_captured': item.get('was_captured'),
         'weight': item.get('weight'),
         'weight_max': item.get('weight_max'),
         'weight_min': item.get('weight_min'),
@@ -609,6 +610,7 @@ def bolo_process_web(item: Dict, pull_date: date) -> Optional[Dict[str, Any]]:
         'uid': uid,
         'url': item.get('url'),
         'warning_message': item.get('warning_message'),
+        'was_captured': item.get('was_captured'),
         'weight': item.get('weight'),
         'weight_max': item.get('weight_max'),
         'weight_min': item.get('weight_min'),
@@ -731,7 +733,7 @@ def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date
                         poster_classification, poster_url, publication, race, race_raw,
                         remarks, reward_max, reward_min, reward_text,
                         scars_and_marks, sex, status, subjects, suspects,
-                        title, url, warning_message, weight, weight_max, weight_min
+                        title, url, warning_message, was_captured, weight, weight_max, weight_min
                     ) VALUES (
                         %s, %s, %s, %s, NULL,
                         %s, TRUE, %s, %s, %s,
@@ -771,8 +773,8 @@ def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date
                     record.get('scars_and_marks'), record.get('sex'),
                     record.get('status'), record.get('subjects'), record.get('suspects'),
                     record.get('title'), record.get('url'),
-                    record.get('warning_message'), record.get('weight'),
-                    record.get('weight_max'), record.get('weight_min')
+                    record.get('warning_message'), record.get('was_captured'),
+                    record.get('weight'), record.get('weight_max'), record.get('weight_min')
                 ))
                 
                 inserted_count += 1
@@ -887,7 +889,7 @@ def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: 
                         poster_classification, poster_url, publication, race, race_raw,
                         related_cases, remarks, reward_max, reward_min, reward_text,
                         scars_and_marks, sex, status, subjects, suspects,
-                        title, url, warning_message, weight, weight_max, weight_min
+                        title, url, warning_message, was_captured, weight, weight_max, weight_min
                     ) VALUES (
                         %s, %s, %s, %s, NULL,
                         %s, TRUE, %s, %s, %s,
@@ -901,7 +903,7 @@ def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: 
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s, %s
                     )
                 """, (
                     uid, content_hash, new_version_number, pull_date,
@@ -928,8 +930,8 @@ def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: 
                     record.get('sex'), record.get('status'),
                     record.get('subjects'), record.get('suspects'),
                     record.get('title'), record.get('url'),
-                    record.get('warning_message'), record.get('weight'),
-                    record.get('weight_max'), record.get('weight_min')
+                    record.get('warning_message'), record.get('was_captured'),
+                    record.get('weight'), record.get('weight_max'), record.get('weight_min')
                 ))
                 
                 inserted_count += 1
@@ -1718,7 +1720,7 @@ async def fetch_page_with_retry(client: httpx.AsyncClient, url: str, params: dic
     Fetch a single page from the FBI API with retry logic.
     Retries up to max_retries times on failure.
     """
-    params_with_page = {**params, 'page': page, 'pageSize': 50}
+    params_with_page = {**params, 'page': page}
     
     for attempt in range(1, max_retries + 1):
         try:
