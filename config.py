@@ -25,6 +25,17 @@ except ImportError:
     pass
 
 # ============================================================================
+# ENVIRONMENT CONFIGURATION
+# ============================================================================
+
+# Environment detection using existing API_ENV variable
+# Values: 'dev', 'staging', 'prod'
+API_ENV = os.getenv('API_ENV', 'dev').lower()
+
+# Google Analytics tracking ID (only used in staging)
+API_GA_TRACKING_ID = os.getenv('API_GA_TRACKING_ID', '')
+
+# ============================================================================
 # DATABASE CONFIGURATION
 # ============================================================================
 
@@ -75,7 +86,9 @@ APP_GLOBALS = {
     "support_email": "engage@scientifics.io",
     "api_version" : "2.0.0", 
     "api_description" : "A Comprehensive Wrapper for FBI Wanted API data", 
-    "year": 2025
+    "year": 2025,
+    "environment": API_ENV,
+    "ga_tracking_id": API_GA_TRACKING_ID
     }
 
 
