@@ -1718,7 +1718,7 @@ async def fetch_page_with_retry(client: httpx.AsyncClient, url: str, params: dic
     Fetch a single page from the FBI API with retry logic.
     Retries up to max_retries times on failure.
     """
-    params_with_page = {**params, 'page': page}
+    params_with_page = {**params, 'page': page, 'pageSize': 50}
     
     for attempt in range(1, max_retries + 1):
         try:
