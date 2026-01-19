@@ -140,13 +140,14 @@ def should_skip_url(url: str) -> bool:
     Skip API endpoints, Plone routing, AND:
     - URLs without valid file extensions
     - URLs with redirect parameters
+    
+    NOTE: We do NOT skip @@download URLs anymore - these contain valid PDFs
+    in multiple languages that should be downloaded by deriving the base URL.
     """
-    # 1. Pattern-based skipping (same as before)
+    # 1. Pattern-based skipping (removed @@download and /@@)
     skip_patterns = [
         '/@wanted-person/',
         '/@',
-        '/@@download/',
-        '/@@',
         '/acl_users/',
         '/require_login',
     ]
@@ -203,6 +204,46 @@ def get_valid_file_extensions() -> set:
         # Images
         'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'svg',
     }
+
+
+def derive_base_url_from_download(url: str) -> Optional[str]:
+    """
+    Derive the base URL from a Plone @@download URL.
+    
+    Plone uses URLs like:
+    https://www.fbi.gov/path/to/file.pdf/@@download/file/FileName.pdf
+    
+    The actual downloadable URL (without Plone issues) is:
+    https://www.fbi.gov/path/to/file.pdf
+    
+    Args:
+        url: Full URL potentially containing @@download
+        
+    Returns:
+        Base URL (everything before /@@download) if pattern matches, None otherwise
+        
+    Examples:
+        >>> derive_base_url_from_download('https://fbi.gov/doc.pdf/@@download/file/Doc.pdf')
+        'https://fbi.gov/doc.pdf'
+        >>> derive_base_url_from_download('https://fbi.gov/doc.pdf')
+        None
+    """
+    if '@@download' not in url.lower():
+        return None
+    
+    # Find position of @@download (case-insensitive)
+    idx = url.lower().find('/@@download')
+    if idx == -1:
+        return None
+    
+    # Extract base URL (everything before /@@download)
+    base_url = url[:idx]
+    
+    # Validate it's a proper URL with a file extension
+    if is_valid_url(base_url) and get_file_extension(base_url):
+        return base_url
+    
+    return None
 
 
 def has_redirect_in_query(url: str) -> bool:
@@ -374,6 +415,9 @@ def extract_urls_from_record(item: Dict[str, Any]) -> List[Tuple[str, str, str]]
     """
     Extract all URLs from a single BOLO record.
     
+    For @@download URLs, also extracts the derived base URL which is
+    the direct download link without Plone routing issues.
+    
     Returns:
         List of tuples: (uid, field_name, url)
     """
@@ -387,11 +431,19 @@ def extract_urls_from_record(item: Dict[str, Any]) -> List[Tuple[str, str, str]]
     path_id = item.get('pathId')
     if is_valid_url(path_id) and not should_skip_url(path_id):
         urls.append((uid, 'path_id', path_id))
+        # Check for @@download and derive base URL
+        base_url = derive_base_url_from_download(path_id)
+        if base_url:
+            urls.append((uid, 'path_id_derived', base_url))
     
     # 2. url - direct URL field
     url = item.get('url')
     if is_valid_url(url) and not should_skip_url(url):
         urls.append((uid, 'url', url))
+        # Check for @@download and derive base URL
+        base_url = derive_base_url_from_download(url)
+        if base_url:
+            urls.append((uid, 'url_derived', base_url))
 
     # 3. files[].url - array of file objects
     files = item.get('files') or []
@@ -400,6 +452,10 @@ def extract_urls_from_record(item: Dict[str, Any]) -> List[Tuple[str, str, str]]
             file_url = file_obj.get('url')
             if is_valid_url(file_url):
                 urls.append((uid, f'files_{idx}_url', file_url))
+                # Check for @@download and derive base URL
+                base_url = derive_base_url_from_download(file_url)
+                if base_url:
+                    urls.append((uid, f'files_{idx}_url_derived', base_url))
     
     # 4. images[] - array of image objects with large, thumb, original
     images = item.get('images') or []
@@ -409,16 +465,25 @@ def extract_urls_from_record(item: Dict[str, Any]) -> List[Tuple[str, str, str]]
             large_url = image_obj.get('large')
             if is_valid_url(large_url):
                 urls.append((uid, f'images_{idx}_large', large_url))
+                base_url = derive_base_url_from_download(large_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_large_derived', base_url))
             
             # thumb
             thumb_url = image_obj.get('thumb')
             if is_valid_url(thumb_url):
                 urls.append((uid, f'images_{idx}_thumb', thumb_url))
+                base_url = derive_base_url_from_download(thumb_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_thumb_derived', base_url))
             
             # original
             original_url = image_obj.get('original')
             if is_valid_url(original_url):
                 urls.append((uid, f'images_{idx}_original', original_url))
+                base_url = derive_base_url_from_download(original_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_original_derived', base_url))
     
     return urls
 
@@ -446,6 +511,9 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
     Extract all URLs from a single web-scraped BOLO record.
     Includes support for related_cases which is unique to web data.
     
+    For @@download URLs, also extracts the derived base URL which is
+    the direct download link without Plone routing issues.
+    
     Returns:
         List of tuples: (uid, field_name, url)
     """
@@ -459,11 +527,19 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
     path_id = item.get('pathId')
     if is_valid_url(path_id) and not should_skip_url(path_id):
         urls.append((uid, 'path_id', path_id))
+        # Check for @@download and derive base URL
+        base_url = derive_base_url_from_download(path_id)
+        if base_url:
+            urls.append((uid, 'path_id_derived', base_url))
     
     # 2. url - direct URL field
     url = item.get('url')
     if is_valid_url(url) and not should_skip_url(url):
         urls.append((uid, 'url', url))
+        # Check for @@download and derive base URL
+        base_url = derive_base_url_from_download(url)
+        if base_url:
+            urls.append((uid, 'url_derived', base_url))
     
     # 3. files[].url - array of file objects
     files = item.get('files') or []
@@ -472,6 +548,10 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
             file_url = file_obj.get('url')
             if is_valid_url(file_url) and not should_skip_url(file_url):
                 urls.append((uid, f'files_{idx}_url', file_url))
+                # Check for @@download and derive base URL
+                base_url = derive_base_url_from_download(file_url)
+                if base_url:
+                    urls.append((uid, f'files_{idx}_url_derived', base_url))
     
     # 4. images[] - array of image objects with large, thumb, original
     images = item.get('images') or []
@@ -481,22 +561,35 @@ def extract_urls_from_record_web(item: Dict[str, Any]) -> List[Tuple[str, str, s
             large_url = image_obj.get('large')
             if is_valid_url(large_url) and not should_skip_url(large_url):
                 urls.append((uid, f'images_{idx}_large', large_url))
+                base_url = derive_base_url_from_download(large_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_large_derived', base_url))
             
             # thumb
             thumb_url = image_obj.get('thumb')
             if is_valid_url(thumb_url) and not should_skip_url(thumb_url):
                 urls.append((uid, f'images_{idx}_thumb', thumb_url))
+                base_url = derive_base_url_from_download(thumb_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_thumb_derived', base_url))
             
             # original
             original_url = image_obj.get('original')
             if is_valid_url(original_url) and not should_skip_url(original_url):
                 urls.append((uid, f'images_{idx}_original', original_url))
+                base_url = derive_base_url_from_download(original_url)
+                if base_url:
+                    urls.append((uid, f'images_{idx}_original_derived', base_url))
     
     # 5. related_cases[] - unique to web data
     related_cases = item.get('related_cases') or []
     for idx, case_url in enumerate(related_cases):
         if is_valid_url(case_url) and not should_skip_url(case_url):
             urls.append((uid, f'related_cases_{idx}', case_url))
+            # Check for @@download and derive base URL
+            base_url = derive_base_url_from_download(case_url)
+            if base_url:
+                urls.append((uid, f'related_cases_{idx}_derived', base_url))
     
     return urls
 
@@ -1552,7 +1645,7 @@ def generate_manifest(
         "FBI BOLO DOCUMENTS ARCHIVE",
         "=" * 70,
         f"Generated: {generation_time.strftime('%Y-%m-%d %H:%M:%S')} UTC",
-        f"Source: BoloDoc.com via FBI API and Web Scraping",
+        f"Source: BoloDoc.io via FBI API and Web Scraping",
         "",
         "-" * 70,
         "SUMMARY",
