@@ -263,6 +263,21 @@ async def get_docs(request: Request):
     html_body = html.body.decode('utf-8')
     # html_body = html_body.replace('</head>', f'{SWAGGER_UI_CUSTOM_CSS}</head>')
     
+    # Inject Google Analytics if in staging or prod
+    from config import API_ENV, API_GA_TRACKING_ID
+    if API_ENV in ['staging', 'prod'] and API_GA_TRACKING_ID:
+        ga_script = f'''
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={API_GA_TRACKING_ID}"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{API_GA_TRACKING_ID}');
+    </script>
+'''
+        html_body = html_body.replace('</head>', f'{ga_script}</head>')
+    
     # Create response with updated HTML
     response = HTMLResponse(content=html_body)
     
@@ -295,6 +310,23 @@ async def get_redoc(request: Request):
         openapi_url="/openapi.json",
         title=f"Bolo API - {role_label} View",
     )
+    
+    # Inject Google Analytics if in staging or prod
+    from config import API_ENV, API_GA_TRACKING_ID
+    if API_ENV in ['staging', 'prod'] and API_GA_TRACKING_ID:
+        html_body = redoc_response.body.decode('utf-8')
+        ga_script = f'''
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={API_GA_TRACKING_ID}"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{API_GA_TRACKING_ID}');
+    </script>
+'''
+        html_body = html_body.replace('</head>', f'{ga_script}</head>')
+        redoc_response = HTMLResponse(content=html_body)
     
     # Add cache-control headers to prevent browser caching
     redoc_response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
