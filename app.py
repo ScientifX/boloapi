@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse
@@ -28,6 +29,7 @@ from auth import (
     ROLE_HIERARCHY
     )
 from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, API_APP_BASE_URL
+import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -91,6 +93,29 @@ app = FastAPI(
     redoc_url=None,
     openapi_url=None,
 	)
+
+# Configure CORS
+# Allow requests from Railway domains and localhost for development
+# Can be overridden with API_CORS_ORIGINS environment variable (comma-separated)
+cors_origins_env = os.getenv('API_CORS_ORIGINS', '')
+if cors_origins_env:
+    allowed_origins = [origin.strip() for origin in cors_origins_env.split(',') if origin.strip()]
+else:
+    allowed_origins = [
+        "https://fastapi-fwnh-staging.up.railway.app",
+        "https://fastapi-production-9e32.up.railway.app",
+        "http://127.0.0.1:8000"
+    ]
+
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Trust proxy headers for correct HTTPS URL generation on Railway
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
