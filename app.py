@@ -107,8 +107,6 @@ else:
         "http://127.0.0.1:8000"
     ]
 
-logger.info(f"CORS allowed origins: {allowed_origins}")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,

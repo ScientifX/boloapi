@@ -48,7 +48,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Log test mode status at startup
-if BILLING_TEST_MODE:
+if BILLING_TEST_MODE and 1 == 2:
     logger.warning("=" * 60)
     logger.warning("BILLING TEST MODE ENABLED - Test endpoints are active")
     logger.warning("Set BILLING_TEST_MODE=false in production!")
