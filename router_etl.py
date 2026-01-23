@@ -6,6 +6,7 @@ import asyncio
 import os
 import re
 import hashlib
+import shutil
 
 from config import DB_CONFIG
 from typing import Literal
@@ -225,7 +226,7 @@ def clean_json_recursive(data: Any, field_name: str = '') -> Any:
     control_chars = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+')
     
     # HTML tags pattern
-    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|Ãƒâ€š', re.IGNORECASE)
+    html_tags = re.compile(r'</?(?:p|br|b|i|u|strong|em|span|div)(?:\s[^>]*)?>|\xa0', re.IGNORECASE)
     
     # Email pattern
     email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
@@ -747,7 +748,7 @@ def bolo_insert(conn: Connection, records: List[Dict[str, Any]], pull_date: date
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s
                     )
                 """, (
                     uid, content_hash, new_version_number, pull_date,
@@ -903,7 +904,7 @@ def bolo_insert_web(conn: Connection, records: List[Dict[str, Any]], pull_date: 
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s
                     )
                 """, (
                     uid, content_hash, new_version_number, pull_date,
@@ -2024,7 +2025,17 @@ async def get_wanted(
                 with open(filename, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 logger.info(f"Saved JSON file with {len(data.get('items', []))} items")
-                return {"message": f"Extracted data to {filename}"}
+                
+                # Create timestamped copy
+                timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+                timestamped_filename = f"data/bolo-api-data-{timestamp}.json"
+                shutil.copy2(filename, timestamped_filename)
+                logger.info(f"Created timestamped copy: {timestamped_filename}")
+                
+                return {
+                    "message": f"Extracted data to {filename}",
+                    "timestamped_copy": timestamped_filename
+                }
             except Exception as e:
                 logger.error(f"Error saving JSON file: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Error saving JSON file: {str(e)}")
