@@ -1758,8 +1758,8 @@ async def fetch_all_pages(client: httpx.AsyncClient, url: str, params: dict) -> 
         logger.info("No records found")
         return first_page
     
-    # Calculate number of pages (50 items per page)
-    items_per_page = 50
+    # Calculate number of pages (20 items per page)
+    items_per_page = 20
     total_pages = total // items_per_page
     if total % items_per_page > 0:
         total_pages += 1
