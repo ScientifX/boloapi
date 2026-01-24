@@ -28,7 +28,7 @@ from auth import UserRole
 from auth_jwt import require_jwt_role
 from utils_array import extract_and_clean_array
 from utils_warning_enrichment import enrich_with_warning_components
-from service_nottification import detect_all_changes, process_pending_notifications
+from service_notification import detect_all_changes, process_pending_notifications
 from service_link_validation import (
     validate_links_from_file, 
     validate_links_from_file_web,
