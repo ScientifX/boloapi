@@ -1241,6 +1241,10 @@ async def admin_users_page(
     user: dict = Depends(require_browser_auth(UserRole.ADMIN))
 ):
     """Render admin user management page (ADMIN only)"""
+    # If not authenticated or not admin, redirect to login page
+    if not user:
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+    
     try:
         return templates.TemplateResponse(
             "auth/users.html",

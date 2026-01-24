@@ -1818,7 +1818,7 @@ async def data_load(
     
     Parameters:
     - run_link_validation: If True, automatically validate all URLs after load
-    - generate_archive: If True, download files and create ZIP archive (requires link validation)
+    - generate_archive: If True, download files and create ZIP archive (uses existing validation data)
     
     Returns a summary of the import operation including counts and any errors.
     """
@@ -1841,24 +1841,23 @@ async def data_load(
                 logger.info("Starting link validation after data load")
                 link_validation_results = await validate_links_from_file(file_path)
                 logger.info(f"Link validation complete: {link_validation_results.get('total_urls', 0)} URLs checked")
-                
-                # Generate archive if requested (only after successful validation)
-                if generate_archive:
-                    try:
-                        logger.info("Starting file download and archive generation")
-                        with get_db_connection() as conn:
-                            download_results = await download_files_for_archive(conn)
-                        logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
-                        
-                        archive_results = create_documents_archive()
-                        logger.info(f"Archive created: {archive_results.get('archive_path')}")
-                    except Exception as e:
-                        logger.error(f"Archive generation error (non-fatal): {str(e)}")
-                        archive_results = {"error": str(e)}
-                        
             except Exception as e:
                 logger.error(f"Link validation error (non-fatal): {str(e)}")
                 link_validation_results = {"error": str(e)}
+        
+        # Generate archive if requested (can run with existing validation data)
+        if generate_archive:
+            try:
+                logger.info("Starting file download and archive generation")
+                with get_db_connection() as conn:
+                    download_results = await download_files_for_archive(conn)
+                logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
+                
+                archive_results = create_documents_archive()
+                logger.info(f"Archive created: {archive_results.get('archive_path')}")
+            except Exception as e:
+                logger.error(f"Archive generation error (non-fatal): {str(e)}")
+                archive_results = {"error": str(e)}
         
         # Return summary (ImportSummary model - link validation and archive logged separately)
         return summary
@@ -1910,7 +1909,7 @@ async def data_load_web(
     
     Parameters:
     - run_link_validation: If True, automatically validate all URLs after load
-    - generate_archive: If True, download files and create ZIP archive (requires link validation)
+    - generate_archive: If True, download files and create ZIP archive (uses existing validation data)
     
     Returns a summary of the import operation including counts and any errors.
     """
@@ -1933,24 +1932,23 @@ async def data_load_web(
                 logger.info("Starting web link validation after data load")
                 link_validation_results = await validate_links_from_file_web(file_path)
                 logger.info(f"Web link validation complete: {link_validation_results.get('total_urls_extracted', 0)} URLs checked")
-                
-                # Generate archive if requested (only after successful validation)
-                if generate_archive:
-                    try:
-                        logger.info("Starting file download and archive generation for web data")
-                        with get_db_connection() as conn:
-                            download_results = await download_files_for_archive(conn)
-                        logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
-                        
-                        archive_results = create_documents_archive()
-                        logger.info(f"Archive created: {archive_results.get('archive_path')}")
-                    except Exception as e:
-                        logger.error(f"Web archive generation error (non-fatal): {str(e)}")
-                        archive_results = {"error": str(e)}
-                        
             except Exception as e:
                 logger.error(f"Web link validation error (non-fatal): {str(e)}")
                 link_validation_results = {"error": str(e)}
+        
+        # Generate archive if requested (can run with existing validation data)
+        if generate_archive:
+            try:
+                logger.info("Starting file download and archive generation for web data")
+                with get_db_connection() as conn:
+                    download_results = await download_files_for_archive(conn)
+                logger.info(f"Download complete: {download_results.get('total_files', 0)} files")
+                
+                archive_results = create_documents_archive()
+                logger.info(f"Archive created: {archive_results.get('archive_path')}")
+            except Exception as e:
+                logger.error(f"Web archive generation error (non-fatal): {str(e)}")
+                archive_results = {"error": str(e)}
         
         # Return summary
         return summary

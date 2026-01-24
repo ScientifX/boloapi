@@ -254,8 +254,11 @@
                                 success.style.display = 'none';
                             }, 3000);
                             
-                            // Reload users
-                            await loadUsers();
+                            // Update stats in place
+                            await updateStatsInPlace(!currentIsActive);
+                            
+                            // Update the specific row in place
+                            updateRowInPlace(userId, !currentIsActive);
                             
                         } catch (err) {
                             error.style.display = 'block';
@@ -270,10 +273,43 @@
         });
     }
     
+    async function updateStatsInPlace(newIsActive) {
+        // Update active users count
+        const activeUsersElement = document.getElementById('activeUsers');
+        const currentActive = parseInt(activeUsersElement.textContent.replace(/,/g, ''));
+        const newActive = newIsActive ? currentActive + 1 : currentActive - 1;
+        activeUsersElement.textContent = newActive.toLocaleString();
+    }
+    
+    function updateRowInPlace(userId, newIsActive) {
+        // Find the row in the DataTable
+        const table = dataTable;
+        const rows = table.rows().nodes();
+        
+        // Find the row with this user_id
+        $(rows).each(function() {
+            const dropdown = $(this).find('.action-dropdown');
+            if (dropdown.data('user-id') === userId) {
+                // Update the status badge
+                const statusCell = $(this).find('td:eq(2)'); // Status is the 3rd column (index 2)
+                const statusClass = newIsActive ? 'status-active' : 'status-disabled';
+                const statusText = newIsActive ? 'Active' : 'Disabled';
+                statusCell.html(`<span class="status-badge ${statusClass}">${statusText}</span>`);
+                
+                // Update the dropdown data and options
+                dropdown.data('is-active', newIsActive);
+                const actionText = newIsActive ? 'Disable User' : 'Enable User';
+                dropdown.find('option[value="toggle"]').text(actionText);
+                
+                return false; // Break the loop
+            }
+        });
+    }
+    
     function formatDate(dateString) {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        return date.toLocaleDateString();
     }
     
     // Load users on page load
@@ -466,6 +502,12 @@ table.dataTable tbody td {
     padding: 12px;
     border-bottom: 1px solid #eee;
     vertical-align: middle;
+}
+
+/* Smaller font for date columns */
+table.dataTable tbody td:nth-child(4),
+table.dataTable tbody td:nth-child(5) {
+    font-size: 0.85em;
 }
 
 table.dataTable tbody tr:hover {
