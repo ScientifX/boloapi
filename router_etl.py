@@ -1488,7 +1488,7 @@ def import_data_set(file_path: str, pull_date: date) -> ImportSummary:
 
             try:
                 # Get list of UIDs that were inserted (new records)
-                inserted_uids = []  # We'll need to track these in bolo_insert
+                inserted_uids = upsert_results.get('new_uids', [])
                 
                 # Get list of UIDs that were marked inactive (removed from FBI list)
                 removed_uids_list = []
