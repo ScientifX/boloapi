@@ -68,6 +68,8 @@ DOCS_VISIBILITY_CONFIG = {
     ("GET", "/v1/etl/load"): UserRole.ADMIN,
     ("GET", "/v1/etl/metadata"): UserRole.ADMIN,
     ("GET", "/v1/etl/process_notifications"): UserRole.ADMIN,
+    ("POST", "/v1/etl/full_refresh_merge"): UserRole.ADMIN,
+    ("GET", "/v1/etl/metadata_merge"): UserRole.ADMIN,
     
     # Search root - admin visibility
     ("GET", "/v1/search/"): UserRole.ADMIN,

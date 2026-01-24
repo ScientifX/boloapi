@@ -2193,8 +2193,8 @@ async def full_refresh_web(
 
 @router.post(
     "/full_refresh_all",
-    summary="Full Refresh (API + Web)",
-    description="Perform a full refresh of both API and web-scraped FBI Wanted data with unified notifications."
+    summary="Full Refresh (API + Web + Merge)",
+    description="Perform a full refresh of API data, web-scraped data, and merge into unified table."
     )
 async def full_refresh_all(
     request: Request,
@@ -2206,49 +2206,53 @@ async def full_refresh_all(
         default=False,
         description="Generate archives for both API and web data"
     ),
+    skip_merge: bool = Query(
+        default=False,
+        description="Skip the merge step (useful for debugging)"
+    ),
     current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
-    Perform a full refresh of both FBI API data and web-scraped data.
+    Perform a full refresh of both FBI API data, web-scraped data, and merge into unified table.
     
     **Access:** ADMIN role only
     
-    **Notification Strategy:**
-    - Web data is loaded first (no notifications)
-    - API data is loaded second (notifications cover BOTH sources)
-    - Users receive ONE consolidated notification covering all changes
+    **Workflow:**
+    1. Web data is loaded first (no notifications)
+    2. API data is loaded second (notifications cover BOTH sources)
+    3. Merge step combines API and Web into tbl_bolo_full
+    4. Users receive ONE consolidated notification covering all changes
     
-    This endpoint runs the complete refresh workflow:
-    1. Load web data into tbl_bolo_web (if file exists)
-    2. Extract all FBI API data to JSON file
-    3. Load API data into tbl_bolo
-    4. Process notifications for ALL changes (both sources)
-    
-    This is equivalent to running:
-    - /v1/etl/full_refresh_web (no notifications)
-    - /v1/etl/full_refresh (with notifications)
+    **Merge Rules:**
+    - Scalar fields: Web value wins if populated
+    - Array fields: UNION with deduplication  
+    - Record removed if not in EITHER source
     
     Parameters:
     - run_link_validation: Validate URLs for both sources (default: True)
     - generate_archive: Create ZIP archives for both sources (default: False)
+    - skip_merge: Skip the merge step (default: False)
     
-    Returns combined results from both refresh operations.
+    Returns combined results from all refresh operations.
     """
+    from service_merge_etl import import_data_set_full
+    from datetime import date
+    
     current_role = current_user["role"]
     user_id = current_user["user_id"]
     
     results = {
         "web_refresh": None,
-        "api_refresh": None
+        "api_refresh": None,
+        "merge_refresh": None
     }
     
     try:
-        logger.info("Starting full refresh for both API and web data")
+        logger.info("Starting full refresh for API, Web, and Merge")
         
         # Step 1: Refresh web data FIRST (no notifications)
         logger.info("=== Phase 1: Web Data Refresh (no notifications) ===")
         try:
-            # Check if web data file exists before attempting
             web_file_path = Path("data/fbi-wanted-api-data-web.json")
             if web_file_path.exists():
                 web_result = await full_refresh_web(
@@ -2268,22 +2272,35 @@ async def full_refresh_all(
         except Exception as e:
             logger.error(f"Web refresh failed: {str(e)}")
             results["web_refresh"] = {"error": str(e)}
-            # Continue with API refresh even if web fails
         
-        # Step 2: Refresh API data SECOND (with notifications covering BOTH sources)
-        logger.info("=== Phase 2: API Data Refresh (notifications for all changes) ===")
+        # Step 2: Refresh API data SECOND (with notifications)
+        logger.info("=== Phase 2: API Data Refresh (with notifications) ===")
         try:
             api_result = await full_refresh(request=request, current_user=current_user)
             results["api_refresh"] = api_result
-            logger.info("API refresh completed successfully with unified notifications")
+            logger.info("API refresh completed successfully")
         except Exception as e:
             logger.error(f"API refresh failed: {str(e)}")
             results["api_refresh"] = {"error": str(e)}
         
-        logger.info("Full refresh (all sources) completed")
+        # Step 3: Merge API and Web data into tbl_bolo_full
+        if not skip_merge:
+            logger.info("=== Phase 3: Merge ETL ===")
+            try:
+                merge_result = import_data_set_full(merge_date=date.today())
+                results["merge_refresh"] = merge_result
+                logger.info(f"Merge completed: {merge_result['statistics'].get('active_count', 0)} active records")
+            except Exception as e:
+                logger.error(f"Merge failed: {str(e)}")
+                results["merge_refresh"] = {"error": str(e)}
+        else:
+            logger.info("=== Phase 3: Merge ETL (SKIPPED) ===")
+            results["merge_refresh"] = {"skipped": True, "reason": "skip_merge=True"}
+        
+        logger.info("Full refresh (all sources + merge) completed")
         return {
             "message": "Full refresh completed for all data sources",
-            "notification_strategy": "Unified notifications sent covering both API and web changes",
+            "workflow": "Web -> API (with notifications) -> Merge",
             "results": results
         }
         
@@ -2296,7 +2313,62 @@ async def full_refresh_all(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Full refresh all error: {str(e)}"
         )
+
+@router.post(
+    "/full_refresh_merge",
+    summary="Merge API and Web Data",
+    description="Merge data from API and Web sources into unified tbl_bolo_full table."
+    )
+async def full_refresh_merge(
+    request: Request,
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Merge FBI Wanted data from API and Web sources into tbl_bolo_full.
     
+    **Access:** ADMIN role only
+    
+    **Merge Rules:**
+    - Scalar fields: Web value wins if populated, else API value
+    - Array fields: UNION with deduplication
+    - JSONB fields: Deep merge with same rules
+    - Record is REMOVED if not active in EITHER source
+    
+    **Provenance Tracking:**
+    Each merged record tracks:
+    - source_flags: API, WEB, or BOTH
+    - field_sources: JSONB showing which source provided each field
+    - api_content_hash/web_content_hash: Hashes of source records
+    
+    Returns merge statistics and any errors encountered.
+    """
+    from service_merge_etl import import_data_set_full
+    from datetime import date
+    
+    current_role = current_user["role"]
+    user_id = current_user["user_id"]
+    
+    try:
+        logger.info(f"Starting merge ETL (user: {user_id})")
+        
+        # Run merge ETL
+        merge_result = import_data_set_full(merge_date=date.today())
+        
+        logger.info(f"Merge ETL completed: {merge_result['statistics']}")
+        
+        return {
+            "message": "Merge completed successfully",
+            "merge_date": merge_result['merge_date'],
+            "statistics": merge_result['statistics']
+        }
+        
+    except Exception as e:
+        logger.error(f"Merge ETL failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Merge ETL error: {str(e)}"
+        )
+
 @router.get(
     "/metadata",
     summary="ETL Metadata History",
@@ -2558,7 +2630,100 @@ async def get_etl_metadata_all(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve combined metadata: {str(e)}"
         )
-      
+
+@router.get(
+    "/metadata_merge",
+    summary="Merge ETL Metadata",
+    description="View merge ETL statistics and history."
+    )
+async def get_merge_metadata(
+    limit: int = Query(default=30, ge=1, le=365, description="Number of recent merges to return"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+    ):
+    """
+    Get merge ETL metadata from tbl_bolo_control_full.
+    
+    **Access:** ADMIN role only
+    
+    Returns:
+    - Summary statistics
+    - Recent merge history
+    - Source distribution breakdown
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        merge_date,
+                        merge_timestamp,
+                        api_active_count,
+                        web_active_count,
+                        records_api_only,
+                        records_web_only,
+                        records_both_sources,
+                        records_new,
+                        records_modified,
+                        records_unchanged,
+                        records_removed,
+                        records_returned,
+                        active_count,
+                        inactive_count,
+                        total_versions,
+                        processing_time_seconds,
+                        fields_from_api,
+                        fields_from_web,
+                        arrays_merged
+                    FROM base.tbl_bolo_control_full
+                    ORDER BY merge_date DESC
+                    LIMIT %s
+                """, (limit,))
+                
+                results = cur.fetchall()
+                
+                if results:
+                    latest = results[0]
+                    summary = {
+                        "total_merges": len(results),
+                        "date_range": {
+                            "earliest": str(results[-1]['merge_date']) if results else None,
+                            "latest": str(results[0]['merge_date']) if results else None
+                        },
+                        "current_state": {
+                            "active_count": latest['active_count'],
+                            "inactive_count": latest['inactive_count'],
+                            "total_versions": latest['total_versions']
+                        },
+                        "source_distribution": {
+                            "api_only": latest['records_api_only'],
+                            "web_only": latest['records_web_only'],
+                            "both_sources": latest['records_both_sources']
+                        },
+                        "latest_merge": {
+                            "date": str(latest['merge_date']),
+                            "new": latest['records_new'],
+                            "modified": latest['records_modified'],
+                            "unchanged": latest['records_unchanged'],
+                            "removed": latest['records_removed'],
+                            "returned": latest['records_returned'],
+                            "processing_seconds": float(latest['processing_time_seconds'])
+                        }
+                    }
+                else:
+                    summary = {"message": "No merge metadata available"}
+                
+                return {
+                    "summary": summary,
+                    "merges": [dict(r) for r in results]
+                }
+                
+    except Exception as e:
+        logger.error(f"Error retrieving merge metadata: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve merge metadata: {str(e)}"
+        )
+     
 @router.get(
     "/process_notifications",
     summary="Process Pending Notifications",
