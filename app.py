@@ -40,6 +40,7 @@ import router_billing
 import router_analytics
 
 from auth_middleware import TemplateAuthMiddleware
+from security_middleware import SecurityValidationMiddleware
 from config_docs import (
     get_role_filtered_openapi,
     get_viewer_role_from_request,
@@ -117,6 +118,10 @@ app.add_middleware(
 
 # Trust proxy headers for correct HTTPS URL generation on Railway
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
+# Add security validation middleware (runs after proxy headers are processed)
+# This must run early to catch security issues before other processing
+app.add_middleware(SecurityValidationMiddleware)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
