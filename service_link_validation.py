@@ -21,6 +21,7 @@ import asyncio
 import hashlib
 import shutil
 import zipfile
+import warnings
 from typing import List, Dict, Any, Optional, Tuple, Set
 from datetime import datetime
 from pathlib import Path
@@ -1725,12 +1726,15 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
     
     # Combine both sources
     all_urls = list(api_urls) + list(web_urls)
+    total_urls = len(all_urls)
     
     if not all_urls:
         return {
             "status": "no_files",
             "message": "No validated URLs to download from either source"
         }
+    
+    logger.info(f"Starting file download: {total_urls} URLs to process (API: {len(api_urls)}, Web: {len(web_urls)})")
     
     # Get sets of validated URLs from both sources
     validated_urls_api = get_validated_urls(conn)
@@ -1744,6 +1748,10 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
     total_bytes = 0
     api_count = 0
     web_count = 0
+    processed = 0
+    
+    # Progress logging settings
+    log_interval = max(50, total_urls // 20)  # Log every 50 files or 5% of total
     
     ensure_cache_dir()
     
@@ -1794,6 +1802,22 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
             else:
                 failed += 1
             
+            # Progress logging
+            processed += 1
+            if processed % log_interval == 0 or processed == total_urls:
+                elapsed = (datetime.now() - start_time).total_seconds()
+                rate = processed / elapsed if elapsed > 0 else 0
+                remaining = total_urls - processed
+                eta_seconds = remaining / rate if rate > 0 else 0
+                eta_minutes = eta_seconds / 60
+                
+                logger.info(
+                    f"Download progress: {processed}/{total_urls} files "
+                    f"({100*processed/total_urls:.1f}%), "
+                    f"cache: {from_cache}, new: {downloaded}, failed: {failed}, "
+                    f"ETA: {eta_minutes:.1f} min"
+                )
+            
             # Small delay between downloads
             if not result['from_cache']:
                 await asyncio.sleep(REQUEST_DELAY)
@@ -1801,6 +1825,13 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
         conn.commit()
     
     processing_time = (datetime.now() - start_time).total_seconds()
+    
+    # Final summary log
+    logger.info(
+        f"Download complete: {from_cache + downloaded} files in {processing_time:.1f}s "
+        f"(cache: {from_cache}, new: {downloaded}, failed: {failed}, "
+        f"API: {api_count}, Web: {web_count}, {total_bytes / (1024*1024):.1f} MB)"
+    )
     
     return {
         "status": "success",
@@ -1828,6 +1859,8 @@ def create_documents_archive() -> Dict[str, Any]:
     ensure_cache_dir()
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     
+    logger.info("Starting archive creation...")
+    
     with get_db_connection() as conn:
         # Get cached files grouped by UID (from both sources)
         files_by_uid = get_cached_files_by_uid(conn)
@@ -1838,6 +1871,8 @@ def create_documents_archive() -> Dict[str, Any]:
                 "message": "No cached files available. Run download_files first."
             }
         
+        logger.info(f"Found {len(files_by_uid)} persons with cached files")
+        
         # Track statistics
         persons_count = 0
         files_by_type = defaultdict(int)
@@ -1846,118 +1881,151 @@ def create_documents_archive() -> Dict[str, Any]:
         folder_structure = []
         api_file_count = 0
         web_file_count = 0
+        duplicates_skipped = 0
+        files_not_found = 0
         
-        # Create ZIP file
-        with zipfile.ZipFile(ARCHIVE_PATH, 'w', zipfile.ZIP_DEFLATED) as zf:
-            
-            for uid, files in files_by_uid.items():
-                # Get person info (from web or api)
-                person = get_person_info(conn, uid)
-                if not person:
-                    continue
+        # Create ZIP file (suppress duplicate warnings - we handle them ourselves)
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', message='Duplicate name:', category=UserWarning)
+            with zipfile.ZipFile(ARCHIVE_PATH, 'w', zipfile.ZIP_DEFLATED) as zf:
+                # Track all archive paths to prevent duplicates
+                added_paths = set()
                 
-                persons_count += 1
-                
-                # Track classification
-                classification = person.get('poster_classification', 'other') or 'other'
-                classifications[classification] += 1
-                
-                # Generate folder name
-                folder_name = generate_folder_name(person)
-                folder_files = []
-                
-                # Generate and add info.txt
-                info_content = generate_info_txt(person)
-                info_path = f"{folder_name}/info.txt"
-                zf.writestr(info_path, info_content.encode('utf-8'))
-                files_by_type['.txt'] += 1
-                total_size += len(info_content.encode('utf-8'))
-                folder_files.append('info.txt')
-                
-                # Add cached files
-                for file_info in files:
-                    # Track source
-                    source = file_info.get('source', 'api')
-                    if source == 'api':
-                        api_file_count += 1
-                    else:
-                        web_file_count += 1
-                    
-                    # Get cache path
-                    if 'cache_path' in file_info and file_info['cache_path']:
-                        cache_path = DATA_DIR / file_info['cache_path']
-                    else:
-                        # For web files without cache_path, construct it
-                        cache_filename = get_cache_filename(file_info['actual_url'])
-                        cache_path = CACHE_DIR / cache_filename
-                    
-                    if not cache_path.exists():
+                for uid, files in files_by_uid.items():
+                    # Get person info (from web or api)
+                    person = get_person_info(conn, uid)
+                    if not person:
                         continue
                     
-                    # Determine filename in archive
-                    ext = cache_path.suffix.lower()
-                    field = file_info['field']
+                    persons_count += 1
                     
-                    # Create meaningful filename
-                    if 'files_' in field or field == 'file':
-                        if 'files_' in field:
-                            base_name = f"document_{field.split('_')[1]}"
+                    # Track classification
+                    classification = person.get('poster_classification', 'other') or 'other'
+                    classifications[classification] += 1
+                    
+                    # Generate folder name
+                    folder_name = generate_folder_name(person)
+                    folder_files = []
+                    
+                    # Generate and add info.txt
+                    info_content = generate_info_txt(person)
+                    info_path = f"{folder_name}/info.txt"
+                    if info_path not in added_paths:
+                        zf.writestr(info_path, info_content.encode('utf-8'))
+                        added_paths.add(info_path)
+                        files_by_type['.txt'] += 1
+                        total_size += len(info_content.encode('utf-8'))
+                        folder_files.append('info.txt')
+                    
+                    # Add cached files
+                    for file_info in files:
+                        # Track source
+                        source = file_info.get('source', 'api')
+                        
+                        # Get cache path
+                        if 'cache_path' in file_info and file_info['cache_path']:
+                            cache_path = DATA_DIR / file_info['cache_path']
                         else:
-                            base_name = "document"
-                    elif 'images_' in field or field == 'poster':
-                        if 'images_' in field:
-                            idx = field.split('_')[1]
-                            img_type = field.split('_')[2] if len(field.split('_')) > 2 else 'image'
-                            base_name = f"{img_type}_{idx}"
+                            # For web files without cache_path, construct it
+                            cache_filename = get_cache_filename(file_info['actual_url'])
+                            cache_path = CACHE_DIR / cache_filename
+                        
+                        if not cache_path.exists():
+                            files_not_found += 1
+                            continue
+                        
+                        # Determine filename in archive
+                        ext = cache_path.suffix.lower()
+                        field = file_info['field']
+                        
+                        # Create meaningful filename
+                        if 'files_' in field or field == 'file':
+                            if 'files_' in field:
+                                base_name = f"document_{field.split('_')[1]}"
+                            else:
+                                base_name = "document"
+                        elif 'images_' in field or field == 'poster':
+                            if 'images_' in field:
+                                idx = field.split('_')[1]
+                                img_type = field.split('_')[2] if len(field.split('_')) > 2 else 'image'
+                                base_name = f"{img_type}_{idx}"
+                            else:
+                                base_name = "poster"
+                        elif 'related_case' in field:
+                            if 'related_cases_' in field:
+                                idx = field.split('_')[-1]
+                                base_name = f"related_case_{idx}"
+                            else:
+                                base_name = "related_case"
                         else:
-                            base_name = "poster"
-                    elif 'related_case' in field:
-                        if 'related_cases_' in field:
-                            idx = field.split('_')[-1]
-                            base_name = f"related_case_{idx}"
+                            base_name = field
+                        
+                        # Add source indicator to filename
+                        if source == 'web':
+                            base_name = f"{base_name}_web"
+                        
+                        archive_filename = f"{base_name}{ext}"
+                        archive_path = f"{folder_name}/{archive_filename}"
+                        
+                        # Skip duplicates
+                        if archive_path in added_paths:
+                            duplicates_skipped += 1
+                            continue
+                        
+                        # Add to ZIP
+                        zf.write(cache_path, archive_path)
+                        added_paths.add(archive_path)
+                        
+                        # Track source counts
+                        if source == 'api':
+                            api_file_count += 1
                         else:
-                            base_name = "related_case"
-                    else:
-                        base_name = field
+                            web_file_count += 1
+                        
+                        file_size = file_info.get('file_size', 0)
+                        if file_size == 0 and cache_path.exists():
+                            file_size = cache_path.stat().st_size
+                        
+                        files_by_type[ext] += 1
+                        total_size += file_size
+                        folder_files.append(archive_filename)
                     
-                    # Add source indicator to filename
-                    if source == 'web':
-                        base_name = f"{base_name}_web"
-                    
-                    archive_filename = f"{base_name}{ext}"
-                    archive_path = f"{folder_name}/{archive_filename}"
-                    
-                    # Add to ZIP
-                    zf.write(cache_path, archive_path)
-                    
-                    file_size = file_info.get('file_size', 0)
-                    if file_size == 0 and cache_path.exists():
-                        file_size = cache_path.stat().st_size
-                    
-                    files_by_type[ext] += 1
-                    total_size += file_size
-                    folder_files.append(archive_filename)
+                    folder_structure.append({
+                        'name': folder_name,
+                        'files': folder_files
+                    })
                 
-                folder_structure.append({
-                    'name': folder_name,
-                    'files': folder_files
-                })
-            
-            # Generate and add manifest
-            manifest_content = generate_manifest(
-                generation_time,
-                persons_count,
-                dict(files_by_type),
-                total_size,
-                dict(classifications),
-                folder_structure,
-                api_file_count,
-                web_file_count
-            )
-            zf.writestr('manifest.txt', manifest_content.encode('utf-8'))
+                # Generate and add manifest
+                manifest_content = generate_manifest(
+                    generation_time,
+                    persons_count,
+                    dict(files_by_type),
+                    total_size,
+                    dict(classifications),
+                    folder_structure,
+                    api_file_count,
+                    web_file_count
+                )
+                zf.writestr('manifest.txt', manifest_content.encode('utf-8'))
     
     processing_time = (datetime.now() - start_time).total_seconds()
     archive_size = ARCHIVE_PATH.stat().st_size
+    total_files = sum(files_by_type.values())
+    
+    # Summary logging
+    logger.info(
+        f"Archive created: {archive_size / (1024*1024):.1f} MB, "
+        f"{persons_count} persons, {total_files} files "
+        f"(API: {api_file_count}, Web: {web_file_count})"
+    )
+    if duplicates_skipped > 0:
+        logger.info(f"Duplicates skipped: {duplicates_skipped}")
+    if files_not_found > 0:
+        logger.info(f"Cache files not found: {files_not_found}")
+    
+    # Log file type breakdown
+    type_summary = ", ".join([f"{ext}: {count}" for ext, count in sorted(files_by_type.items())])
+    logger.info(f"Files by type: {type_summary}")
     
     return {
         "status": "success",
@@ -1965,9 +2033,11 @@ def create_documents_archive() -> Dict[str, Any]:
         "archive_size_bytes": archive_size,
         "archive_size_mb": round(archive_size / (1024 * 1024), 2),
         "persons_count": persons_count,
-        "total_files": sum(files_by_type.values()),
+        "total_files": total_files,
         "api_files": api_file_count,
         "web_files": web_file_count,
+        "duplicates_skipped": duplicates_skipped,
+        "files_not_found": files_not_found,
         "files_by_type": dict(files_by_type),
         "classifications": dict(classifications),
         "generation_time": generation_time.isoformat(),
