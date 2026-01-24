@@ -1423,48 +1423,47 @@ async def validate_links_from_file_web(file_path: str) -> Dict[str, Any]:
 # ARCHIVE GENERATION
 # =============================================================================
 
-def get_person_info(conn: Connection, uid: str) -> Optional[Dict[str, Any]]:
+def get_person_info(conn: Connection, uid: str, preferred_source: str = None) -> Optional[Dict[str, Any]]:
     """
     Get person details for info.txt generation.
-    Checks both tbl_bolo_web and tbl_bolo, preferring web data if available.
+    
+    Args:
+        conn: Database connection
+        uid: Person's UID
+        preferred_source: 'web' or 'api' - which table to check first
+                         If None, tries web first then API (default behavior)
+    
+    Returns person info dict or None if not found in either source.
     """
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        # Try web data first (most recent scrape, more complete)
-        cur.execute("""
-            SELECT 
-                uid, title, aliases, dates_of_birth_used, place_of_birth,
-                sex, race, hair, eyes, height_min, height_max, 
-                weight_min, weight_max, scars_and_marks,
-                poster_classification, reward_text, reward_max,
-                warning_message, description, caution, remarks,
-                status, nationality, url, modified, 'web' as data_source
-            FROM tbl_bolo_web
-            WHERE uid = %s AND is_active = TRUE
-            ORDER BY modified DESC
-            LIMIT 1
-        """, (uid,))
+        # Determine query order based on preferred_source
+        if preferred_source == 'api':
+            tables = [('tbl_bolo', 'api'), ('tbl_bolo_web', 'web')]
+        else:
+            # Default: web first (fresher data)
+            tables = [('tbl_bolo_web', 'web'), ('tbl_bolo', 'api')]
         
-        row = cur.fetchone()
-        if row:
-            return dict(row)
+        for table, source_label in tables:
+            cur.execute(f"""
+                SELECT 
+                    uid, title, aliases, dates_of_birth_used, place_of_birth,
+                    sex, race, hair, eyes, height_min, height_max, 
+                    weight_min, weight_max, scars_and_marks,
+                    poster_classification, reward_text, reward_max,
+                    warning_message, description, caution, remarks,
+                    status, nationality, url, modified, 
+                    '{source_label}' as data_source
+                FROM {table}
+                WHERE uid = %s AND is_active = TRUE
+                ORDER BY modified DESC
+                LIMIT 1
+            """, (uid,))
+            
+            row = cur.fetchone()
+            if row:
+                return dict(row)
         
-        # Fallback to API data if web data not available
-        cur.execute("""
-            SELECT 
-                uid, title, aliases, dates_of_birth_used, place_of_birth,
-                sex, race, hair, eyes, height_min, height_max, 
-                weight_min, weight_max, scars_and_marks,
-                poster_classification, reward_text, reward_max,
-                warning_message, description, caution, remarks,
-                status, nationality, url, modified, 'api' as data_source
-            FROM tbl_bolo
-            WHERE uid = %s AND is_active = TRUE
-            ORDER BY modified DESC
-            LIMIT 1
-        """, (uid,))
-        
-        row = cur.fetchone()
-        return dict(row) if row else None
+        return None
 
 
 def format_height(min_inches: Optional[int], max_inches: Optional[int]) -> str:
@@ -1892,6 +1891,7 @@ def create_documents_archive() -> Dict[str, Any]:
         web_file_count = 0
         duplicates_skipped = 0
         files_not_found = 0
+        persons_skipped = 0
         
         # Create ZIP file (suppress duplicate warnings - we handle them ourselves)
         with warnings.catch_warnings():
@@ -1901,9 +1901,18 @@ def create_documents_archive() -> Dict[str, Any]:
                 added_paths = set()
                 
                 for uid, files in files_by_uid.items():
-                    # Get person info (from web or api)
-                    person = get_person_info(conn, uid)
+                    # Determine preferred source based on which source has files
+                    sources_present = set(f.get('source', 'api') for f in files)
+                    if 'web' in sources_present:
+                        preferred_source = 'web'
+                    else:
+                        preferred_source = 'api'
+                    
+                    # Get person info from appropriate table
+                    person = get_person_info(conn, uid, preferred_source=preferred_source)
                     if not person:
+                        persons_skipped += 1
+                        logger.debug(f"No person info found for UID {uid} (preferred: {preferred_source})")
                         continue
                     
                     persons_count += 1
@@ -2027,6 +2036,8 @@ def create_documents_archive() -> Dict[str, Any]:
         f"{persons_count} persons, {total_files} files "
         f"(API: {api_file_count}, Web: {web_file_count})"
     )
+    if persons_skipped > 0:
+        logger.info(f"Persons skipped (no record found): {persons_skipped}")
     if duplicates_skipped > 0:
         logger.info(f"Duplicates skipped: {duplicates_skipped}")
     if files_not_found > 0:
@@ -2042,6 +2053,7 @@ def create_documents_archive() -> Dict[str, Any]:
         "archive_size_bytes": archive_size,
         "archive_size_mb": round(archive_size / (1024 * 1024), 2),
         "persons_count": persons_count,
+        "persons_skipped": persons_skipped,
         "total_files": total_files,
         "api_files": api_file_count,
         "web_files": web_file_count,
