@@ -8,108 +8,219 @@
         </div>
         
         <div style="display: flex; align-items: center; gap: 20px;">
-            {% if user_authenticated %}
-                <!-- Logged-in Indicator 1: Status Dot -->
-                <div class="status-dot" title="Logged In"></div>
-                
-                <!-- Logged-in Indicator 2: Status Bar -->
-                <div class="status-bar"></div>
-                
-                <!-- Logged-in Indicator 3: User Display Name (codename if set, otherwise email) -->
-                <div class="user-email-display">{{ user_display_name or user_email }}</div>
-            {% endif %}
-            
             <nav class="nav">
-                <!-- <a href="/">Home</a> -->
                 <a href="/docs" target="_new" class="nav-item">API Docs</a>
                 <a href="/plans" class="nav-item">Pricing</a> 
                 <a href="/quickstart" class="nav-item">QuickStart</a>
                 {% if user_authenticated %}
-                    <!-- Authenticated User Links -->
-                    <a href="/v1/auth/profile" class="nav-item">Profile</a>
                     <a href="/v1/auth/analytics" class="nav-item">Analytics</a>
-                    {% if user_role == 'admin' %}
-                    <a href="/v1/auth/admin/users" class="nav-item">Users</a>
-                    {% endif %}
-                    <a href="/v1/billing" class="nav-item">Billing</a>
-                    <a href="/v1/auth/logout" class="nav-item nav-item-last" onclick="localStorage.clear();">Log Out</a>
                 {% else %}
-                    <!-- Guest Links -->
                     <a href="/v1/auth/login" class="nav-item">Log In</a>
                     <a href="/v1/auth/signup" class="nav-item nav-item-last">Sign Up</a>
                 {% endif %}
             </nav>
+            
+            {% if user_authenticated %}
+                <!-- User Avatar Dropdown -->
+                <div class="avatar-container">
+                    <button class="avatar-button" onclick="toggleAvatarMenu(event)" aria-label="User menu">
+                        <svg class="avatar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="11" fill="#ffffff" opacity="0.2"/>
+                            <circle cx="12" cy="9" r="3" fill="#ffffff"/>
+                            <path d="M6 20c0-3.314 2.686-6 6-6s6 2.686 6 6" fill="#ffffff"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="avatar-menu" id="avatarMenu">
+                        <div class="avatar-menu-header">
+                            {{ user_display_name or user_email }}
+                        </div>
+                        <div class="avatar-menu-divider"></div>
+                        <a href="/v1/auth/profile" class="avatar-menu-item">Profile</a>
+                        {% if user_role == 'admin' %}
+                        <a href="/v1/auth/admin/users" class="avatar-menu-item">Users</a>
+                        {% endif %}
+                        <a href="/v1/billing" class="avatar-menu-item">Billing</a>
+                        <div class="avatar-menu-divider"></div>
+                        <a href="/v1/auth/logout" class="avatar-menu-item" onclick="localStorage.clear();">Log Out</a>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </header>
 
 <style>
-/* Navigation item separators */
+/* Navigation item separators - improved spacing */
 .nav-item {
-    padding-right: 4px;
-    margin-right: 4px;
-    border-right: 1px solid #ddd;
+    padding: 0 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .nav-item-last {
     border-right: none;
 }
 
-/* Status Dot Indicator */
-.status-dot {
-    width: 10px;
-    height: 10px;
+/* Avatar Container */
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Avatar Button */
+.avatar-button {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: #28a745;
-    box-shadow: 0 0 6px rgba(40, 167, 69, 0.6);
-    animation: pulse 2s infinite;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.6;
-    }
+.avatar-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
 }
 
-/* Status Bar Indicator */
-.status-bar {
-    width: 3px;
+.avatar-button:active {
+    transform: scale(0.98);
+}
+
+.avatar-icon {
+    width: 24px;
     height: 24px;
-    background: linear-gradient(180deg, #28a745 0%, #20c997 100%);
-    border-radius: 2px;
-    box-shadow: 0 0 8px rgba(40, 167, 69, 0.4);
+    opacity: 0.9;
 }
 
-/* User Email Display */
-.user-email-display {
-    font-size: 0.85em;
+/* Avatar Dropdown Menu */
+.avatar-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 220px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.avatar-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Arrow pointer at top of menu */
+.avatar-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+.avatar-menu-header {
+    padding: 16px 20px;
+    font-size: 0.9em;
     color: #6c757d;
-    padding: 6px 12px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    border: 1px solid #dee2e6;
-    white-space: nowrap;
+    font-weight: 500;
+    word-break: break-word;
 }
 
-.user-email-display::before {
-    content: "Access granted to: ";
-    font-weight: 600;
-    color: #495057;
+.avatar-menu-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 0;
+}
+
+.avatar-menu-item {
+    display: block;
+    padding: 12px 20px;
+    color: #212529;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: background-color 0.15s ease;
+}
+
+.avatar-menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.avatar-menu-item:first-of-type {
+    border-radius: 8px 8px 0 0;
+}
+
+.avatar-menu-item:last-of-type {
+    border-radius: 0 0 8px 8px;
 }
 
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
-    .user-email-display {
-        background-color: #2d3748;
-        border-color: #4a5568;
+    .avatar-menu {
+        background: #2d3748;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .avatar-menu::before {
+        border-bottom-color: #2d3748;
+    }
+    
+    .avatar-menu-header {
         color: #a0aec0;
     }
     
-    .user-email-display::before {
-        color: #cbd5e0;
+    .avatar-menu-divider {
+        background: #4a5568;
+    }
+    
+    .avatar-menu-item {
+        color: #e2e8f0;
+    }
+    
+    .avatar-menu-item:hover {
+        background-color: #374151;
     }
 }
 </style>
+
+<script>
+function toggleAvatarMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('avatarMenu');
+    menu.classList.toggle('show');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('avatarMenu');
+    const container = event.target.closest('.avatar-container');
+    
+    if (!container && menu) {
+        menu.classList.remove('show');
+    }
+});
+
+// Close menu on escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const menu = document.getElementById('avatarMenu');
+        if (menu) {
+            menu.classList.remove('show');
+        }
+    }
+});
+</script>

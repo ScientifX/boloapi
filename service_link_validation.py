@@ -1769,6 +1769,15 @@ async def download_files_for_archive(conn: Connection) -> Dict[str, Any]:
             
             result = await download_file_with_cache(client, url, validated_urls)
             
+            # Log each URL download
+            if result['success']:
+                if result['from_cache']:
+                    logger.info(f"[CACHE] {url}")
+                else:
+                    logger.info(f"[200] {url} ({result['file_size']} bytes)")
+            else:
+                logger.info(f"[FAILED] {url} - {result.get('error', 'unknown')}")
+            
             if result['success']:
                 if result['from_cache']:
                     from_cache += 1
