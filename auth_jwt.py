@@ -69,6 +69,8 @@ def get_current_user_from_token(
         # Extract user_id and role from token claims
         user_id = payload.get("sub")
         role_str = payload.get("role")
+        email = payload.get("email")
+        codename = payload.get("codename")
         
         if not user_id or not role_str:
             raise HTTPException(
@@ -89,7 +91,9 @@ def get_current_user_from_token(
         
         return {
             "user_id": user_id,
-            "role": role
+            "role": role,
+            "email": email,
+            "codename": codename
         }
         
     except JWTError as e:
@@ -159,6 +163,8 @@ def get_optional_user(
         payload = decode_access_token(token)
         user_id = payload.get("sub")
         role_str = payload.get("role")
+        email = payload.get("email")
+        codename = payload.get("codename")
         
         if not user_id or not role_str:
             return None
@@ -170,7 +176,9 @@ def get_optional_user(
         
         return {
             "user_id": user_id,
-            "role": role
+            "role": role,
+            "email": email,
+            "codename": codename
         }
     except (JWTError, Exception):
         return None
@@ -208,6 +216,8 @@ def get_user_or_none(request: Request) -> Optional[dict]:
         payload = decode_access_token(token)
         user_id = payload.get("sub")
         role_str = payload.get("role")
+        email = payload.get("email")
+        codename = payload.get("codename")
         
         if not user_id or not role_str:
             return None
@@ -219,7 +229,9 @@ def get_user_or_none(request: Request) -> Optional[dict]:
         
         return {
             "user_id": user_id,
-            "role": role
+            "role": role,
+            "email": email,
+            "codename": codename
         }
     except (JWTError, Exception):
         return None

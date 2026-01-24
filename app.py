@@ -591,6 +591,7 @@ async def home(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
         }
     )
 
@@ -647,6 +648,7 @@ async def about_page(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
         }
     )
 
@@ -664,6 +666,7 @@ async def privacy_page(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
         }
     )
 
@@ -681,6 +684,7 @@ async def terms_page(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
         }
     )
 
@@ -697,6 +701,7 @@ async def contact_page(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
         }
     )
 
@@ -765,6 +770,7 @@ async def pricing_plans_page(request: Request):
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
             "pricing": PRICING,
             "current_plan": current_plan,
             "current_cycle": current_cycle, 

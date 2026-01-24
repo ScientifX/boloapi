@@ -313,6 +313,7 @@ async def login_page(request: Request):
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
         "user_display_name": request.state.user_display_name,
+        "user_role": request.state.user_role,
         "captcha_token": captcha_token
     })
     
@@ -333,6 +334,7 @@ async def signup_page(request: Request):
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
         "user_display_name": request.state.user_display_name,
+        "user_role": request.state.user_role,
         "captcha_token": captcha_token
     })
     
@@ -591,8 +593,15 @@ async def login(request: Request, login_req: LoginRequest):
         
         user = get_user_by_email(login_req.email)
         
-        if not user or not user['is_active'] or not user['password_hash']:
+        if not user or not user['password_hash']:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+        
+        # Check if account is disabled
+        if not user['is_active']:
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                "Account disabled. Contact support for assistance."
+            )
         
         if not verify_password(login_req.password, user['password_hash']):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
@@ -856,7 +865,8 @@ async def analytics_page(
             "request": request,
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
-            "user_display_name": request.state.user_display_name
+            "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role
         }
     )
     
@@ -933,6 +943,7 @@ async def profile_page(
             "user_authenticated": request.state.user_authenticated,
             "user_email": request.state.user_email,
             "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role,
             "user": user,
             "data_usage": data_usage,
             "job_roles": job_roles,
@@ -1177,17 +1188,25 @@ async def get_token(request: Request, token_req: TokenRequest):
         
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute("SELECT * FROM tbl_users WHERE is_active = TRUE")
+                # Get all users (active and inactive) to check API key
+                cur.execute("SELECT * FROM tbl_users")
                 users = cur.fetchall()
         
         user = None
         for u in users:
-            if verify_api_key(api_key, u['api_key_hash']):
+            if u.get('api_key_hash') and verify_api_key(api_key, u['api_key_hash']):
                 user = u
                 break
         
         if not user:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid API key")
+        
+        # Check if account is disabled
+        if not user['is_active']:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                "Account disabled. Contact support for assistance."
+            )
         
         user_role = UserRole(user['role'])
         access_token = create_access_token(
@@ -1210,3 +1229,161 @@ async def get_token(request: Request, token_req: TokenRequest):
     except Exception as e:
         logger.error(f"Token generation error: {str(e)}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate token")
+
+# ====================================================================
+# ADMIN USER MANAGEMENT
+# ====================================================================
+
+@router.get("/admin/users", response_class=HTMLResponse)
+@limiter.limit(rate_max)
+async def admin_users_page(
+    request: Request,
+    user: dict = Depends(require_browser_auth(UserRole.ADMIN))
+):
+    """Render admin user management page (ADMIN only)"""
+    try:
+        return templates.TemplateResponse(
+            "auth/users.html",
+            {
+                "request": request,
+                "user_authenticated": True,
+                "user_email": user.get('email'),
+                "user_display_name": user.get('codename'),
+                "user_role": request.state.user_role
+            }
+        )
+    except Exception as e:
+        logger.error(f"Admin users page error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to load users page")
+
+@router.get("/admin/users/list")
+@limiter.limit(rate_max)
+async def admin_users_list(
+    request: Request,
+    user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """Get list of all users with stats (ADMIN only)"""
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                # Get all users with search counts
+                cur.execute("""
+                    SELECT 
+                        u.user_id,
+                        u.email,
+                        u.codename,
+                        u.role,
+                        u.is_active,
+                        u.created_at,
+                        u.last_login_at,
+                        u.subscription_status,
+                        u.subscription_plan,
+                        u.billing_cycle,
+                        COALESCE(s.search_count, 0) as search_count
+                    FROM base.tbl_users u
+                    LEFT JOIN (
+                        SELECT user_id, COUNT(*) as search_count
+                        FROM base.tbl_search_analytics
+                        GROUP BY user_id
+                    ) s ON u.user_id = s.user_id
+                    ORDER BY u.created_at DESC
+                """)
+                users = cur.fetchall()
+                
+                # Get summary stats
+                cur.execute("""
+                    SELECT 
+                        COUNT(*) as total_users,
+                        COUNT(*) FILTER (WHERE is_active = TRUE) as active_users,
+                        COUNT(*) FILTER (WHERE role = 'premium') as premium_users,
+                        COALESCE(SUM(search_count), 0) as total_searches
+                    FROM base.tbl_users u
+                    LEFT JOIN (
+                        SELECT user_id, COUNT(*) as search_count
+                        FROM base.tbl_search_analytics
+                        GROUP BY user_id
+                    ) s ON u.user_id = s.user_id
+                """)
+                stats = cur.fetchone()
+        
+        # Convert datetime objects to strings
+        for user_dict in users:
+            if user_dict.get('created_at'):
+                user_dict['created_at'] = user_dict['created_at'].isoformat()
+            if user_dict.get('last_login_at'):
+                user_dict['last_login_at'] = user_dict['last_login_at'].isoformat()
+            # Convert UUID to string
+            user_dict['user_id'] = str(user_dict['user_id'])
+        
+        return {
+            "users": users,
+            "stats": {
+                "total_users": stats['total_users'],
+                "active_users": stats['active_users'],
+                "premium_users": stats['premium_users'],
+                "total_searches": int(stats['total_searches']) if stats['total_searches'] else 0
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Admin users list error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to load user list")
+
+class ToggleUserRequest(BaseModel):
+    is_active: bool
+
+@router.post("/admin/users/{user_id}/toggle")
+@limiter.limit(rate_max)
+async def admin_toggle_user(
+    request: Request,
+    user_id: str,
+    toggle_req: ToggleUserRequest,
+    user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """Toggle user active status (ADMIN only)"""
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                # Check if user exists
+                cur.execute(
+                    "SELECT user_id, email, is_active FROM base.tbl_users WHERE user_id = %s",
+                    (user_id,)
+                )
+                target_user = cur.fetchone()
+                
+                if not target_user:
+                    raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+                
+                # Prevent admin from disabling themselves
+                if str(target_user['user_id']) == str(user['user_id']):
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST,
+                        "Cannot disable your own admin account"
+                    )
+                
+                # Update user status
+                cur.execute(
+                    """
+                    UPDATE base.tbl_users 
+                    SET is_active = %s, updated_at = NOW() 
+                    WHERE user_id = %s
+                    """,
+                    (toggle_req.is_active, user_id)
+                )
+                conn.commit()
+        
+        action = "enabled" if toggle_req.is_active else "disabled"
+        logger.info(f"User {action} by admin: {target_user['email']} by {user['email']}")
+        
+        return {
+            "success": True,
+            "message": f"User {target_user['email']} has been {action}",
+            "user_id": user_id,
+            "is_active": toggle_req.is_active
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Toggle user status error: {str(e)}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update user status")
