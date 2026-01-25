@@ -13,7 +13,11 @@
                 <a href="/plans" class="nav-item">Pricing</a> 
                 <a href="/quickstart" class="nav-item">QuickStart</a>
                 {% if user_authenticated %}
-                    <a href="/v1/auth/analytics" class="nav-item">Analytics</a>
+                    {% if user_role == 'admin' %}
+                        <a href="/v1/auth/site_analytics" class="nav-item">Analytics</a>
+                    {% else %}
+                        <a href="/v1/auth/analytics" class="nav-item">Analytics</a>
+                    {% endif %}
                 {% else %}
                     <a href="/v1/auth/login" class="nav-item">Log In</a>
                     <a href="/v1/auth/signup" class="nav-item nav-item-last">Sign Up</a>

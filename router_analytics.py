@@ -489,26 +489,46 @@ async def get_admin_overview(
                 
                 search_types = cur.fetchall()
                 
-                # Daily trends
+                # Activity trends with dynamic grouping based on time range
                 # Convert UTC timestamps to user's timezone for accurate date grouping
                 # JavaScript's getTimezoneOffset() is positive for west, negative for east
                 # We subtract the offset to get local time
                 offset_minutes = -timezone_offset
                 
-                cur.execute("""
+                # Determine grouping based on time range
+                if time_range in [TimeRange.TODAY, TimeRange.LAST_7_DAYS]:
+                    # Daily grouping
+                    group_by_clause = "DATE(request_timestamp + (%s || ' minutes')::INTERVAL)"
+                    date_label = "date"
+                elif time_range in [TimeRange.LAST_30_DAYS]:
+                    # Weekly grouping
+                    group_by_clause = "DATE_TRUNC('week', request_timestamp + (%s || ' minutes')::INTERVAL)::DATE"
+                    date_label = "week"
+                elif time_range in [TimeRange.LAST_90_DAYS, TimeRange.THIS_MONTH, TimeRange.LAST_MONTH]:
+                    # Monthly grouping
+                    group_by_clause = "DATE_TRUNC('month', request_timestamp + (%s || ' minutes')::INTERVAL)::DATE"
+                    date_label = "month"
+                else:  # ALL_TIME
+                    # Quarterly grouping
+                    group_by_clause = "DATE_TRUNC('quarter', request_timestamp + (%s || ' minutes')::INTERVAL)::DATE"
+                    date_label = "quarter"
+                
+                query = f"""
                     SELECT 
-                        DATE(request_timestamp + (%s || ' minutes')::INTERVAL) as date,
+                        {group_by_clause} as date,
                         COUNT(*) as searches,
                         COUNT(DISTINCT user_id) as active_users,
                         SUM(results_count) as results
                     FROM base.tbl_search_analytics
                     WHERE request_timestamp >= %s
                         AND request_timestamp <= %s
-                    GROUP BY DATE(request_timestamp + (%s || ' minutes')::INTERVAL)
+                    GROUP BY {group_by_clause}
                     ORDER BY date DESC
-                """, (offset_minutes, start_date, end_date, offset_minutes))
+                """
                 
-                daily_trends = cur.fetchall()
+                cur.execute(query, (offset_minutes, start_date, end_date))
+                
+                activity_trends = cur.fetchall()
                 
                 return {
                     "overall": {
@@ -521,7 +541,8 @@ async def get_admin_overview(
                     "by_role": by_role,
                     "top_endpoints": top_endpoints,
                     "search_types": search_types,
-                    "daily_trends": daily_trends,
+                    "activity_trends": activity_trends,
+                    "grouping": date_label,
                     "time_range": {
                         "start": start_date.isoformat(),
                         "end": end_date.isoformat(),
@@ -534,6 +555,249 @@ async def get_admin_overview(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving admin analytics: {str(e)}"
+        )
+
+
+@router.get(
+    "/admin/top_users",
+    tags=[TAG_ANALYTICS],
+    summary="[ADMIN] Top Users by Search Count",
+    description="""
+    Get top users ranked by search count for site analytics.
+    
+    **Access:** ADMIN only
+    """
+)
+@limiter.limit(rate_max)
+async def get_top_users_admin(
+    request: Request,
+    time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
+    limit: int = Query(10, ge=1, le=50),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """
+    Get top users by search count with user details.
+    """
+    start_date, end_date = get_date_range(time_range, timezone_offset)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        a.user_id,
+                        COALESCE(u.display_name, u.email) as user_name,
+                        u.user_role,
+                        COUNT(*) as search_count,
+                        SUM(a.results_count) as total_results,
+                        AVG(a.response_time_ms) as avg_response_time
+                    FROM base.tbl_search_analytics a
+                    LEFT JOIN base.tbl_users u ON a.user_id = u.user_id
+                    WHERE a.request_timestamp >= %s
+                        AND a.request_timestamp <= %s
+                    GROUP BY a.user_id, u.display_name, u.email, u.user_role
+                    ORDER BY search_count DESC
+                    LIMIT %s
+                """, (start_date, end_date, limit))
+                
+                top_users = cur.fetchall()
+                
+                return {
+                    "top_users": top_users,
+                    "time_range": {
+                        "start": start_date.isoformat(),
+                        "end": end_date.isoformat(),
+                        "label": time_range.value
+                    }
+                }
+                
+    except Exception as e:
+        logger.error(f"Error fetching top users: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving top users: {str(e)}"
+        )
+
+
+@router.get(
+    "/admin/zero_result_endpoints",
+    tags=[TAG_ANALYTICS],
+    summary="[ADMIN] Endpoints with Most Zero Results",
+    description="""
+    Get endpoints that most frequently return zero results.
+    
+    **Access:** ADMIN only
+    """
+)
+@limiter.limit(rate_max)
+async def get_zero_result_endpoints_admin(
+    request: Request,
+    time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
+    limit: int = Query(10, ge=1, le=50),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """
+    Get endpoints with the most zero-result searches.
+    """
+    start_date, end_date = get_date_range(time_range, timezone_offset)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        endpoint,
+                        COUNT(*) as zero_result_count,
+                        COUNT(DISTINCT user_id) as unique_users,
+                        AVG(response_time_ms) as avg_response_time
+                    FROM base.tbl_search_analytics
+                    WHERE results_count = 0
+                        AND request_timestamp >= %s
+                        AND request_timestamp <= %s
+                    GROUP BY endpoint
+                    ORDER BY zero_result_count DESC
+                    LIMIT %s
+                """, (start_date, end_date, limit))
+                
+                zero_result_endpoints = cur.fetchall()
+                
+                return {
+                    "zero_result_endpoints": zero_result_endpoints,
+                    "time_range": {
+                        "start": start_date.isoformat(),
+                        "end": end_date.isoformat(),
+                        "label": time_range.value
+                    }
+                }
+                
+    except Exception as e:
+        logger.error(f"Error fetching zero result endpoints: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving zero result endpoints: {str(e)}"
+        )
+
+
+@router.get(
+    "/admin/endpoints_by_results",
+    tags=[TAG_ANALYTICS],
+    summary="[ADMIN] Top Endpoints by Results Returned",
+    description="""
+    Get endpoints that return the most results.
+    
+    **Access:** ADMIN only
+    """
+)
+@limiter.limit(rate_max)
+async def get_endpoints_by_results_admin(
+    request: Request,
+    time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
+    limit: int = Query(10, ge=1, le=50),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """
+    Get endpoints ranked by total results returned.
+    """
+    start_date, end_date = get_date_range(time_range, timezone_offset)
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        endpoint,
+                        COUNT(*) as request_count,
+                        SUM(results_count) as total_results,
+                        AVG(results_count) as avg_results_per_request,
+                        COUNT(DISTINCT user_id) as unique_users
+                    FROM base.tbl_search_analytics
+                    WHERE request_timestamp >= %s
+                        AND request_timestamp <= %s
+                    GROUP BY endpoint
+                    ORDER BY total_results DESC
+                    LIMIT %s
+                """, (start_date, end_date, limit))
+                
+                endpoints_by_results = cur.fetchall()
+                
+                return {
+                    "endpoints_by_results": endpoints_by_results,
+                    "time_range": {
+                        "start": start_date.isoformat(),
+                        "end": end_date.isoformat(),
+                        "label": time_range.value
+                    }
+                }
+                
+    except Exception as e:
+        logger.error(f"Error fetching endpoints by results: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving endpoints by results: {str(e)}"
+        )
+
+
+@router.get(
+    "/admin/response_times",
+    tags=[TAG_ANALYTICS],
+    summary="[ADMIN] Response Time Trends",
+    description="""
+    Get response time trends over time for site analytics.
+    
+    **Access:** ADMIN only
+    """
+)
+@limiter.limit(rate_max)
+async def get_response_times_admin(
+    request: Request,
+    time_range: TimeRange = Query(TimeRange.LAST_7_DAYS, description="Time range for analytics"),
+    timezone_offset: int = Query(0, description="User's timezone offset in minutes from UTC"),
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
+):
+    """
+    Get response time trends grouped by date.
+    """
+    start_date, end_date = get_date_range(time_range, timezone_offset)
+    offset_minutes = -timezone_offset
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        DATE(request_timestamp + (%s || ' minutes')::INTERVAL) as date,
+                        AVG(response_time_ms) as avg_response_time,
+                        MIN(response_time_ms) as min_response_time,
+                        MAX(response_time_ms) as max_response_time,
+                        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY response_time_ms) as median_response_time,
+                        PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time_ms) as p95_response_time,
+                        COUNT(*) as request_count
+                    FROM base.tbl_search_analytics
+                    WHERE request_timestamp >= %s
+                        AND request_timestamp <= %s
+                    GROUP BY DATE(request_timestamp + (%s || ' minutes')::INTERVAL)
+                    ORDER BY date ASC
+                """, (offset_minutes, start_date, end_date, offset_minutes))
+                
+                response_times = cur.fetchall()
+                
+                return {
+                    "response_times": response_times,
+                    "time_range": {
+                        "start": start_date.isoformat(),
+                        "end": end_date.isoformat(),
+                        "label": time_range.value
+                    }
+                }
+                
+    except Exception as e:
+        logger.error(f"Error fetching response times: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving response times: {str(e)}"
         )
 
 

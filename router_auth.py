@@ -869,6 +869,38 @@ async def analytics_page(
             "user_role": request.state.user_role
         }
     )
+
+
+@router.get(
+    "/site_analytics",
+    response_class=HTMLResponse,
+    summary="Site Analytics Dashboard Page",
+    description="Admin dashboard showing site-wide API usage statistics",
+    include_in_schema=False  # Hide from API docs since it's a web page
+)
+@limiter.limit(rate_max)
+async def site_analytics_page(
+    request: Request,
+    current_user: Optional[dict] = Depends(require_browser_auth(UserRole.ADMIN))
+):
+    """
+    Site Analytics Dashboard - Admin-only view of site-wide statistics.
+    Requires admin authentication - redirects to login if not authenticated or not admin.
+    """
+    # If not authenticated or not admin, redirect to login page
+    if not current_user or request.state.user_role != 'admin':
+        return RedirectResponse(url="/v1/auth/login", status_code=303)
+    
+    return templates.TemplateResponse(
+        "auth/site_analytics.html",
+        {
+            "request": request,
+            "user_authenticated": request.state.user_authenticated,
+            "user_email": request.state.user_email,
+            "user_display_name": request.state.user_display_name,
+            "user_role": request.state.user_role
+        }
+    )
     
 # ====================================================================
 # PROFILE ENDPOINTS
