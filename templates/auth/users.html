@@ -14,14 +14,6 @@
 <div class="content">
     <h2>User Management</h2>
     
-    <div id="error" class="error" style="display: none;"></div>
-    <div id="success" class="success" style="display: none;"></div>
-    
-    <!-- Confirmation Dialog -->
-    <div id="confirm-dialog" title="Confirm Action" style="display: none;">
-        <p id="confirm-message"></p>
-    </div>
-    
     <div id="loading" class="loading">Loading users...</div>
     
     <div id="content" style="display: none;">
@@ -69,7 +61,16 @@
                 <tbody></tbody>
             </table>
         </div>
+        
+        <!-- Notifications moved below table -->
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="success" class="success" style="display: none;"></div>
     </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div id="confirm-dialog" title="Confirm Action" style="display: none;">
+    <p id="confirm-message"></p>
 </div>
 
 <script>
@@ -86,6 +87,13 @@
         
         try {
             const response = await fetch('/v1/auth/admin/users/list');
+            
+            // Check for 401 Unauthorized (disabled account)
+            if (response.status === 401) {
+                window.location.href = '/v1/auth/login?message=account_disabled';
+                return;
+            }
+            
             if (!response.ok) {
                 throw new Error('Failed to load users');
             }
@@ -192,6 +200,7 @@
                 const action = this.value;
                 if (action === 'toggle') {
                     const userId = this.dataset.userId;
+                    // Read current state from data attribute (not captured variable)
                     const isActive = this.dataset.isActive === 'true';
                     await toggleUserStatus(userId, isActive);
                 }
@@ -239,6 +248,12 @@
                                 },
                                 body: JSON.stringify({ is_active: !currentIsActive })
                             });
+                            
+                            // Check for 401 Unauthorized (disabled account)
+                            if (response.status === 401) {
+                                window.location.href = '/v1/auth/login?message=account_disabled';
+                                return;
+                            }
                             
                             if (!response.ok) {
                                 const errorData = await response.json();
@@ -296,8 +311,8 @@
                 const statusText = newIsActive ? 'Active' : 'Disabled';
                 statusCell.html(`<span class="status-badge ${statusClass}">${statusText}</span>`);
                 
-                // Update the dropdown data and options
-                dropdown.data('is-active', newIsActive);
+                // Update the dropdown data attribute (use attr to update HTML attribute)
+                dropdown.attr('data-is-active', newIsActive);
                 const actionText = newIsActive ? 'Disable User' : 'Enable User';
                 dropdown.find('option[value="toggle"]').text(actionText);
                 
@@ -488,9 +503,14 @@ table.dataTable thead th {
     background: #667eea;
     color: white;
     padding: 12px;
-    text-align: left;
+    text-align: center; /* Center align headers by default */
     font-weight: 600;
     border-bottom: 2px solid #5568d3;
+}
+
+/* Left align first column header (Email/Codename) */
+table.dataTable thead th:first-child {
+    text-align: left;
 }
 
 table.dataTable thead th:hover {
@@ -502,6 +522,12 @@ table.dataTable tbody td {
     padding: 12px;
     border-bottom: 1px solid #eee;
     vertical-align: middle;
+    text-align: center; /* Center align all cells by default */
+}
+
+/* Left align first column (Email/Codename) */
+table.dataTable tbody td:first-child {
+    text-align: left;
 }
 
 /* Smaller font for date columns */

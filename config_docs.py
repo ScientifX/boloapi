@@ -15,6 +15,9 @@ Exception system:
 - docs_hidden: Hide from everyone including ADMIN
 """
 
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 from typing import Optional, Callable, Dict, Any, List
 from functools import wraps
 from copy import deepcopy
@@ -24,6 +27,17 @@ from fastapi.openapi.utils import get_openapi
 
 from auth import UserRole, ROLE_HIERARCHY
 from utils_jwt import decode_access_token, JWTError
+from config import DB_CONFIG
+
+
+@contextmanager
+def get_db_connection():
+    """Database connection context manager"""
+    conn = psycopg2.connect(**DB_CONFIG)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 # ============================================================================
@@ -121,7 +135,7 @@ def register_visibility_override(
 def get_viewer_role_from_request(request: Request) -> UserRole:
     """
     Extract the viewer's role from JWT token (cookie or header).
-    Returns PUBLIC if not authenticated or token invalid.
+    Returns PUBLIC if not authenticated, token invalid, or user disabled.
     """
     # Check cookie first (web users)
     token = request.cookies.get("auth_token")
@@ -138,8 +152,26 @@ def get_viewer_role_from_request(request: Request) -> UserRole:
     try:
         payload = decode_access_token(token)
         role_str = payload.get("role")
-        if role_str:
-            return UserRole(role_str)
+        user_id = payload.get("sub")
+        
+        if role_str and user_id:
+            # CRITICAL: Check database to ensure user is still active
+            # Disabled users should see PUBLIC docs only
+            try:
+                with get_db_connection() as conn:
+                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                        cur.execute(
+                            "SELECT is_active FROM base.tbl_users WHERE user_id = %s",
+                            (user_id,)
+                        )
+                        user_record = cur.fetchone()
+                        
+                        # Only return user's role if they exist and are active
+                        if user_record and user_record['is_active']:
+                            return UserRole(role_str)
+            except Exception:
+                # Database error - treat as public
+                pass
     except (JWTError, ValueError):
         pass
     

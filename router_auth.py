@@ -1234,7 +1234,7 @@ async def get_token(request: Request, token_req: TokenRequest):
 # ADMIN USER MANAGEMENT
 # ====================================================================
 
-@router.get("/admin/users", response_class=HTMLResponse)
+@router.get("/admin/users", response_class=HTMLResponse, include_in_schema=False)
 @limiter.limit(rate_max)
 async def admin_users_page(
     request: Request,

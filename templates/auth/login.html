@@ -170,6 +170,18 @@ window.addEventListener('DOMContentLoaded', () => {
         // Clean up URL without the message parameter
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
+    } else if (message === 'account_disabled') {
+        // Clear the auth cookie since account is disabled
+        document.cookie = 'auth_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        
+        // Show account disabled error message
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = 'Your account has been disabled. Please contact support for assistance.';
+        errorDiv.style.display = 'block';
+        
+        // Clean up URL without the message parameter
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
     }
 });
 

@@ -3,11 +3,15 @@ JWT Authentication Dependencies
 Provides FastAPI dependencies for protecting endpoints with JWT tokens
 Supports both Authorization header (API) and httpOnly cookie (web pages)
 """
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 from typing import Optional
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from auth import UserRole, has_role
 from utils_jwt import decode_access_token, JWTError
+from config import DB_CONFIG
 
 # HTTP Bearer token scheme
 security = HTTPBearer(
@@ -15,6 +19,15 @@ security = HTTPBearer(
     description="Enter your JWT access token (get from /v1/auth/token)",
     auto_error=False  # Don't auto-error, we'll handle it ourselves
 )
+
+@contextmanager
+def get_db_connection():
+    """Database connection context manager"""
+    conn = psycopg2.connect(**DB_CONFIG)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 def get_token_from_cookie_or_header(
     request: Request,
@@ -88,6 +101,30 @@ def get_current_user_from_token(
                 detail=f"Invalid role in token: {role_str}",
                 headers={"WWW-Authenticate": "Bearer"}
             )
+        
+        # CRITICAL: Check database to ensure user is still active
+        # This allows immediate revocation when admin disables a user
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT is_active FROM base.tbl_users WHERE user_id = %s",
+                    (user_id,)
+                )
+                user_record = cur.fetchone()
+                
+                if not user_record:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="User not found",
+                        headers={"WWW-Authenticate": "Bearer"}
+                    )
+                
+                if not user_record['is_active']:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Account disabled. Contact support for assistance.",
+                        headers={"WWW-Authenticate": "Bearer"}
+                    )
         
         return {
             "user_id": user_id,
@@ -174,6 +211,18 @@ def get_optional_user(
         except ValueError:
             return None
         
+        # Check database to ensure user is still active
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT is_active FROM base.tbl_users WHERE user_id = %s",
+                    (user_id,)
+                )
+                user_record = cur.fetchone()
+                
+                if not user_record or not user_record['is_active']:
+                    return None
+        
         return {
             "user_id": user_id,
             "role": role,
@@ -226,6 +275,18 @@ def get_user_or_none(request: Request) -> Optional[dict]:
             role = UserRole(role_str)
         except ValueError:
             return None
+        
+        # Check database to ensure user is still active
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT is_active FROM base.tbl_users WHERE user_id = %s",
+                    (user_id,)
+                )
+                user_record = cur.fetchone()
+                
+                if not user_record or not user_record['is_active']:
+                    return None
         
         return {
             "user_id": user_id,

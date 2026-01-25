@@ -117,7 +117,7 @@ async function fetchWithAuth(url, options = {}) {
     
     if (response.status === 401) {
         localStorage.removeItem('access_token');
-        window.location.href = '/v1/auth/login';
+        window.location.href = '/v1/auth/login?message=account_disabled';
         return null;
     }
     

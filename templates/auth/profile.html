@@ -289,6 +289,12 @@ document.getElementById('saveProfileBtn').addEventListener('click', async () => 
             body: JSON.stringify(profileData)
             });
         
+        // Check for 401 Unauthorized (disabled account)
+        if (response.status === 401) {
+            window.location.href = '/v1/auth/login?message=account_disabled';
+            return;
+        }
+        
         const data = await response.json();
         
         if (response.ok) {
@@ -357,6 +363,12 @@ document.getElementById('changePasswordBtn').addEventListener('click', async () 
             })
         });
         
+        // Check for 401 Unauthorized (disabled account)
+        if (response.status === 401) {
+            window.location.href = '/v1/auth/login?message=account_disabled';
+            return;
+        }
+        
         if (response.ok) {
             messageDiv.className = 'alert alert-success';
             messageDiv.textContent = 'Password changed successfully! Redirecting to login...';
@@ -396,6 +408,12 @@ async function resetApiKey() {
             },
             credentials: 'include'
         });
+        
+        // Check for 401 Unauthorized (disabled account)
+        if (response.status === 401) {
+            window.location.href = '/v1/auth/login?message=account_disabled';
+            return;
+        }
         
         if (response.ok) {
             alert('API key reset successfully! Check your email for the new key.');

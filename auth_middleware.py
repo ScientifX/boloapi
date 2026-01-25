@@ -2,9 +2,23 @@
 Authentication Middleware for Template Rendering
 Checks JWT cookie and sets user_authenticated state for Jinja2 templates
 """
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
 from utils_jwt import decode_access_token, JWTError
+from config import DB_CONFIG
+
+
+@contextmanager
+def get_db_connection():
+    """Database connection context manager"""
+    conn = psycopg2.connect(**DB_CONFIG)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 class TemplateAuthMiddleware(BaseHTTPMiddleware):
@@ -38,18 +52,34 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
                 codename = payload.get("codename")
                 
                 if user_id and role:
-                    request.state.user_authenticated = True
-                    request.state.user_id = user_id
-                    request.state.user_role = role
-                    request.state.user_email = email
-                    request.state.user_codename = codename
-                    # Display codename if set, otherwise use email username (before @)
-                    if codename:
-                        request.state.user_display_name = codename
-                    elif email:
-                        request.state.user_display_name = email.split('@')[0]
-                    else:
-                        request.state.user_display_name = None
+                    # CRITICAL: Check database to ensure user is still active
+                    # This prevents disabled users from seeing authenticated UI
+                    try:
+                        with get_db_connection() as conn:
+                            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                                cur.execute(
+                                    "SELECT is_active FROM base.tbl_users WHERE user_id = %s",
+                                    (user_id,)
+                                )
+                                user_record = cur.fetchone()
+                                
+                                # Only set as authenticated if user exists and is active
+                                if user_record and user_record['is_active']:
+                                    request.state.user_authenticated = True
+                                    request.state.user_id = user_id
+                                    request.state.user_role = role
+                                    request.state.user_email = email
+                                    request.state.user_codename = codename
+                                    # Display codename if set, otherwise use email username (before @)
+                                    if codename:
+                                        request.state.user_display_name = codename
+                                    elif email:
+                                        request.state.user_display_name = email.split('@')[0]
+                                    else:
+                                        request.state.user_display_name = None
+                    except Exception:
+                        # Database error - treat as unauthenticated
+                        pass
                     
             except JWTError:
                 # Token is invalid or expired - remain unauthenticated

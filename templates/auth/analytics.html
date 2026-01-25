@@ -115,6 +115,13 @@
         
         try {
             const statsResponse = await fetch(`/v1/analytics/my_stats?time_range=${timeRange}&timezone_offset=${timezoneOffset}`);
+            
+            // Check for 401 Unauthorized (disabled account)
+            if (statsResponse.status === 401) {
+                window.location.href = '/v1/auth/login?message=account_disabled';
+                return;
+            }
+            
             if (!statsResponse.ok) throw new Error('Failed to load stats');
             const stats = await statsResponse.json();
             
@@ -122,6 +129,13 @@
             console.log('Stats total searches:', stats.overall.total_searches);
             
             const searchesResponse = await fetch(`/v1/analytics/my_searches?time_range=${timeRange}&timezone_offset=${timezoneOffset}`);
+            
+            // Check for 401 Unauthorized (disabled account)
+            if (searchesResponse.status === 401) {
+                window.location.href = '/v1/auth/login?message=account_disabled';
+                return;
+            }
+            
             if (!searchesResponse.ok) throw new Error('Failed to load searches');
             const searches = await searchesResponse.json();
             
