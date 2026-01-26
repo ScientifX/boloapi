@@ -10,12 +10,12 @@ import io
 import json
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from fastapi import Response, HTTPException, status
 
 
 class ResponseFormat(str, Enum):
-    """Supported response formats for search endpoints"""
+    """Supported response formats for search endpoints (all formats)"""
     JSON = "json"
     CSV = "csv"
     TXT = "txt"
@@ -23,7 +23,21 @@ class ResponseFormat(str, Enum):
     PARQUET = "parquet"
 
 
-def validate_format_access(user_role: str, requested_format: ResponseFormat) -> None:
+class ResponseFormatBasic(str, Enum):
+    """Response formats for BASIC tier users (JSON only)"""
+    JSON = "json"
+
+
+class ResponseFormatPremium(str, Enum):
+    """Response formats for PREMIUM/ADMIN tier users (all formats)"""
+    JSON = "json"
+    CSV = "csv"
+    TXT = "txt"
+    XML = "xml"
+    PARQUET = "parquet"
+
+
+def validate_format_access(user_role: str, requested_format: Union[ResponseFormat, ResponseFormatBasic, ResponseFormatPremium]) -> None:
     """
     Validate that the user's role allows access to the requested format.
     
@@ -42,12 +56,15 @@ def validate_format_access(user_role: str, requested_format: ResponseFormat) -> 
     # Convert role to lowercase for comparison
     role_lower = user_role.lower() if isinstance(user_role, str) else user_role.value.lower()
     
+    # Get the format value
+    format_value = requested_format if isinstance(requested_format, str) else requested_format.value
+    
     # BASIC users can only use JSON format
     if role_lower == "basic":
-        if requested_format != ResponseFormat.JSON:
+        if format_value != "json":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Format '{requested_format.value}' is only available to PREMIUM and ADMIN subscribers. "
+                detail=f"Format '{format_value}' is only available to PREMIUM and ADMIN subscribers. "
                        f"BASIC users can only use JSON format. Upgrade to PREMIUM for CSV, TXT, XML, and Parquet formats."
             )
     
@@ -978,7 +995,7 @@ def convert_to_parquet(result_dict: Dict) -> bytes:
 
 def format_response(
     result_dict: Dict,
-    response_format: ResponseFormat,
+    response_format: Union[ResponseFormat, ResponseFormatBasic, ResponseFormatPremium],
     filename_prefix: str = "bolo_results"
 ) -> Response:
     """
@@ -992,15 +1009,18 @@ def format_response(
     Returns:
         FastAPI Response object with appropriate content and headers
     """
+    # Get the format value (handles both string and enum)
+    format_value = response_format if isinstance(response_format, str) else response_format.value
+    
     # JSON - return the dict directly (FastAPI will serialize it)
-    if response_format == ResponseFormat.JSON:
+    if format_value == "json":
         return result_dict
     
     # Generate timestamp for filename
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     
     # CSV
-    if response_format == ResponseFormat.CSV:
+    if format_value == "csv":
         content = convert_to_csv(result_dict)
         return Response(
             content=content,
@@ -1011,7 +1031,7 @@ def format_response(
         )
     
     # TXT (Plain text)
-    if response_format == ResponseFormat.TXT:
+    if format_value == "txt":
         content = convert_to_txt(result_dict)
         return Response(
             content=content,
@@ -1022,7 +1042,7 @@ def format_response(
         )
     
     # XML
-    if response_format == ResponseFormat.XML:
+    if format_value == "xml":
         content = convert_to_xml(result_dict)
         return Response(
             content=content,
@@ -1033,7 +1053,7 @@ def format_response(
         )
     
     # Parquet
-    if response_format == ResponseFormat.PARQUET:
+    if format_value == "parquet":
         try:
             content = convert_to_parquet(result_dict)
             if not isinstance(content, bytes):

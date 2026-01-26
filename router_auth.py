@@ -626,13 +626,16 @@ async def login(request: Request, login_req: LoginRequest):
             codename=user.get('codename')
             )
 
+        # Determine redirect URL based on role
+        redirect_url = "/v1/auth/site_analytics" if user_role == UserRole.ADMIN else "/v1/auth/analytics"
+
         # Create response with cookie
         response_data = {
             "access_token": access_token,
             "token_type": "bearer",
             "expires_in": int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
             "role": user_role.value,
-            "redirect_url": "/v1/auth/analytics"  # Use relative URL for proper proxy handling
+            "redirect_url": redirect_url
         }
         
         response = JSONResponse(content=response_data)

@@ -526,17 +526,18 @@ async def get_admin_overview(
                     ORDER BY date DESC
                 """
                 
-                cur.execute(query, (offset_minutes, start_date, end_date))
+                # Parameters: offset_minutes (SELECT), start_date, end_date, offset_minutes (GROUP BY)
+                cur.execute(query, (offset_minutes, start_date, end_date, offset_minutes))
                 
                 activity_trends = cur.fetchall()
                 
                 return {
                     "overall": {
-                        "total_searches": overall["total_searches"],
-                        "active_users": overall["active_users"],
-                        "total_results": overall["total_results"],
+                        "total_searches": overall["total_searches"] or 0,
+                        "active_users": overall["active_users"] or 0,
+                        "total_results": overall["total_results"] or 0,
                         "avg_response_time_ms": round(overall["avg_response_time"], 2) if overall["avg_response_time"] else 0,
-                        "active_days": overall["active_days"]
+                        "active_days": overall["active_days"] or 0
                     },
                     "by_role": by_role,
                     "top_endpoints": top_endpoints,
@@ -587,8 +588,8 @@ async def get_top_users_admin(
                 cur.execute("""
                     SELECT 
                         a.user_id,
-                        COALESCE(u.display_name, u.email) as user_name,
-                        u.user_role,
+                        COALESCE(u.codename, u.email) as user_name,
+                        u.role as user_role,
                         COUNT(*) as search_count,
                         SUM(a.results_count) as total_results,
                         AVG(a.response_time_ms) as avg_response_time
@@ -596,7 +597,7 @@ async def get_top_users_admin(
                     LEFT JOIN base.tbl_users u ON a.user_id = u.user_id
                     WHERE a.request_timestamp >= %s
                         AND a.request_timestamp <= %s
-                    GROUP BY a.user_id, u.display_name, u.email, u.user_role
+                    GROUP BY a.user_id, u.codename, u.email, u.role
                     ORDER BY search_count DESC
                     LIMIT %s
                 """, (start_date, end_date, limit))

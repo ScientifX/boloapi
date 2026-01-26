@@ -106,7 +106,7 @@
         
         try {
             const [statsRes, topUsersRes, zeroResultsRes, endpointsByResultsRes, responseTimesRes] = await Promise.all([
-                fetch(`/v1/analytics/admin/analytics?time_range=${timeRange}&timezone_offset=${timezoneOffset}`),
+                fetch(`/v1/analytics/admin/overview?time_range=${timeRange}&timezone_offset=${timezoneOffset}`),
                 fetch(`/v1/analytics/admin/top_users?time_range=${timeRange}&timezone_offset=${timezoneOffset}&limit=10`),
                 fetch(`/v1/analytics/admin/zero_result_endpoints?time_range=${timeRange}&timezone_offset=${timezoneOffset}&limit=10`),
                 fetch(`/v1/analytics/admin/endpoints_by_results?time_range=${timeRange}&timezone_offset=${timezoneOffset}&limit=10`),
@@ -173,6 +173,15 @@
         
         const chartData = [...data].reverse();
         
+        // Handle empty data
+        if (chartData.length === 0) {
+            chartData.push({ 
+                date: new Date().toISOString().split('T')[0], 
+                searches: 0, 
+                active_users: 0 
+            });
+        }
+        
         const labels = chartData.map(d => {
             const date = new Date(d.date + 'T00:00:00');
             if (grouping === 'week') {
@@ -216,7 +225,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 interaction: {
                     mode: 'index',
                     intersect: false,
@@ -259,6 +268,15 @@
         
         const chartData = [...data].reverse();
         
+        // Handle empty data
+        if (chartData.length === 0) {
+            chartData.push({ 
+                date: new Date().toISOString().split('T')[0], 
+                avg_response_time: 0, 
+                p95_response_time: 0 
+            });
+        }
+        
         const labels = chartData.map(d => {
             const date = new Date(d.date + 'T00:00:00');
             return date.toLocaleDateString();
@@ -292,7 +310,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -313,6 +331,11 @@
             topUsersChart.destroy();
         }
         
+        // Handle empty data
+        if (data.length === 0) {
+            data = [{ user_name: 'No users yet', search_count: 0 }];
+        }
+        
         const labels = data.map(u => {
             const name = u.user_name || 'Unknown';
             return name.length > 20 ? name.substring(0, 20) + '...' : name;
@@ -331,7 +354,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 indexAxis: 'y',
                 plugins: {
                     legend: {
@@ -354,9 +377,14 @@
             topEndpointsChart.destroy();
         }
         
+        // Handle empty data
+        if (data.length === 0) {
+            data = [{ endpoint: 'No data yet', total_results: 0 }];
+        }
+        
         const labels = data.map(e => {
             const parts = e.endpoint.split('/');
-            const endpoint = parts[parts.length - 1] || parts[parts.length - 2];
+            const endpoint = parts[parts.length - 1] || parts[parts.length - 2] || e.endpoint;
             return endpoint.length > 15 ? endpoint.substring(0, 15) + '...' : endpoint;
         });
         const results = data.map(e => e.total_results);
@@ -373,7 +401,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 indexAxis: 'y',
                 plugins: {
                     legend: {
@@ -396,9 +424,14 @@
             zeroResultsChart.destroy();
         }
         
+        // Handle empty data
+        if (data.length === 0) {
+            data = [{ endpoint: 'No data yet', zero_result_count: 0 }];
+        }
+        
         const labels = data.map(e => {
             const parts = e.endpoint.split('/');
-            const endpoint = parts[parts.length - 1] || parts[parts.length - 2];
+            const endpoint = parts[parts.length - 1] || parts[parts.length - 2] || e.endpoint;
             return endpoint.length > 15 ? endpoint.substring(0, 15) + '...' : endpoint;
         });
         const counts = data.map(e => e.zero_result_count);
@@ -415,7 +448,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 indexAxis: 'y',
                 plugins: {
                     legend: {
@@ -438,6 +471,11 @@
             roleChart.destroy();
         }
         
+        // Handle empty data
+        if (data.length === 0) {
+            data = [{ user_role: 'No data yet', searches: 0 }];
+        }
+        
         const labels = data.map(r => r.user_role.toUpperCase());
         const counts = data.map(r => r.searches);
         
@@ -458,7 +496,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom'
@@ -586,16 +624,45 @@ h2 {
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-height: 300px;
+    max-height: 450px;
 }
 
 .chart-container.chart-large {
     grid-column: 1 / -1;
+    min-height: 350px;
+    max-height: 500px;
 }
 
 .chart-container h3 {
     color: #333;
     margin-bottom: 20px;
     font-size: 1.3em;
+}
+
+.chart-container canvas {
+    max-height: 350px;
+}
+
+.chart-container.chart-large canvas {
+    max-height: 400px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: #999;
+    font-size: 1.1em;
+    padding: 40px 20px;
+}
+
+.empty-state-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+    opacity: 0.3;
 }
 
 .grouping-label {
