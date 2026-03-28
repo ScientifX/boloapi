@@ -40,7 +40,8 @@ router = APIRouter(prefix="/v1/search")
 TAG_SEARCH = "Search"
 TAG_SEARCH_BY_CATEGORY = "Search By Category"
 TAG_SEARCH_BY_LIST = "Search By List"
-QUICKSTART_URL = f"{API_APP_BASE_URL}/quickstart.html" if API_APP_BASE_URL else "/quickstart.html"
+QUICKSTART_URL = "/quickstart#search_fields"
+QUICKSTART_LINK = f"[Searchable Fields Reference]({QUICKSTART_URL})"
 
 # ============================================================================
 # VALIDATION HELPER FUNCTIONS
@@ -941,7 +942,7 @@ def get_db_connection():
     "/simple",
     tags=[TAG_SEARCH],
     summary="Simple search with wildcards",
-    description=f"See {QUICKSTART_URL} for details.",
+    description=f"See {QUICKSTART_LINK} for details.",
     response_description="Query parameters, count, and array of matching recordss"
     )
 @limiter.limit(rate_max)
@@ -955,7 +956,7 @@ async def simple_search(
     f"""
     Execute a simple search with wildcard support.
     All string comparisons are case-insensitive.
-    See {QUICKSTART_URL} for details.
+    See {QUICKSTART_LINK} for details.
     """
 
     current_role = current_user["role"]
@@ -1055,7 +1056,7 @@ async def simple_search(
     "/advanced",
     tags=[TAG_SEARCH],
     summary="Advanced search with grouped conditions",
-    description=f"See {QUICKSTART_URL} for details.",
+    description=f"See {QUICKSTART_LINK} for details.",
     response_description="Query parameters, count, and array of matching recordss"
 )
 @limiter.limit(rate_max)
@@ -1069,7 +1070,7 @@ async def advanced_search(
     f"""
     Execute advanced searches with ehanced operator and grouped condition support.
     All string comparisons are case-insensitive.
-    See {QUICKSTART_URL} for details.
+    See {QUICKSTART_LINK} for details.
     """
     current_role = current_user["role"]
     user_id = current_user["user_id"] 
