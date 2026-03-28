@@ -21,7 +21,7 @@ from auth import UserRole
 from auth_jwt import require_jwt_role
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 rate_max = "100/minute"

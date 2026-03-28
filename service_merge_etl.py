@@ -29,7 +29,7 @@ from config import DB_CONFIG
 from utils_warning_enrichment import enrich_with_warning_components
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Fields to exclude from content hash (volatile fields)

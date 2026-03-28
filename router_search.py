@@ -27,7 +27,7 @@ from service_link_validation import get_archive_info, get_archive_file_path
 from utils_search_analytics import track_search_analytics
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 rate_max = "500/minute"

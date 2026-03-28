@@ -53,7 +53,7 @@ templates = Jinja2Templates(directory="templates")
 templates.env.globals.update(APP_GLOBALS)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Rate limiter

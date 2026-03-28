@@ -16,7 +16,7 @@ from config import DB_CONFIG
 from utils_email import send_bolo_notification_email
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Valid status transitions for notifications

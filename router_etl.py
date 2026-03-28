@@ -62,7 +62,7 @@ VOLATILE_HASH_FIELDS = {'modified', '@id'}
 FBI_API_URL = "https://api.fbi.gov/wanted/v1/list"
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 @contextmanager

@@ -44,7 +44,7 @@ from utils_email import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Log test mode status at startup

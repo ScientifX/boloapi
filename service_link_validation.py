@@ -40,7 +40,7 @@ from config import DB_CONFIG
 # =============================================================================
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Directory paths
