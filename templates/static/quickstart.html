@@ -343,237 +343,512 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h3>Code Examples:</h3>
-            <div class="code-tabs">
-                <div class="tab-buttons">
-                    <button class="tab-button active" onclick="showTab(event, 'search-js')">JavaScript</button>
-                    <button class="tab-button" onclick="showTab(event, 'search-python')">Python</button>
-                    <button class="tab-button" onclick="showTab(event, 'search-java')">Java</button>
-                    <button class="tab-button" onclick="showTab(event, 'search-csharp')">C#</button>
-                    <button class="tab-button" onclick="showTab(event, 'search-go')">Go</button>
-                </div>
-                
-                <div id="search-js" class="tab-content active">
-                    <pre><code>// Simple search for records with "Murder" in title
-async function simpleSearch(accessToken) {
-    const searchRequest = {
-        filters: [
-            { field: "title", value: "Murder*" }
-        ],
-        logic: "AND",
-        limit: 10
-    };
-    
-    const response = await fetch(`${BASE_URL}/v1/search/simple`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(searchRequest)
-    });
-    
-    if (response.ok) {
-        const results = await response.json();
-        console.log(`Found ${results.count} results`);
-        
-        // Display first result
-        if (results.results.length > 0) {
-            const first = results.results[0];
-            const data = first.data;
-            console.log('\nFirst result:');
-            console.log('Title:', data.title || 'N/A');
-            console.log('UID:', data.uid || 'N/A');
-            console.log('Subjects:', data.subjects?.join(', ') || 'N/A');
-        }
-        
-        return results;
-    } else {
-        const error = await response.text();
-        throw new Error(`Search failed: ${response.status} - ${error}`);
-    }
-}
-
-// Usage
-simpleSearch(accessToken)
-    .then(results => console.log('Search complete!'))
-    .catch(error => console.error(error));</code></pre>
-                </div>
-                
-                <div id="search-python" class="tab-content">
-                    <pre><code>import requests
-
-def simple_search(access_token):
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-    
-    search_request = {
-        "filters": [
-            {"field": "title", "value": "Murder*"}
-        ],
-        "logic": "AND",
-        "limit": 25
-    }
-    
-    response = requests.post(
-        f"{BASE_URL}/v1/search/simple",
-        headers=headers,
-        json=search_request
-    )
-    
-    if response.status_code == 200:
-        results = response.json()
-        print(f"Found {results['count']} results")
-        
-        # Display first result
-        if results['results']:
-            first = results['results'][0]
-            data = first['data']
-            print(f"\nFirst result:")
-            print(f"Title: {data.get('title', 'N/A')}")
-            print(f"UID: {data.get('uid', 'N/A')}")
-            print(f"Subjects: {', '.join(data.get('subjects', []))}")
-        
-        return results
-    else:
-        raise Exception(f"Search failed: {response.status_code} - {response.text}")
-
-# Usage
-try:
-    results = simple_search(access_token)
-    print("Search complete!")
-except Exception as e:
-    print(f"Error: {e}")</code></pre>
-                </div>
-                
-                <div id="search-java" class="tab-content">
-                    <pre><code>import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-
-public class BoloSearch {
-    private static final HttpClient client = HttpClient.newHttpClient();
-    private static final Gson gson = new Gson();
-    
-    public static JsonObject simpleSearch(String accessToken) throws Exception {
-        JsonObject filter = new JsonObject();
-        filter.addProperty("field", "title");
-        filter.addProperty("value", "Murder*");
-        
-        JsonArray filters = new JsonArray();
-        filters.add(filter);
-        
-        JsonObject requestBody = new JsonObject();
-        requestBody.add("filters", filters);
-        requestBody.addProperty("logic", "AND");
-        requestBody.addProperty("limit", 10);
-        
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(BASE_URL + "/v1/search/simple"))
-            .header("Authorization", "Bearer " + accessToken)
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
-            .build();
-        
-        HttpResponse<String> response = client.send(request, 
-            HttpResponse.BodyHandlers.ofString());
-        
-        if (response.statusCode() == 200) {
-            JsonObject results = gson.fromJson(response.body(), JsonObject.class);
-            int count = results.get("count").getAsInt();
-            System.out.println("Found " + count + " results");
-            return results;
-        } else {
-            throw new Exception("Search failed: " + 
-                response.statusCode() + " - " + response.body());
-        }
-    }
-}</code></pre>
-                </div>
-                
-                <div id="search-csharp" class="tab-content">
-                    <pre><code>public static async Task<JsonElement> SimpleSearch(string accessToken)
-{
-    var searchRequest = new {
-        filters = new[] {
-            new { field = "title", value = "Murder*" }
-        },
-        logic = "AND",
-        limit = 10
-    };
-    
-    var json = JsonSerializer.Serialize(searchRequest);
-    var content = new StringContent(json, Encoding.UTF8, "application/json");
-    
-    client.DefaultRequestHeaders.Authorization = 
-        new AuthenticationHeaderValue("Bearer", accessToken);
-    
-    var response = await client.PostAsync($"{BaseUrl}/v1/search/simple", content);
-    
-    if (response.IsSuccessStatusCode)
-    {
-        var responseBody = await response.Content.ReadAsStringAsync();
-        var results = JsonSerializer.Deserialize<JsonElement>(responseBody);
-        Console.WriteLine($"Found {results.GetProperty("count")} results");
-        return results;
-    }
-    else
-    {
-        var error = await response.Content.ReadAsStringAsync();
-        throw new Exception($"Search failed: {response.StatusCode} - {error}");
-    }
-}</code></pre>
-                </div>
-                
-                <div id="search-go" class="tab-content">
-                    <pre><code>func simpleSearch(accessToken string) (map[string]interface{}, error) {
-    searchRequest := map[string]interface{}{
-        "filters": []map[string]string{
-            {"field": "title", "value": "Murder*"},
-        },
-        "logic": "AND",
-        "limit": 25,
-    }
-    
-    jsonData, _ := json.Marshal(searchRequest)
-    
-    req, _ := http.NewRequest(
-        "POST",
-        baseURL+"/v1/search/simple",
-        bytes.NewBuffer(jsonData),
-    )
-    req.Header.Set("Authorization", "Bearer "+accessToken)
-    req.Header.Set("Content-Type", "application/json")
-    
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
-    
-    body, _ := ioutil.ReadAll(resp.Body)
-    
-    if resp.StatusCode == 200 {
-        var results map[string]interface{}
-        json.Unmarshal(body, &results)
-        fmt.Printf("Found %.0f results\n", results["count"])
-        return results, nil
-    }
-    
-    return nil, fmt.Errorf("search failed: %d - %s", resp.StatusCode, string(body))
-}</code></pre>
-                </div>
+            <h3>Request Parameters:</h3>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>filters</code></td>
+                            <td>array</td>
+                            <td>Yes</td>
+                            <td>-</td>
+                            <td>One or more filter objects. Each object requires a <code>field</code> name and a <code>value</code> string with optional <code>*</code> wildcard characters.</td>
+                        </tr>
+                        <tr>
+                            <td><code>logic</code></td>
+                            <td>string</td>
+                            <td>No</td>
+                            <td><code>AND</code></td>
+                            <td>How to combine multiple filters when more than one is provided. <code>AND</code> returns only records that satisfy every filter. <code>OR</code> returns records that satisfy at least one filter.</td>
+                        </tr>
+                        <tr>
+                            <td><code>limit</code></td>
+                            <td>integer</td>
+                            <td>No</td>
+                            <td><code>25</code></td>
+                            <td>Maximum number of records to return. Accepted values: <code>25</code>, <code>50</code>, <code>100</code>, <code>250</code>, <code>500</code>, <code>5000</code>. Your subscription tier enforces a ceiling: Basic and Premium Monthly are capped at 25 regardless of the value you submit. Premium Annual subscribers may request up to 5000.</td>
+                        </tr>
+                        <tr>
+                            <td><code>rules</code></td>
+                            <td>string</td>
+                            <td>No</td>
+                            <td><code>strict</code></td>
+                            <td>Controls how the API handles string values that contain no <code>*</code> wildcard. See the explanation below.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <h4 class="mt-3">The rules Parameter: strict vs flex</h4>
+            <p>The <code>rules</code> parameter controls whether the API automatically expands string field values that contain no wildcard character.</p>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Behavior when no wildcard is present</th>
+                            <th>Input value</th>
+                            <th>Effective match type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>strict</code> (default)</td>
+                            <td>No expansion occurs. A bare value with no <code>*</code> is treated as a case-insensitive exact match.</td>
+                            <td><code>"Male"</code></td>
+                            <td>sex equals "Male" exactly</td>
+                        </tr>
+                        <tr>
+                            <td><code>flex</code></td>
+                            <td>String fields without any wildcard are automatically wrapped as <code>*value*</code>, producing a contains match. Integer and date fields are never affected by flex mode.</td>
+                            <td><code>"murder"</code></td>
+                            <td>title contains "murder" (same as supplying <code>*murder*</code>)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted" style="font-size:.9em;">Use <code>strict</code> when precision matters and you are already placing wildcards exactly where needed. Use <code>flex</code> when you want broad contains-style matching without typing <code>*</code> on every filter value.</p>
+
+            <h3 class="mt-4">Request Body Examples:</h3>
+
+            <h4 class="mt-3">Example 1: Single filter, starts-with wildcard</h4>
+            <p class="text-muted">Trailing <code>*</code> matches any title beginning with "Murder". <code>logic</code> and <code>limit</code> are omitted, so both default values apply (<code>AND</code> and <code>25</code> respectively).</p>
+            <pre><code>{
+  "filters": [
+    {
+      "field": "title",
+      "value": "Murder*"
+    }
+  ]
+}</code></pre>
+
+            <h4 class="mt-3">Example 2: Multiple filters with AND logic</h4>
+            <p class="text-muted">Both conditions must be true. The <code>sex</code> filter has no wildcard, so in <code>strict</code> mode (the default) it is an exact match. The <code>title</code> filter uses <code>*...*</code> for a contains match.</p>
+            <pre><code>{
+  "filters": [
+    {
+      "field": "sex",
+      "value": "Male"
+    },
+    {
+      "field": "title",
+      "value": "*murder*"
+    }
+  ],
+  "logic": "AND",
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 3: Multiple filters with OR logic</h4>
+            <p class="text-muted">A record is returned if it matches either filter. Useful for searching across multiple subject categories or aliases in a single call.</p>
+            <pre><code>{
+  "filters": [
+    {
+      "field": "title",
+      "value": "*robbery*"
+    },
+    {
+      "field": "title",
+      "value": "*kidnapping*"
+    }
+  ],
+  "logic": "OR",
+  "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Example 4: Array field search (languages, field_offices, subjects)</h4>
+            <p class="text-muted">Array fields store multiple values per record. A bare value with no wildcard in <code>strict</code> mode checks whether any element in the array exactly matches the value. Field office names must be lowercase and joined (e.g., <code>losangeles</code>).</p>
+            <pre><code>{
+  "filters": [
+    {
+      "field": "languages",
+      "value": "Spanish"
+    },
+    {
+      "field": "field_offices",
+      "value": "miami"
+    }
+  ],
+  "logic": "AND",
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 5: flex mode — contains matching without explicit wildcards</h4>
+            <p class="text-muted">Setting <code>rules</code> to <code>flex</code> automatically wraps string field values that contain no <code>*</code> as <code>*value*</code>, producing a contains match. Here both <code>caution</code> and <code>description</code> values are expanded automatically. Integer and date fields are never affected by flex mode.</p>
+            <pre><code>{
+  "filters": [
+    {
+      "field": "caution",
+      "value": "armed"
+    },
+    {
+      "field": "description",
+      "value": "dangerous"
+    }
+  ],
+  "logic": "OR",
+  "rules": "flex",
+  "limit": 25
+}</code></pre>
+
+            <h3 class="mt-4">Response:</h3>
+            <pre><code>{
+  "query": {
+    "filters": [
+      {"field": "sex",   "value": "Male"},
+      {"field": "title", "value": "*murder*"}
+    ],
+    "logic": "AND",
+    "limit": 25,
+    "rules": "strict",
+    "endpoint": "simple"
+  },
+  "role": "basic",
+  "resultcount": 8,
+  "items": [
+    {
+      "data_type": "raw",
+      "data": {
+        "uid": "abc123",
+        "title": "John Doe",
+        "sex": "Male",
+        "subjects": ["Murder", "Unlawful Flight to Avoid Prosecution"],
+        "reward_max": 25000,
+        "modified": "2024-06-10",
+        "publication": "2019-03-22"
+      }
+    }
+  ]
+}</code></pre>
         </div>
     </div>
     
+    <!-- Advanced Search Section -->
+    <div class="card mt-4">
+        <div class="card-header">Step 4: Advanced Search <span class="badge badge-warning">PREMIUM</span></div>
+        <div class="card-body">
+            <p>The <code>/v1/search/advanced</code> endpoint is available to Premium subscribers. It supports explicit comparison operators, numeric and date range queries, and grouped conditions with independent AND/OR logic both within and between groups.</p>
+
+            <h3>Request Structure:</h3>
+            <pre><code>POST {{ base_url }}/v1/search/advanced
+Authorization: Bearer {your-access-token}
+Content-Type: application/json
+
+{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "title", "operator": "contains", "value": "murder"},
+                {"field": "reward_max", "operator": "gte", "value": 10000}
+            ]
+        }
+    ],
+    "group_logic": "AND",
+    "limit": 25
+}</code></pre>
+
+            <h3>Request Parameters:</h3>
+            <div class="table-responsive">
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>groups</code></td>
+                            <td>array</td>
+                            <td>Yes</td>
+                            <td>-</td>
+                            <td>One or more filter group objects. Each group contains a <code>condition</code> and a <code>rules</code> array. At least one group with at least one rule is required.</td>
+                        </tr>
+                        <tr>
+                            <td><code>groups[].condition</code></td>
+                            <td>string</td>
+                            <td>Yes</td>
+                            <td>-</td>
+                            <td>How to combine the rules within that specific group. <code>AND</code> means all rules in the group must match. <code>OR</code> means at least one rule in the group must match.</td>
+                        </tr>
+                        <tr>
+                            <td><code>groups[].rules</code></td>
+                            <td>array</td>
+                            <td>Yes</td>
+                            <td>-</td>
+                            <td>One or more rule objects. Each rule requires a <code>field</code>, an <code>operator</code>, and a <code>value</code>. For the <code>between</code> operator, <code>value</code> must be an array of exactly two values in <code>[min, max]</code> order.</td>
+                        </tr>
+                        <tr>
+                            <td><code>group_logic</code></td>
+                            <td>string</td>
+                            <td>No</td>
+                            <td><code>AND</code></td>
+                            <td>How to combine the results of multiple groups. <code>AND</code> requires all groups to match. <code>OR</code> requires at least one group to match. Only meaningful when two or more groups are provided.</td>
+                        </tr>
+                        <tr>
+                            <td><code>limit</code></td>
+                            <td>integer</td>
+                            <td>No</td>
+                            <td><code>25</code></td>
+                            <td>Maximum records to return. Accepted values: <code>25</code>, <code>50</code>, <code>100</code>, <code>250</code>, <code>500</code>, <code>5000</code>. Your subscription tier caps the maximum: Premium Monthly is capped at 25; Premium Annual may request up to 5000.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 class="mt-3">How Groups and Conditions Interact</h4>
+            <p>Advanced search applies logic at two levels. The <code>condition</code> field inside each group controls how its own rules are evaluated. The top-level <code>group_logic</code> field controls how the evaluated result of each group is combined against the others.</p>
+            <pre><code>// Logical structure:
+// (Group 1 result) [group_logic] (Group 2 result)
+//
+// Group 1 result = rule_A [condition] rule_B [condition] rule_C
+// Group 2 result = rule_D [condition] rule_E
+//
+// Example with group_logic=OR, condition=AND in each group:
+// (title contains "murder" AND sex = "Male") OR (reward_max >= 100000)</code></pre>
+
+            <h3 class="mt-4">Request Body Examples:</h3>
+
+            <h4 class="mt-3">Example 1: String fields — contains, equals, ends_with (single AND group)</h4>
+            <p class="text-muted">All three rules must be true. Demonstrates three string operators in one group. <code>contains</code> and <code>ends_with</code> are case-insensitive substring matches; <code>equals</code> is a case-insensitive exact match.</p>
+            <pre><code>{
+  "group_logic": "AND",
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "title",
+          "operator": "contains",
+          "value": "murder"
+        },
+        {
+          "field": "sex",
+          "operator": "equals",
+          "value": "Male"
+        },
+        {
+          "field": "title",
+          "operator": "ends_with",
+          "value": "Jr"
+        }
+      ]
+    }
+  ],
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 2: Numeric fields — gte, lte, between (integer operators)</h4>
+            <p class="text-muted">Demonstrates all three forms of numeric range filtering. The first rule uses two separate rules to bracket an age range; the second rule uses <code>between</code> as a shorthand for the same pattern on reward. <code>between</code> accepts an array of exactly two integers in <code>[min, max]</code> order and is inclusive on both ends.</p>
+            <pre><code>{
+  "group_logic": "AND",
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "age_min",
+          "operator": "gte",
+          "value": 30
+        },
+        {
+          "field": "age_max",
+          "operator": "lte",
+          "value": 50
+        },
+        {
+          "field": "reward_max",
+          "operator": "between",
+          "value": [10000, 100000]
+        }
+      ]
+    }
+  ],
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 3: Timestamp fields — gt and between (date operators)</h4>
+            <p class="text-muted">Date values must be strings in <code>YYYY-MM-DD</code> format. <code>gt</code> returns records modified strictly after the given date. <code>between</code> on a date field is inclusive on both ends and covers the full calendar day for each boundary.</p>
+            <pre><code>{
+  "group_logic": "AND",
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "publication",
+          "operator": "gt",
+          "value": "2020-01-01"
+        },
+        {
+          "field": "modified",
+          "operator": "between",
+          "value": ["2024-01-01", "2024-12-31"]
+        }
+      ]
+    }
+  ],
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 4: Array fields — contains and equals (text array operators)</h4>
+            <p class="text-muted">Array fields (<code>subjects</code>, <code>languages</code>, <code>field_offices</code>, <code>possible_states</code>, etc.) store multiple values per record. The <code>contains</code> operator checks whether any element in the array matches the substring; <code>equals</code> checks for an exact element match. Field office values must be lowercase and joined (e.g., <code>losangeles</code>). State values use ISO 3166-2 format (<code>US-CA</code>) but the API also accepts the full state name and normalizes it.</p>
+            <pre><code>{
+  "group_logic": "AND",
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Kidnapping"
+        },
+        {
+          "field": "languages",
+          "operator": "equals",
+          "value": "Spanish"
+        },
+        {
+          "field": "field_offices",
+          "operator": "equals",
+          "value": "miami"
+        },
+        {
+          "field": "possible_states",
+          "operator": "equals",
+          "value": "US-FL"
+        }
+      ]
+    }
+  ],
+  "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Example 5: OR condition within a single group</h4>
+            <p class="text-muted">Setting <code>condition</code> to <code>OR</code> inside a group means a record is returned if it satisfies <em>any</em> of the rules. Useful when you want to match multiple possible values for the same field without creating separate groups.</p>
+            <pre><code>{
+  "group_logic": "AND",
+  "groups": [
+    {
+      "condition": "OR",
+      "rules": [
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Murder"
+        },
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Assault"
+        },
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Robbery"
+        }
+      ]
+    }
+  ],
+  "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Example 6: Multiple groups with OR group_logic</h4>
+            <p class="text-muted">Each group is evaluated independently using its own <code>condition</code>. The <code>group_logic</code> then combines those results. Here, a record is returned if it satisfies Group 1 entirely (a high-value male fugitive) OR Group 2 entirely (any terrorism subject with a recent publication date). This is the mechanism for expressing compound boolean logic that cannot be represented in a single flat list of rules.</p>
+            <pre><code>{
+  "group_logic": "OR",
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "sex",
+          "operator": "equals",
+          "value": "Male"
+        },
+        {
+          "field": "reward_max",
+          "operator": "gte",
+          "value": 100000
+        }
+      ]
+    },
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Terrorism"
+        },
+        {
+          "field": "publication",
+          "operator": "gte",
+          "value": "2015-01-01"
+        }
+      ]
+    }
+  ],
+  "limit": 50
+}</code></pre>
+
+            <h3 class="mt-4">Response:</h3>
+            <pre><code>{
+  "query": {
+    "groups": [
+      {
+        "condition": "AND",
+        "rules": [
+          {"field": "sex",        "operator": "equals", "value": "Male"},
+          {"field": "reward_max", "operator": "gte",    "value": 100000}
+        ]
+      },
+      {
+        "condition": "AND",
+        "rules": [
+          {"field": "subjects",   "operator": "contains", "value": "Terrorism"},
+          {"field": "publication","operator": "gte",       "value": "2015-01-01"}
+        ]
+      }
+    ],
+    "group_logic": "OR",
+    "limit": 50,
+    "endpoint": "advanced"
+  },
+  "role": "premium",
+  "resultcount": 12,
+  "items": [
+    {
+      "data_type": "clean",
+      "data": {
+        "uid": "abc123",
+        "title": "John Doe",
+        "sex": "Male",
+        "reward_max": 150000,
+        "subjects": ["Murder", "Unlawful Flight to Avoid Prosecution"],
+        "modified": "2024-03-15",
+        "publication": "2019-07-01"
+      }
+    }
+  ]
+}</code></pre>
+        </div>
+    </div>
+
     <!-- Searchable Fields Reference Section -->
     <div class="card mt-4" id="search_fields">
         <div class="card-header">Searchable Fields Reference</div>
@@ -1007,125 +1282,467 @@ public class BoloSearch {
             </div>
             
             <h3 class="mt-4">Usage:</h3>
+            <p>Append the <code>format</code> query parameter to the endpoint URL. The request body is unchanged — only the URL changes.</p>
             <pre><code>POST {{ base_url }}/v1/search/simple?format=csv
 Authorization: Bearer {your-access-token}
 Content-Type: application/json
 
 {
-    "filters": [
-        {"field": "title", "value": "*murder*"}
-    ],
-    "limit": 250
+  "filters": [
+    {
+      "field": "title",
+      "value": "*murder*"
+    }
+  ],
+  "limit": 250
 }</code></pre>
-            
-            <h3>Code Examples:</h3>
-            <div class="code-tabs">
-                <div class="tab-buttons">
-                    <button class="tab-button active" onclick="showTab(event, 'format-js')">JavaScript</button>
-                    <button class="tab-button" onclick="showTab(event, 'format-python')">Python</button>
-                    <button class="tab-button" onclick="showTab(event, 'format-java')">Java</button>
-                    <button class="tab-button" onclick="showTab(event, 'format-csharp')">C#</button>
-                    <button class="tab-button" onclick="showTab(event, 'format-go')">Go</button>
-                </div>
-                
-                <div id="format-js" class="tab-content active">
-                    <pre><code>// Request CSV format
-const response = await fetch(`${BASE_URL}/v1/search/simple?format=csv`, {
-    method: 'POST',
-    headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(searchRequest)
-});
 
-if (response.ok) {
-    const csvText = await response.text();
-    // Save to file or process
-    console.log(csvText);
-}</code></pre>
-                </div>
-                
-                <div id="format-python" class="tab-content">
-                    <pre><code># Request CSV format
-response = requests.post(
-    f"{BASE_URL}/v1/search/simple?format=csv",
-    headers=headers,
-    json=search_request
-)
+            <p>The same pattern applies to the advanced endpoint:</p>
+            <pre><code>POST {{ base_url }}/v1/search/advanced?format=xml
+Authorization: Bearer {your-access-token}
+Content-Type: application/json
 
-if response.status_code == 200:
-    csv_text = response.text
-    # Save to file
-    with open('results.csv', 'w') as f:
-        f.write(csv_text)
-    print("Results saved to results.csv")</code></pre>
-                </div>
-                
-                <div id="format-java" class="tab-content">
-                    <pre><code>// Request CSV format
-HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create(BASE_URL + "/v1/search/simple?format=csv"))
-    .header("Authorization", "Bearer " + accessToken)
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
-    .build();
-
-HttpResponse<String> response = client.send(request, 
-    HttpResponse.BodyHandlers.ofString());
-
-if (response.statusCode() == 200) {
-    String csvText = response.body();
-    // Save to file or process
-    System.out.println(csvText);
-}</code></pre>
-                </div>
-                
-                <div id="format-csharp" class="tab-content">
-                    <pre><code>// Request CSV format
-var response = await client.PostAsync(
-    $"{BaseUrl}/v1/search/simple?format=csv", 
-    content
-);
-
-if (response.IsSuccessStatusCode)
 {
-    var csvText = await response.Content.ReadAsStringAsync();
-    // Save to file or process
-    File.WriteAllText("results.csv", csvText);
-    Console.WriteLine("Results saved to results.csv");
+  "groups": [
+    {
+      "condition": "AND",
+      "rules": [
+        {
+          "field": "subjects",
+          "operator": "contains",
+          "value": "Terrorism"
+        }
+      ]
+    }
+  ],
+  "limit": 100
 }</code></pre>
-                </div>
-                
-                <div id="format-go" class="tab-content">
-                    <pre><code>// Request CSV format
-req, _ := http.NewRequest(
-    "POST",
-    baseURL+"/v1/search/simple?format=csv",
-    bytes.NewBuffer(jsonData),
-)
-req.Header.Set("Authorization", "Bearer "+accessToken)
-req.Header.Set("Content-Type", "application/json")
-
-resp, _ := client.Do(req)
-defer resp.Body.Close()
-
-if resp.StatusCode == 200 {
-    body, _ := ioutil.ReadAll(resp.Body)
-    csvText := string(body)
-    
-    // Save to file
-    ioutil.WriteFile("results.csv", body, 0644)
-    fmt.Println("Results saved to results.csv")
-}</code></pre>
-                </div>
-            </div>
         </div>
     </div>
     
+    <!-- Search Examples Section -->
+    <div class="card mt-4" id="search-examples">
+        <div class="card-header">Search Examples</div>
+        <div class="card-body">
+            <p>The following examples cover a wide range of real-world scenarios. Each shows the full request body. All string comparisons are case-insensitive unless noted. Simple search examples use <code>POST /v1/search/simple</code>. Advanced search examples use <code>POST /v1/search/advanced</code> and require a Premium subscription.</p>
+
+            <!-- ======================================================= -->
+            <!-- SIMPLE SEARCH EXAMPLES                                    -->
+            <!-- ======================================================= -->
+            <h3 id="simple-examples">Simple Search Examples</h3>
+
+            <h4 class="mt-3">Q: Find all subjects whose name contains the word "murder"</h4>
+            <p class="text-muted">Using <code>*murder*</code> pattern to get a contains match on the title field.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "*murder*"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose name starts with "John"</h4>
+            <p class="text-muted">Trailing <code>*</code> produces a starts-with match.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "John*"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose name ends with "Garcia"</h4>
+            <p class="text-muted">Leading <code>*</code> produces an ends-with match.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "*Garcia"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find all female subjects</h4>
+            <p class="text-muted">No wildcard on an exact field value. <code>rules</code> defaults to <code>strict</code>, so "Female" is an exact match.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "sex", "value": "Female"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find female subjects whose title contains "bank"</h4>
+            <p class="text-muted">Multiple filters combined with <code>AND</code> (the default). Both conditions must be true for a record to appear.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "sex",   "value": "Female"},
+        {"field": "title", "value": "*bank*"}
+    ],
+    "logic": "AND",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects wanted for robbery OR kidnapping in the title</h4>
+            <p class="text-muted">Using <code>logic: "OR"</code> so that a record matching either filter is returned.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "*robbery*"},
+        {"field": "title", "value": "*kidnapping*"}
+    ],
+    "logic": "OR",
+    "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects with any caution warning mentioning weapons</h4>
+            <p class="text-muted">Searching the <code>caution</code> field which contains FBI-issued safety warnings.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "caution", "value": "*weapon*"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects who speak Spanish</h4>
+            <p class="text-muted">The <code>languages</code> field is an array. A contains match checks whether any element in the array matches.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "languages", "value": "Spanish"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects handled by the Miami field office</h4>
+            <p class="text-muted">Field office values are lowercase and single-word. "miami" is the correct format.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "field_offices", "value": "miami"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects possibly located in California</h4>
+            <p class="text-muted">The <code>possible_states</code> field uses ISO 3166-2 format. You may supply the full state name and the API normalizes it automatically.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "possible_states", "value": "California"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects possibly located in California OR Texas</h4>
+            <p class="text-muted">OR logic across two state filters. Both <code>US-CA</code> and <code>US-TX</code> formats are accepted, or you can supply the full name.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "possible_states", "value": "California"},
+        {"field": "possible_states", "value": "Texas"}
+    ],
+    "logic": "OR",
+    "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects possibly located in Mexico</h4>
+            <p class="text-muted">The <code>possible_countries</code> field uses ISO 3166 alpha-3 codes, but the API accepts country names and normalizes them.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "possible_countries", "value": "Mexico"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Broad keyword search without typing wildcards (flex mode)</h4>
+            <p class="text-muted">Setting <code>rules: "flex"</code> automatically wraps string values without wildcards as a contains match. The input "armed" becomes <code>*armed*</code> for string fields. Integer and date fields are unaffected.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "caution",     "value": "armed"},
+        {"field": "description", "value": "dangerous"}
+    ],
+    "logic": "OR",
+    "rules": "flex",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Exact match with strict mode explicitly declared</h4>
+            <p class="text-muted">Declaring <code>rules: "strict"</code> (the default) ensures "White Collar Crime" is an exact match on the subjects field, not a contains search.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "subjects", "value": "White Collar Crime"}
+    ],
+    "rules": "strict",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Get up to 100 results for a broad name search (Premium Annual required)</h4>
+            <p class="text-muted">The <code>limit</code> is 100. Basic and Premium Monthly subscribers are capped at 25 regardless of this value. Only Premium Annual subscribers may retrieve up to 5000.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "title", "value": "Jose*"}
+    ],
+    "limit": 100
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects with tattoo or scar descriptions mentioning a specific body part</h4>
+            <p class="text-muted">Searching the <code>scars_and_marks</code> field for identifying feature references.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "scars_and_marks", "value": "*neck*"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects known to use the alias "El Chapo"</h4>
+            <p class="text-muted">The <code>aliases</code> field is an array of known names. A contains match scans all alias entries.</p>
+            <pre><code>{
+    "filters": [
+        {"field": "aliases", "value": "*Chapo*"}
+    ],
+    "limit": 25
+}</code></pre>
+
+            <!-- ======================================================= -->
+            <!-- ADVANCED SEARCH EXAMPLES                                  -->
+            <!-- ======================================================= -->
+            <h3 class="mt-4" id="advanced-examples">Advanced Search Examples <span class="badge badge-warning">PREMIUM</span></h3>
+
+            <h4 class="mt-3">Q: Find subjects with rewards over $50,000</h4>
+            <p class="text-muted">Single group, single rule using the <code>gte</code> operator on a numeric field.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "reward_max", "operator": "gte", "value": 50000}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find male subjects wanted for murder with a reward of at least $10,000</h4>
+            <p class="text-muted">Three rules in one group, all joined by AND. Every condition must be satisfied.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "sex",        "operator": "equals",   "value": "Male"},
+                {"field": "title",      "operator": "contains", "value": "murder"},
+                {"field": "reward_max", "operator": "gte",      "value": 10000}
+            ]
+        }
+    ],
+    "group_logic": "AND",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects in an estimated age range of 25 to 40</h4>
+            <p class="text-muted">Using two rules on the same group to bracket a numeric range. Alternatively, the <code>between</code> operator can be used on a single rule.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "age_min", "operator": "gte", "value": 25},
+                {"field": "age_max", "operator": "lte", "value": 40}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose reward falls between $5,000 and $100,000</h4>
+            <p class="text-muted">The <code>between</code> operator accepts an array of exactly two values: <code>[min, max]</code>. Both endpoints are inclusive.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "reward_max", "operator": "between", "value": [5000, 100000]}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose records were modified in a specific date range</h4>
+            <p class="text-muted">Date values must be in <code>YYYY-MM-DD</code> format. The <code>between</code> operator is inclusive on both ends for date fields.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "modified", "operator": "between", "value": ["2024-01-01", "2024-12-31"]}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose records were added or modified after a specific date</h4>
+            <p class="text-muted">Using <code>gt</code> (greater than) on the <code>publication</code> date field.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "publication", "operator": "gt", "value": "2023-06-01"}
+            ]
+        }
+    ],
+    "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects with specific physical dimensions</h4>
+            <p class="text-muted">Height is stored in inches. This query finds subjects estimated between 5'6" (66 in) and 6'0" (72 in) tall.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "height_min", "operator": "gte", "value": 66},
+                {"field": "height_max", "operator": "lte", "value": 72}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects wanted for kidnapping handled by the Miami or Los Angeles offices</h4>
+            <p class="text-muted">OR condition within a single group. The subject must be wanted for kidnapping AND (handled by miami OR losangeles). Note: to express that logic, use two separate groups with OR group_logic, because a single group with mixed AND/OR is not supported.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "subjects",      "operator": "contains", "value": "Kidnapping"},
+                {"field": "field_offices", "operator": "equals",   "value": "miami"}
+            ]
+        },
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "subjects",      "operator": "contains", "value": "Kidnapping"},
+                {"field": "field_offices", "operator": "equals",   "value": "losangeles"}
+            ]
+        }
+    ],
+    "group_logic": "OR",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects who match either a high-reward profile OR a terrorism-related category</h4>
+            <p class="text-muted">Two groups joined by OR group_logic. A record matching either group will be returned.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "reward_max", "operator": "gte", "value": 100000}
+            ]
+        },
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "subjects", "operator": "contains", "value": "Terrorism"}
+            ]
+        }
+    ],
+    "group_logic": "OR",
+    "limit": 50
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find male subjects over 40 who speak Spanish and may be in Mexico or Venezuela</h4>
+            <p class="text-muted">A multi-condition group combining demographic, language, and location filters. All conditions are joined by AND.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "sex",                "operator": "equals",   "value": "Male"},
+                {"field": "age_min",            "operator": "gte",      "value": 40},
+                {"field": "languages",          "operator": "contains", "value": "Spanish"},
+                {"field": "possible_countries", "operator": "equals",   "value": "MEX"}
+            ]
+        },
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "sex",                "operator": "equals",   "value": "Male"},
+                {"field": "age_min",            "operator": "gte",      "value": 40},
+                {"field": "languages",          "operator": "contains", "value": "Spanish"},
+                {"field": "possible_countries", "operator": "equals",   "value": "VEN"}
+            ]
+        }
+    ],
+    "group_logic": "OR",
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects with white collar crime ties and no reward (reward_max equals 0)</h4>
+            <p class="text-muted">Combining a category filter with a numeric equals check. Useful to identify cases where no reward has been posted.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "subjects",   "operator": "contains", "value": "White Collar Crime"},
+                {"field": "reward_max", "operator": "equals",   "value": 0}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects whose title starts with "John" and are shorter than 5'8" (68 inches)</h4>
+            <p class="text-muted">Mixing a string operator (<code>starts_with</code>) with a numeric operator (<code>lt</code>) in a single group.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "title",      "operator": "starts_with", "value": "John"},
+                {"field": "height_max", "operator": "lt",          "value": 68}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Find subjects wanted for cyber crime with records modified in 2025</h4>
+            <p class="text-muted">Combining a subjects array contains check with a date range, using a single AND group.</p>
+            <pre><code>{
+    "groups": [
+        {
+            "condition": "AND",
+            "rules": [
+                {"field": "subjects",  "operator": "contains", "value": "Cyber"},
+                {"field": "modified",  "operator": "gte",      "value": "2025-01-01"},
+                {"field": "modified",  "operator": "lte",      "value": "2025-12-31"}
+            ]
+        }
+    ],
+    "limit": 25
+}</code></pre>
+
+            <h4 class="mt-3">Q: Export up to 500 records for subjects wanted for violent crimes (Premium Annual, CSV format)</h4>
+            <p class="text-muted">Requesting a higher limit and appending <code>?format=csv</code> to the endpoint URL. Only Premium Annual subscribers may retrieve up to 500 or 5000 records. The <code>format</code> query parameter is appended to the URL, not the request body.</p>
+            <pre><code>POST {{ base_url }}/v1/search/advanced?format=csv
+
+{
+    "groups": [
+        {
+            "condition": "OR",
+            "rules": [
+                {"field": "subjects", "operator": "contains", "value": "Murder"},
+                {"field": "subjects", "operator": "contains", "value": "Assault"},
+                {"field": "subjects", "operator": "contains", "value": "Robbery"}
+            ]
+        }
+    ],
+    "limit": 500
+}</code></pre>
+
+        </div>
+    </div>
+
     <!-- Rate Limits Section -->
     <div class="card mt-4">
-        <div class="card-header">Rate Limits & Best Practices</div>
+        <div class="card-header">Rate Limits &amp; Best Practices</div>
         <div class="card-body">
             <h3>Token Limits:</h3>
             <ul>
