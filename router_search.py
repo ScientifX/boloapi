@@ -1163,7 +1163,7 @@ async def advanced_search(
     "/list_field_offices",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of FBI field office locations",
-    description="Returns a one-variable record set",
+    description="Returns a list of FBI field office locations",
     response_description="List of FBI field office locations"
 )
 @limiter.limit(rate_max)
@@ -1226,7 +1226,7 @@ async def list_field_offices(
     "/list_languages",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of languages spoken by wanted individuals",
-    description="Returns a one-variable record set",
+    description="Returns a list of languages spoken by wanted individuals",
     response_description="List of languages spoken by wanted individuals"
 )
 @limiter.limit(rate_max)
@@ -1289,7 +1289,7 @@ async def list_languages(
     "/list_nationality",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of nationalities of wanted individuals",
-    description="Returns a one-variable record set",
+    description="Returns a list of nationalities of wanted individuals",
     response_description="List of nationalities of wanted individuals"
 )
 @limiter.limit(rate_max)
@@ -1350,7 +1350,7 @@ async def list_nationality(
     "/list_possible_countries",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of possible countries associated with wanted individuals and cases",
-    description="Returns a one-variable record set",
+    description="Returns a list of possible countries associated with wanted individuals and cases",
     response_description="List of possible countries associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
@@ -1413,7 +1413,7 @@ async def list_possible_countries(
     "/list_possible_states",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of possible USA states associated with wanted individuals and cases",
-    description="Returns a one-variable record set",
+    description="Returns a list of possible USA states associated with wanted individuals and cases",
     response_description="List of possible USA states associated with wanted individuals and cases"
 )
 @limiter.limit(rate_max)
@@ -1475,16 +1475,16 @@ async def list_possible_states(
     "/list_race",
     tags=[TAG_SEARCH_BY_LIST],
     summary="List of races of origin associated with wanted individuals and cases",
-    description="Returns a one-variable record set",
+    description="Returns list of races of origin associated with wanted individuals and cases",
     response_description="List of races of origin associated with wanted individuals and cases"
-)
+    )
 @limiter.limit(rate_max)
 @track_search_analytics
 async def list_race(
     request: Request,
     format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
-):
+    ):
     """List of races of origin associated with wanted individuals and cases"""
     current_role = current_user["role"]
     user_id = current_user.get("user_id")
