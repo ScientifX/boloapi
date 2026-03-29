@@ -1331,7 +1331,7 @@ Content-Type: application/json
             <!-- ======================================================= -->
             <h3 id="simple-examples">Simple Search Examples</h3>
 
-            <h4 class="mt-3">Q: Find all subjects whose name contains the word "murder"</h4>
+            <h4 class="mt-3">Use case: Find all subjects whose name contains the word "murder"</h4>
             <p class="text-muted">Using <code>*murder*</code> pattern to get a contains match on the title field.</p>
             <pre><code>{
     "filters": [
@@ -1340,7 +1340,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose name starts with "John"</h4>
+            <h4 class="mt-3">Use case: Find subjects whose name starts with "John"</h4>
             <p class="text-muted">Trailing <code>*</code> produces a starts-with match.</p>
             <pre><code>{
     "filters": [
@@ -1349,7 +1349,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose name ends with "Garcia"</h4>
+            <h4 class="mt-3">Use case: Find subjects whose name ends with "Garcia"</h4>
             <p class="text-muted">Leading <code>*</code> produces an ends-with match.</p>
             <pre><code>{
     "filters": [
@@ -1358,7 +1358,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find all female subjects</h4>
+            <h4 class="mt-3">Use case: Find all female subjects</h4>
             <p class="text-muted">No wildcard on an exact field value. <code>rules</code> defaults to <code>strict</code>, so "Female" is an exact match.</p>
             <pre><code>{
     "filters": [
@@ -1367,7 +1367,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find female subjects whose title contains "bank"</h4>
+            <h4 class="mt-3">Use case: Find female subjects whose title contains "bank"</h4>
             <p class="text-muted">Multiple filters combined with <code>AND</code> (the default). Both conditions must be true for a record to appear.</p>
             <pre><code>{
     "filters": [
@@ -1378,7 +1378,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects wanted for robbery OR kidnapping in the title</h4>
+            <h4 class="mt-3">Use case: Find subjects wanted for robbery OR kidnapping in the title</h4>
             <p class="text-muted">Using <code>logic: "OR"</code> so that a record matching either filter is returned.</p>
             <pre><code>{
     "filters": [
@@ -1389,7 +1389,7 @@ Content-Type: application/json
     "limit": 50
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects with any caution warning mentioning weapons</h4>
+            <h4 class="mt-3">Use case: Find subjects with any caution warning mentioning weapons</h4>
             <p class="text-muted">Searching the <code>caution</code> field which contains FBI-issued safety warnings.</p>
             <pre><code>{
     "filters": [
@@ -1398,7 +1398,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects who speak Spanish</h4>
+            <h4 class="mt-3">Use case: Find subjects who speak Spanish</h4>
             <p class="text-muted">The <code>languages</code> field is an array. A contains match checks whether any element in the array matches.</p>
             <pre><code>{
     "filters": [
@@ -1407,7 +1407,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects handled by the Miami field office</h4>
+            <h4 class="mt-3">Use case: Find subjects handled by the Miami field office</h4>
             <p class="text-muted">Field office values are lowercase and single-word. "miami" is the correct format.</p>
             <pre><code>{
     "filters": [
@@ -1416,7 +1416,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects possibly located in California</h4>
+            <h4 class="mt-3">Use case: Find subjects possibly located in California</h4>
             <p class="text-muted">The <code>possible_states</code> field uses ISO 3166-2 format. You may supply the full state name and the API normalizes it automatically.</p>
             <pre><code>{
     "filters": [
@@ -1425,7 +1425,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects possibly located in California OR Texas</h4>
+            <h4 class="mt-3">Use case: Find subjects possibly located in California OR Texas</h4>
             <p class="text-muted">OR logic across two state filters. Both <code>US-CA</code> and <code>US-TX</code> formats are accepted, or you can supply the full name.</p>
             <pre><code>{
     "filters": [
@@ -1436,7 +1436,7 @@ Content-Type: application/json
     "limit": 50
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects possibly located in Mexico</h4>
+            <h4 class="mt-3">Use case: Find subjects possibly located in Mexico</h4>
             <p class="text-muted">The <code>possible_countries</code> field uses ISO 3166 alpha-3 codes, but the API accepts country names and normalizes them.</p>
             <pre><code>{
     "filters": [
@@ -1445,7 +1445,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Broad keyword search without typing wildcards (flex mode)</h4>
+            <h4 class="mt-3">Use case: Broad keyword search without typing wildcards (flex mode)</h4>
             <p class="text-muted">Setting <code>rules: "flex"</code> automatically wraps string values without wildcards as a contains match. The input "armed" becomes <code>*armed*</code> for string fields. Integer and date fields are unaffected.</p>
             <pre><code>{
     "filters": [
@@ -1457,7 +1457,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Exact match with strict mode explicitly declared</h4>
+            <h4 class="mt-3">Use case: Exact match with strict mode explicitly declared</h4>
             <p class="text-muted">Declaring <code>rules: "strict"</code> (the default) ensures "White Collar Crime" is an exact match on the subjects field, not a contains search.</p>
             <pre><code>{
     "filters": [
@@ -1467,7 +1467,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Get up to 100 results for a broad name search (Premium Annual required)</h4>
+            <h4 class="mt-3">Use case: Get up to 100 results for a broad name search (Premium Annual required)</h4>
             <p class="text-muted">The <code>limit</code> is 100. Basic and Premium Monthly subscribers are capped at 25 regardless of this value. Only Premium Annual subscribers may retrieve up to 5000.</p>
             <pre><code>{
     "filters": [
@@ -1476,7 +1476,7 @@ Content-Type: application/json
     "limit": 100
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects with tattoo or scar descriptions mentioning a specific body part</h4>
+            <h4 class="mt-3">Use case: Find subjects with tattoo or scar descriptions mentioning a specific body part</h4>
             <p class="text-muted">Searching the <code>scars_and_marks</code> field for identifying feature references.</p>
             <pre><code>{
     "filters": [
@@ -1485,7 +1485,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects known to use the alias "El Chapo"</h4>
+            <h4 class="mt-3">Use case: Find subjects known to use the alias "El Chapo"</h4>
             <p class="text-muted">The <code>aliases</code> field is an array of known names. A contains match scans all alias entries.</p>
             <pre><code>{
     "filters": [
@@ -1499,7 +1499,7 @@ Content-Type: application/json
             <!-- ======================================================= -->
             <h3 class="mt-4" id="advanced-examples">Advanced Search Examples <span class="badge badge-warning">PREMIUM</span></h3>
 
-            <h4 class="mt-3">Q: Find subjects with rewards over $50,000</h4>
+            <h4 class="mt-3">Use case: Find subjects with rewards over $50,000</h4>
             <p class="text-muted">Single group, single rule using the <code>gte</code> operator on a numeric field.</p>
             <pre><code>{
     "groups": [
@@ -1513,7 +1513,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find male subjects wanted for murder with a reward of at least $10,000</h4>
+            <h4 class="mt-3">Use case: Find male subjects wanted for murder with a reward of at least $10,000</h4>
             <p class="text-muted">Three rules in one group, all joined by AND. Every condition must be satisfied.</p>
             <pre><code>{
     "groups": [
@@ -1530,7 +1530,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects in an estimated age range of 25 to 40</h4>
+            <h4 class="mt-3">Use case: Find subjects in an estimated age range of 25 to 40</h4>
             <p class="text-muted">Using two rules on the same group to bracket a numeric range. Alternatively, the <code>between</code> operator can be used on a single rule.</p>
             <pre><code>{
     "groups": [
@@ -1545,7 +1545,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose reward falls between $5,000 and $100,000</h4>
+            <h4 class="mt-3">Use case: Find subjects whose reward falls between $5,000 and $100,000</h4>
             <p class="text-muted">The <code>between</code> operator accepts an array of exactly two values: <code>[min, max]</code>. Both endpoints are inclusive.</p>
             <pre><code>{
     "groups": [
@@ -1559,7 +1559,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose records were modified in a specific date range</h4>
+            <h4 class="mt-3">Use case: Find subjects whose records were modified in a specific date range</h4>
             <p class="text-muted">Date values must be in <code>YYYY-MM-DD</code> format. The <code>between</code> operator is inclusive on both ends for date fields.</p>
             <pre><code>{
     "groups": [
@@ -1573,7 +1573,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose records were added or modified after a specific date</h4>
+            <h4 class="mt-3">Use case: Find subjects whose records were added or modified after a specific date</h4>
             <p class="text-muted">Using <code>gt</code> (greater than) on the <code>publication</code> date field.</p>
             <pre><code>{
     "groups": [
@@ -1587,7 +1587,7 @@ Content-Type: application/json
     "limit": 50
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects with specific physical dimensions</h4>
+            <h4 class="mt-3">Use case: Find subjects with specific physical dimensions</h4>
             <p class="text-muted">Height is stored in inches. This query finds subjects estimated between 5'6" (66 in) and 6'0" (72 in) tall.</p>
             <pre><code>{
     "groups": [
@@ -1602,7 +1602,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects wanted for kidnapping handled by the Miami or Los Angeles offices</h4>
+            <h4 class="mt-3">Use case: Find subjects wanted for kidnapping handled by the Miami or Los Angeles offices</h4>
             <p class="text-muted">OR condition within a single group. The subject must be wanted for kidnapping AND (handled by miami OR losangeles). Note: to express that logic, use two separate groups with OR group_logic, because a single group with mixed AND/OR is not supported.</p>
             <pre><code>{
     "groups": [
@@ -1625,7 +1625,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects who match either a high-reward profile OR a terrorism-related category</h4>
+            <h4 class="mt-3">Use case: Find subjects who match either a high-reward profile OR a terrorism-related category</h4>
             <p class="text-muted">Two groups joined by OR group_logic. A record matching either group will be returned.</p>
             <pre><code>{
     "groups": [
@@ -1646,7 +1646,7 @@ Content-Type: application/json
     "limit": 50
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find male subjects over 40 who speak Spanish and may be in Mexico or Venezuela</h4>
+            <h4 class="mt-3">Use case: Find male subjects over 40 who speak Spanish and may be in Mexico or Venezuela</h4>
             <p class="text-muted">A multi-condition group combining demographic, language, and location filters. All conditions are joined by AND.</p>
             <pre><code>{
     "groups": [
@@ -1673,7 +1673,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects with white collar crime ties and no reward (reward_max equals 0)</h4>
+            <h4 class="mt-3">Use case: Find subjects with white collar crime ties and no reward (reward_max equals 0)</h4>
             <p class="text-muted">Combining a category filter with a numeric equals check. Useful to identify cases where no reward has been posted.</p>
             <pre><code>{
     "groups": [
@@ -1688,7 +1688,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects whose title starts with "John" and are shorter than 5'8" (68 inches)</h4>
+            <h4 class="mt-3">Use case: Find subjects whose title starts with "John" and are shorter than 5'8" (68 inches)</h4>
             <p class="text-muted">Mixing a string operator (<code>starts_with</code>) with a numeric operator (<code>lt</code>) in a single group.</p>
             <pre><code>{
     "groups": [
@@ -1703,7 +1703,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Find subjects wanted for cyber crime with records modified in 2025</h4>
+            <h4 class="mt-3">Use case: Find subjects wanted for cyber crime with records modified in 2025</h4>
             <p class="text-muted">Combining a subjects array contains check with a date range, using a single AND group.</p>
             <pre><code>{
     "groups": [
@@ -1719,7 +1719,7 @@ Content-Type: application/json
     "limit": 25
 }</code></pre>
 
-            <h4 class="mt-3">Q: Export up to 500 records for subjects wanted for violent crimes (Premium Annual, CSV format)</h4>
+            <h4 class="mt-3">Use case: Export up to 500 records for subjects wanted for violent crimes (Premium Annual, CSV format)</h4>
             <p class="text-muted">Requesting a higher limit and appending <code>?format=csv</code> to the endpoint URL. Only Premium Annual subscribers may retrieve up to 500 or 5000 records. The <code>format</code> query parameter is appended to the URL, not the request body.</p>
             <pre><code>POST {{ base_url }}/v1/search/advanced?format=csv
 
@@ -1851,6 +1851,64 @@ function toggleValues(elementId) {
         toggle.textContent = 'show values';
     }
 }
+
+// Copy-to-clipboard: inject a button into every <pre> block
+document.addEventListener('DOMContentLoaded', function () {
+    const ICON_IDLE = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+    const LABEL_IDLE   = 'Copy';
+    const LABEL_COPIED = 'Copied';
+
+    document.querySelectorAll('pre').forEach(function (pre) {
+        // Make pre the positioning anchor
+        pre.style.position = 'relative';
+
+        var btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.setAttribute('title', 'Copy to clipboard');
+        btn.innerHTML = ICON_IDLE + '<span class="copy-label">' + LABEL_IDLE + '</span>';
+
+        btn.addEventListener('click', function () {
+            var codeEl = pre.querySelector('code');
+            var text   = codeEl ? codeEl.innerText : pre.innerText;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function () {
+                    showCopied(btn);
+                }).catch(function () {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        });
+
+        pre.appendChild(btn);
+    });
+
+    function showCopied(btn) {
+        var label = btn.querySelector('.copy-label');
+        btn.classList.add('copy-code-btn--copied');
+        label.textContent = LABEL_COPIED;
+        setTimeout(function () {
+            btn.classList.remove('copy-code-btn--copied');
+            label.textContent = LABEL_IDLE;
+        }, 2000);
+    }
+
+    function fallbackCopy(text, btn) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+            showCopied(btn);
+        } catch (e) { /* silent */ }
+        document.body.removeChild(ta);
+    }
+});
 </script>
 
 <style>
@@ -1909,8 +1967,57 @@ pre {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1rem;
+    padding-top: 2.4rem; /* room for the copy button */
     overflow-x: auto;
     margin: 1rem 0;
+    position: relative;
+}
+
+/* Copy-to-clipboard button */
+.copy-code-btn {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+    line-height: 1.4;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.copy-code-btn:hover {
+    background-color: var(--primary-color, #0d6efd);
+    border-color: var(--primary-color, #0d6efd);
+    color: #fff;
+}
+
+.copy-code-btn:hover svg {
+    stroke: #fff;
+}
+
+.copy-code-btn--copied {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.copy-code-btn--copied svg {
+    stroke: #fff;
+}
+
+.copy-label {
+    display: inline-block;
 }
 
 pre code {
