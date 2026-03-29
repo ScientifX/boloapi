@@ -761,7 +761,7 @@ class SimpleSearchRequest(BaseModel):
                     {"field": "title", "value": "Murder*"},
                     {"field": "description", "value": "*armed*"}
                     ],
-                "logic": "AND",
+                "logic": "OR",
                 "limit": 25
                 }
             }
