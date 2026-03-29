@@ -11,6 +11,14 @@ Development setup:
 Production setup:
     1. Set environment variables in Railway dashboard
     2. No .env file needed - Railway injects env vars directly
+
+Beta mode:
+    Set API_BETA_MODE=true in your environment (or .env file) to enable beta mode.
+    In beta mode:
+      - All registered users receive PREMIUM access at no cost
+      - Billing features are suppressed in the UI
+      - A beta notice is displayed on all web pages and in Swagger docs
+    Production mode is the default when API_BETA_MODE is absent or false.
 """
 import os
 from typing import Optional
@@ -36,6 +44,18 @@ API_ENV = os.getenv('API_ENV', 'dev').lower()
 API_GA_TRACKING_ID = os.getenv('API_GA_TRACKING_ID', '')
 
 # ============================================================================
+# BETA MODE
+# ============================================================================
+
+# Set API_BETA_MODE=true to enable beta mode.
+# When true:
+#   - All new registrations are granted PREMIUM role and flagged as beta users
+#   - Billing UI is suppressed site-wide
+#   - A persistent beta notice appears on all web pages and Swagger docs
+# Default is False (production mode).
+BETA_MODE = os.getenv('API_BETA_MODE', 'false').lower() == 'true'
+
+# ============================================================================
 # DATABASE CONFIGURATION
 # ============================================================================
 
@@ -45,7 +65,7 @@ DB_CONFIG = {
     "database": os.getenv('API_DB_DATABASE'),
     "user": os.getenv('API_DB_USER'),
     "password": os.getenv('API_DB_PASSWORD'),
-    "options": "-c search_path=base,public"  # Look in base schema first, then public
+    "options": "-c search_path=base"  # Look in base schema first, then public
 }
 
 # ============================================================================
@@ -70,7 +90,7 @@ API_EMAIL_FROM_ADDRESS = os.getenv('API_EMAIL_FROM_ADDRESS')
 API_EMAIL_FROM_NAME = os.getenv('API_EMAIL_FROM_NAME') 
 
 # Application URL (for email links)
-API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')  # Default for dev
+API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')
 
 # ============================================================================
 # API CONFIGURATION
@@ -88,7 +108,9 @@ APP_GLOBALS = {
     "api_description" : "A Comprehensive Wrapper for FBI Wanted API data", 
     "year": 2025,
     "environment": API_ENV,
-    "ga_tracking_id": API_GA_TRACKING_ID
+    "ga_tracking_id": API_GA_TRACKING_ID,
+    # Beta mode flag - available in all Jinja2 templates automatically
+    "beta_mode": BETA_MODE,
     }
 
 
@@ -156,7 +178,10 @@ def validate_config() -> list[str]:
     """
     Validate that required configuration variables are set.
     Returns list of missing variables.
-    
+
+    LemonSqueezy credentials are only required in production mode.
+    In beta mode they are optional since billing is suppressed.
+
     Call this at application startup to fail fast if config is incomplete.
     """
     required_vars = {
@@ -177,13 +202,15 @@ def validate_config() -> list[str]:
         'API_JWT_SECRET_KEY': API_JWT_SECRET_KEY,
         'API_JWT_ALGORITHM': API_JWT_ALGORITHM,
         'API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES': int(os.getenv('API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES')),
-
-        # LemonSqueezy (required for billing)
-        'API_LEMONSQUEEZY_API_KEY': API_LEMONSQUEEZY_API_KEY,
-        'API_LEMONSQUEEZY_STORE_ID': API_LEMONSQUEEZY_STORE_ID,
-        'API_LEMONSQUEEZY_WEBHOOK_SECRET': API_LEMONSQUEEZY_WEBHOOK_SECRET
-
         }
+
+    # LemonSqueezy credentials are required only in production mode
+    if not BETA_MODE:
+        required_vars.update({
+            'API_LEMONSQUEEZY_API_KEY': API_LEMONSQUEEZY_API_KEY,
+            'API_LEMONSQUEEZY_STORE_ID': API_LEMONSQUEEZY_STORE_ID,
+            'API_LEMONSQUEEZY_WEBHOOK_SECRET': API_LEMONSQUEEZY_WEBHOOK_SECRET,
+        })
     
     missing = []
     for var_name, var_value in required_vars.items():
@@ -211,9 +238,11 @@ def get_config_summary() -> dict:
         },
         "app": {
             "base_url": API_APP_BASE_URL,
-            "jwt_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+            "jwt_expiry_minutes": API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES,
+            "beta_mode": BETA_MODE
         },
         "billing": {
+            "enabled": not BETA_MODE,
             "test_mode": BILLING_TEST_MODE,
             "variants_configured": bool(
                 API_LEMONSQUEEZY_VARIANT_MONTHLY and 

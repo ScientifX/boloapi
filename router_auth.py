@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field, field_validator
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, APP_GLOBALS
+from config import DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, APP_GLOBALS, BETA_MODE
 from auth import UserRole
 from auth_jwt import require_jwt_role, require_browser_auth, get_current_user_from_token
 from utils_security import (
@@ -459,14 +459,17 @@ async def register(request: Request, register_req: RegisterRequest):
             )
         
         # Create new user
+        # In beta mode all registrations receive PREMIUM access at no cost
+        # and are flagged as beta users for future cleanup when beta ends.
         activation_token = generate_activation_token()
-        
+        registration_role = UserRole.PREMIUM.value if BETA_MODE else UserRole.BASIC.value
+
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    """INSERT INTO tbl_users (email, activation_token, role, is_active)
-                       VALUES (%s, %s, %s, %s) RETURNING user_id""",
-                    (email, activation_token, UserRole.BASIC.value, False)
+                    """INSERT INTO tbl_users (email, activation_token, role, is_active, is_beta_user)
+                       VALUES (%s, %s, %s, %s, %s) RETURNING user_id""",
+                    (email, activation_token, registration_role, False, BETA_MODE)
                 )
                 user_id = cur.fetchone()[0]
                 conn.commit()

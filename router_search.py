@@ -22,7 +22,7 @@ from contextlib import contextmanager
 
 from auth import UserRole, get_data_field_for_role, validate_limit_for_role
 from auth_jwt import require_jwt_role
-from utils_format import ResponseFormat, ResponseFormatBasic, ResponseFormatPremium, format_response, validate_format_access
+from utils_format import ResponseFormat, ResponseFormatPremium, format_response, validate_format_access
 from service_link_validation import get_archive_info, get_archive_file_path
 from utils_search_analytics import track_search_analytics
 
@@ -950,7 +950,7 @@ def get_db_connection():
 async def simple_search(
     request: Request, 
     search_request: SimpleSearchRequest,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format (BASIC tier: JSON only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC)) 
     ):
     f"""
@@ -1064,7 +1064,7 @@ async def simple_search(
 async def advanced_search(
     request: Request, 
     search_request: AdvancedSearchRequest,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format (BASIC tier: JSON only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM)) 
     ):
     f"""
@@ -1170,7 +1170,7 @@ async def advanced_search(
 @track_search_analytics
 async def list_field_offices(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of FBI field office locations"""
@@ -1233,7 +1233,7 @@ async def list_field_offices(
 @track_search_analytics
 async def list_languages(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """Get list of all distinct languages"""
@@ -1296,7 +1296,7 @@ async def list_languages(
 @track_search_analytics
 async def list_nationality(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of nationalities of wanted individuals"""
@@ -1357,7 +1357,7 @@ async def list_nationality(
 @track_search_analytics
 async def list_possible_countries(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of possible countries associated with wanted individuals and cases"""
@@ -1420,7 +1420,7 @@ async def list_possible_countries(
 @track_search_analytics
 async def list_possible_states(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
 ):
     """List of possible USA states associated with wanted individuals and cases"""
@@ -1482,7 +1482,7 @@ async def list_possible_states(
 @track_search_analytics
 async def list_race(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format: json, csv, txt, parquet, or xml (PREMIUM only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.BASIC))
     ):
     """List of races of origin associated with wanted individuals and cases"""
@@ -1548,7 +1548,7 @@ async def list_race(
 @track_search_analytics
 async def get_top_ten(
     request: Request,
-    format: ResponseFormatBasic = Query(default=ResponseFormatBasic.JSON, description="Response format (BASIC tier: JSON only)"),
+    format: ResponseFormat = Query(default=ResponseFormat.JSON, description="Response format: json, csv, txt, xml, or parquet (BASIC: json only; PREMIUM/ADMIN: all formats)"),
     current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
     ):
     """Get FBI ten most wanted fugitives"""

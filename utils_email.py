@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 # Initialize Jinja2 templates for emails
 templates = Jinja2Templates(directory="templates")
+# Inject global app variables so all email templates can access app_name,
+# beta_mode, and other APP_GLOBALS values without explicit context passing.
+templates.env.globals.update(APP_GLOBALS)
 
 
 class EmailConfig:
@@ -337,7 +340,8 @@ def send_welcome_email(to_email: str, api_key: str) -> bool:
             "app_base_url": EmailConfig.APP_BASE_URL,
             "app_name": APP_GLOBALS.get('app_name'),
             "header_title": "Account Activated!",
-            "year": datetime.now().year
+            "year": datetime.now().year,
+            "beta_mode": APP_GLOBALS.get('beta_mode', False)
         }
         
         # Render the template

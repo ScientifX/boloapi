@@ -21,10 +21,26 @@
     <ol style="margin: 0; padding-left: 20px; color: #0c5460; font-size: 14px; line-height: 1.6;">
         <li>Save your API key in a secure location</li>
         <li>Exchange it for access tokens using <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px;">/v1/auth/token</code></li>
-        <li>Use tokens to access FBI Wanted API data</li>
+        <li>Use tokens to access FBI Wanted API data via BoloDoc</li>
+        {% if beta_mode %}
+        <li>Your access level: <strong>PREMIUM (Beta)</strong> - full unrestricted access at no cost</li>
+        {% else %}
         <li>Your role: <strong>BASIC</strong> (25 records per request)</li>
+        {% endif %}
     </ol>
 </div>
+
+{% if beta_mode %}
+<div style="background-color: #f0f0f5; border-left: 4px solid #3d4461; padding: 15px;
+            border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0 0 6px 0; color: #3d4461; font-weight: 600;">Beta Access</p>
+    <p style="margin: 0; color: #495057; font-size: 14px; line-height: 1.6;">
+        You registered during the beta period and have been granted full premium access
+        at no cost. No payment information is required. Billing will be introduced
+        when the beta period ends, and you will be notified in advance.
+    </p>
+</div>
+{% endif %}
 
 <h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Quick Start Guide</h3>
 
@@ -43,6 +59,18 @@ curl "{{ app_base_url }}/v1/search/simple?field=sex&value=Male" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 </pre>
 
+{% if beta_mode %}
+<h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Available Features (Full Access)</h3>
+
+<ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
+    <li>Simple and advanced search across all fields</li>
+    <li>No limit on records per request</li>
+    <li>Cleaned, standardized data</li>
+    <li>Boolean logic and multi-field queries</li>
+    <li>Additional output formats (CSV, XML, Parquet)</li>
+    <li>Full field documentation</li>
+</ul>
+{% else %}
 <h3 style="color: #3d4461; margin: 25px 0 15px 0; font-size: 18px;">Available Features (BASIC tier)</h3>
 
 <ul style="color: #212529; line-height: 1.8; padding-left: 20px; margin: 0 0 20px 0;">
@@ -51,6 +79,7 @@ curl "{{ app_base_url }}/v1/search/simple?field=sex&value=Male" \
     <li>Access to cleaned, standardized data</li>
     <li>Full field documentation</li>
 </ul>
+{% endif %}
 
 <p style="color: #212529; line-height: 1.6; margin: 20px 0;">
     <strong>Documentation:</strong> Visit 

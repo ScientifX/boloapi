@@ -4,6 +4,33 @@
 
 {% block content %}
 <div class="content">
+
+{% if beta_mode %}
+    <h2>Subscription Plans</h2>
+    <p class="subtitle">Pricing will be available when the beta period ends</p>
+
+    <div style="max-width: 560px; margin: 40px auto; background: #f8f9fa; border: 1px solid #e9ecef;
+                border-left: 4px solid #3d4461; border-radius: 6px; padding: 30px 36px;">
+        <p style="font-size: 1.05rem; color: #3d4461; font-weight: 600; margin-bottom: 12px;">
+            Full access included during beta
+        </p>
+        <p style="color: #495057; line-height: 1.7; margin-bottom: 16px;">
+            BoloDoc is currently in public beta. All registered users have full premium access
+            at no cost for the duration of the beta period. No payment information is required.
+        </p>
+        <p style="color: #495057; line-height: 1.7; margin: 0;">
+            {% if not user_authenticated %}
+                <a href="/v1/auth/signup" style="color: #3d4461; font-weight: 600;">Register now</a>
+                to get started with unrestricted access.
+            {% else %}
+                You are registered and have full access. Visit
+                <a href="/docs" style="color: #3d4461; font-weight: 600;">the API docs</a>
+                to start making requests.
+            {% endif %}
+        </p>
+    </div>
+
+{% else %}
     <h2>Subscription Plans</h2>
     <p class="subtitle">Choose the plan that fits your needs</p>
     
@@ -741,4 +768,5 @@ button.btn[disabled]:hover {
     }
 }
 </style>
+{% endif %}
 {% endblock %}

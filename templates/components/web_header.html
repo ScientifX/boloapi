@@ -10,7 +10,9 @@
         <div style="display: flex; align-items: center; gap: 20px;">
             <nav class="nav">
                 <a href="/docs" target="_new" class="nav-item">API Docs</a>
-                <a href="/plans" class="nav-item">Pricing</a> 
+                {% if not beta_mode %}
+                <a href="/plans" class="nav-item">Pricing</a>
+                {% endif %}
                 <a href="/quickstart" class="nav-item">QuickStart</a>
                 {% if user_authenticated %}
                     {% if user_role == 'admin' %}
@@ -44,7 +46,9 @@
                         {% if user_role == 'admin' %}
                         <a href="/v1/auth/admin/users" class="avatar-menu-item">Users</a>
                         {% endif %}
+                        {% if not beta_mode %}
                         <a href="/v1/billing" class="avatar-menu-item">Billing</a>
+                        {% endif %}
                         <div class="avatar-menu-divider"></div>
                         <a href="/v1/auth/logout" class="avatar-menu-item" onclick="localStorage.clear();">Log Out</a>
                     </div>

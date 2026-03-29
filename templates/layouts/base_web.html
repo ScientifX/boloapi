@@ -26,6 +26,13 @@
         {% include 'components/web_header.html' %}
     {% endblock %}
 
+    {% if beta_mode %}
+    <!-- Beta Mode Notice -->
+    <div class="beta-banner">
+        BETA &mdash; All features are available at no cost during the beta period. Billing is not active.
+    </div>
+    {% endif %}
+
     <!-- Main Content -->
     <main class="container">
         {% block content %}{% endblock %}

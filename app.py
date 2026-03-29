@@ -28,7 +28,7 @@ from auth import (
     SESSION_ROLE_KEY, 
     ROLE_HIERARCHY
     )
-from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, API_APP_BASE_URL
+from config import APP_GLOBALS, PRICING, DB_CONFIG, API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, API_APP_BASE_URL, BETA_MODE
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -86,9 +86,21 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[rate_max])
 # FASTAPI APP WITH CUSTOM DOCS
 # ============================================================================
 
+_beta_notice = (
+    "<br><br><strong>BETA:</strong> This API is currently in public beta. "
+    "All features are available at no cost during the beta period. "
+    "Billing is not active."
+    "<br>"
+) if BETA_MODE else ""
+
 app = FastAPI(
-    title="BoloDoc API",
-    description="Enhanced FBI Wanted API data. <br><br><a href='/v1/auth/signup'>Sign up free</a> to get started, then <a href='/v1/auth/login'>log in</a> to see the full API docs",
+    title="BoloDoc API" + (" [BETA]" if BETA_MODE else ""),
+    description=(
+        f"{_beta_notice}"
+        "Enhanced FBI Wanted API data. <br><br>"
+        "<a href='/v1/auth/signup'>Sign up free</a> to get started, then "
+        "<a href='/v1/auth/login'>log in</a> to see the full API docs"
+    ),
     version="1.0.0",
     docs_url=None,
     redoc_url=None,
@@ -105,7 +117,7 @@ else:
     allowed_origins = [
         "https://fastapi-fwnh-staging.up.railway.app",
         "https://fastapi-production-9e32.up.railway.app",
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:80"
     ]
 
 app.add_middleware(
@@ -260,14 +272,24 @@ async def get_docs(request: Request):
     # Get the base Swagger UI HTML response
     html = get_swagger_ui_html(
         openapi_url="/openapi.json",
-        title=f"API Docs - BoloDoc",
+        title=f"API Docs - BoloDoc" + (" [BETA]" if BETA_MODE else ""),
         swagger_ui_parameters={"defaultModelsExpandDepth": -1}
     )
     
-    # Inject custom CSS for better markdown rendering
     html_body = html.body.decode('utf-8')
-    # html_body = html_body.replace('</head>', f'{SWAGGER_UI_CUSTOM_CSS}</head>')
-    
+
+    # Inject beta notice bar into the Swagger UI page when beta mode is active
+    if BETA_MODE:
+        beta_bar = (
+            '<div style="background:#3d4461;color:#fff;text-align:center;'
+            'padding:8px 16px;font-size:13px;font-family:sans-serif;'
+            'position:sticky;top:0;z-index:9999;">'
+            'BETA - All features are available at no cost during the beta period. '
+            'Billing is not active.'
+            '</div>'
+        )
+        html_body = html_body.replace('<body>', f'<body>{beta_bar}', 1)
+
     # Inject Google Analytics if in staging or prod
     from config import API_ENV, API_GA_TRACKING_ID
     if API_ENV in ['staging', 'prod'] and API_GA_TRACKING_ID:

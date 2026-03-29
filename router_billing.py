@@ -29,7 +29,8 @@ from config import (
     API_LEMONSQUEEZY_STORE_ID,
     API_LEMONSQUEEZY_WEBHOOK_SECRET,
     PRICING,
-    BILLING_TEST_MODE
+    BILLING_TEST_MODE,
+    BETA_MODE
 )
 from auth import UserRole
 from auth_jwt import require_jwt_role, require_browser_auth
@@ -1442,7 +1443,11 @@ async def billing_dashboard_page(
     """
     Billing Dashboard - View subscription and payment history.
     Requires authentication - redirects to login if not authenticated.
+    In beta mode redirects to the profile page since billing is not active.
     """
+    if BETA_MODE:
+        return RedirectResponse(url="/v1/auth/profile", status_code=303)
+
     # If not authenticated, redirect to login page
     if not current_user:
         return RedirectResponse(url="/v1/auth/login", status_code=303)
