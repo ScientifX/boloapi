@@ -1,0 +1,24 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local data / logs
+*.log
+*.db
+*.sqlite3
+data/
+logs/
+
+# Dev/test artifacts
+.env.local
+*.bak
+node_modules/
