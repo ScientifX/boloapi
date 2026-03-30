@@ -131,11 +131,13 @@
             
             // Email/Codename
             const emailCell = row.insertCell();
-            const displayName = user.codename || user.email;
+            const nameParts = [user.first_name, user.last_name].filter(Boolean);
+            const displayName = user.codename || (nameParts.length ? nameParts.join(' ') : null) || user.email;
+            const showSecondary = user.codename || nameParts.length;
             emailCell.innerHTML = `
                 <div class="user-display">
                     <strong>${displayName}</strong>
-                    ${user.codename ? `<br><span class="email-secondary">${user.email}</span>` : ''}
+                    ${showSecondary ? `<br><span class="email-secondary">${user.email}</span>` : ''}
                 </div>
             `;
             

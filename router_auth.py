@@ -32,7 +32,7 @@ from utils_security import (
     verify_password,
     validate_password_strength
     )
-from utils_jwt import create_access_token
+from utils_jwt import create_access_token, resolve_display_name
 from utils_email import (
     send_activation_email,
     send_api_key_email,
@@ -626,7 +626,9 @@ async def login(request: Request, login_req: LoginRequest):
             user_id=str(user['user_id']), 
             role=user_role,
             email=user['email'],
-            codename=user.get('codename')
+            codename=user.get('codename'),
+            first_name=user.get('first_name'),
+            last_name=user.get('last_name')
             )
 
         # Determine redirect URL based on role
@@ -1130,6 +1132,8 @@ async def update_profile(
         # Use updated values if provided, otherwise keep existing
         new_email = profile_update.email if profile_update.email is not None else user['email']
         new_codename = profile_update.codename if 'codename' in profile_update.model_fields_set else user.get('codename')
+        new_first_name = profile_update.first_name if profile_update.first_name is not None else user.get('first_name')
+        new_last_name = profile_update.last_name if profile_update.last_name is not None else user.get('last_name')
         
         # Create a new JWT token with updated user info
         user_role = UserRole(user['role'])
@@ -1137,7 +1141,9 @@ async def update_profile(
             user_id=str(user['user_id']),
             role=user_role,
             email=new_email,
-            codename=new_codename
+            codename=new_codename,
+            first_name=new_first_name,
+            last_name=new_last_name
             )
         
         # Build response with refreshed token cookie
@@ -1251,7 +1257,9 @@ async def get_token(request: Request, token_req: TokenRequest):
             user_id=str(user['user_id']), 
             role=user_role,
             email=user['email'],
-            codename=user.get('codename')
+            codename=user.get('codename'),
+            first_name=user.get('first_name'),
+            last_name=user.get('last_name')
         )
         
         return TokenResponse(
@@ -1290,7 +1298,12 @@ async def admin_users_page(
                 "request": request,
                 "user_authenticated": True,
                 "user_email": user.get('email'),
-                "user_display_name": user.get('codename'),
+                "user_display_name": resolve_display_name(
+                    user.get('codename'),
+                    user.get('first_name'),
+                    user.get('last_name'),
+                    user.get('email')
+                ),
                 "user_role": request.state.user_role
             }
         )
@@ -1314,6 +1327,8 @@ async def admin_users_list(
                         u.user_id,
                         u.email,
                         u.codename,
+                        u.first_name,
+                        u.last_name,
                         u.role,
                         u.is_active,
                         u.created_at,

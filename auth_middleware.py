@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
-from utils_jwt import decode_access_token, JWTError
+from utils_jwt import decode_access_token, JWTError, resolve_display_name
 from config import DB_CONFIG
 
 
@@ -38,7 +38,7 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
         request.state.user_role = None
         request.state.user_id = None
         request.state.user_codename = None
-        request.state.user_display_name = None  # codename if set, otherwise email
+        request.state.user_display_name = None  # codename > full name > email prefix
         
         if token:
             try:
@@ -50,6 +50,8 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
                 role = payload.get("role")
                 email = payload.get("email") 
                 codename = payload.get("codename")
+                first_name = payload.get("first_name")
+                last_name = payload.get("last_name")
                 
                 if user_id and role:
                     # CRITICAL: Check database to ensure user is still active
@@ -70,9 +72,10 @@ class TemplateAuthMiddleware(BaseHTTPMiddleware):
                                     request.state.user_role = role
                                     request.state.user_email = email
                                     request.state.user_codename = codename
-                                    # Display codename if set, otherwise use email username (before @)
-                                    if codename:
-                                        request.state.user_display_name = codename
+                                    # Priority: codename > first/last name > email prefix
+                                    display = resolve_display_name(codename, first_name, last_name)
+                                    if display:
+                                        request.state.user_display_name = display
                                     elif email:
                                         request.state.user_display_name = email.split('@')[0]
                                     else:

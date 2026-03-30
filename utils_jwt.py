@@ -14,7 +14,39 @@ class JWTError(Exception):
     pass
 
 
-def create_access_token(user_id: str, role: UserRole, email: str = None, codename: str = None, expires_delta: Optional[timedelta] = None) -> str:
+def resolve_display_name(
+    codename: str = None,
+    first_name: str = None,
+    last_name: str = None,
+    email: str = None
+) -> Optional[str]:
+    """
+    Resolve the display name for a user using priority order:
+    1. Codename (if set)
+    2. Full name assembled from first and/or last name (whichever are set)
+    3. Email address as fallback (returned as-is; caller may choose to strip domain)
+
+    Returns None only when all inputs are absent.
+    """
+    if codename:
+        return codename
+    name_parts = [p for p in [first_name, last_name] if p]
+    if name_parts:
+        return " ".join(name_parts)
+    if email:
+        return email
+    return None
+
+
+def create_access_token(
+    user_id: str,
+    role: UserRole,
+    email: str = None,
+    codename: str = None,
+    first_name: str = None,
+    last_name: str = None,
+    expires_delta: Optional[timedelta] = None
+) -> str:
     """
     Create a JWT access token with user claims.
     
@@ -22,7 +54,9 @@ def create_access_token(user_id: str, role: UserRole, email: str = None, codenam
         user_id: The user's UUID as string
         role: The user's role (from UserRole enum)
         email: User email address
-        codename: Optional display name (shown instead of email if set)
+        codename: Optional codename (takes display priority if set)
+        first_name: Optional first name (used for display when no codename)
+        last_name: Optional last name (used for display when no codename)
         expires_delta: Optional custom expiration time
         
     Returns:
@@ -36,13 +70,15 @@ def create_access_token(user_id: str, role: UserRole, email: str = None, codenam
         expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
     
     to_encode = {
-        "sub": user_id,  # Subject (user_id)
-        "role": role.value,  # User role
-        "email": email,  # User email
-        "codename": codename,  # Display name (optional)
-        "exp": expire,  # Expiration time
+        "sub": user_id,        # Subject (user_id)
+        "role": role.value,    # User role
+        "email": email,        # User email
+        "codename": codename,  # Codename (optional, highest display priority)
+        "first_name": first_name,  # First name (optional)
+        "last_name": last_name,    # Last name (optional)
+        "exp": expire,         # Expiration time
         "iat": datetime.now(timezone.utc),  # Issued at
-        "type": "access"  # Token type
+        "type": "access"       # Token type
         }
     
     encoded_jwt = jwt.encode(to_encode, API_JWT_SECRET_KEY, algorithm=API_JWT_ALGORITHM)
