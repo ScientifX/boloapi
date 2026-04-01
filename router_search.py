@@ -2324,78 +2324,6 @@ async def get_kidnap_missing(
 
 
 @router.get(
-    "/category_known_bank_robbers",
-    tags=[TAG_SEARCH_BY_CATEGORY],
-    summary="Individuals and cases related to known bank robbers",
-    description="Returns records of a given class",
-    response_description="Individuals and cases related to known bank robbers"
-)
-@limiter.limit(rate_max)
-@track_search_analytics
-async def get_known_bank_robbers(
-    request: Request,
-    format: ResponseFormatPremium = Query(default=ResponseFormatPremium.JSON, description="Response format: json, csv, txt, parquet, or xml"),
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
-    ):
-    """Individuals and cases related to known bank robbers"""
-    current_role = current_user["role"]
-    billing_cycle = current_user.get("billing_cycle")
-    
-    if current_role != UserRole.ADMIN:
-        if not BETA_MODE and billing_cycle != "annual":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="This endpoint is only available to annual subscribers. "
-                       "Upgrade to an annual plan to access this feature."
-            )
-    
-    validate_format_access(current_role, format)
-    actual_limit = validate_limit_for_role(current_role, 5000, billing_cycle)
-    data_field = get_data_field_for_role(current_role)
-    
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                query = f"""
-                    SELECT {data_field}
-                    FROM ftn_bolo_group('known-bank-robbers')
-                    LIMIT %s
-                """
-                cur.execute(query, (actual_limit,))
-                results = cur.fetchall()
-        
-        items = []
-        data_type = "clean" if data_field == "full_data_clean" else "raw"
-        
-        for row in results:
-            item_data = row[data_field]
-            items.append({
-                "data_type": data_type,
-                "data": item_data
-            })
-        
-        result_dict = {
-            "query": {
-                "endpoint": "category_known_bank_robbers",
-                "classification": "known-bank-robbers",
-                "limit": actual_limit
-            },
-            "role": current_role.value,
-            "resultcount": len(items),
-            "items": items
-        }
-        request.state.results_count = len(items)  # Store for analytics
-        return format_response(result_dict, format, "bolo_known_bank_robbers")
-    
-    except Exception as e:
-        logger.error(f"Known Bank Robbers search error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search error: {str(e)}"
-        )
-
-
-@router.get(
     "/category_law_enforcement_assistance",
     tags=[TAG_SEARCH_BY_CATEGORY],
     summary="Individuals and cases related to law enforcement assistance",
@@ -3143,7 +3071,6 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
                 "/category_endangered_child_alert_program": "ECAP - Endangered Child Alert Program (PREMIUM annual subscription only)",
                 "/category_human_trafficking": "Human Trafficking (PREMIUM annual subscription only)",
                 "/category_kidnap_missing": "Kidnappings and Missing Persons (PREMIUM annual subscription only)",
-                "/category_known_bank_robbers": "Known Bank Robbers (PREMIUM annual subscription only)",
                 "/category_law_enforcement_assistance": "Law Enforcement Assistance (PREMIUM annual subscription only)",
                 "/category_murders": "Murders (PREMIUM annual subscription only)",
                 "/category_kidnap_parental": "Parental Kidnappings (PREMIUM annual subscription only)",
