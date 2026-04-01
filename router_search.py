@@ -1,7 +1,7 @@
 import logging
 import psycopg2
 import re, time
-from config import DB_CONFIG, API_APP_BASE_URL
+from config import DB_CONFIG, API_APP_BASE_URL, BETA_MODE
 from lookups import COUNTRIES, STATES
 
 from psycopg2.extensions import connection as Connection
@@ -1621,7 +1621,7 @@ async def get_top_reward(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -1694,7 +1694,7 @@ async def get_additional_info(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -1766,7 +1766,7 @@ async def get_crimes_against_children(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -1838,7 +1838,7 @@ async def get_criminal_enterprise_investigations(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -1910,7 +1910,7 @@ async def get_counterintelligence(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -1982,7 +1982,7 @@ async def get_cyber_crimes(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2054,7 +2054,7 @@ async def get_domestic_terrorism(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2126,7 +2126,7 @@ async def get_endangered_child_alert_program(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2198,7 +2198,7 @@ async def get_human_trafficking(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2270,7 +2270,7 @@ async def get_kidnap_missing(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2342,7 +2342,7 @@ async def get_known_bank_robbers(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2414,7 +2414,7 @@ async def get_law_enforcement_assistance(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2486,7 +2486,7 @@ async def get_murders(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2558,7 +2558,7 @@ async def get_kidnap_parental(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2630,7 +2630,7 @@ async def get_seeking_info(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2702,7 +2702,7 @@ async def get_terror_info(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2774,7 +2774,7 @@ async def get_violent_criminal_apprehension_program(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2846,7 +2846,7 @@ async def get_wanted_terrorists(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2918,7 +2918,7 @@ async def get_white_collar_crimes(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -2989,7 +2989,7 @@ async def get_case_of_the_week(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -3061,7 +3061,7 @@ async def get_native_american(
     billing_cycle = current_user.get("billing_cycle")
     
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="This endpoint is only available to annual subscribers. "
@@ -3226,7 +3226,7 @@ async def get_documents_info(
     
     # Check access: ADMIN always allowed, PREMIUM must have annual billing
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Documents archive is only available to annual subscribers. "
@@ -3311,7 +3311,7 @@ async def download_documents_archive(
     
     # Check access: ADMIN always allowed, PREMIUM must have annual billing
     if current_role != UserRole.ADMIN:
-        if billing_cycle != "annual":
+        if not BETA_MODE and billing_cycle != "annual":
             logger.warning(f"User {user_id} attempted archive download without annual subscription")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

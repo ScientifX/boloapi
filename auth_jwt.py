@@ -84,6 +84,7 @@ def get_current_user_from_token(
         role_str = payload.get("role")
         email = payload.get("email")
         codename = payload.get("codename")
+        billing_cycle = payload.get("billing_cycle")
         
         if not user_id or not role_str:
             raise HTTPException(
@@ -130,7 +131,8 @@ def get_current_user_from_token(
             "user_id": user_id,
             "role": role,
             "email": email,
-            "codename": codename
+            "codename": codename,
+            "billing_cycle": billing_cycle
         }
         
     except JWTError as e:
@@ -202,6 +204,7 @@ def get_optional_user(
         role_str = payload.get("role")
         email = payload.get("email")
         codename = payload.get("codename")
+        billing_cycle = payload.get("billing_cycle")
         
         if not user_id or not role_str:
             return None
@@ -227,7 +230,8 @@ def get_optional_user(
             "user_id": user_id,
             "role": role,
             "email": email,
-            "codename": codename
+            "codename": codename,
+            "billing_cycle": billing_cycle
         }
     except (JWTError, Exception):
         return None
@@ -267,6 +271,7 @@ def get_user_or_none(request: Request) -> Optional[dict]:
         role_str = payload.get("role")
         email = payload.get("email")
         codename = payload.get("codename")
+        billing_cycle = payload.get("billing_cycle")
         
         if not user_id or not role_str:
             return None
@@ -292,7 +297,8 @@ def get_user_or_none(request: Request) -> Optional[dict]:
             "user_id": user_id,
             "role": role,
             "email": email,
-            "codename": codename
+            "codename": codename,
+            "billing_cycle": billing_cycle
         }
     except (JWTError, Exception):
         return None

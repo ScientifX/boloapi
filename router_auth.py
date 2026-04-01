@@ -628,7 +628,8 @@ async def login(request: Request, login_req: LoginRequest):
             email=user['email'],
             codename=user.get('codename'),
             first_name=user.get('first_name'),
-            last_name=user.get('last_name')
+            last_name=user.get('last_name'),
+            billing_cycle=user.get('billing_cycle')
             )
 
         # Determine redirect URL based on role
@@ -1143,7 +1144,8 @@ async def update_profile(
             email=new_email,
             codename=new_codename,
             first_name=new_first_name,
-            last_name=new_last_name
+            last_name=new_last_name,
+            billing_cycle=user.get('billing_cycle')
             )
         
         # Build response with refreshed token cookie
@@ -1259,7 +1261,8 @@ async def get_token(request: Request, token_req: TokenRequest):
             email=user['email'],
             codename=user.get('codename'),
             first_name=user.get('first_name'),
-            last_name=user.get('last_name')
+            last_name=user.get('last_name'),
+            billing_cycle=user.get('billing_cycle')
         )
         
         return TokenResponse(

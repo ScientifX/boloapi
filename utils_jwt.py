@@ -45,6 +45,7 @@ def create_access_token(
     codename: str = None,
     first_name: str = None,
     last_name: str = None,
+    billing_cycle: str = None,
     expires_delta: Optional[timedelta] = None
 ) -> str:
     """
@@ -57,6 +58,7 @@ def create_access_token(
         codename: Optional codename (takes display priority if set)
         first_name: Optional first name (used for display when no codename)
         last_name: Optional last name (used for display when no codename)
+        billing_cycle: Optional billing cycle (monthly, quarterly, annual)
         expires_delta: Optional custom expiration time
         
     Returns:
@@ -70,15 +72,16 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
     
     to_encode = {
-        "sub": user_id,        # Subject (user_id)
-        "role": role.value,    # User role
-        "email": email,        # User email
-        "codename": codename,  # Codename (optional, highest display priority)
-        "first_name": first_name,  # First name (optional)
-        "last_name": last_name,    # Last name (optional)
-        "exp": expire,         # Expiration time
+        "sub": user_id,               # Subject (user_id)
+        "role": role.value,           # User role
+        "email": email,               # User email
+        "codename": codename,         # Codename (optional, highest display priority)
+        "first_name": first_name,     # First name (optional)
+        "last_name": last_name,       # Last name (optional)
+        "billing_cycle": billing_cycle,  # Billing cycle (monthly, quarterly, annual, or None)
+        "exp": expire,                # Expiration time
         "iat": datetime.now(timezone.utc),  # Issued at
-        "type": "access"       # Token type
+        "type": "access"              # Token type
         }
     
     encoded_jwt = jwt.encode(to_encode, API_JWT_SECRET_KEY, algorithm=API_JWT_ALGORITHM)
