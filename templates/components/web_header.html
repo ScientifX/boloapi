@@ -23,6 +23,9 @@
                     {% else %}
                         <a href="/v1/auth/analytics" class="nav-item">Analytics</a>
                     {% endif %}
+                    {% if beta_mode %}
+                        <a href="/v1/feedback" class="nav-item nav-item-last">Feedback</a>
+                    {% endif %}
                 {% else %}
                     <a href="/v1/auth/login" class="nav-item">Log In</a>
                     <a href="/v1/auth/signup" class="nav-item nav-item-last">Sign Up</a>

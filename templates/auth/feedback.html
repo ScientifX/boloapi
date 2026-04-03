@@ -1,0 +1,395 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Beta Feedback - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-container {
+        max-width: 680px;
+        margin: 40px auto;
+        padding: 36px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .feedback-header h2 {
+        color: #3d4461;
+        margin-bottom: 10px;
+        font-size: 1.6em;
+    }
+
+    .feedback-header p {
+        color: #6c757d;
+        font-size: 0.97em;
+        line-height: 1.55;
+    }
+
+    .beta-badge {
+        display: inline-block;
+        background-color: #3d4461;
+        color: #ffffff;
+        font-size: 0.75em;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        padding: 3px 10px;
+        border-radius: 4px;
+        vertical-align: middle;
+        margin-left: 6px;
+        position: relative;
+        top: -2px;
+    }
+
+    .form-group {
+        margin-bottom: 26px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #3d4461;
+        font-size: 0.97em;
+    }
+
+    .form-group .question-hint {
+        display: block;
+        color: #6c757d;
+        font-size: 0.84em;
+        margin-bottom: 8px;
+        font-weight: 400;
+    }
+
+    .form-group textarea {
+        width: 100%;
+        min-height: 110px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: inherit;
+        resize: vertical;
+        transition: border-color 0.25s;
+        box-sizing: border-box;
+        line-height: 1.5;
+        color: #212529;
+    }
+
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3d4461;
+    }
+
+    .char-count {
+        font-size: 12px;
+        color: #adb5bd;
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    .char-count.warn {
+        color: #dc3545;
+    }
+
+    .section-divider {
+        border: none;
+        border-top: 1px solid #e9ecef;
+        margin: 28px 0;
+    }
+
+    .captcha-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 2px solid #e1e4e8;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .captcha-box:hover {
+        border-color: #3d4461;
+        box-shadow: 0 4px 8px rgba(61,68,97,0.1);
+    }
+
+    .captcha-content {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .captcha-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #3d4461 0%, #2d3451 100%);
+        border-radius: 6px;
+        margin-right: 14px;
+        font-size: 20px;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+
+    .captcha-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .captcha-checkbox-wrapper input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+        cursor: pointer;
+        accent-color: #3d4461;
+    }
+
+    .captcha-label {
+        font-size: 15px;
+        font-weight: 500;
+        color: #212529;
+        user-select: none;
+    }
+
+    .captcha-sublabel {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background-color: #3d4461;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background-color: #2d3451;
+    }
+
+    .btn-submit:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .error-banner {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 6px;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+        color: #856404;
+        font-size: 0.94em;
+        line-height: 1.5;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .privacy-note {
+        text-align: center;
+        font-size: 0.83em;
+        color: #adb5bd;
+        margin-top: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="feedback-container">
+
+        <div class="feedback-header">
+            <h2>Beta Feedback <span class="beta-badge">BETA</span></h2>
+            <p>
+                Thanks for taking part in the {{ app_name }} beta. Your feedback directly
+                shapes what we build next. Please answer as many questions as you like -
+                even a quick note is helpful.
+            </p>
+        </div>
+
+        {% if error_message %}
+        <div class="error-banner" id="errorBanner">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <form id="feedbackForm" method="POST" action="/v1/feedback/submit">
+            <input type="hidden" id="captchaToken" name="captcha_token" value="{{ captcha_token }}">
+
+            <div class="form-group">
+                <label for="liked">What did you like?</label>
+                <span class="question-hint">Features, data quality, documentation, speed - anything that worked well for you.</span>
+                <textarea
+                    id="liked"
+                    name="liked"
+                    maxlength="2000"
+                    placeholder="Tell us what impressed you or what you found most useful..."
+                >{{ liked or "" }}</textarea>
+                <div class="char-count" id="likedCount">0 / 2000</div>
+            </div>
+
+            <div class="form-group">
+                <label for="disliked">What did you not like, or what was not working?</label>
+                <span class="question-hint">Bugs, missing data, confusing flows, rough edges - be direct, we can handle it.</span>
+                <textarea
+                    id="disliked"
+                    name="disliked"
+                    maxlength="2000"
+                    placeholder="Describe any issues, frustrations, or things that fell short of your expectations..."
+                >{{ disliked or "" }}</textarea>
+                <div class="char-count" id="dislikedCount">0 / 2000</div>
+            </div>
+
+            <div class="form-group">
+                <label for="improve">What would you improve?</label>
+                <span class="question-hint">New features, workflow changes, different defaults, or anything you wish existed.</span>
+                <textarea
+                    id="improve"
+                    name="improve"
+                    maxlength="2000"
+                    placeholder="If you could change or add one thing, what would it be..."
+                >{{ improve or "" }}</textarea>
+                <div class="char-count" id="improveCount">0 / 2000</div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="captcha-box">
+                <label class="captcha-content" for="captchaCheck">
+                    <div class="captcha-icon">&#128274;</div>
+                    <div class="captcha-checkbox-wrapper">
+                        <input
+                            type="checkbox"
+                            id="captchaCheck"
+                            name="captcha_checked"
+                            value="true"
+                        >
+                        <div>
+                            <div class="captcha-label">I ain't no robot</div>
+                            <div class="captcha-sublabel">Verify you're human</div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                Submit Feedback
+            </button>
+        </form>
+
+        <p class="privacy-note">
+            Your responses are sent to the {{ app_name }} team and are not shared with third parties.
+        </p>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var formSubmitted = false;
+    var MAX = 2000;
+
+    function updateCount(textareaId, countId) {
+        var ta = document.getElementById(textareaId);
+        var counter = document.getElementById(countId);
+        if (!ta || !counter) return;
+        ta.addEventListener('input', function () {
+            var len = ta.value.length;
+            counter.textContent = len + ' / ' + MAX;
+            if (len >= MAX * 0.9) {
+                counter.classList.add('warn');
+            } else {
+                counter.classList.remove('warn');
+            }
+        });
+        // initialise on load (for pre-filled values on error re-render)
+        var initLen = ta.value.length;
+        counter.textContent = initLen + ' / ' + MAX;
+        if (initLen >= MAX * 0.9) counter.classList.add('warn');
+    }
+
+    updateCount('liked', 'likedCount');
+    updateCount('disliked', 'dislikedCount');
+    updateCount('improve', 'improveCount');
+
+    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+        if (formSubmitted) {
+            e.preventDefault();
+            return;
+        }
+
+        var liked    = (document.getElementById('liked').value || '').trim();
+        var disliked = (document.getElementById('disliked').value || '').trim();
+        var improve  = (document.getElementById('improve').value || '').trim();
+        var checked  = document.getElementById('captchaCheck').checked;
+
+        if (!liked && !disliked && !improve) {
+            e.preventDefault();
+            showInlineError('Please fill in at least one feedback field before submitting.');
+            return;
+        }
+
+        if (!checked) {
+            e.preventDefault();
+            showInlineError('Please check the verification box to confirm you are human.');
+            return;
+        }
+
+        formSubmitted = true;
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = 'Submitting<span class="spinner"></span>';
+    });
+
+    function showInlineError(msg) {
+        var banner = document.getElementById('errorBanner');
+        if (banner) {
+            banner.textContent = msg;
+        } else {
+            banner = document.createElement('div');
+            banner.id = 'errorBanner';
+            banner.className = 'error-banner';
+            banner.textContent = msg;
+            var form = document.getElementById('feedbackForm');
+            form.parentNode.insertBefore(banner, form);
+        }
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Prevent accidental resubmission via browser back button
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+})();
+</script>
+{% endblock %}

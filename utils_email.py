@@ -745,6 +745,133 @@ def send_refund_confirmation_email(
         logger.error(f"Error sending refund confirmation email: {str(e)}")
         return False
     
+def send_feedback_email(
+    user_email: str,
+    user_id: str,
+    liked: str = None,
+    disliked: str = None,
+    improve: str = None,
+) -> bool:
+    """
+    Send a formatted beta feedback notification to the support address.
+
+    Args:
+        user_email: Email address of the submitting user
+        user_id: UUID of the submitting user
+        liked: Response to "What did you like?"
+        disliked: Response to "What did you not like / what was not working?"
+        improve: Response to "What would you improve?"
+
+    Returns:
+        bool: True if email sent successfully
+    """
+    app_name = APP_GLOBALS.get("app_name", "BoloDoc API")
+    subject = f"{app_name} [BETA] - New Feedback Submission"
+
+    def _section(label: str, body: str) -> str:
+        content = (body or "").strip()
+        if not content:
+            content = "<em style='color:#adb5bd;'>(no response)</em>"
+        else:
+            content = content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            content = content.replace("\n", "<br>")
+        return (
+            f"<tr>"
+            f"<td style='padding:14px 0 6px 0;font-weight:600;color:#3d4461;"
+            f"font-size:14px;border-top:1px solid #e9ecef;'>{label}</td>"
+            f"</tr>"
+            f"<tr>"
+            f"<td style='padding:0 0 14px 0;color:#212529;font-size:14px;"
+            f"line-height:1.6;'>{content}</td>"
+            f"</tr>"
+        )
+
+    rows = (
+        _section("What did you like?", liked)
+        + _section("What did you not like, or what was not working?", disliked)
+        + _section("What would you improve?", improve)
+    )
+
+    html_body = f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f7;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:#f4f4f7;padding:32px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0"
+           style="background:#ffffff;border-radius:8px;
+                  box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;">
+
+      <!-- header -->
+      <tr>
+        <td style="background:#3d4461;padding:24px 32px;">
+          <span style="color:#ffffff;font-size:20px;font-weight:700;">
+            {app_name}
+          </span>
+          <span style="display:inline-block;background:#ffffff;color:#3d4461;
+                       font-size:11px;font-weight:700;letter-spacing:0.06em;
+                       padding:2px 8px;border-radius:4px;margin-left:10px;
+                       vertical-align:middle;">BETA</span>
+        </td>
+      </tr>
+
+      <!-- subheader -->
+      <tr>
+        <td style="padding:24px 32px 0 32px;">
+          <h2 style="margin:0 0 6px 0;color:#3d4461;font-size:18px;">
+            New Beta Feedback Submission
+          </h2>
+          <p style="margin:0;color:#6c757d;font-size:13px;">
+            From: {user_email} &nbsp;|&nbsp; User ID: {user_id}
+          </p>
+        </td>
+      </tr>
+
+      <!-- responses -->
+      <tr>
+        <td style="padding:20px 32px 28px 32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            {rows}
+          </table>
+        </td>
+      </tr>
+
+      <!-- footer -->
+      <tr>
+        <td style="background:#f8f9fa;padding:16px 32px;
+                   border-top:1px solid #e9ecef;
+                   color:#adb5bd;font-size:12px;text-align:center;">
+          This is an internal notification from {app_name}. Do not reply to this message.
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
+"""
+
+    try:
+        support = EmailConfig.SUPPORT_EMAIL
+        if not support:
+            logger.warning("[feedback] No support_email configured; feedback email not sent")
+            return False
+
+        sender = get_email_sender()
+        result = sender.send_email(support, subject, html_body)
+
+        if result:
+            logger.info(f"[email] Feedback notification sent for user {user_email}")
+        return result
+
+    except Exception as e:
+        logger.error(f"Error sending feedback email: {str(e)}")
+        return False
+
+
 def send_bolo_notification_email(
     to_email: str,
     first_name: str,

@@ -38,6 +38,7 @@ import router_search
 import router_auth
 import router_billing
 import router_analytics
+import router_feedback
 
 from auth_middleware import TemplateAuthMiddleware
 from security_middleware import SecurityValidationMiddleware
@@ -220,6 +221,7 @@ app.include_router(router_etl.router)
 app.include_router(router_search.router)
 app.include_router(router_auth.router) 
 app.include_router(router_analytics.router, tags=["Analytics"])
+app.include_router(router_feedback.router)
 
 
 # ============================================================================

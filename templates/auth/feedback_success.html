@@ -1,0 +1,131 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Thank You - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        max-width: 580px;
+        margin: 60px auto;
+        padding: 44px 40px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 64px;
+        height: 64px;
+        background-color: #eef0f8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px auto;
+    }
+
+    .success-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .success-container h2 {
+        color: #3d4461;
+        font-size: 1.55em;
+        margin-bottom: 14px;
+    }
+
+    .success-container p {
+        color: #6c757d;
+        font-size: 0.97em;
+        line-height: 1.6;
+        margin-bottom: 14px;
+    }
+
+    .action-links {
+        margin-top: 32px;
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        padding: 12px 28px;
+        background-color: #3d4461;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.95em;
+        transition: background-color 0.25s;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d3451;
+        color: #ffffff;
+    }
+
+    .btn-secondary {
+        padding: 12px 28px;
+        background-color: #f8f9fa;
+        color: #3d4461;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.95em;
+        border: 2px solid #e9ecef;
+        transition: all 0.25s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #eef0f8;
+        border-color: #3d4461;
+    }
+
+    .beta-note {
+        font-size: 0.82em;
+        color: #adb5bd;
+        margin-top: 28px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="success-container">
+
+        <div class="success-icon">
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="18" cy="18" r="16" fill="#3d4461"/>
+                <path d="M10 18 L16 24 L26 13" stroke="#ffffff" stroke-width="2.8"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <h2>Thank You for Your Feedback</h2>
+
+        <p>
+            Your responses have been received and forwarded to the {{ app_name }} team.
+            Feedback from beta users directly influences our roadmap, so this is genuinely
+            useful - thank you for taking the time.
+        </p>
+
+        <p>
+            You are welcome to submit additional feedback at any time. Each unique response
+            is accepted, so feel free to come back as your experience evolves.
+        </p>
+
+        <div class="action-links">
+            <a href="/v1/auth/analytics" class="btn-primary">Back to Analytics</a>
+            <a href="/v1/feedback" class="btn-secondary">Submit More Feedback</a>
+        </div>
+
+        <p class="beta-note">
+            {{ app_name }} is currently in public beta. Thank you for helping us improve it.
+        </p>
+
+    </div>
+</div>
+{% endblock %}
