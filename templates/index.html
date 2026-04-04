@@ -1,6 +1,8 @@
 {% extends "layouts/base_web.html" %}
 
-{% block title %}{{ app_name }} by {{ company_name }}{% endblock %}
+{% block title %}BoloDoc API -- FBI Wanted Data, Historically Tracked and Queryable{% endblock %}
+
+{% block meta_description %}A clean, historically tracked, queryable API built on FBI Wanted persons data. Search by name, crime, location, physical description, or reward. Export to JSON, CSV, XML, Parquet, or plain text.{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -452,12 +454,15 @@
 {% block content %}
 <!-- Hero Section with Live Stats -->
 <div class="hero-stats">
-    <h2>{{ app_name }} for Developers and Data Professionals</h2>
-    <p class="tagline">Clean, structured data from the FBI's Wanted API delivered through simple REST calls.</p>
+    <h2>FBI Wanted Data — Clean, Historical, and Ready for Your Workflow</h2>
+    <p class="tagline">Query the FBI Wanted list and drop results straight into your workflow. Advanced search, five export formats, and full historical records — including entries the FBI quietly removed.</p>
     
     <div class="cta-buttons">
         <a href="/v1/auth/signup" class="btn btn-primary" style="width:40%;display:block;margin: 0 auto;">Get Started Free</a>
     </div>
+    <p style="margin-top: 24px; font-size: 0.95em; opacity: 0.8; max-width: 680px; margin-left: auto; margin-right: auto;">
+        A clean, historically tracked, queryable API built on FBI Wanted persons data. Search by name, crime, location, physical description, or reward. Export to JSON, CSV, XML, Parquet, or plain text.
+    </p>
 </div>
 
 <!-- Use Cases Section 
@@ -494,55 +499,55 @@
 -->
 <!-- Features Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Why Pay For What the FBI Gives Away Free?</h2>
-    <p class="section-subtitle">Because the raw FBI API costs you hours of frustration. We solved the hard problems already.</p>
+<h2 class="section-title">Built Different From the Ground Up</h2>
+    <p class="section-subtitle">The FBI API is free. What it costs you is hours of cleanup, broken integrations, and data that quietly disappears.</p>
     
     <div class="features-grid">        
         <div class="feature-item">
             <div class="feature-icon">✨</div>
             <div class="feature-content">
-                <h4>Hours of Data Cleanup - Already Done</h4>
-                <p>Inconsistent dates, duplicate records, messy text? We normalize everything so you get clean, query-ready data every time.</p>
+                <h4>Historical Records -- Including the Ones FBI Deleted</h4>
+                <p>The FBI removes and modifies wanted records without notice or explanation. BoloDoc preserves every version. Query what was listed last week, last month, or last year -- audit-ready and always available.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🔍</div>
             <div class="feature-content">
-                <h4>Find People, Not Just Records</h4>
-                <p>Search by partial name, physical description, location, or offense type. Get targeted results instead of paginating through hundreds of records.</p>
+                <h4>Search That Actually Works</h4>
+                <p>Query by partial name, physical description, offense type, reward range, language spoken, field office, or possible location. Simple wildcard search or advanced multi-group boolean logic -- your call.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🔐</div>
             <div class="feature-content">
-                <h4>Records Disappear - We Track That</h4>
-                <p>The FBI removes records without notice. Our historical tracking proves what was listed yesterday, last month, or last year.</p>
+                <h4>Clean, Normalized Data -- Ready to Use</h4>
+                <p>Inconsistent dates, malformed text, duplicate records, and missing fields -- all resolved before the data reaches you. What you get back is schema-consistent and query-ready.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🔔</div>
             <div class="feature-content">
-                <h4>Never Miss a Change</h4>
-                <p>Premium subscribers get email alerts when records change - new fugitives, removals, and updates delivered before you have to go looking.</p>
+                <h4>Alerts When Records Change</h4>
+                <p>Premium subscribers receive email notifications when wanted records are added, modified, or removed. Know before you have to go looking.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">🛡️</div>
             <div class="feature-content">
-                <h4>Works When FBI.gov Doesn't</h4>
-                <p>Maintenance windows, rate limits, surprise outages? Your API key works 24/7 against our always-available database.</p>
+                <h4>Always On -- Even When FBI.gov Isn't</h4>
+                <p>FBI.gov has maintenance windows, rate limits, and unannounced outages. BoloDoc runs against our own database, so your integration keeps working regardless.</p>
             </div>
         </div>
         
         <div class="feature-item">
             <div class="feature-icon">⚡</div>
             <div class="feature-content">
-                <h4>API to Results in 5 Minutes</h4>
-                <p>Copy-paste examples in Python, JavaScript, and cURL. Interactive docs let you test queries before writing a single line of code.</p>
+                <h4>Integrated in Minutes</h4>
+                <p>Copy-paste code examples in Python, JavaScript, Java, C#, and Go. Interactive Swagger docs let you test every endpoint before writing a single line. From signup to first API response in under five minutes.</p>
             </div>
         </div>
     </div>
@@ -550,7 +555,7 @@
 
 <!-- Quick Start Section -->
 <div class="section" style="background: #f8f9fa;">
-    <h2 class="section-title">Get Started FREE in Minutes</h2>
+    <h2 class="section-title">From Signup to First Query in Under 5 Minutes</h2>
     <p class="section-subtitle">From registration to your first API call in under 5 minutes</p>
     
     <div class="steps-container">
