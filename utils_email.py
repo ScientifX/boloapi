@@ -16,6 +16,7 @@ from config import (
     API_AZURE_TENANT_ID,
     API_EMAIL_FROM_ADDRESS,
     API_EMAIL_FROM_NAME,
+    API_EMAIL_BCC_SUPPORT,
     API_APP_BASE_URL,
     APP_GLOBALS,
     PRICING
@@ -42,6 +43,7 @@ class EmailConfig:
     FROM_NAME = API_EMAIL_FROM_NAME
     APP_BASE_URL = API_APP_BASE_URL
     SUPPORT_EMAIL = APP_GLOBALS.get('support_email')
+    BCC_SUPPORT_ENABLED = API_EMAIL_BCC_SUPPORT
     
     @classmethod
     def is_configured(cls) -> bool:
@@ -169,8 +171,14 @@ class GraphAPIEmailSender:
                 "saveToSentItems": "true"
             }
             
-            # Always BCC support email on all notifications
-            if EmailConfig.SUPPORT_EMAIL:
+            # BCC support address on all outgoing user notifications.
+            # Skipped if disabled via API_EMAIL_BCC_SUPPORT=false, or if the
+            # recipient is already the support address (e.g. feedback emails).
+            if (
+                EmailConfig.BCC_SUPPORT_ENABLED
+                and EmailConfig.SUPPORT_EMAIL
+                and to_address.lower() != EmailConfig.SUPPORT_EMAIL.lower()
+            ):
                 message["message"]["bccRecipients"] = [
                     {
                         "emailAddress": {
@@ -189,7 +197,12 @@ class GraphAPIEmailSender:
             response = requests.post(url, json=message, headers=headers, timeout=10)
             response.raise_for_status()
             
-            bcc_info = f" (BCC: {EmailConfig.SUPPORT_EMAIL})" if EmailConfig.SUPPORT_EMAIL else ""
+            bcc_applied = (
+                EmailConfig.BCC_SUPPORT_ENABLED
+                and EmailConfig.SUPPORT_EMAIL
+                and to_address.lower() != EmailConfig.SUPPORT_EMAIL.lower()
+            )
+            bcc_info = f" (BCC: {EmailConfig.SUPPORT_EMAIL})" if bcc_applied else ""
             logger.info(f"Successfully sent email to {to_address}{bcc_info}")
             return True
             

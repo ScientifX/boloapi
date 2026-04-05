@@ -89,6 +89,10 @@ API_AZURE_TENANT_ID = os.getenv('API_AZURE_TENANT_ID')
 API_EMAIL_FROM_ADDRESS = os.getenv('API_EMAIL_FROM_ADDRESS') 
 API_EMAIL_FROM_NAME = os.getenv('API_EMAIL_FROM_NAME') 
 
+# BCC support address on all outgoing user notifications
+# Set API_EMAIL_BCC_SUPPORT=false to disable. Default is true.
+API_EMAIL_BCC_SUPPORT = os.getenv('API_EMAIL_BCC_SUPPORT', 'true').lower() == 'true'
+
 # Application URL (for email links)
 API_APP_BASE_URL = os.getenv('API_APP_BASE_URL')
 
