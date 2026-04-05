@@ -163,7 +163,7 @@ def detect_and_log_removals(
     # Get title and poster_url for removed records (from both sources)
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
-            SELECT uid, title, poster_url, data_source
+            SELECT uid, title, poster_url, source as data_source
             FROM vw_bolo_full 
             WHERE uid = ANY(%s)
         """, (removed_uids,))

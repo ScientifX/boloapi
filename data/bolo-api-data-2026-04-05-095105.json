@@ -5360,90 +5360,6 @@
       "occupations": null,
       "possible_countries": null,
       "subjects": [
-        "Seeking Information"
-      ],
-      "field_offices": [
-        "sandiego"
-      ],
-      "suspects": null,
-      "title": "YUNIQUE MARIE PUCKETT",
-      "publication": "2026-03-02T13:23:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": null,
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": null,
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "33f7ffee746b4d69a65ac2864b6fc19a",
-      "weight_min": null,
-      "poster_classification": "information",
-      "languages": null,
-      "hair": null,
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image",
-          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Murder Victim\r\nImperial, California\r\nJanuary 17, 2017",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/seeking-info/yunique-marie-puckett",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>The Federal Bureau of Investigation in San Diego, California, is seeking information regarding the death of Yunique Marie Puckett.  On January 17, 2017, at approximately 5:00 a.m., law enforcement responded to a reported fire at a residential home in Imperial, California.  After the fire was extinguished, authorities located one deceased female in the residence who was later identified as Puckett.  She had been shot multiple times.</p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:23:49+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/download.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett",
-      "coordinates": [],
-      "hair_raw": null,
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the location, arrest, and conviction of individuals involved in the death of Yunique Marie Puckett.",
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/33f7ffee746b4d69a65ac2864b6fc19a"
-    },
-    {
-      "race": null,
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
         "Cyber's Most Wanted"
       ],
       "field_offices": null,
@@ -5578,6 +5494,90 @@
       "eyes": null,
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/9957ba299d774955b857bad921685cac"
+    },
+    {
+      "race": null,
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "field_offices": [
+        "sandiego"
+      ],
+      "suspects": null,
+      "title": "YUNIQUE MARIE PUCKETT",
+      "publication": "2026-03-02T13:23:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": null,
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": null,
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "33f7ffee746b4d69a65ac2864b6fc19a",
+      "weight_min": null,
+      "poster_classification": "information",
+      "languages": null,
+      "hair": null,
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett2.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/puckett3.jpg/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Murder Victim\r\nImperial, California\r\nJanuary 17, 2017",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/seeking-info/yunique-marie-puckett",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>The Federal Bureau of Investigation in San Diego, California, is seeking information regarding the death of Yunique Marie Puckett.  On January 17, 2017, at approximately 5:00 a.m., law enforcement responded to a reported fire at a residential home in Imperial, California.  After the fire was extinguished, authorities located one deceased female in the residence who was later identified as Puckett.  She had been shot multiple times.</p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:23:49+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett/download.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/yunique-marie-puckett",
+      "coordinates": [],
+      "hair_raw": null,
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": "The FBI is offering a reward of up to $10,000 for information leading to the location, arrest, and conviction of individuals involved in the death of Yunique Marie Puckett.",
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/33f7ffee746b4d69a65ac2864b6fc19a"
     },
     {
       "race": "hispanic",
@@ -6537,6 +6537,76 @@
       "pathId": "https://api.fbi.gov/@wanted-person/dfcf24ee89c5425190c5d8f920d8d277"
     },
     {
+      "race": "hispanic",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "ViCAP Unidentified Persons"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "JOHN DOE - NEEDVILLE, TEXAS",
+      "publication": "2019-02-28T14:22:00",
+      "warning_message": null,
+      "height_min": 61,
+      "legat_names": null,
+      "height_max": 66,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": "Hispanic",
+      "scars_and_marks": "The victim had a vitamin deficiency, broken tailbone (healed), and his front two lower incisor teeth were rotated and overlapping.",
+      "person_classification": "Main",
+      "uid": "0de65261a2d74b298f3021202edfa532",
+      "weight_min": null,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": "brown",
+      "aliases": null,
+      "images": [
+        {
+          "caption": "2005 Composite",
+          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Needville, Texas\r\nDecember 17, 2000",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/vicap/unidentified-persons/john-doe---needville-texas",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>On December 17, 2000, the skeletal remains of an unidentified male were located beside the roadway near 8500 Davis Estate Road in Needville, Texas (Fort Bend County). Based on the condition of the remains, the decedent is believed to have been deceased approximately 3 - 9 months prior to discovery. The decedent had straight dark brown to black hair, approximately 2 inches in length. Clothing items found with the remains include blue jeans with a 29\" waistband (Route 66 brand), a brown leather belt, beige socks, brown suede shoes (Pele brand), a black wrist band (Guess logo/brand), and a pink fabric wrist band. The decedent had a healed fracture of his tailbone and his front two lower incisor teeth were rotated and overlapping. The victim was found with many of his bones inside a green plastic bag.</p>",
+      "age_min": 17,
+      "age_range": "Approximately 17 to 23 years old",
+      "possible_states": null,
+      "modified": "2026-03-15T00:23:34+00:00",
+      "age_max": 23,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/vicap-alert-2019-02-02-revised-unidentified_human_remains_needville.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas",
+      "coordinates": [],
+      "hair_raw": "Black or brown",
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": null,
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/0de65261a2d74b298f3021202edfa532"
+    },
+    {
       "race": "white",
       "occupations": [
         "Waiter or Food Service Worker"
@@ -6617,76 +6687,6 @@
       "eyes": "brown",
       "place_of_birth": "Bel Ombre, Mahe Island, Seychelles",
       "pathId": "https://api.fbi.gov/@wanted-person/08fffb803ba74bde9cabf3e1511834e3"
-    },
-    {
-      "race": "hispanic",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ViCAP Unidentified Persons"
-      ],
-      "field_offices": null,
-      "suspects": null,
-      "title": "JOHN DOE - NEEDVILLE, TEXAS",
-      "publication": "2019-02-28T14:22:00",
-      "warning_message": null,
-      "height_min": 61,
-      "legat_names": null,
-      "height_max": 66,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": "Hispanic",
-      "scars_and_marks": "The victim had a vitamin deficiency, broken tailbone (healed), and his front two lower incisor teeth were rotated and overlapping.",
-      "person_classification": "Main",
-      "uid": "0de65261a2d74b298f3021202edfa532",
-      "weight_min": null,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": "brown",
-      "aliases": null,
-      "images": [
-        {
-          "caption": "2005 Composite",
-          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image",
-          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Needville, Texas\r\nDecember 17, 2000",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/vicap/unidentified-persons/john-doe---needville-texas",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>On December 17, 2000, the skeletal remains of an unidentified male were located beside the roadway near 8500 Davis Estate Road in Needville, Texas (Fort Bend County). Based on the condition of the remains, the decedent is believed to have been deceased approximately 3 - 9 months prior to discovery. The decedent had straight dark brown to black hair, approximately 2 inches in length. Clothing items found with the remains include blue jeans with a 29\" waistband (Route 66 brand), a brown leather belt, beige socks, brown suede shoes (Pele brand), a black wrist band (Guess logo/brand), and a pink fabric wrist band. The decedent had a healed fracture of his tailbone and his front two lower incisor teeth were rotated and overlapping. The victim was found with many of his bones inside a green plastic bag.</p>",
-      "age_min": 17,
-      "age_range": "Approximately 17 to 23 years old",
-      "possible_states": null,
-      "modified": "2026-03-15T00:23:34+00:00",
-      "age_max": 23,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas/vicap-alert-2019-02-02-revised-unidentified_human_remains_needville.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---needville-texas",
-      "coordinates": [],
-      "hair_raw": "Black or brown",
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": null,
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/0de65261a2d74b298f3021202edfa532"
     },
     {
       "race": "asian",
@@ -7663,6 +7663,76 @@
       "pathId": "https://api.fbi.gov/@wanted-person/70dbb4e1fa37427e9baa5ccb96444d75"
     },
     {
+      "race": "white",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "ViCAP Unidentified Persons"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "JOHN DOE - GRANT COUNTY, KENTUCKY",
+      "publication": "2017-10-24T13:45:00",
+      "warning_message": null,
+      "height_min": 77,
+      "legat_names": null,
+      "height_max": 77,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Features: Previously healed nasal fracture, Victim had Plagiocephaly (flat head syndrome), Back of the victim’s head was flat.</p>\r\n<p>Dental: Extensive dental work to include a ten unit porcelain fixed, porcelain to metal bridge with missing teeth replaced with porcelain pontics.</p>",
+      "caution": null,
+      "race_raw": "White",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "5a4a33118d1b468e8ffa6d67248c87a5",
+      "weight_min": 230,
+      "poster_classification": "information",
+      "languages": null,
+      "hair": "brown",
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "April 9, 1989\r\nGrant County, Kentucky",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "230 pounds",
+      "path": "/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>On Sunday, April 9, 1989, the victim’s remains were discovered in a tobacco barn in rural Grant County, Kentucky. It is estimated the victim was killed approximately two weeks prior. The victim was shot twice in the back of his head with a .22 caliber weapon, his hands were cut off, and he was stripped of all of his clothing. The victim had extensive dental work, to include a ten unit porcelain fixed, porcelain to metal bridge with missing teeth replaced with porcelain pontics.</p>",
+      "age_min": 25,
+      "age_range": "25 years old (Approximately)",
+      "possible_states": null,
+      "modified": "2026-03-15T00:23:21+00:00",
+      "age_max": 25,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/vicap-alert-2017-05-01-john-doe-unidentified-remains.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": 230,
+      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": null,
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/5a4a33118d1b468e8ffa6d67248c87a5"
+    },
+    {
       "race": "hispanic",
       "occupations": null,
       "possible_countries": null,
@@ -7755,76 +7825,6 @@
       "eyes": "brown",
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/41e73653bd724f0ebb33557e665f55f5"
-    },
-    {
-      "race": "white",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ViCAP Unidentified Persons"
-      ],
-      "field_offices": null,
-      "suspects": null,
-      "title": "JOHN DOE - GRANT COUNTY, KENTUCKY",
-      "publication": "2017-10-24T13:45:00",
-      "warning_message": null,
-      "height_min": 77,
-      "legat_names": null,
-      "height_max": 77,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Features: Previously healed nasal fracture, Victim had Plagiocephaly (flat head syndrome), Back of the victim’s head was flat.</p>\r\n<p>Dental: Extensive dental work to include a ten unit porcelain fixed, porcelain to metal bridge with missing teeth replaced with porcelain pontics.</p>",
-      "caution": null,
-      "race_raw": "White",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "5a4a33118d1b468e8ffa6d67248c87a5",
-      "weight_min": 230,
-      "poster_classification": "information",
-      "languages": null,
-      "hair": "brown",
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image",
-          "large": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "April 9, 1989\r\nGrant County, Kentucky",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "230 pounds",
-      "path": "/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>On Sunday, April 9, 1989, the victim’s remains were discovered in a tobacco barn in rural Grant County, Kentucky. It is estimated the victim was killed approximately two weeks prior. The victim was shot twice in the back of his head with a .22 caliber weapon, his hands were cut off, and he was stripped of all of his clothing. The victim had extensive dental work, to include a ten unit porcelain fixed, porcelain to metal bridge with missing teeth replaced with porcelain pontics.</p>",
-      "age_min": 25,
-      "age_range": "25 years old (Approximately)",
-      "possible_states": null,
-      "modified": "2026-03-15T00:23:21+00:00",
-      "age_max": 25,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky/vicap-alert-2017-05-01-john-doe-unidentified-remains.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": 230,
-      "url": "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe---grant-county-kentucky",
-      "coordinates": [],
-      "hair_raw": "Brown",
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": null,
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/5a4a33118d1b468e8ffa6d67248c87a5"
     },
     {
       "race": "white",
@@ -11501,76 +11501,6 @@
       "pathId": "https://api.fbi.gov/@wanted-person/b4938d63fe924b8396f8f5eceeacb288"
     },
     {
-      "race": "black",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ViCAP Homicides and Sexual Assaults"
-      ],
-      "field_offices": null,
-      "suspects": null,
-      "title": "RANDOM SHOOTER - TEXAS",
-      "publication": "2015-06-01T07:00:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Vehicle(s): Black Jeep Cherokee; dark SUV<br />Weapon(s) 380 caliber handgun</p>",
-      "caution": null,
-      "race_raw": "Black (light complexion or mixed race)",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "87edc9ef-b37e-4d54-ae0d-98f10e62ae21",
-      "weight_min": null,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": null,
-      "aliases": null,
-      "images": [
-        {
-          "caption": "Composite",
-          "thumb": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image",
-          "large": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Houston, Texas, and Missouri City, Texas\r\nFebruary 17-22, 2015",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/vicap/homicides-and-sexual-assaults/random-shooter",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>Between the dates of February 17, 2015 and February 22, 2015, five separate shooting incidents occurred in Houston, Texas, and Missouri City, Texas, (southwest section of the Houston metroplex). The shootings seemed to be random, robbery was not a motive, and the victims were usually pedestrians walking alone. One of the incidents resulted in a homicide. The Houston and Missouri City Police Departments are requesting assistance in identifying the suspect of these shootings.</p>",
-      "age_min": 30,
-      "age_range": "Approximately 30 years old",
-      "possible_states": null,
-      "modified": "2026-03-15T00:22:49+00:00",
-      "age_max": 30,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/vicapalert_2015-05-01_rev05-15-2017.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter",
-      "coordinates": [],
-      "hair_raw": null,
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": null,
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/87edc9ef-b37e-4d54-ae0d-98f10e62ae21"
-    },
-    {
       "race": null,
       "occupations": null,
       "possible_countries": null,
@@ -11639,6 +11569,76 @@
       "eyes": null,
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/b0d732c5-1822-4c59-89f2-22d0cec7a3fb"
+    },
+    {
+      "race": "black",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "ViCAP Homicides and Sexual Assaults"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "RANDOM SHOOTER - TEXAS",
+      "publication": "2015-06-01T07:00:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Vehicle(s): Black Jeep Cherokee; dark SUV<br />Weapon(s) 380 caliber handgun</p>",
+      "caution": null,
+      "race_raw": "Black (light complexion or mixed race)",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "87edc9ef-b37e-4d54-ae0d-98f10e62ae21",
+      "weight_min": null,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": null,
+      "aliases": null,
+      "images": [
+        {
+          "caption": "Composite",
+          "thumb": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Houston, Texas, and Missouri City, Texas\r\nFebruary 17-22, 2015",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/vicap/homicides-and-sexual-assaults/random-shooter",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>Between the dates of February 17, 2015 and February 22, 2015, five separate shooting incidents occurred in Houston, Texas, and Missouri City, Texas, (southwest section of the Houston metroplex). The shootings seemed to be random, robbery was not a motive, and the victims were usually pedestrians walking alone. One of the incidents resulted in a homicide. The Houston and Missouri City Police Departments are requesting assistance in identifying the suspect of these shootings.</p>",
+      "age_min": 30,
+      "age_range": "Approximately 30 years old",
+      "possible_states": null,
+      "modified": "2026-03-15T00:22:49+00:00",
+      "age_max": 30,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter/vicapalert_2015-05-01_rev05-15-2017.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/vicap/homicides-and-sexual-assaults/random-shooter",
+      "coordinates": [],
+      "hair_raw": null,
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": null,
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/87edc9ef-b37e-4d54-ae0d-98f10e62ae21"
     },
     {
       "race": "white",
@@ -12851,106 +12851,6 @@
     {
       "race": null,
       "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ECAP"
-      ],
-      "field_offices": null,
-      "suspects": null,
-      "title": "UNKNOWN SUSPECT  -  JOHN DOE 19",
-      "publication": "2010-11-17T20:50:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": "",
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": null,
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "7bce2f4653729b28cc6df4457204954a",
-      "weight_min": null,
-      "poster_classification": "ecap",
-      "languages": null,
-      "hair": null,
-      "aliases": null,
-      "images": [
-        {
-          "caption": "John Doe 19",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image/large"
-        },
-        {
-          "caption": "John Doe 19",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg/@@images/image/large"
-        },
-        {
-          "caption": "John Doe 19",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg/@@images/image/large"
-        },
-        {
-          "caption": "ECAP 36 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 37 and 38 are other angles of the same room. The FBI seeks information regarding the location of this room.",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg/@@images/image/large"
-        },
-        {
-          "caption": "ECAP 37 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 36 and 38 are other angles of the same room. The FBI seeks information regarding the location of this room.",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg/@@images/image/large"
-        },
-        {
-          "caption": "ECAP 38 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 36 and 37 are other angles of the same room. The FBI seeks information regarding the location of this room.",
-          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg",
-          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "",
-      "additional_information": "<ul>\r\n<li><a href=\"mailto:RescueMe@fbi.gov?subject=Contact an Investigator\" data-linktype=\"email\" data-subject=\"Contact an Investigator\" data-val=\"RescueMe@fbi.gov\" data-urltype=\"/view\">Contact an ECAP Investigator</a></li>\r\n</ul>",
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/ecap/unknown-suspect-3",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>Law enforcement officials are seeking information which will lead to the identification of this unknown suspect. It is alleged that he may be involved with the attempted sexual exploitation of children and the sexual abuse of a minor. Images of this person were found on a video being traded on the Internet.</p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:22:37+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/download.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3",
-      "coordinates": [],
-      "hair_raw": null,
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": null,
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/7bce2f4653729b28cc6df4457204954a"
-    },
-    {
-      "race": null,
-      "occupations": null,
       "possible_countries": [
         "USA"
       ],
@@ -13049,6 +12949,106 @@
       "eyes": null,
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/695255b7598698fe6ac3abbed8d12c9c"
+    },
+    {
+      "race": null,
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "ECAP"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "UNKNOWN SUSPECT  -  JOHN DOE 19",
+      "publication": "2010-11-17T20:50:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "",
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": null,
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "7bce2f4653729b28cc6df4457204954a",
+      "weight_min": null,
+      "poster_classification": "ecap",
+      "languages": null,
+      "hair": null,
+      "aliases": null,
+      "images": [
+        {
+          "caption": "John Doe 19",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/@@images/image/large"
+        },
+        {
+          "caption": "John Doe 19",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19b.jpg/@@images/image/large"
+        },
+        {
+          "caption": "John Doe 19",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/johndoe19c.jpg/@@images/image/large"
+        },
+        {
+          "caption": "ECAP 36 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 37 and 38 are other angles of the same room. The FBI seeks information regarding the location of this room.",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-36.jpg/@@images/image/large"
+        },
+        {
+          "caption": "ECAP 37 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 36 and 38 are other angles of the same room. The FBI seeks information regarding the location of this room.",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-37.jpg/@@images/image/large"
+        },
+        {
+          "caption": "ECAP 38 - This image is of a room seen in the background of files depicting John Doe 19. Photographs entitled ECAP 36 and 37 are other angles of the same room. The FBI seeks information regarding the location of this room.",
+          "thumb": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg",
+          "large": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/ecap-38.jpg/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "",
+      "additional_information": "<ul>\r\n<li><a href=\"mailto:RescueMe@fbi.gov?subject=Contact an Investigator\" data-linktype=\"email\" data-subject=\"Contact an Investigator\" data-val=\"RescueMe@fbi.gov\" data-urltype=\"/view\">Contact an ECAP Investigator</a></li>\r\n</ul>",
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/ecap/unknown-suspect-3",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>Law enforcement officials are seeking information which will lead to the identification of this unknown suspect. It is alleged that he may be involved with the attempted sexual exploitation of children and the sexual abuse of a minor. Images of this person were found on a video being traded on the Internet.</p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:22:37+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3/download.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/ecap/unknown-suspect-3",
+      "coordinates": [],
+      "hair_raw": null,
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": null,
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/7bce2f4653729b28cc6df4457204954a"
     },
     {
       "race": null,
@@ -28401,6 +28401,84 @@
       "occupations": null,
       "possible_countries": null,
       "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "field_offices": [
+        "sanfrancisco"
+      ],
+      "suspects": null,
+      "title": "RUSLAN ALEKSANDROVICH PERETYATKO",
+      "publication": "2023-11-14T08:17:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": null,
+      "caution": "<p>Ruslan Aleksandrovich Peretyatko, a Russian Federal Security Service (FSB) officer, and his co-conspirator <a href=\"https://www.fbi.gov/wanted/cyber/andrey-stanislavovich-korinets\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/andrey-stanislavovich-korinets\">Andrey Stanislavovich Korinets</a> are wanted for their alleged involvement in a spear phishing campaign in the United States that was specifically designed to gain unauthorized access to the email account credentials of their targeted victims in order to gather valuable intelligence related to United States defense, foreign affairs, security policies, and nuclear energy related research and development.  On December 5, 2023, a grand jury, sitting in the United States District Court, Northern District of California, San Francisco Division, indicted the two men on charges of Conspiracy to Commit Computer Fraud and Abuse, and Forfeiture Allegation.</p>\r\n<p> </p>",
+      "race_raw": "White",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "04659e8a301446b395019d9b17818fa8",
+      "weight_min": null,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": null,
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Conspiracy to Commit Computer Fraud and Abuse; Forfeiture Allegation",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/cyber/ruslan-aleksandrovich-peretyatko",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "August 3, 1985"
+      ],
+      "details": null,
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:18:14+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/peretyatko-russian-final.pdf/@@download/file/peretyatko.Russian.final.pdf",
+          "name": " "
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko",
+      "coordinates": [],
+      "hair_raw": null,
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": null,
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/04659e8a301446b395019d9b17818fa8"
+    },
+    {
+      "race": "white",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
         "ViCAP Unidentified Persons"
       ],
       "field_offices": null,
@@ -28483,84 +28561,6 @@
       "eyes": null,
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/1b4045c775954ab0b294553bc4bebe3f"
-    },
-    {
-      "race": "white",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "Cyber's Most Wanted"
-      ],
-      "field_offices": [
-        "sanfrancisco"
-      ],
-      "suspects": null,
-      "title": "RUSLAN ALEKSANDROVICH PERETYATKO",
-      "publication": "2023-11-14T08:17:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": null,
-      "caution": "<p>Ruslan Aleksandrovich Peretyatko, a Russian Federal Security Service (FSB) officer, and his co-conspirator <a href=\"https://www.fbi.gov/wanted/cyber/andrey-stanislavovich-korinets\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/andrey-stanislavovich-korinets\">Andrey Stanislavovich Korinets</a> are wanted for their alleged involvement in a spear phishing campaign in the United States that was specifically designed to gain unauthorized access to the email account credentials of their targeted victims in order to gather valuable intelligence related to United States defense, foreign affairs, security policies, and nuclear energy related research and development.  On December 5, 2023, a grand jury, sitting in the United States District Court, Northern District of California, San Francisco Division, indicted the two men on charges of Conspiracy to Commit Computer Fraud and Abuse, and Forfeiture Allegation.</p>\r\n<p> </p>",
-      "race_raw": "White",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "04659e8a301446b395019d9b17818fa8",
-      "weight_min": null,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": null,
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image",
-          "large": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Conspiracy to Commit Computer Fraud and Abuse; Forfeiture Allegation",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/cyber/ruslan-aleksandrovich-peretyatko",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": [
-        "August 3, 1985"
-      ],
-      "details": null,
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:18:14+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/download.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko/peretyatko-russian-final.pdf/@@download/file/peretyatko.Russian.final.pdf",
-          "name": " "
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/cyber/ruslan-aleksandrovich-peretyatko",
-      "coordinates": [],
-      "hair_raw": null,
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": null,
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/04659e8a301446b395019d9b17818fa8"
     },
     {
       "race": null,
@@ -36228,93 +36228,6 @@
     },
     {
       "race": "hispanic",
-      "occupations": [
-        "Painter",
-        "Construction Worker"
-      ],
-      "possible_countries": null,
-      "subjects": [
-        "Violent Crime - Murders"
-      ],
-      "field_offices": [
-        "philadelphia"
-      ],
-      "suspects": null,
-      "title": "MIGUEL ANGEL AGUILAR OJEDA",
-      "publication": "2025-04-03T11:36:00",
-      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
-      "height_min": 64,
-      "legat_names": null,
-      "height_max": 64,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Ojeda has ties to Camden, New Jersey; Philadelphia, Pennsylvania; and Mexico.</p>",
-      "caution": "<p>Miguel Angel Aguilar Ojeda is wanted for allegedly killing his wife on October 27, 2024, in Philadelphia, Pennsylvania.  On October 30, 2024, the Commonwealth of Pennsylvania, County of Philadelphia, issued an arrest warrant for Ojeda after he was charged with Murder, Possessing Instruments of Crime, Abuse of Corpse, and Tampering with Evidence.  On November 21, 2024, a federal arrest warrant was issued for Ojeda in the United States District Court, Eastern District of Pennsylvania, Philadelphia, Pennsylvania, after he was charged with Unlawful Flight to Avoid Prosecution. </p>\r\n<p> </p>",
-      "race_raw": "White (Hispanic)",
-      "scars_and_marks": "Ojeda has tattoos on both of his wrists, including the name \"Miguelito\" in black script with a yellow crown on his right wrist.",
-      "person_classification": "Main",
-      "uid": "9f9cc060851c445a99afee99bdada94b",
-      "weight_min": 240,
-      "poster_classification": "default",
-      "languages": [
-        "Spanish",
-        "English"
-      ],
-      "hair": "black",
-      "aliases": [
-        "Miguel Aguilar",
-        "\"Cara Gorda\""
-      ],
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image",
-          "large": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Unlawful Flight to Avoid Prosecution - Murder, Possessing Instruments of Crime, Abuse of Corpse, Tampering with Evidence",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "240 pounds",
-      "path": "/wanted/murders/miguel-angel-aguilar-ojeda",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": [
-        "August 5, 1990"
-      ],
-      "details": null,
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:16:55+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/download.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/ojedaspanish2.pdf/@@download/file/OjedaSpanish2.pdf",
-          "name": "EN ESPAOL"
-        }
-      ],
-      "weight_max": 240,
-      "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda",
-      "coordinates": [],
-      "hair_raw": "Black",
-      "eyes_raw": "Brown",
-      "nationality": "Mexican",
-      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the location and arrest of Miguel Angel Aguilar Ojeda.",
-      "eyes": "brown",
-      "place_of_birth": "Mexico",
-      "pathId": "https://api.fbi.gov/@wanted-person/9f9cc060851c445a99afee99bdada94b"
-    },
-    {
-      "race": "hispanic",
       "occupations": null,
       "possible_countries": null,
       "subjects": [
@@ -36411,6 +36324,93 @@
       "eyes": "brown",
       "place_of_birth": "Tepatitlan de Morelos, Jalisco, Mexico",
       "pathId": "https://api.fbi.gov/@wanted-person/5187b47ed74c4cd69afeef4fe8e01ccf"
+    },
+    {
+      "race": "hispanic",
+      "occupations": [
+        "Painter",
+        "Construction Worker"
+      ],
+      "possible_countries": null,
+      "subjects": [
+        "Violent Crime - Murders"
+      ],
+      "field_offices": [
+        "philadelphia"
+      ],
+      "suspects": null,
+      "title": "MIGUEL ANGEL AGUILAR OJEDA",
+      "publication": "2025-04-03T11:36:00",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS",
+      "height_min": 64,
+      "legat_names": null,
+      "height_max": 64,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Ojeda has ties to Camden, New Jersey; Philadelphia, Pennsylvania; and Mexico.</p>",
+      "caution": "<p>Miguel Angel Aguilar Ojeda is wanted for allegedly killing his wife on October 27, 2024, in Philadelphia, Pennsylvania.  On October 30, 2024, the Commonwealth of Pennsylvania, County of Philadelphia, issued an arrest warrant for Ojeda after he was charged with Murder, Possessing Instruments of Crime, Abuse of Corpse, and Tampering with Evidence.  On November 21, 2024, a federal arrest warrant was issued for Ojeda in the United States District Court, Eastern District of Pennsylvania, Philadelphia, Pennsylvania, after he was charged with Unlawful Flight to Avoid Prosecution. </p>\r\n<p> </p>",
+      "race_raw": "White (Hispanic)",
+      "scars_and_marks": "Ojeda has tattoos on both of his wrists, including the name \"Miguelito\" in black script with a yellow crown on his right wrist.",
+      "person_classification": "Main",
+      "uid": "9f9cc060851c445a99afee99bdada94b",
+      "weight_min": 240,
+      "poster_classification": "default",
+      "languages": [
+        "Spanish",
+        "English"
+      ],
+      "hair": "black",
+      "aliases": [
+        "Miguel Aguilar",
+        "\"Cara Gorda\""
+      ],
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image",
+          "large": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Unlawful Flight to Avoid Prosecution - Murder, Possessing Instruments of Crime, Abuse of Corpse, Tampering with Evidence",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "240 pounds",
+      "path": "/wanted/murders/miguel-angel-aguilar-ojeda",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "August 5, 1990"
+      ],
+      "details": null,
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:16:55+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda/ojedaspanish2.pdf/@@download/file/OjedaSpanish2.pdf",
+          "name": "EN ESPAOL"
+        }
+      ],
+      "weight_max": 240,
+      "url": "https://www.fbi.gov/wanted/murders/miguel-angel-aguilar-ojeda",
+      "coordinates": [],
+      "hair_raw": "Black",
+      "eyes_raw": "Brown",
+      "nationality": "Mexican",
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the location and arrest of Miguel Angel Aguilar Ojeda.",
+      "eyes": "brown",
+      "place_of_birth": "Mexico",
+      "pathId": "https://api.fbi.gov/@wanted-person/9f9cc060851c445a99afee99bdada94b"
     },
     {
       "race": "hispanic",
@@ -36559,86 +36559,6 @@
       "pathId": "https://api.fbi.gov/@wanted-person/fb7fd266e7154ed6991c86fa0f9b0ee9"
     },
     {
-      "race": "white",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "Seeking Information"
-      ],
-      "field_offices": [
-        "detroit"
-      ],
-      "suspects": null,
-      "title": "KELLY BOYCE-HURLBERT",
-      "publication": "2018-06-20T11:19:00",
-      "warning_message": null,
-      "height_min": 62,
-      "legat_names": null,
-      "height_max": 62,
-      "complexion": null,
-      "sex": "Female",
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": "White",
-      "scars_and_marks": null,
-      "person_classification": "Victim",
-      "uid": "39d379c6c3f2440ca32410e27240c171",
-      "weight_min": 132,
-      "poster_classification": "information",
-      "languages": null,
-      "hair": "brown",
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image",
-          "large": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Murder Victim\r\nTraverse City, Michigan\r\nJuly 5, 2013",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "132 pounds",
-      "path": "/wanted/seeking-info/kelly-boyce-hurlbert",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": [
-        "January 30, 1984"
-      ],
-      "details": "<p>On July 5, 2013, shortly before 2:00 a.m., Kelly Boyce-Hurlbert was riding her bicycle on the 600 block of Washington Street, Traverse City, Michigan, when she was struck and killed by an unknown vehicle.  </p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:16:52+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/download.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": 132,
-      "url": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert",
-      "coordinates": [],
-      "hair_raw": "Brown",
-      "eyes_raw": "Blue",
-      "nationality": null,
-      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of the person responsible for Boyce-Hurlbert's death.",
-      "eyes": "blue",
-      "place_of_birth": "Michigan",
-      "pathId": "https://api.fbi.gov/@wanted-person/39d379c6c3f2440ca32410e27240c171"
-    },
-    {
       "race": "asian",
       "occupations": [
         "Engineer"
@@ -36723,6 +36643,86 @@
       "eyes": null,
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/8fec8d2b90ef48789a8bc223effa6e1f"
+    },
+    {
+      "race": "white",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "Seeking Information"
+      ],
+      "field_offices": [
+        "detroit"
+      ],
+      "suspects": null,
+      "title": "KELLY BOYCE-HURLBERT",
+      "publication": "2018-06-20T11:19:00",
+      "warning_message": null,
+      "height_min": 62,
+      "legat_names": null,
+      "height_max": 62,
+      "complexion": null,
+      "sex": "Female",
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": "White",
+      "scars_and_marks": null,
+      "person_classification": "Victim",
+      "uid": "39d379c6c3f2440ca32410e27240c171",
+      "weight_min": 132,
+      "poster_classification": "information",
+      "languages": null,
+      "hair": "brown",
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/kelly-boyce-hurlbert-pic-3.jpg/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Murder Victim\r\nTraverse City, Michigan\r\nJuly 5, 2013",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "132 pounds",
+      "path": "/wanted/seeking-info/kelly-boyce-hurlbert",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "January 30, 1984"
+      ],
+      "details": "<p>On July 5, 2013, shortly before 2:00 a.m., Kelly Boyce-Hurlbert was riding her bicycle on the 600 block of Washington Street, Traverse City, Michigan, when she was struck and killed by an unknown vehicle.  </p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:16:52+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert/download.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": 132,
+      "url": "https://www.fbi.gov/wanted/seeking-info/kelly-boyce-hurlbert",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "eyes_raw": "Blue",
+      "nationality": null,
+      "reward_text": "The FBI is offering a reward of up to $25,000 for information leading to the arrest and conviction of the person responsible for Boyce-Hurlbert's death.",
+      "eyes": "blue",
+      "place_of_birth": "Michigan",
+      "pathId": "https://api.fbi.gov/@wanted-person/39d379c6c3f2440ca32410e27240c171"
     },
     {
       "race": "white",
@@ -37840,90 +37840,6 @@
     },
     {
       "race": "white",
-      "occupations": [
-        "Paula Ann Wade was working for Sam's Club at the time of her disappearance."
-      ],
-      "possible_countries": null,
-      "subjects": [
-        "Kidnappings and Missing Persons"
-      ],
-      "field_offices": [
-        "atlanta"
-      ],
-      "suspects": null,
-      "title": "PAULA ANN WADE",
-      "publication": "2023-08-16T12:33:00",
-      "warning_message": null,
-      "height_min": 67,
-      "legat_names": null,
-      "height_max": 67,
-      "complexion": null,
-      "sex": "Female",
-      "build": null,
-      "remarks": "<p>Paula Ann Wade may be wearing corrective lenses or glasses. She also uses an inhaler for asthma. </p>",
-      "caution": null,
-      "race_raw": "White",
-      "scars_and_marks": "Paula Ann Wade has a birthmark on the upper part of one of her legs. Her top canine teeth protrude in front of her other top teeth.",
-      "person_classification": "Main",
-      "uid": "357791ddd4a04f6392beee551cf36d74",
-      "weight_min": 150,
-      "poster_classification": "missing",
-      "languages": null,
-      "hair": "brown",
-      "aliases": [
-        "Paula Ann McGrath"
-      ],
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image",
-          "large": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image/large"
-        },
-        {
-          "caption": "Photograph age-progressed to 45 years old",
-          "thumb": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png",
-          "large": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "October 14, 2002\r\nValdosta, Georgia",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "150 pounds",
-      "path": "/wanted/kidnap/paula-ann-wade",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": [
-        "October 30, 1976"
-      ],
-      "details": "<p>The FBI's Atlanta Field Office and the Valdosta Police Department in Georgia are asking for the public's assistance in locating Paula Ann Wade and her son <a href=\"https://www.fbi.gov/wanted/kidnap/brandon-lee-wade\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/kidnap/brandon-lee-wade\">Brandon Lee Wade</a>. Paula and Brandon were reported missing on October 14, 2002, after Paula failed to report to work at Sam's Club in Valdosta, Georgia. </p>\r\n<p> </p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:16:39+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/download.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": 150,
-      "url": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade",
-      "coordinates": [],
-      "hair_raw": "Brown",
-      "eyes_raw": "Brown",
-      "nationality": null,
-      "reward_text": null,
-      "eyes": "brown",
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/357791ddd4a04f6392beee551cf36d74"
-    },
-    {
-      "race": "white",
       "occupations": null,
       "possible_countries": null,
       "subjects": [
@@ -38013,6 +37929,90 @@
       "eyes": "blue",
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/5b9f9e6ffd3a44e1815a404b254f2a43"
+    },
+    {
+      "race": "white",
+      "occupations": [
+        "Paula Ann Wade was working for Sam's Club at the time of her disappearance."
+      ],
+      "possible_countries": null,
+      "subjects": [
+        "Kidnappings and Missing Persons"
+      ],
+      "field_offices": [
+        "atlanta"
+      ],
+      "suspects": null,
+      "title": "PAULA ANN WADE",
+      "publication": "2023-08-16T12:33:00",
+      "warning_message": null,
+      "height_min": 67,
+      "legat_names": null,
+      "height_max": 67,
+      "complexion": null,
+      "sex": "Female",
+      "build": null,
+      "remarks": "<p>Paula Ann Wade may be wearing corrective lenses or glasses. She also uses an inhaler for asthma. </p>",
+      "caution": null,
+      "race_raw": "White",
+      "scars_and_marks": "Paula Ann Wade has a birthmark on the upper part of one of her legs. Her top canine teeth protrude in front of her other top teeth.",
+      "person_classification": "Main",
+      "uid": "357791ddd4a04f6392beee551cf36d74",
+      "weight_min": 150,
+      "poster_classification": "missing",
+      "languages": null,
+      "hair": "brown",
+      "aliases": [
+        "Paula Ann McGrath"
+      ],
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image",
+          "large": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/@@images/image/large"
+        },
+        {
+          "caption": "Photograph age-progressed to 45 years old",
+          "thumb": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png",
+          "large": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/paulawadeageprogressed.png/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "October 14, 2002\r\nValdosta, Georgia",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "150 pounds",
+      "path": "/wanted/kidnap/paula-ann-wade",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "October 30, 1976"
+      ],
+      "details": "<p>The FBI's Atlanta Field Office and the Valdosta Police Department in Georgia are asking for the public's assistance in locating Paula Ann Wade and her son <a href=\"https://www.fbi.gov/wanted/kidnap/brandon-lee-wade\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/kidnap/brandon-lee-wade\">Brandon Lee Wade</a>. Paula and Brandon were reported missing on October 14, 2002, after Paula failed to report to work at Sam's Club in Valdosta, Georgia. </p>\r\n<p> </p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:16:39+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade/download.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": 150,
+      "url": "https://www.fbi.gov/wanted/kidnap/paula-ann-wade",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "eyes_raw": "Brown",
+      "nationality": null,
+      "reward_text": null,
+      "eyes": "brown",
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/357791ddd4a04f6392beee551cf36d74"
     },
     {
       "race": null,
@@ -42705,11 +42705,11 @@
         "Seeking Information"
       ],
       "field_offices": [
-        "chicago"
+        "newyork"
       ],
       "suspects": null,
-      "title": "ASSAULTS ON FEDERAL OFFICERS AND DAMAGE TO GOVERNMENT PROPERTY",
-      "publication": "2025-10-06T11:58:00",
+      "title": "ANA DELVALLE AND BASIL GRAY",
+      "publication": "2022-02-25T06:51:00",
       "warning_message": null,
       "height_min": null,
       "legat_names": null,
@@ -42722,7 +42722,7 @@
       "race_raw": null,
       "scars_and_marks": null,
       "person_classification": "Main",
-      "uid": "9ec0a2e5a0d4465dbbd1af2560186385",
+      "uid": "88c678268371426d9bcaa307ca8df4d2",
       "weight_min": null,
       "poster_classification": "information",
       "languages": null,
@@ -42730,35 +42730,29 @@
       "aliases": null,
       "images": [
         {
-          "caption": "Incident at 3900 block of S. Kedzie",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/@@images/image",
-          "large": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/@@images/image/large"
+          "caption": "Ana Delvalle",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray1.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray1.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray1.jpg/@@images/image/large"
         },
         {
-          "caption": "Subject's Vehicle - Incident at 3700 block of S. Kedzie",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago1.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago1.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago1.jpg/@@images/image/large"
-        },
-        {
-          "caption": "Subject's Vehicle - Incident at 3700 block of S. Kedzie",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago2.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago2.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/chicago2.jpg/@@images/image/large"
+          "caption": "Basil Gray",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray2.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegray2.jpg/@@images/image/large"
         }
       ],
       "reward_min": 0,
       "status": "na",
-      "description": "Chicago, Illinois\r\nOctober 4, 2025",
+      "description": "Homicide Victims\r\nBrooklyn, New York\r\nMay 2018",
       "additional_information": null,
       "reward_max": 0,
       "weight": null,
-      "path": "/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property",
+      "path": "/wanted/seeking-info/ana-delvalle-and-basil-gray",
       "locations": null,
       "ncic": null,
       "dates_of_birth_used": null,
-      "details": "<p>The Federal Bureau of Investigation's Chicago Field Office and the Bureau of Alcohol, Tobacco, Firearms, and Explosives in Chicago, Illinois, are seeking the public's assistance with information regarding those responsible for the two assaults on federal officers and damage to government property on October 4, 2025, in Chicago, Illinois. </p>\r\n<p> </p>\r\n<p>At approximately 10:30 a.m., multiple vehicles were allegedly involved in impeding and attempting to box in U.S. Customs and Border Protection officers in a vehicle chase in the 3900 block of S. Kedzie, Chicago, Illinois. The drivers of two of the vehicles have been apprehended.</p>\r\n<p> </p>\r\n<p><br />At approximately 12:00 p.m., a black Chevy Tahoe, Illinois license plate EM 62829, allegedly rammed a U.S. Immigration and Customs Enforcement vehicle repeatedly in the 3700 block of S. Kedzie, Chicago, Illinois. The driver of the Tahoe is currently at-large.</p>\r\n<p> </p>\r\n<p>The public is encouraged to share any personal videos or photographs of the incidents to <a href=\"https://tips.fbi.gov/digitalmedia/5600e4723a5d75d\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://tips.fbi.gov/digitalmedia/5600e4723a5d75d\">www.fbi.gov/chicagoafo</a></p>",
+      "details": "<p>The Federal Bureau of Investigation's New York/NYPD Metro Safe Streets Task Force is asking for the public’s assistance in solving the murders of Ana Delvalle and Basil Gray in their homes at 140 Moore Street, in Brooklyn, New York, in 2018. </p>\r\n<p> </p>\r\n<p>Family members discovered Ana Delvalle dead in her apartment on May 11, 2018. Basil Gray was found in the apartment next door to Ms. Delvalle a few days after, on May 13, 2018. Both had been shot and killed. Investigators believe the murders may be connected. </p>\r\n<p> </p>",
       "age_min": null,
       "age_range": null,
       "possible_states": null,
@@ -42766,20 +42760,24 @@
       "age_max": null,
       "files": [
         {
-          "url": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property/download.pdf",
+          "url": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/download.pdf",
           "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray/delvallegrayspanish.pdf/@@download/file/delvallegrayspanish.pdf",
+          "name": "EN ESPAOL"
         }
       ],
       "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/seeking-info/assaults-on-federal-officers-and-damage-to-government-property",
+      "url": "https://www.fbi.gov/wanted/seeking-info/ana-delvalle-and-basil-gray",
       "coordinates": [],
       "hair_raw": null,
       "eyes_raw": null,
       "nationality": null,
-      "reward_text": "The FBI and ATF are offering a combined reward of up to $50,000 for information leading to the arrest and conviction of those who aided, abetted, or conspired, whether through funding, coordination, planning, or other means, in the two incidents.",
+      "reward_text": "The FBI is offering a reward of up to $50,000 for information that leads to an arrest in this case.",
       "eyes": null,
       "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/9ec0a2e5a0d4465dbbd1af2560186385"
+      "pathId": "https://api.fbi.gov/@wanted-person/88c678268371426d9bcaa307ca8df4d2"
     },
     {
       "race": null,
@@ -43411,103 +43409,6 @@
       "pathId": "https://api.fbi.gov/@wanted-person/aab56d9dbbc44e71a2176b69ae95c9fd"
     },
     {
-      "race": "asian",
-      "occupations": [
-        "IT Worker"
-      ],
-      "possible_countries": null,
-      "subjects": [
-        "Cyber's Most Wanted"
-      ],
-      "field_offices": [
-        "stlouis"
-      ],
-      "suspects": null,
-      "title": "JONG KYONG CHOL",
-      "publication": "2024-11-12T13:40:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Jong Kyong Chol has ties to or may visit China.</p>",
-      "caution": "<p>Jong Kyong Chol is wanted for his alleged involvement in a <a href=\"https://www.fbi.gov/wanted/cyber/dprk-it-workers\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/dprk-it-workers\">conspiracy</a> to generate revenue and launder it for the North Korean regime from approximately April 2017 to approximately March 2023 in violation of United States and international sanctions.</p>\r\n<p> </p>\r\n<p>A federal arrest warrant was issued for Jong Kyong Chol in the United States District Court, Eastern District of Missouri, Eastern Division, St. Louis, Missouri, in December 2024.</p>",
-      "race_raw": "Asian",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "9850b1c338324eaaa9fa77504def2df4",
-      "weight_min": null,
-      "poster_classification": "default",
-      "languages": [
-        "Korean",
-        "English"
-      ],
-      "hair": "black",
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image",
-          "large": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png",
-          "large": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Conspiracy to Violate the International Emergency Economic Powers Act; Conspiracy to Commit Wire Fraud; Money Laundering Conspiracy; Conspiracy to Commit Identity Theft; Aggravated Identity Theft",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/cyber/jong-kyong-chol",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": [
-        "November 2, 1987"
-      ],
-      "details": null,
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:13:56+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/download.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-chinese-simplified-final.pdf/@@download/file/jong-kyong-chol.Chinese.simplified.final.pdf",
-          "name": " Chinese (Simplified)"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-chinese-traditional-final.pdf/@@download/file/jong-kyong-chol.Chinese.traditional.final.pdf",
-          "name": " Chinese (Traditional)"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-korean-final.pdf/@@download/file/jong-kyong-chol.Korean.final.pdf",
-          "name": ""
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol",
-      "coordinates": [],
-      "hair_raw": "Black",
-      "eyes_raw": "Brown",
-      "nationality": "North Korean",
-      "reward_text": "The Rewards For Justice Program, United States Department of State, is offering a reward of up to $5 million for information that leads to the disruption of financial mechanisms of persons engaged in certain activities that support North Korea (Democratic People's Republic of Korea, DPRK), including the exportation of workers from North Korea to generate revenue, money laundering, and specified cyber activity and actions that support North Korea's weapons of mass destruction proliferation.",
-      "eyes": "brown",
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/9850b1c338324eaaa9fa77504def2df4"
-    },
-    {
       "race": null,
       "occupations": null,
       "possible_countries": null,
@@ -43604,6 +43505,103 @@
       "eyes": "brown",
       "place_of_birth": "Pranpura, Haryana, India",
       "pathId": "https://api.fbi.gov/@wanted-person/5e744d158f9b4665b5d6bf4b8cfc778b"
+    },
+    {
+      "race": "asian",
+      "occupations": [
+        "IT Worker"
+      ],
+      "possible_countries": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "field_offices": [
+        "stlouis"
+      ],
+      "suspects": null,
+      "title": "JONG KYONG CHOL",
+      "publication": "2024-11-12T13:40:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Jong Kyong Chol has ties to or may visit China.</p>",
+      "caution": "<p>Jong Kyong Chol is wanted for his alleged involvement in a <a href=\"https://www.fbi.gov/wanted/cyber/dprk-it-workers\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/cyber/dprk-it-workers\">conspiracy</a> to generate revenue and launder it for the North Korean regime from approximately April 2017 to approximately March 2023 in violation of United States and international sanctions.</p>\r\n<p> </p>\r\n<p>A federal arrest warrant was issued for Jong Kyong Chol in the United States District Court, Eastern District of Missouri, Eastern Division, St. Louis, Missouri, in December 2024.</p>",
+      "race_raw": "Asian",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "9850b1c338324eaaa9fa77504def2df4",
+      "weight_min": null,
+      "poster_classification": "default",
+      "languages": [
+        "Korean",
+        "English"
+      ],
+      "hair": "black",
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png",
+          "large": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol2.png/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Conspiracy to Violate the International Emergency Economic Powers Act; Conspiracy to Commit Wire Fraud; Money Laundering Conspiracy; Conspiracy to Commit Identity Theft; Aggravated Identity Theft",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/cyber/jong-kyong-chol",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": [
+        "November 2, 1987"
+      ],
+      "details": null,
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:13:56+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/download.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-chinese-simplified-final.pdf/@@download/file/jong-kyong-chol.Chinese.simplified.final.pdf",
+          "name": " Chinese (Simplified)"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-chinese-traditional-final.pdf/@@download/file/jong-kyong-chol.Chinese.traditional.final.pdf",
+          "name": " Chinese (Traditional)"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol/jong-kyong-chol-korean-final.pdf/@@download/file/jong-kyong-chol.Korean.final.pdf",
+          "name": ""
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/cyber/jong-kyong-chol",
+      "coordinates": [],
+      "hair_raw": "Black",
+      "eyes_raw": "Brown",
+      "nationality": "North Korean",
+      "reward_text": "The Rewards For Justice Program, United States Department of State, is offering a reward of up to $5 million for information that leads to the disruption of financial mechanisms of persons engaged in certain activities that support North Korea (Democratic People's Republic of Korea, DPRK), including the exportation of workers from North Korea to generate revenue, money laundering, and specified cyber activity and actions that support North Korea's weapons of mass destruction proliferation.",
+      "eyes": "brown",
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/9850b1c338324eaaa9fa77504def2df4"
     },
     {
       "race": null,
@@ -45370,76 +45368,6 @@
       ],
       "field_offices": null,
       "suspects": null,
-      "title": "ROBERT DESHAWN CHILDERS - FLORENCE, ALABAMA",
-      "publication": "2020-10-15T06:08:00",
-      "warning_message": null,
-      "height_min": 74,
-      "legat_names": null,
-      "height_max": 74,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Childers walks with a limp.</p>",
-      "caution": null,
-      "race_raw": "White",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "b477b2f3b2984a14ad90b64612e3f2a8",
-      "weight_min": 240,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": "gray",
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image",
-          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Florence, Alabama\r\nSeptember 17, 2016",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "240 pounds",
-      "path": "/wanted/vicap/missing-persons/robert-deshawn-childers",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>On September 17, 2016, Robert Childers left his residence near Highway 141 in Florence, Alabama, between 9:00 AM and 12:00 PM. According to his roommate, Childers locked his truck and walked down the road, giving no indication where he was going. He was wearing blue jeans, a long-sleeve green shirt and brown cowboy boots. Mr. Childers has not been seen or heard from since. He reportedly had little or no money when he last left home. Childers was an alcoholic and very depressed at the time of his disappearance. He did not take his medication with him. Friends are worried that he may be disoriented. Foul play is suspected. Childers is known to walk with a limp and his cervical vertebra are fused together.</p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:13:33+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/vicap-miissing-childers-_10-6-2020.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": 240,
-      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers",
-      "coordinates": [],
-      "hair_raw": "Gray",
-      "eyes_raw": "Blue",
-      "nationality": null,
-      "reward_text": null,
-      "eyes": "blue",
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/b477b2f3b2984a14ad90b64612e3f2a8"
-    },
-    {
-      "race": "white",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ViCAP Missing Persons"
-      ],
-      "field_offices": null,
-      "suspects": null,
       "title": "HELENA ANN NEGRETE – LITTLE LAKE, MICHIGAN",
       "publication": "2021-11-17T07:13:00",
       "warning_message": null,
@@ -45502,6 +45430,76 @@
       "eyes": "blue",
       "place_of_birth": null,
       "pathId": "https://api.fbi.gov/@wanted-person/716ef7e577074b6088d5b2d95f38ad4d"
+    },
+    {
+      "race": "white",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "ROBERT DESHAWN CHILDERS - FLORENCE, ALABAMA",
+      "publication": "2020-10-15T06:08:00",
+      "warning_message": null,
+      "height_min": 74,
+      "legat_names": null,
+      "height_max": 74,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Childers walks with a limp.</p>",
+      "caution": null,
+      "race_raw": "White",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "b477b2f3b2984a14ad90b64612e3f2a8",
+      "weight_min": 240,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": "gray",
+      "aliases": null,
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Florence, Alabama\r\nSeptember 17, 2016",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "240 pounds",
+      "path": "/wanted/vicap/missing-persons/robert-deshawn-childers",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>On September 17, 2016, Robert Childers left his residence near Highway 141 in Florence, Alabama, between 9:00 AM and 12:00 PM. According to his roommate, Childers locked his truck and walked down the road, giving no indication where he was going. He was wearing blue jeans, a long-sleeve green shirt and brown cowboy boots. Mr. Childers has not been seen or heard from since. He reportedly had little or no money when he last left home. Childers was an alcoholic and very depressed at the time of his disappearance. He did not take his medication with him. Friends are worried that he may be disoriented. Foul play is suspected. Childers is known to walk with a limp and his cervical vertebra are fused together.</p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:13:33+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers/vicap-miissing-childers-_10-6-2020.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": 240,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/robert-deshawn-childers",
+      "coordinates": [],
+      "hair_raw": "Gray",
+      "eyes_raw": "Blue",
+      "nationality": null,
+      "reward_text": null,
+      "eyes": "blue",
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/b477b2f3b2984a14ad90b64612e3f2a8"
     },
     {
       "race": null,
@@ -45668,86 +45666,6 @@
       ],
       "field_offices": null,
       "suspects": null,
-      "title": "ALEKSEY ALEKSANDROVICH POTEMKIN",
-      "publication": "2018-09-18T09:37:00",
-      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS, AN INTERNATIONAL FLIGHT RISK, AND AN ESCAPE RISK",
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": "<p>Potemkin is alleged to have been a Russian military intelligence officer assigned as a supervisor in Unit 74455.  Potemkin was last known to be located in Moscow, Russia.</p>",
-      "caution": null,
-      "race_raw": "White",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "5ab231b51f9841d589ae05c3a19bbd6a",
-      "weight_min": null,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": "brown",
-      "aliases": [
-        "Потемкин Алексей Александрович"
-      ],
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image",
-          "large": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Conspiracy to Commit an Offense Against the United States; False Registration of a Domain Name; Aggravated Identity Theft; Conspiracy to Commit Money Laundering",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/cyber/aleksey-aleksandrovich-potemkin",
-      "locations": null,
-      "ncic": "W704346036",
-      "dates_of_birth_used": [
-        "March 20, 1983"
-      ],
-      "details": "<p>On July 13, 2018, a federal grand jury sitting in the District of Columbia returned an indictment against 12 Russian military intelligence officers for their alleged roles in <a href=\"https://www.fbi.gov/wanted/cyber/russian-interference-in-2016-u-s-elections\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/russian-interference-in-2016-u-s-elections\" data-linktype=\"external\">interfering with the 2016 United States (U.S.) elections</a>.  The indictment charges 11 defendants, Aleksey Aleksandrovich Potemkin, <a href=\"https://www.fbi.gov/wanted/cyber/sergey-aleksandrovich-morgachev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/sergey-aleksandrovich-morgachev\" data-linktype=\"external\">Sergey Aleksandrovich Morgachev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/artem-andreyevich-malyshev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/artem-andreyevich-malyshev\" data-linktype=\"external\">Artem Andreyevich Malyshev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/aleksey-viktorovich-lukashev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksey-viktorovich-lukashev\" data-linktype=\"external\">Aleksey Viktorovich Lukashev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/boris-alekseyevich-antonov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/boris-alekseyevich-antonov\" data-linktype=\"external\">Boris Alekseyevich Antonov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/dmitriy-sergeyevich-badin\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/dmitriy-sergeyevich-badin\" data-linktype=\"external\">Dmitriy Sergeyevich Badin</a>, <a href=\"https://www.fbi.gov/wanted/cyber/ivan-sergeyevich-yermakov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/ivan-sergeyevich-yermakov\" data-linktype=\"external\">Ivan Sergeyevich Yermakov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/nikolay-yuryevich-kozachek\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/nikolay-yuryevich-kozachek\" data-linktype=\"external\">Nikolay Yuryevich Kozachek</a>, <a href=\"https://www.fbi.gov/wanted/cyber/pavel-vyacheslavovich-yershov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/pavel-vyacheslavovich-yershov\" data-linktype=\"external\">Pavel Vyacheslavovich Yershov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-linktype=\"external\">Aleksandr Vladimirovich Osadchuk</a>, and Viktor Borisovich Netyksho, with a computer hacking conspiracy involving gaining unauthorized access into the computers of U.S. persons and entities involved in the 2016 U.S. presidential election, stealing documents from those computers, and staging releases of the stolen documents to interfere with the 2016 U.S. presidential election.  The indictment also charges these defendants with aggravated identity theft, false registration of a domain name, and conspiracy to commit money laundering.  Two defendants, <a href=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-linktype=\"external\">Aleksandr Vladimirovich Osadchuk </a>and <a href=\"https://www.fbi.gov/wanted/cyber/anatoliy-sergeyevich-kovalev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/anatoliy-sergeyevich-kovalev\" data-linktype=\"external\">Anatoliy Sergeyevich Kovalev</a>, are charged with a separate conspiracy to commit computer crimes, relating to hacking into the computers of U.S. persons and entities responsible for the administration of 2016 U.S. elections, such as state boards of elections, secretaries of state, and U.S. companies that supplied software and other technology related to the administration of U.S. elections.  The United States District Court for the District of Columbia in Washington, D.C. issued a federal arrest warrant for Aleksey Aleksandrovich Potemkin upon the grand jury’s return of the indictment.</p>\r\n<p> </p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:13:28+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/aleksey-aleksandrovich-potemkin-8-5x11.pdf",
-          "name": "English"
-        },
-        {
-          "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/potemkinrussian.pdf/@@download/file/potemkinrussian.pdf",
-          "name": " "
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin",
-      "coordinates": [],
-      "hair_raw": "Brown",
-      "eyes_raw": "Blue",
-      "nationality": "Russian",
-      "reward_text": null,
-      "eyes": "blue",
-      "place_of_birth": "Russia",
-      "pathId": "https://api.fbi.gov/@wanted-person/5ab231b51f9841d589ae05c3a19bbd6a"
-    },
-    {
-      "race": "white",
-      "occupations": [
-        "Officer in the Russian Federation’s Main Intelligence Directorate of the General Staff (GRU)"
-      ],
-      "possible_countries": null,
-      "subjects": [
-        "Cyber's Most Wanted"
-      ],
-      "field_offices": null,
-      "suspects": null,
       "title": "IVAN SERGEYEVICH YERMAKOV",
       "publication": "2018-09-20T08:13:00",
       "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS, AN INTERNATIONAL FLIGHT RISK, AND AN ESCAPE RISK",
@@ -45820,6 +45738,86 @@
       "eyes": "brown",
       "place_of_birth": "Chelyabinskaya Oblast, Russia",
       "pathId": "https://api.fbi.gov/@wanted-person/a3f70fd05e6e435cbb7ebe1d9201524e"
+    },
+    {
+      "race": "white",
+      "occupations": [
+        "Officer in the Russian Federation’s Main Intelligence Directorate of the General Staff (GRU)"
+      ],
+      "possible_countries": null,
+      "subjects": [
+        "Cyber's Most Wanted"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "ALEKSEY ALEKSANDROVICH POTEMKIN",
+      "publication": "2018-09-18T09:37:00",
+      "warning_message": "SHOULD BE CONSIDERED ARMED AND DANGEROUS, AN INTERNATIONAL FLIGHT RISK, AND AN ESCAPE RISK",
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": "<p>Potemkin is alleged to have been a Russian military intelligence officer assigned as a supervisor in Unit 74455.  Potemkin was last known to be located in Moscow, Russia.</p>",
+      "caution": null,
+      "race_raw": "White",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "5ab231b51f9841d589ae05c3a19bbd6a",
+      "weight_min": null,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": "brown",
+      "aliases": [
+        "Потемкин Алексей Александрович"
+      ],
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image",
+          "large": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Conspiracy to Commit an Offense Against the United States; False Registration of a Domain Name; Aggravated Identity Theft; Conspiracy to Commit Money Laundering",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/cyber/aleksey-aleksandrovich-potemkin",
+      "locations": null,
+      "ncic": "W704346036",
+      "dates_of_birth_used": [
+        "March 20, 1983"
+      ],
+      "details": "<p>On July 13, 2018, a federal grand jury sitting in the District of Columbia returned an indictment against 12 Russian military intelligence officers for their alleged roles in <a href=\"https://www.fbi.gov/wanted/cyber/russian-interference-in-2016-u-s-elections\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/russian-interference-in-2016-u-s-elections\" data-linktype=\"external\">interfering with the 2016 United States (U.S.) elections</a>.  The indictment charges 11 defendants, Aleksey Aleksandrovich Potemkin, <a href=\"https://www.fbi.gov/wanted/cyber/sergey-aleksandrovich-morgachev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/sergey-aleksandrovich-morgachev\" data-linktype=\"external\">Sergey Aleksandrovich Morgachev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/artem-andreyevich-malyshev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/artem-andreyevich-malyshev\" data-linktype=\"external\">Artem Andreyevich Malyshev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/aleksey-viktorovich-lukashev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksey-viktorovich-lukashev\" data-linktype=\"external\">Aleksey Viktorovich Lukashev</a>, <a href=\"https://www.fbi.gov/wanted/cyber/boris-alekseyevich-antonov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/boris-alekseyevich-antonov\" data-linktype=\"external\">Boris Alekseyevich Antonov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/dmitriy-sergeyevich-badin\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/dmitriy-sergeyevich-badin\" data-linktype=\"external\">Dmitriy Sergeyevich Badin</a>, <a href=\"https://www.fbi.gov/wanted/cyber/ivan-sergeyevich-yermakov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/ivan-sergeyevich-yermakov\" data-linktype=\"external\">Ivan Sergeyevich Yermakov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/nikolay-yuryevich-kozachek\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/nikolay-yuryevich-kozachek\" data-linktype=\"external\">Nikolay Yuryevich Kozachek</a>, <a href=\"https://www.fbi.gov/wanted/cyber/pavel-vyacheslavovich-yershov\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/pavel-vyacheslavovich-yershov\" data-linktype=\"external\">Pavel Vyacheslavovich Yershov</a>, <a href=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-linktype=\"external\">Aleksandr Vladimirovich Osadchuk</a>, and Viktor Borisovich Netyksho, with a computer hacking conspiracy involving gaining unauthorized access into the computers of U.S. persons and entities involved in the 2016 U.S. presidential election, stealing documents from those computers, and staging releases of the stolen documents to interfere with the 2016 U.S. presidential election.  The indictment also charges these defendants with aggravated identity theft, false registration of a domain name, and conspiracy to commit money laundering.  Two defendants, <a href=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/aleksandr-vladimirovich-osadchuk\" data-linktype=\"external\">Aleksandr Vladimirovich Osadchuk </a>and <a href=\"https://www.fbi.gov/wanted/cyber/anatoliy-sergeyevich-kovalev\" data-urltype=\"/view\" data-val=\"https://www.fbi.gov/wanted/cyber/anatoliy-sergeyevich-kovalev\" data-linktype=\"external\">Anatoliy Sergeyevich Kovalev</a>, are charged with a separate conspiracy to commit computer crimes, relating to hacking into the computers of U.S. persons and entities responsible for the administration of 2016 U.S. elections, such as state boards of elections, secretaries of state, and U.S. companies that supplied software and other technology related to the administration of U.S. elections.  The United States District Court for the District of Columbia in Washington, D.C. issued a federal arrest warrant for Aleksey Aleksandrovich Potemkin upon the grand jury’s return of the indictment.</p>\r\n<p> </p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:13:28+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/aleksey-aleksandrovich-potemkin-8-5x11.pdf",
+          "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin/potemkinrussian.pdf/@@download/file/potemkinrussian.pdf",
+          "name": " "
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/cyber/aleksey-aleksandrovich-potemkin",
+      "coordinates": [],
+      "hair_raw": "Brown",
+      "eyes_raw": "Blue",
+      "nationality": "Russian",
+      "reward_text": null,
+      "eyes": "blue",
+      "place_of_birth": "Russia",
+      "pathId": "https://api.fbi.gov/@wanted-person/5ab231b51f9841d589ae05c3a19bbd6a"
     },
     {
       "race": "native",
@@ -56849,90 +56847,6 @@
       "pathId": "https://api.fbi.gov/@wanted-person/edea47d1d61f4697b47d91e369a87f01"
     },
     {
-      "race": null,
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "Seeking Information"
-      ],
-      "field_offices": [
-        "portland"
-      ],
-      "suspects": null,
-      "title": "CIVIL UNREST - OREGON",
-      "publication": "2026-02-10T09:58:00",
-      "warning_message": null,
-      "height_min": null,
-      "legat_names": null,
-      "height_max": null,
-      "complexion": null,
-      "sex": null,
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": null,
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "604061113b0742898784103e18451b3d",
-      "weight_min": null,
-      "poster_classification": "information",
-      "languages": null,
-      "hair": null,
-      "aliases": null,
-      "images": [
-        {
-          "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image",
-          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg/@@images/image/large"
-        },
-        {
-          "caption": "",
-          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg",
-          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Unknown Suspect\r\nEugene, Oregon\r\nJanuary 30, 2026",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": null,
-      "path": "/wanted/seeking-info/civil-unrest-oregon-3",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>On January 30, 2026, 400 to 500 people participated in an anti-ICE protest at the Federal Building in Eugene, Oregon.  The protest turned into a riot in which the individuals broke windows, spray-painted federal property, and threw rocks at law enforcement officers.  The FBI seeks information that will lead to the identification of any individuals involved in the vandalism and/or destruction of government property.</p>\r\n<p> </p>\r\n<p>The unknown suspect shown above was seen in the area and is described as being White with dark hair.  The individual was wearing dark clothing, dark shoes with white soles, tape on the arms, and goggles.</p>",
-      "age_min": null,
-      "age_range": null,
-      "possible_states": null,
-      "modified": "2026-03-15T00:11:27+00:00",
-      "age_max": null,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/download.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": null,
-      "url": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3",
-      "coordinates": [],
-      "hair_raw": null,
-      "eyes_raw": null,
-      "nationality": null,
-      "reward_text": "The FBI is offering a reward of up to $5,000 for information leading to the arrest and conviction of the individuals involved in the vandalism and/or destruction of government property in Eugene, Oregon.",
-      "eyes": null,
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/604061113b0742898784103e18451b3d"
-    },
-    {
       "race": "asian",
       "occupations": [
         "Delegation Leader"
@@ -57030,57 +56944,144 @@
       "pathId": "https://api.fbi.gov/@wanted-person/9190f086d82d49049c0c55ec73b566bc"
     },
     {
-      "race": "white",
+      "race": null,
       "occupations": null,
       "possible_countries": null,
       "subjects": [
-        "Kidnappings and Missing Persons"
+        "Seeking Information"
       ],
       "field_offices": [
-        "pittsburgh"
+        "portland"
       ],
       "suspects": null,
-      "title": "GRETCHEN EVE FLEMING",
-      "publication": "2025-05-15T08:17:00",
+      "title": "CIVIL UNREST - OREGON",
+      "publication": "2026-02-10T09:58:00",
       "warning_message": null,
-      "height_min": 62,
+      "height_min": null,
       "legat_names": null,
-      "height_max": 62,
+      "height_max": null,
       "complexion": null,
-      "sex": "Female",
+      "sex": null,
       "build": null,
       "remarks": null,
       "caution": null,
-      "race_raw": "White",
+      "race_raw": null,
       "scars_and_marks": null,
       "person_classification": "Main",
-      "uid": "bc3df94013594894ae7880ad2a3483ad",
-      "weight_min": 125,
-      "poster_classification": "missing",
+      "uid": "604061113b0742898784103e18451b3d",
+      "weight_min": null,
+      "poster_classification": "information",
       "languages": null,
-      "hair": "brown",
+      "hair": null,
       "aliases": null,
       "images": [
         {
           "caption": null,
-          "thumb": "https://www.fbi.gov/wanted/kidnap/gretchen-eve-fleming/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/kidnap/gretchen-eve-fleming/@@images/image",
-          "large": "https://www.fbi.gov/wanted/kidnap/gretchen-eve-fleming/@@images/image/large"
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image",
+          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape2.jpg/@@images/image/large"
+        },
+        {
+          "caption": "",
+          "thumb": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg",
+          "large": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/portlandarmtape3.jpg/@@images/image/large"
         }
       ],
       "reward_min": 0,
       "status": "na",
-      "description": "December 12, 2022\r\nParkersburg, West Virginia",
+      "description": "Unknown Suspect\r\nEugene, Oregon\r\nJanuary 30, 2026",
       "additional_information": null,
       "reward_max": 0,
-      "weight": "125 pounds",
-      "path": "/wanted/kidnap/gretchen-eve-fleming",
+      "weight": null,
+      "path": "/wanted/seeking-info/civil-unrest-oregon-3",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>On January 30, 2026, 400 to 500 people participated in an anti-ICE protest at the Federal Building in Eugene, Oregon.  The protest turned into a riot in which the individuals broke windows, spray-painted federal property, and threw rocks at law enforcement officers.  The FBI seeks information that will lead to the identification of any individuals involved in the vandalism and/or destruction of government property.</p>\r\n<p> </p>\r\n<p>The unknown suspect shown above was seen in the area and is described as being White with dark hair.  The individual was wearing dark clothing, dark shoes with white soles, tape on the arms, and goggles.</p>",
+      "age_min": null,
+      "age_range": null,
+      "possible_states": null,
+      "modified": "2026-03-15T00:11:27+00:00",
+      "age_max": null,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3/download.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/seeking-info/civil-unrest-oregon-3",
+      "coordinates": [],
+      "hair_raw": null,
+      "eyes_raw": null,
+      "nationality": null,
+      "reward_text": "The FBI is offering a reward of up to $5,000 for information leading to the arrest and conviction of the individuals involved in the vandalism and/or destruction of government property in Eugene, Oregon.",
+      "eyes": null,
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/604061113b0742898784103e18451b3d"
+    },
+    {
+      "race": null,
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
+        "Seeking Information - Terrorism"
+      ],
+      "field_offices": [
+        "washingtondc"
+      ],
+      "suspects": null,
+      "title": "REZA AMIRI MOGHADAM",
+      "publication": "2025-05-14T11:57:00",
+      "warning_message": null,
+      "height_min": null,
+      "legat_names": null,
+      "height_max": null,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": null,
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "7a84a0f20f2648d6b956a02384e84f17",
+      "weight_min": null,
+      "poster_classification": "information",
+      "languages": null,
+      "hair": "black",
+      "aliases": [
+        "Ahmad Amirinia"
+      ],
+      "images": [
+        {
+          "caption": null,
+          "thumb": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/@@images/image",
+          "large": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": null,
+      "path": "/wanted/terrorinfo/reza-amiri-moghadam",
       "locations": null,
       "ncic": null,
       "dates_of_birth_used": [
-        "December 24, 1994"
+        "April 30, 1961",
+        "April 30, 1960"
       ],
-      "details": "<p>The Federal Bureau of Investigation's Pittsburgh Field Office and the Parkersburg Police Department in Wood County, West Virginia, are seeking assistance from the public to locate Gretchen Eve Fleming. </p>\r\n<p> </p>\r\n<p>Fleming was last seen leaving My Way Lounge in Parkersburg, West Virginia, in the early morning hours of December 4, 2022.</p>\r\n<p> </p>",
+      "details": "<p>Reza Amiri Moghadam, an official of Iran’s Ministry of Intelligence and Security (MOIS), is wanted for questioning based on his alleged involvement in the abduction, detention, and probable death of retired FBI Special Agent <a href=\"https://www.fbi.gov/wanted/kidnap/robert-a-levinson\" data-urltype=\"/view\" data-linktype=\"external\" data-val=\"https://www.fbi.gov/wanted/kidnap/robert-a-levinson\">Robert A. Levinson</a>, as well as Iran’s alleged efforts to cover up its responsibility.  Levinson traveled to Kish Island, Iran, on March 8, 2007, and has not been publicly seen or heard from since his disappearance the following day. In 2010 and 2011, a video and photographs were obtained showing Levinson in captivity. In March of 2025, the United States Department of the Treasury designated Moghadam and others for their involvement in the abduction, detention, and probable death. The FBI continues its investigation in order to identify more Iranian officials involved in Levinson’s abduction.</p>\r\n<p> </p>",
       "age_min": null,
       "age_range": null,
       "possible_states": null,
@@ -57088,20 +57089,40 @@
       "age_max": null,
       "files": [
         {
-          "url": "https://www.fbi.gov/wanted/kidnap/gretchen-eve-fleming/download.pdf",
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/download.pdf",
           "name": "English"
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/moghadamarabic.pdf/@@download/file/MoghadamArabic.pdf",
+          "name": " "
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/moghaddamfarsi.pdf/@@download/file/moghaddamFarsi.pdf",
+          "name": "  "
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/moghadamurdu.pdf/@@download/file/MoghadamUrdu.pdf",
+          "name": " "
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/moghaddampashto.pdf/@@download/file/moghaddamPashto.pdf",
+          "name": ""
+        },
+        {
+          "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam/moghadamturkish.pdf/@@download/file/MoghadamTurkish.pdf",
+          "name": "Trke'de"
         }
       ],
-      "weight_max": 125,
-      "url": "https://www.fbi.gov/wanted/kidnap/gretchen-eve-fleming",
+      "weight_max": null,
+      "url": "https://www.fbi.gov/wanted/terrorinfo/reza-amiri-moghadam",
       "coordinates": [],
-      "hair_raw": "Brown",
-      "eyes_raw": "Brown",
-      "nationality": "American",
+      "hair_raw": "Black",
+      "eyes_raw": null,
+      "nationality": "Iranian",
       "reward_text": null,
-      "eyes": "brown",
-      "place_of_birth": "Parkersburg, West Virginia",
-      "pathId": "https://api.fbi.gov/@wanted-person/bc3df94013594894ae7880ad2a3483ad"
+      "eyes": null,
+      "place_of_birth": "Iran",
+      "pathId": "https://api.fbi.gov/@wanted-person/7a84a0f20f2648d6b956a02384e84f17"
     },
     {
       "race": null,
@@ -60377,6 +60398,76 @@
       "occupations": null,
       "possible_countries": null,
       "subjects": [
+        "ViCAP Missing Persons"
+      ],
+      "field_offices": null,
+      "suspects": null,
+      "title": "JUAN MARTINEZ GONZALEZ - MIAMI, FLORIDA",
+      "publication": "2025-05-27T07:54:00",
+      "warning_message": null,
+      "height_min": 69,
+      "legat_names": null,
+      "height_max": 71,
+      "complexion": null,
+      "sex": "Male",
+      "build": null,
+      "remarks": null,
+      "caution": null,
+      "race_raw": "White (Hispanic)",
+      "scars_and_marks": null,
+      "person_classification": "Main",
+      "uid": "fe7ee0ca1de943c18823cbbd5b3d7f66",
+      "weight_min": 190,
+      "poster_classification": "default",
+      "languages": null,
+      "hair": "black",
+      "aliases": null,
+      "images": [
+        {
+          "caption": "Photograph taken approximately 2011",
+          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image/thumb",
+          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image",
+          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image/large"
+        }
+      ],
+      "reward_min": 0,
+      "status": "na",
+      "description": "Miami, Florida\r\nFebruary 11, 2012",
+      "additional_information": null,
+      "reward_max": 0,
+      "weight": "190 to 210 pounds",
+      "path": "/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida",
+      "locations": null,
+      "ncic": null,
+      "dates_of_birth_used": null,
+      "details": "<p>On February 11, 2012, Juan Martinez Gonzalez was last seen at a cafeteria and sports bar, located in the area of SW 192nd Street and Krome Avenue in Miami, Florida. He has not been seen or heard from since. He was driving a 1999 dark blue Ford F150 pickup truck, which had a light-colored tailgate that did not match the original dark blue paint. He sometimes wears a mustache or goatee. He is known to frequent the areas of Homestead, Miami Gardens, Kendall, and Hialeah (all in southern Florida).</p>\r\n<p> </p>\r\n<p>Anyone with information is asked to contact the Miami-Dade Sheriff’s Office.</p>",
+      "age_min": 45,
+      "age_range": "45 (at time of disappearance)",
+      "possible_states": null,
+      "modified": "2026-03-15T00:10:47+00:00",
+      "age_max": 45,
+      "files": [
+        {
+          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/2025-05-08-juanmartinezgonzalez.pdf",
+          "name": "English"
+        }
+      ],
+      "weight_max": 210,
+      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida",
+      "coordinates": [],
+      "hair_raw": "Black/Gray",
+      "eyes_raw": "Brown",
+      "nationality": null,
+      "reward_text": null,
+      "eyes": "brown",
+      "place_of_birth": null,
+      "pathId": "https://api.fbi.gov/@wanted-person/fe7ee0ca1de943c18823cbbd5b3d7f66"
+    },
+    {
+      "race": "hispanic",
+      "occupations": null,
+      "possible_countries": null,
+      "subjects": [
         "Kidnappings and Missing Persons"
       ],
       "field_offices": [
@@ -60461,76 +60552,6 @@
       "eyes": "brown",
       "place_of_birth": "Los Angeles, California",
       "pathId": "https://api.fbi.gov/@wanted-person/f150c3ca72c849a4a13f387adddf496c"
-    },
-    {
-      "race": "hispanic",
-      "occupations": null,
-      "possible_countries": null,
-      "subjects": [
-        "ViCAP Missing Persons"
-      ],
-      "field_offices": null,
-      "suspects": null,
-      "title": "JUAN MARTINEZ GONZALEZ - MIAMI, FLORIDA",
-      "publication": "2025-05-27T07:54:00",
-      "warning_message": null,
-      "height_min": 69,
-      "legat_names": null,
-      "height_max": 71,
-      "complexion": null,
-      "sex": "Male",
-      "build": null,
-      "remarks": null,
-      "caution": null,
-      "race_raw": "White (Hispanic)",
-      "scars_and_marks": null,
-      "person_classification": "Main",
-      "uid": "fe7ee0ca1de943c18823cbbd5b3d7f66",
-      "weight_min": 190,
-      "poster_classification": "default",
-      "languages": null,
-      "hair": "black",
-      "aliases": null,
-      "images": [
-        {
-          "caption": "Photograph taken approximately 2011",
-          "thumb": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image/thumb",
-          "original": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image",
-          "large": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/@@images/image/large"
-        }
-      ],
-      "reward_min": 0,
-      "status": "na",
-      "description": "Miami, Florida\r\nFebruary 11, 2012",
-      "additional_information": null,
-      "reward_max": 0,
-      "weight": "190 to 210 pounds",
-      "path": "/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida",
-      "locations": null,
-      "ncic": null,
-      "dates_of_birth_used": null,
-      "details": "<p>On February 11, 2012, Juan Martinez Gonzalez was last seen at a cafeteria and sports bar, located in the area of SW 192nd Street and Krome Avenue in Miami, Florida. He has not been seen or heard from since. He was driving a 1999 dark blue Ford F150 pickup truck, which had a light-colored tailgate that did not match the original dark blue paint. He sometimes wears a mustache or goatee. He is known to frequent the areas of Homestead, Miami Gardens, Kendall, and Hialeah (all in southern Florida).</p>\r\n<p> </p>\r\n<p>Anyone with information is asked to contact the Miami-Dade Sheriff’s Office.</p>",
-      "age_min": 45,
-      "age_range": "45 (at time of disappearance)",
-      "possible_states": null,
-      "modified": "2026-03-15T00:10:47+00:00",
-      "age_max": 45,
-      "files": [
-        {
-          "url": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida/2025-05-08-juanmartinezgonzalez.pdf",
-          "name": "English"
-        }
-      ],
-      "weight_max": 210,
-      "url": "https://www.fbi.gov/wanted/vicap/missing-persons/juan-martinez-gonzalez---miami-florida",
-      "coordinates": [],
-      "hair_raw": "Black/Gray",
-      "eyes_raw": "Brown",
-      "nationality": null,
-      "reward_text": null,
-      "eyes": "brown",
-      "place_of_birth": null,
-      "pathId": "https://api.fbi.gov/@wanted-person/fe7ee0ca1de943c18823cbbd5b3d7f66"
     },
     {
       "race": "black",
