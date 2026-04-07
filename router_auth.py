@@ -297,6 +297,14 @@ def get_user_by_reset_token(token: str) -> Optional[dict]:
             )
             return cur.fetchone()
 
+def get_beta_user_count() -> int:
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COUNT(*) FROM tbl_users WHERE is_beta_user = TRUE"
+            )
+            return cur.fetchone()[0]
+
 # ====================================================================
 # WEB PAGE ROUTES (Serve HTML)
 # ====================================================================
@@ -328,14 +336,20 @@ async def signup_page(request: Request):
     """Display signup form"""
     # Generate CAPTCHA token
     captcha_token, captcha_hash = generate_captcha_token()
-    
+
+    # In beta mode, check whether the beta cohort cap has been reached
+    beta_slots_full = False
+    if BETA_MODE:
+        beta_slots_full = get_beta_user_count() >= 100
+
     response = templates.TemplateResponse("auth/signup.html", {
         "request": request,
         "user_authenticated": request.state.user_authenticated,
         "user_email": request.state.user_email,
         "user_display_name": request.state.user_display_name,
         "user_role": request.state.user_role,
-        "captcha_token": captcha_token
+        "captcha_token": captcha_token,
+        "beta_slots_full": beta_slots_full
     })
     
     # Set CAPTCHA cookie
@@ -425,6 +439,13 @@ async def change_password_page(request: Request):
 async def register(request: Request, register_req: RegisterRequest):
     """Register new user - sends activation email"""
     try:
+        # In beta mode, enforce the 100-user cap before doing anything else
+        if BETA_MODE and get_beta_user_count() >= 100:
+            return RedirectResponse(
+                "/v1/auth/signup",
+                status_code=status.HTTP_303_SEE_OTHER
+            )
+
         # Validate CAPTCHA first
         if ( captcha_enforce):
             is_valid, error_message = validate_captcha(

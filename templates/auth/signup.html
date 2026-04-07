@@ -263,7 +263,25 @@
         <div class="text-center">
             <h2>Sign Up For {{ app_name }}</h2>
         </div>
-        
+
+        {% if beta_slots_full %}
+
+        <div style="text-align: center; padding: 30px 10px;">
+            <p style="font-size: 18px; font-weight: 600; color: #3d4461; margin-bottom: 16px;">
+                Beta Is Currently Full
+            </p>
+            <p style="font-size: 15px; color: #495057; line-height: 1.7; margin-bottom: 16px;">
+                We have reached the maximum number of qualified beta users for the time being.
+                Thank you for your interest in {{ app_name }}.
+            </p>
+            <p style="font-size: 15px; color: #495057; line-height: 1.7;">
+                If additional spots open up, the sign-up form will return here automatically.
+                Please check back soon.
+            </p>
+        </div>
+
+        {% else %}
+
         <form id="signupForm" method="POST" action="/v1/auth/register">
             <div class="form-group">
                 <label for="email">Email Address *</label>
@@ -330,6 +348,8 @@
                 Sign Up!
             </button>
         </form>
+
+        {% endif %}
         
         <div class="already-registered">
             Already signed up? <a href="/v1/auth/login">Log In</a>
