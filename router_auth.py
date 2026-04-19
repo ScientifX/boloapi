@@ -30,7 +30,9 @@ from utils_security import (
     is_valid_email,
     hash_password,
     verify_password,
-    validate_password_strength
+    validate_password_strength,
+    check_password_breached,
+    PASSWORD_MIN_LENGTH
     )
 from utils_jwt import create_access_token, resolve_display_name
 from utils_email import (
@@ -95,8 +97,8 @@ class LoginRequest(BaseModel):
 
 class SetPasswordRequest(BaseModel):
     user_id: str
-    password: str = Field(..., min_length=8)
-    password_confirm: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
+    password_confirm: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
     
     @field_validator('password')
     @classmethod
@@ -115,8 +117,8 @@ class SetPasswordRequest(BaseModel):
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
-    new_password: str = Field(..., min_length=8)
-    new_password_confirm: str = Field(..., min_length=8)
+    new_password: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
+    new_password_confirm: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
     
     @field_validator('new_password')
     @classmethod
@@ -147,8 +149,8 @@ class ForgotPasswordRequest(BaseModel):
 
 class ResetPasswordRequest(BaseModel):
     token: str
-    password: str = Field(..., min_length=8)
-    password_confirm: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
+    password_confirm: str = Field(..., min_length=PASSWORD_MIN_LENGTH)
     captcha_token: str = Field(..., description="CAPTCHA token")
     captcha_checked: bool = Field(..., description="CAPTCHA checkbox status")
     
@@ -176,7 +178,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int
     role: str
-    redirect_url: str
+    redirect_url: Optional[str] = None
 
 class ProfileUpdateRequest(BaseModel):
     email: Optional[str] = None
@@ -573,6 +575,24 @@ async def set_password(request: Request, password_req: SetPasswordRequest):
                 status.HTTP_400_BAD_REQUEST, "Invalid request"
             )
         
+        # Tier 1 re-check with email context (Pydantic validator ran without it)
+        is_valid, error = validate_password_strength(
+            password_req.password, email=user.get('email')
+        )
+        if not is_valid:
+            return render_error(
+                request, "auth/set_password_error.html",
+                status.HTTP_400_BAD_REQUEST, error
+            )
+        
+        # Tier 3 breach check (fails open on HIBP errors)
+        is_breached, breach_msg = await check_password_breached(password_req.password)
+        if is_breached:
+            return render_error(
+                request, "auth/set_password_error.html",
+                status.HTTP_400_BAD_REQUEST, breach_msg
+            )
+        
         password_hash = hash_password(password_req.password)
         
         with get_db_connection() as conn:
@@ -775,6 +795,24 @@ async def reset_password(request: Request, reset_req: ResetPasswordRequest):
                 status.HTTP_400_BAD_REQUEST, "Invalid or expired token"
             )
         
+        # Tier 1 re-check with email context (Pydantic validator ran without it)
+        is_valid, error = validate_password_strength(
+            reset_req.password, email=user.get('email')
+        )
+        if not is_valid:
+            return render_error(
+                request, "auth/reset_password_error.html",
+                status.HTTP_400_BAD_REQUEST, error
+            )
+        
+        # Tier 3 breach check (fails open on HIBP errors)
+        is_breached, breach_msg = await check_password_breached(reset_req.password)
+        if is_breached:
+            return render_error(
+                request, "auth/reset_password_error.html",
+                status.HTTP_400_BAD_REQUEST, breach_msg
+            )
+        
         password_hash = hash_password(reset_req.password)
         
         with get_db_connection() as conn:
@@ -820,6 +858,25 @@ async def change_password(
         
         if not verify_password(password_req.current_password, user['password_hash']):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Current password incorrect")
+        
+        # Reject re-use of the current password
+        if verify_password(password_req.new_password, user['password_hash']):
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "New password must be different from your current password"
+            )
+        
+        # Tier 1 re-check with email context (Pydantic validator ran without it)
+        is_valid, error = validate_password_strength(
+            password_req.new_password, email=user.get('email')
+        )
+        if not is_valid:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, error)
+        
+        # Tier 3 breach check (fails open on HIBP errors)
+        is_breached, breach_msg = await check_password_breached(password_req.new_password)
+        if is_breached:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, breach_msg)
         
         new_password_hash = hash_password(password_req.new_password)
         
@@ -1290,8 +1347,7 @@ async def get_token(request: Request, token_req: TokenRequest):
             access_token=access_token,
             token_type="bearer",
             expires_in=int(API_JWT_ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
-            role=user_role.value,
-            redirect_url="/v1/auth/profile"
+            role=user_role.value
         )
         
     except HTTPException:

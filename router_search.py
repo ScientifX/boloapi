@@ -590,7 +590,7 @@ class AdvancedSearchRequest(BaseModel):
         )
     limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
         default=25,
-        description="Maximum number of results to return (default: 25)"
+        description="Maximum number of results to return. Accepted values: 25, 50, 100, 250, 500, 5000. Default: 25."
         )
     
     @field_validator('groups')
@@ -777,7 +777,7 @@ class SimpleSearchRequest(BaseModel):
         )
     limit: Literal[25, 50, 100, 250, 500, 5000] = Field(
         default=25,
-        description="Maximum number of results to return (default: 25)"
+        description="Maximum number of results to return. Accepted values: 25, 50, 100, 250, 500, 5000. Default: 25."
         )
     rules: Literal["strict", "flex"] = "strict"
     
