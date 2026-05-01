@@ -91,6 +91,7 @@ DOCS_VISIBILITY_CONFIG = {
     ("GET", "/v1/search/category_top_reward"): UserRole.BASIC,
     ("GET", "/v1/search/category_top_ten"): UserRole.BASIC,
     ("GET", "/v1/search/top_terrorist"): UserRole.BASIC,
+    ("GET", "/v1/search/record"): UserRole.PREMIUM,
 }
 
 # Register all visibility overrides at startup

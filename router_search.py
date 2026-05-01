@@ -3041,6 +3041,234 @@ async def get_native_american(
             detail=f"Search error: {str(e)}"
         )
 
+# =============================================================================
+# PREMIUM ENDPOINT - RECORD LOOKUP BY ID
+# =============================================================================
+
+@router.get(
+    "/record",
+    tags=[TAG_SEARCH],
+    summary="Retrieve one or more individuals by UID",
+    description="""
+    Retrieve current records for one or more FBI wanted persons by their unique identifier (UID).
+
+    **Access:** PREMIUM subscription required
+
+    **Parameters:**
+    - `ids` - Required. One or more UIDs, comma-separated (e.g. `abc123` or `abc123,def456`)
+    - `include_history` - Optional. When `true`, returns all historical versions of each record ordered from most recent to oldest. Defaults to `false`.
+    - `format` - Optional. Response format. PREMIUM users may request `json`, `csv`, `txt`, or `xml`.
+
+    **Behavior:**
+    - When `include_history` is `false`, only the current active record for each UID is returned.
+    - When `include_history` is `true`, all versioned records for each UID are returned, including superseded and inactive versions.
+      Each item in the response includes a `history` array of version objects with `version_number`, `change_type`, `valid_from`, `valid_to`, and `data`.
+    - UIDs that are not found are reported in a `not_found` list in the response.
+    - Up to 50 UIDs may be requested per call.
+
+    **Example (single record):**
+    `/v1/search/record?ids=abc123`
+
+    **Example (multiple records with history):**
+    `/v1/search/record?ids=abc123,def456&include_history=true`
+    """,
+    response_description="Current or historical records for the requested UIDs"
+)
+@limiter.limit(rate_max)
+@track_search_analytics
+async def get_record_by_id(
+    request: Request,
+    ids: str = Query(
+        ...,
+        description="One or more FBI wanted person UIDs, comma-separated. Maximum 50 per request."
+    ),
+    include_history: bool = Query(
+        default=False,
+        description="When true, returns all historical versions of each record."
+    ),
+    format: ResponseFormatPremium = Query(
+        default=ResponseFormatPremium.JSON,
+        description="Response format: json, csv, txt, or xml"
+    ),
+    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+):
+    """Retrieve one or more FBI wanted persons by UID, with optional version history."""
+    current_role = current_user["role"]
+    billing_cycle = current_user.get("billing_cycle")
+
+    validate_format_access(current_role, format)
+    data_field = get_data_field_for_role(current_role)
+
+    # Parse and validate the ids parameter
+    raw_ids = [uid.strip() for uid in ids.split(",") if uid.strip()]
+    if not raw_ids:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The 'ids' parameter is required and must contain at least one UID."
+        )
+    if len(raw_ids) > 50:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"A maximum of 50 UIDs may be requested per call. {len(raw_ids)} were provided."
+        )
+
+    try:
+        items = []
+        not_found = []
+        data_type = "clean" if data_field == "full_data_clean" else "raw"
+
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+
+                if include_history:
+                    # Query all versions from the history view, grouped per UID.
+                    # Select view-level columns that are not inside the JSONB blob.
+                    cur.execute(
+                        f"""
+                        SELECT
+                            uid,
+                            version_number,
+                            change_type,
+                            valid_from,
+                            valid_to,
+                            source,
+                            was_captured,
+                            poster_url,
+                            first_seen_date,
+                            last_seen_date,
+                            {data_field}
+                        FROM base.vw_bolo_full_history
+                        WHERE uid = ANY(%s)
+                        ORDER BY uid, version_number DESC
+                        """,
+                        (raw_ids,)
+                    )
+                    rows = cur.fetchall()
+
+                    # Group rows by uid
+                    uid_versions: Dict[str, list] = {}
+                    for row in rows:
+                        uid = row["uid"]
+                        if uid not in uid_versions:
+                            uid_versions[uid] = []
+                        # Inject view-level columns into data dict so all formatters
+                        # can access them (they only read item["data"]).
+                        version_data = dict(row[data_field] or {})
+                        version_data["source"]          = row["source"]
+                        version_data["was_captured"]    = row["was_captured"]
+                        version_data["poster_url"]      = row["poster_url"]
+                        version_data["first_seen_date"] = str(row["first_seen_date"]) if row["first_seen_date"] else None
+                        version_data["last_seen_date"]  = str(row["last_seen_date"]) if row["last_seen_date"] else None
+                        uid_versions[uid].append({
+                            "version_number": row["version_number"],
+                            "change_type": row["change_type"],
+                            "valid_from": row["valid_from"].isoformat() if row["valid_from"] else None,
+                            "valid_to": row["valid_to"].isoformat() if row["valid_to"] else None,
+                            "data_type": data_type,
+                            "data": version_data
+                        })
+
+                    for uid in raw_ids:
+                        if uid in uid_versions:
+                            items.append({
+                                "uid": uid,
+                                "version_count": len(uid_versions[uid]),
+                                "history": uid_versions[uid]
+                            })
+                        else:
+                            not_found.append(uid)
+
+                else:
+                    # Query the most recent version of each UID regardless of active status.
+                    # Using vw_bolo_full_history with DISTINCT ON ensures a direct ID lookup
+                    # always returns the latest known record, even for captured or removed persons.
+                    # Select view-level columns that are not inside the JSONB blob.
+                    cur.execute(
+                        f"""
+                        SELECT DISTINCT ON (uid)
+                            uid,
+                            change_type,
+                            source,
+                            was_captured,
+                            poster_url,
+                            first_seen_date,
+                            last_seen_date,
+                            {data_field}
+                        FROM base.vw_bolo_full_history
+                        WHERE uid = ANY(%s)
+                        ORDER BY uid, version_number DESC
+                        """,
+                        (raw_ids,)
+                    )
+                    rows = cur.fetchall()
+
+                    found_uids = set()
+                    for row in rows:
+                        found_uids.add(row["uid"])
+                        # Inject view-level columns and _change_type into the data dict
+                        # so all formatters (which only read item["data"]) can access them.
+                        row_data = dict(row[data_field] or {})
+                        row_data["_change_type"]    = row["change_type"]
+                        row_data["source"]          = row["source"]
+                        row_data["was_captured"]    = row["was_captured"]
+                        row_data["poster_url"]      = row["poster_url"]
+                        row_data["first_seen_date"] = str(row["first_seen_date"]) if row["first_seen_date"] else None
+                        row_data["last_seen_date"]  = str(row["last_seen_date"]) if row["last_seen_date"] else None
+                        items.append({
+                            "uid": row["uid"],
+                            "change_type": row["change_type"],
+                            "data_type": data_type,
+                            "data": row_data
+                        })
+
+                    not_found = [uid for uid in raw_ids if uid not in found_uids]
+
+        result_dict = {
+            "query": {
+                "endpoint": "record",
+                "ids_requested": raw_ids,
+                "include_history": include_history
+            },
+            "role": current_role.value,
+            "resultcount": len(items),
+            "not_found": not_found,
+            "items": items
+        }
+        request.state.results_count = len(items)
+
+        # Non-JSON formatters (CSV, TXT, XML, Parquet) expect each item to have
+        # a top-level "data" key. When history is included, records are nested
+        # inside item["history"][n]["data"]. Flatten into individual items so
+        # the existing formatters work without modification.
+        format_value = format if isinstance(format, str) else format.value
+        if include_history and format_value != "json":
+            flat_items = []
+            for item in items:
+                for version in item.get("history", []):
+                    version_data = dict(version.get("data") or {})
+                    version_data["_version_number"] = version.get("version_number")
+                    version_data["_change_type"] = version.get("change_type")
+                    version_data["_valid_from"] = version.get("valid_from")
+                    version_data["_valid_to"] = version.get("valid_to")
+                    flat_items.append({
+                        "data_type": version.get("data_type", data_type),
+                        "data": version_data
+                    })
+            result_dict["items"] = flat_items
+            result_dict["resultcount"] = len(flat_items)
+
+        return format_response(result_dict, format, "bolo_record")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Record lookup error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Record lookup error: {str(e)}"
+        )
+
+
 @router.get(
     "/",
     tags=[TAG_SEARCH],
@@ -3054,7 +3282,8 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
         "version": "1.0.0",
         "endpoints": {
             "/simple": "Simple wildcard-based search (BASIC role or higher)",
-            "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)"
+            "/advanced": "Advanced search with grouped conditions (PREMIUM role or higher)",
+            "/record": "Retrieve one or more records by UID, with optional version history (PREMIUM role or higher)"
         },
         "classification_endpoints": {
             "description": "FBI wanted persons by classification category",

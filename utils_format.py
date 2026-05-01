@@ -246,8 +246,11 @@ def safe_get(data: Dict, key: str, default: Any = "") -> Any:
 
 # Define the columns to export in CSV (ordered)
 CSV_COLUMNS = [
+    # Identity
+    "uid",
     "title",
     "aliases",
+    # Demographics
     "sex",
     "race",
     "age_min",
@@ -263,6 +266,7 @@ CSV_COLUMNS = [
     "nationality",
     "place_of_birth",
     "languages",
+    # Narrative
     "caution",
     "warning_message",
     "reward_min",
@@ -271,22 +275,37 @@ CSV_COLUMNS = [
     "description",
     "details",
     "remarks",
+    # Classification and case
     "field_offices",
     "subjects",
     "poster_classification",
     "person_classification",
+    "source",
+    # Status
     "status",
+    "was_captured",
     "ncic",
+    # Additional identifiers
     "dates_of_birth_used",
     "occupations",
     "possible_countries",
     "possible_states",
     "locations",
+    # Dates
+    "first_seen_date",
+    "last_seen_date",
     "modified",
     "publication",
+    # Links
     "url",
+    "poster_url",
     "path",
     "pathid",
+    # Version context (populated only on history responses, blank otherwise)
+    "_version_number",
+    "_change_type",
+    "_valid_from",
+    "_valid_to",
 ]
 
 
@@ -364,8 +383,25 @@ def convert_to_txt(result_dict: Dict) -> str:
         lines.append("-" * 80)
         lines.append(f"RECORD {idx} of {count}")
         lines.append("-" * 80)
-        
+
+        # Version context (only present on history-flattened records)
+        version_num = safe_get(data, "_version_number", "")
+        change_type = safe_get(data, "_change_type", "")
+        valid_from  = safe_get(data, "_valid_from", "")
+        valid_to    = safe_get(data, "_valid_to", "")
+        if version_num or change_type:
+            lines.append(f"VERSION:            {version_num}")
+            lines.append(f"CHANGE TYPE:        {change_type}")
+            if valid_from:
+                lines.append(f"VALID FROM:         {valid_from}")
+            if valid_to:
+                lines.append(f"VALID TO:           {valid_to}")
+            lines.append("")
+
         # Name and aliases
+        uid = safe_get(data, "uid", "")
+        if uid:
+            lines.append(f"UID:                {uid}")
         title = safe_get(data, "title", "UNKNOWN")
         lines.append(f"NAME:               {title}")
         
@@ -378,6 +414,10 @@ def convert_to_txt(result_dict: Dict) -> str:
         if classification:
             readable_class = format_classification(classification)
             lines.append(f"CLASSIFICATION:     {readable_class}")
+        
+        source = safe_get(data, "source", "")
+        if source:
+            lines.append(f"SOURCE:             {source}")
         
         lines.append("")
         lines.append("DESCRIPTION:")
@@ -515,7 +555,23 @@ def convert_to_txt(result_dict: Dict) -> str:
         ncic = safe_get(data, "ncic", "")
         if ncic:
             lines.append(f"NCIC:               {ncic}")
-        
+
+        was_captured = safe_get(data, "was_captured", "")
+        if was_captured is not None and was_captured != "":
+            lines.append(f"CAPTURED:           {'Yes' if was_captured else 'No'}")
+
+        first_seen = safe_get(data, "first_seen_date", "")
+        if first_seen:
+            lines.append(f"FIRST SEEN:         {first_seen}")
+
+        last_seen = safe_get(data, "last_seen_date", "")
+        if last_seen:
+            lines.append(f"LAST SEEN:          {last_seen}")
+
+        poster_url = safe_get(data, "poster_url", "")
+        if poster_url:
+            lines.append(f"POSTER URL:         {poster_url}")
+
         lines.append("")
     
     # Footer
@@ -585,8 +641,26 @@ def convert_to_xml(result_dict: Dict) -> str:
         data = item.get("data", {})
         data_type = item.get("data_type", "raw")
         
-        lines.append(f'    <WantedPerson sequence="{idx}" dataType="{data_type}">')
-        
+        # Version context attributes (populated on history-flattened records)
+        version_num = safe_get(data, "_version_number", "")
+        change_type = safe_get(data, "_change_type", "")
+        valid_from  = safe_get(data, "_valid_from", "")
+        valid_to    = safe_get(data, "_valid_to", "")
+        version_attrs = ""
+        if version_num or change_type:
+            version_attrs = (
+                f' versionNumber="{escape_xml(str(version_num))}"'
+                f' changeType="{escape_xml(str(change_type))}"'
+                f' validFrom="{escape_xml(str(valid_from))}"'
+                f' validTo="{escape_xml(str(valid_to))}"'
+            )
+        lines.append(f'    <WantedPerson sequence="{idx}" dataType="{data_type}"{version_attrs}>')
+
+        # Identity
+        uid = safe_get(data, "uid", "")
+        if uid:
+            lines.append(f"      <UID>{escape_xml(uid)}</UID>")
+
         # Name
         title = safe_get(data, "title", "")
         if title:
@@ -772,7 +846,27 @@ def convert_to_xml(result_dict: Dict) -> str:
         pathid = safe_get(data, "pathid", "")
         if pathid:
             lines.append(f"      <PathId>{escape_xml(pathid)}</PathId>")
-        
+
+        source = safe_get(data, "source", "")
+        if source:
+            lines.append(f"      <Source>{escape_xml(source)}</Source>")
+
+        poster_url = safe_get(data, "poster_url", "")
+        if poster_url:
+            lines.append(f"      <PosterUrl>{escape_xml(poster_url)}</PosterUrl>")
+
+        was_captured = safe_get(data, "was_captured", "")
+        if was_captured is not None and was_captured != "":
+            lines.append(f"      <WasCaptured>{'true' if was_captured else 'false'}</WasCaptured>")
+
+        first_seen = safe_get(data, "first_seen_date", "")
+        if first_seen:
+            lines.append(f"      <FirstSeenDate>{escape_xml(str(first_seen))}</FirstSeenDate>")
+
+        last_seen = safe_get(data, "last_seen_date", "")
+        if last_seen:
+            lines.append(f"      <LastSeenDate>{escape_xml(str(last_seen))}</LastSeenDate>")
+
         lines.append("    </WantedPerson>")
     
     lines.append("  </WantedPersons>")
@@ -832,7 +926,10 @@ def convert_to_parquet(result_dict: Dict) -> bytes:
         'caution', 'warning_message', 'description', 'details', 'remarks',
         'reward_min', 'reward_max', 'reward_text', 'status', 'ncic',
         'modified', 'publication', 'url', 'path', 'pathid',
-        'person_classification', 'poster_classification'
+        'person_classification', 'poster_classification',
+        'source', 'was_captured', 'poster_url',
+        'first_seen_date', 'last_seen_date',
+        '_version_number', '_change_type', '_valid_from', '_valid_to'
     ]
     
     # Array fields (list types)
@@ -912,7 +1009,22 @@ def convert_to_parquet(result_dict: Dict) -> bytes:
         ('path', pa.string()),
         ('pathid', pa.string()),
         ('images', pa.list_(pa.string())),
-        ('files', pa.list_(pa.string()))
+        ('files', pa.list_(pa.string())),
+
+        # Source and status
+        ('source', pa.string()),
+        ('was_captured', pa.string()),
+        ('poster_url', pa.string()),
+
+        # Visibility dates
+        ('first_seen_date', pa.string()),
+        ('last_seen_date', pa.string()),
+
+        # Version context (populated on history responses, empty otherwise)
+        ('_version_number', pa.string()),
+        ('_change_type', pa.string()),
+        ('_valid_from', pa.string()),
+        ('_valid_to', pa.string())
     ])
     
     if not results:
