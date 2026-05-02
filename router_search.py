@@ -3050,29 +3050,9 @@ async def get_native_american(
     tags=[TAG_SEARCH],
     summary="Retrieve one or more individuals by UID",
     description="""
-    Retrieve current records for one or more FBI wanted persons by their unique identifier (UID).
-
-    **Access:** PREMIUM subscription required
-
-    **Parameters:**
-    - `ids` - Required. One or more UIDs, comma-separated (e.g. `abc123` or `abc123,def456`)
-    - `include_history` - Optional. When `true`, returns all historical versions of each record ordered from most recent to oldest. Defaults to `false`.
-    - `format` - Optional. Response format. PREMIUM users may request `json`, `csv`, `txt`, or `xml`.
-
-    **Behavior:**
-    - When `include_history` is `false`, only the current active record for each UID is returned.
-    - When `include_history` is `true`, all versioned records for each UID are returned, including superseded and inactive versions.
-      Each item in the response includes a `history` array of version objects with `version_number`, `change_type`, `valid_from`, `valid_to`, and `data`.
-    - UIDs that are not found are reported in a `not_found` list in the response.
-    - Up to 50 UIDs may be requested per call.
-
-    **Example (single record):**
-    `/v1/search/record?ids=abc123`
-
-    **Example (multiple records with history):**
-    `/v1/search/record?ids=abc123,def456&include_history=true`
+    Retrieve current records for one or more FBI wanted persons by their unique identifier (UID). Add parameter include_history = true to return all versioned records for each UID are returned, including superseded and inactive versions.
     """,
-    response_description="Current or historical records for the requested UIDs"
+    response_description="Current and optional historical records for the requested UIDs"
 )
 @limiter.limit(rate_max)
 @track_search_analytics
