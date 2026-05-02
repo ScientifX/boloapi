@@ -71,8 +71,10 @@ DOCS_VISIBILITY_CONFIG = {
     ("POST", "/v1/etl/full_refresh_merge"): UserRole.ADMIN,
     ("GET", "/v1/etl/metadata_merge"): UserRole.ADMIN,
     
-    # Search root - admin visibility
+    # Search root and admin-only document archive endpoints
     ("GET", "/v1/search/"): UserRole.ADMIN,
+    ("GET", "/v1/search/documents_info"): UserRole.ADMIN,
+    ("GET", "/v1/search/documents_download"): UserRole.ADMIN,
     
     # ----- Basic visibility (BASIC and above see these) -----
     ("POST", "/v1/search/simple"): UserRole.BASIC,

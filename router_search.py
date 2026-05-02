@@ -3347,7 +3347,7 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
     }
 
 # =============================================================================
-# PREMIUM ANNUAL SUBSCRIBER ENDPOINTS - DOCUMENTS ARCHIVE
+# ADMIN-ONLY ENDPOINTS - DOCUMENTS ARCHIVE
 # =============================================================================
 
 @router.get(
@@ -3357,7 +3357,7 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
     description="""
     Get information about the available BOLO documents archive.
     
-    **Access:** PREMIUM subscription with annual billing cycle
+    **Access:** ADMIN only
     
     Returns archive availability, file size, and generation timestamp.
     """
@@ -3365,30 +3365,18 @@ async def root(current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))):
 @limiter.limit(rate_max)
 async def get_documents_info(
     request: Request,
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
     Get information about the current documents archive.
     
-    **Access:** PREMIUM subscription with annual billing cycle
+    **Access:** ADMIN only
     
     Returns:
     - Archive availability
     - File size
     - Generation timestamp
     """
-    current_role = current_user["role"]
-    billing_cycle = current_user.get("billing_cycle")
-    
-    # Check access: ADMIN always allowed, PREMIUM must have annual billing
-    if current_role != UserRole.ADMIN:
-        if not BETA_MODE and billing_cycle != "annual":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Documents archive is only available to annual subscribers. "
-                       "Upgrade to an annual plan to access this feature."
-            )
-    
     try:
         info = get_archive_info()
         
@@ -3422,7 +3410,7 @@ async def get_documents_info(
     description="""
     Download the complete BOLO documents archive (ZIP file).
     
-    **Access:** PREMIUM subscription with annual billing cycle
+    **Access:** ADMIN only
     
     The archive contains:
     - Per-person folders with meaningful names
@@ -3439,7 +3427,7 @@ async def get_documents_info(
             "content": {"application/zip": {}}
         },
         403: {
-            "description": "Access denied - annual subscription required"
+            "description": "Access denied - ADMIN only"
         },
         404: {
             "description": "Archive not available"
@@ -3449,32 +3437,19 @@ async def get_documents_info(
 @limiter.limit("3/hour")  # More restrictive limit for large file downloads
 async def download_documents_archive(
     request: Request,
-    current_user: dict = Depends(require_jwt_role(UserRole.PREMIUM))
+    current_user: dict = Depends(require_jwt_role(UserRole.ADMIN))
     ):
     """
     Download the complete BOLO documents archive.
     
-    **Access:** PREMIUM subscription with annual billing cycle
+    **Access:** ADMIN only
     
     Returns the bolodoc_files.zip archive containing all BOLO documents
     organized by person with info.txt summaries and a root manifest.
     
     This is a large file download. Rate limited to 3 downloads per hour.
     """
-    current_role = current_user["role"]
-    billing_cycle = current_user.get("billing_cycle")
     user_id = current_user.get("user_id")
-    
-    # Check access: ADMIN always allowed, PREMIUM must have annual billing
-    if current_role != UserRole.ADMIN:
-        if not BETA_MODE and billing_cycle != "annual":
-            logger.warning(f"User {user_id} attempted archive download without annual subscription")
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Documents archive download is only available to annual subscribers. "
-                       "Your current billing cycle is: " + (billing_cycle or "none") + ". "
-                       "Upgrade to an annual plan to access this feature."
-            )
     
     try:
         archive_path = get_archive_file_path()
