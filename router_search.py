@@ -1018,7 +1018,7 @@ async def simple_search(
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
-                    SELECT {data_field}
+                    SELECT {data_field}, poster_url
                     FROM vw_bolo_full
                     WHERE {where_clause}
                     LIMIT %s
@@ -1033,10 +1033,14 @@ async def simple_search(
         data_type = "clean" if data_field == "full_data_clean" else "raw"
         
         for row in results:
-            item_data = row[data_field]
+            item_data = dict(row[data_field]) if row[data_field] else {}
+            poster_url = row.get("poster_url")
+            if poster_url:
+                item_data["poster_url"] = poster_url
             items.append({
                 "data_type": data_type,
-                "data": item_data
+                "data": item_data,
+                "poster_url": poster_url
             })
             
         result_dict = {
@@ -1116,7 +1120,7 @@ async def advanced_search(
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 query = f"""
-                    SELECT {data_field}
+                    SELECT {data_field}, poster_url
                     FROM vw_bolo_full
                     WHERE {where_clause}
                     LIMIT %s
@@ -1133,10 +1137,14 @@ async def advanced_search(
         data_type = "clean" if data_field == "full_data_clean" else "raw"
         
         for row in results:
-            item_data = row[data_field]
+            item_data = dict(row[data_field]) if row[data_field] else {}
+            poster_url = row.get("poster_url")
+            if poster_url:
+                item_data["poster_url"] = poster_url
             items.append({
                 "data_type": data_type,
-                "data": item_data
+                "data": item_data,
+                "poster_url": poster_url
             })
         
         # Construct response payload

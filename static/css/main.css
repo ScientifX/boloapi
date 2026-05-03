@@ -1173,3 +1173,19 @@ tr.dt-row-expanded > td {
     color:      var(--text-muted);
     font-style: italic;
 }
+
+/* Photo thumbnail */
+.insights-poster {
+    display:       block;
+    max-height:    40px;
+    max-width:     36px;
+    object-fit:    cover;
+    border-radius: 3px;
+    margin:        0 auto;
+}
+
+/* Placeholder SVG when poster_url is absent */
+.insights-poster-placeholder {
+    display: block;
+    margin:  0 auto;
+}

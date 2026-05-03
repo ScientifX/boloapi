@@ -738,19 +738,27 @@ function buildTable(items) {
     const container = document.querySelector('.insights-table-container');
     container.innerHTML = '<table id="insightsTable" class="display"><thead></thead><tbody></tbody></table>';
 
+    const POSTER_PLACEHOLDER =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44" class="insights-poster-placeholder">' +
+            '<rect width="36" height="44" rx="3" fill="#eef0f4"/>' +
+            '<circle cx="18" cy="15" r="7" fill="#c5c9d6"/>' +
+            '<path d="M3 42 Q3 27 18 27 Q33 27 33 42Z" fill="#c5c9d6"/>' +
+        '</svg>';
+
     const cols = [
         { title: '',             key: '_expand'      },  // 0 - toggle, no header
-        { title: 'Name',         key: 'title'        },  // 1
-        { title: 'Category',     key: 'subjects'     },  // 2
-        { title: 'Sex',          key: 'sex'          },  // 3
-        { title: 'Race',         key: 'race'         },  // 4
-        { title: 'Age Min',      key: 'age_min'      },  // 5
-        { title: 'Age Max',      key: 'age_max'      },  // 6
-        { title: 'Reward Min',   key: 'reward_min'   },  // 7
-        { title: 'Reward Max',   key: 'reward_max'   },  // 8
-        { title: 'Field Offices',key: 'field_offices'},  // 9
-        { title: 'Published',    key: 'publication'  },  // 10
-        { title: 'Modified',     key: 'modified'     },  // 11
+        { title: 'Photo',        key: 'poster_url'   },  // 1
+        { title: 'Name',         key: 'title'        },  // 2
+        { title: 'Category',     key: 'subjects'     },  // 3
+        { title: 'Sex',          key: 'sex'          },  // 4
+        { title: 'Race',         key: 'race'         },  // 5
+        { title: 'Age Min',      key: 'age_min'      },  // 6
+        { title: 'Age Max',      key: 'age_max'      },  // 7
+        { title: 'Reward Min',   key: 'reward_min'   },  // 8
+        { title: 'Reward Max',   key: 'reward_max'   },  // 9
+        { title: 'Field Offices',key: 'field_offices'},  // 10
+        { title: 'Published',    key: 'publication'  },  // 11
+        { title: 'Modified',     key: 'modified'     },  // 12
     ];
 
     if (IS_PREMIUM) {
@@ -770,6 +778,9 @@ function buildTable(items) {
         const d = (item && item.data) ? item.data : (item || {});
         const cell = {
             _expand:      '+',
+            poster_url:   item.poster_url
+                            ? `<img class="insights-poster" src="${item.poster_url}" alt="">`
+                            : POSTER_PLACEHOLDER,
             title:        d.url
                             ? `<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.title || ''}</a>`
                             : (d.title || ''),
@@ -796,7 +807,7 @@ function buildTable(items) {
         data:         tableData,
         columns:      cols.map(c => ({ title: c.title })),
         pageLength:   10,
-        order:        [[10, 'desc']],
+        order:        [[11, 'desc']],
         autoWidth:    false,
         scrollX:      true,
         createdRow:   function(row, data, dataIndex) {
@@ -804,9 +815,10 @@ function buildTable(items) {
         },
         columnDefs:   [
             { targets: 0,  orderable: false, width: '28px',  className: 'dt-expand-cell' },
-            { targets: 1,  width: '200px',   render: function(d) { return d; } },
-            { targets: 9,  width: '180px',   className: 'dt-nowrap' },
-            { targets: [3, 4, 5, 6, 7, 8, 10, 11], className: 'dt-nowrap' },
+            { targets: 1,  orderable: false, width: '50px',  className: 'dt-center' },
+            { targets: 2,  width: '200px',   render: function(d) { return d; } },
+            { targets: 10, width: '180px',   className: 'dt-nowrap' },
+            { targets: [4, 5, 6, 7, 8, 9, 11, 12], className: 'dt-nowrap' },
             { targets: '_all', render: function(d) { return d; } }
         ]
     });
