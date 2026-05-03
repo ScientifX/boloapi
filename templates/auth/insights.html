@@ -593,8 +593,11 @@ function renderCards(category) {
             ? `<span class="insights-tier-badge${IS_PREMIUM ? ' insights-tier-unlocked' : ''}">${IS_PREMIUM ? 'PREMIUM' : 'PREMIUM'}</span>`
             : '';
 
+        const COPY_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+
         const footer = accessible
-            ? `<button class="insights-run-btn" id="btn-${q.id}" onclick="runQuery('${q.id}')">Run Query</button>`
+            ? `<button class="insights-run-btn" id="btn-${q.id}" onclick="runQuery('${q.id}')">Run Query</button>
+               <button class="insights-copy-btn" id="copy-${q.id}" title="Copy REST call to clipboard" onclick="copyRestCall('${q.id}', this)">${COPY_ICON}<span class="insights-copy-label">Copy</span></button>`
             : `<div class="insights-locked-notice">Upgrade to Premium to run this query</div>`;
 
         card.innerHTML = `
@@ -608,6 +611,50 @@ function renderCards(category) {
 
         grid.appendChild(card);
     });
+}
+
+// ============================================================
+// COPY REST CALL
+// ============================================================
+function copyRestCall(queryId, btn) {
+    const query = SAVED_QUERIES.find(q => q.id === queryId);
+    if (!query) return;
+
+    const body   = resolveDates(query.request);
+    body.limit   = Math.min(body.limit, MAX_LIMIT);
+    const origin = window.location.origin;
+    const text   = `curl -X POST "${origin}/v1/search/advanced" \\\n` +
+                   `  -H "Authorization: Bearer <your_token>" \\\n` +
+                   `  -H "Content-Type: application/json" \\\n` +
+                   `  -d '${JSON.stringify(body, null, 2)}'`;
+
+    const label  = btn.querySelector('.insights-copy-label');
+
+    function showCopied() {
+        btn.classList.add('insights-copy-btn--copied');
+        label.textContent = 'Copied';
+        setTimeout(() => {
+            btn.classList.remove('insights-copy-btn--copied');
+            label.textContent = 'Copy';
+        }, 2000);
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(() => fallback());
+    } else {
+        fallback();
+    }
+
+    function fallback() {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand('copy'); showCopied(); } catch (e) { /* silent */ }
+        document.body.removeChild(ta);
+    }
 }
 
 // ============================================================

@@ -914,6 +914,50 @@ pre code {
 .insights-card-footer {
     margin-top: auto;
     padding-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+/* Copy REST call button */
+.insights-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+    line-height: 1.4;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.insights-copy-btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.insights-copy-btn:hover svg {
+    stroke: #fff;
+}
+
+.insights-copy-btn--copied {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.insights-copy-btn--copied svg {
+    stroke: #fff;
 }
 
 /* Run Query button */
