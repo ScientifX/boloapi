@@ -1177,8 +1177,8 @@ tr.dt-row-expanded > td {
 /* Photo thumbnail */
 .insights-poster {
     display:       block;
-    max-height:    40px;
-    max-width:     36px;
+    max-height:    56px;
+    max-width:     50px;
     object-fit:    cover;
     border-radius: 3px;
     margin:        0 auto;

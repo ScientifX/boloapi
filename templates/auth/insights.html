@@ -745,6 +745,12 @@ function buildTable(items) {
             '<path d="M3 42 Q3 27 18 27 Q33 27 33 42Z" fill="#c5c9d6"/>' +
         '</svg>';
 
+    function getPosterThumbUrl(images) {
+        if (!Array.isArray(images) || images.length === 0) return null;
+        const img = images[0];
+        return img.thumb || img.large || img.original || null;
+    }
+
     const cols = [
         { title: '',             key: '_expand'      },  // 0 - toggle, no header
         { title: 'Photo',        key: 'poster_url'   },  // 1
@@ -778,9 +784,12 @@ function buildTable(items) {
         const d = (item && item.data) ? item.data : (item || {});
         const cell = {
             _expand:      '+',
-            poster_url:   item.poster_url
-                            ? `<img class="insights-poster" src="${item.poster_url}" alt="">`
-                            : POSTER_PLACEHOLDER,
+            poster_url:   (function() {
+                              const url = getPosterThumbUrl(d.images);
+                              return url
+                                  ? `<img class="insights-poster" src="${url}" alt="" referrerpolicy="no-referrer">`
+                                  : POSTER_PLACEHOLDER;
+                          })(),
             title:        d.url
                             ? `<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.title || ''}</a>`
                             : (d.title || ''),
