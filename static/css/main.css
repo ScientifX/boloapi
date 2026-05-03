@@ -744,12 +744,6 @@ pre code {
     border-color: #2a3148;
 }
 
-/* ============================================================================
-   BETA MODE PILL
-   Small inline badge rendered next to the logo in the header when the
-   application is running in beta mode. Sits within the existing header height.
-   ============================================================================ */
-
 .beta-pill {
     display: inline-block;
     background-color: rgba(255, 255, 255, 0.15);
@@ -763,4 +757,391 @@ pre code {
     line-height: 1.6;
     vertical-align: middle;
     white-space: nowrap;
+}
+
+/* Page header */
+.insights-page-header {
+    margin-bottom: 1.5rem;
+}
+
+.insights-page-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.4rem;
+}
+
+.insights-page-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 720px;
+}
+
+/* Tab bar */
+.insights-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+}
+
+.insights-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.insights-tab:hover {
+    color: var(--primary-color);
+}
+
+.insights-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.insights-tab-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.insights-tab-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 1px;
+}
+
+.insights-tab.active .insights-tab-sub {
+    color: var(--primary-color);
+    opacity: 0.7;
+}
+
+/* Card grid */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* Individual card */
+.insights-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.insights-card:hover {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-color: #c8cde0;
+}
+
+.insights-card-active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(61, 68, 97, 0.12);
+}
+
+.insights-card-locked {
+    opacity: 0.6;
+    background: var(--light-bg);
+}
+
+/* Card header row */
+.insights-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.insights-card-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text-color);
+    line-height: 1.35;
+    flex: 1;
+}
+
+/* Tier badge */
+.insights-tier-badge {
+    flex-shrink: 0;
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #f0f1f5;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 1px;
+}
+
+.insights-tier-badge.insights-tier-unlocked {
+    background: rgba(61, 68, 97, 0.08);
+    color: var(--primary-color);
+    border-color: rgba(61, 68, 97, 0.2);
+}
+
+/* Card description */
+.insights-card-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+}
+
+/* Card footer */
+.insights-card-footer {
+    margin-top: auto;
+    padding-top: 0.5rem;
+}
+
+/* Run Query button */
+.insights-run-btn {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.insights-run-btn:hover {
+    background: var(--primary-hover);
+}
+
+.insights-run-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Locked notice inside a locked card */
+.insights-locked-notice {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+    cursor: not-allowed;
+}
+
+/* Results panel */
+.insights-results-panel {
+    margin-top: 0.5rem;
+}
+
+/* Results summary bar */
+.insights-results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    background: var(--light-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.insights-results-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.insights-results-query-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.insights-results-count {
+    font-size: 0.88rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.insights-results-time {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* Download button group */
+.insights-download-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.insights-download-btn {
+    padding: 0.4rem 0.9rem;
+    background: #fff;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.insights-download-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* Table container */
+.insights-table-container {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+
+}
+
+/* DataTables overrides scoped to insights table */
+#insightsTable {
+
+}
+
+#insightsTable thead th {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-hover);
+    white-space: nowrap;
+}
+
+#insightsTable thead th:hover {
+    background: var(--primary-hover);
+    cursor: pointer;
+}
+
+#insightsTable tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.88rem;
+    vertical-align: top;
+}
+
+#insightsTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+#insightsTable.display tbody tr.odd  { background-color: #ffffff; }
+#insightsTable.display tbody tr.even { background-color: #fafbfc; }
+
+#insightsTable tbody td a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+}
+
+#insightsTable tbody td a:hover {
+    border-bottom-color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .insights-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .insights-tabs {
+        gap: 0;
+    }
+
+    .insights-tab {
+        padding: 0.6rem 1rem;
+    }
+
+    .insights-results-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .insights-download-group {
+        width: 100%;
+    }
+
+    .insights-download-btn {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .insights-table-container {
+        padding: 0.75rem;
+    }
+}
+
+/* FixedColumns integration
+   -------------------------
+   DataTables FixedColumns clones the frozen columns into a separate overlay.
+   These rules keep the clone visually consistent with the main table and add
+   a shadow separator between frozen and scrollable columns.
+*/
+
+/* Header no-wrap — applies to both main table and FixedColumns clone */
+.insights-table-container thead th,
+.dtfc-fixed-left         thead th {
+    white-space: nowrap;
+}
+
+/* Match frozen header background to main table header */
+.dtfc-fixed-left thead th {
+    background:   var(--primary-color) !important;
+    color:        #fff                 !important;
+    border-bottom: 2px solid var(--primary-hover) !important;
+}
+
+/* Frozen body cell backgrounds match stripe pattern */
+.dtfc-fixed-left table.dataTable tbody tr.odd  td { background-color: #ffffff; }
+.dtfc-fixed-left table.dataTable tbody tr.even td { background-color: #fafbfc; }
+.dtfc-fixed-left table.dataTable tbody tr:hover td { background-color: #f8f9fa; }
+
+/* Shadow separator on the right edge of the frozen columns */
+.dtfc-fixed-left {
+    border-right: 2px solid var(--border-color);
+    box-shadow:   3px 0 8px rgba(0,0,0,0.07);
+}
+
+/* Ensure the FixedColumns wrapper does not clip the shadow */
+.dataTables_scrollBody,
+.dataTables_scrollHead {
+    overflow-x: auto !important;
 }

@@ -18,6 +18,7 @@
                 {% endif %}
                 <a href="/quickstart" class="nav-item">QuickStart</a>
                 {% if user_authenticated %}
+                    <a href="/v1/auth/insights" class="nav-item">Insights</a>
                     {% if user_role == 'admin' %}
                         <a href="/v1/auth/site_analytics" class="nav-item">Analytics</a>
                     {% else %}

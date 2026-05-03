@@ -1,0 +1,944 @@
+{% extends "layouts/base_web.html" %}
+
+{% block title %}Insights - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="insights-page-header">
+        <h2>Insights</h2>
+        <p class="insights-page-subtitle">Pre-built queries that answer common analytical questions about the FBI wanted list. Click any card to run the search instantly.</p>
+    </div>
+
+    <!-- Category Tab Bar -->
+    <div class="insights-tabs" role="tablist">
+        <button class="insights-tab active" data-category="Descriptive"
+                onclick="switchTab(this, 'Descriptive')" role="tab" aria-selected="true">
+            <span class="insights-tab-label">Descriptive</span>
+            <span class="insights-tab-sub">What happened?</span>
+        </button>
+        <button class="insights-tab" data-category="Diagnostic"
+                onclick="switchTab(this, 'Diagnostic')" role="tab" aria-selected="false">
+            <span class="insights-tab-label">Diagnostic</span>
+            <span class="insights-tab-sub">Why did it happen?</span>
+        </button>
+        <button class="insights-tab" data-category="Predictive"
+                onclick="switchTab(this, 'Predictive')" role="tab" aria-selected="false">
+            <span class="insights-tab-label">Predictive</span>
+            <span class="insights-tab-sub">What will happen?</span>
+        </button>
+        <button class="insights-tab" data-category="Prescriptive"
+                onclick="switchTab(this, 'Prescriptive')" role="tab" aria-selected="false">
+            <span class="insights-tab-label">Prescriptive</span>
+            <span class="insights-tab-sub">What should we do?</span>
+        </button>
+    </div>
+
+    <!-- Query Card Grid (populated by JS) -->
+    <div id="insightsGrid" class="insights-grid"></div>
+
+    <!-- Error Banner -->
+    <div id="insightsError" class="alert alert-danger" style="display:none;"></div>
+
+    <!-- Results Panel (hidden until a query runs) -->
+    <div id="insightsResultsPanel" class="insights-results-panel" style="display:none;">
+
+        <div class="insights-results-bar">
+            <div class="insights-results-meta">
+                <span id="insightsResultsLabel" class="insights-results-query-label"></span>
+                <span id="insightsResultsCount" class="insights-results-count"></span>
+                <span id="insightsResultsTime" class="insights-results-time"></span>
+            </div>
+            <div id="insightsDownloadGroup" class="insights-download-group"></div>
+        </div>
+
+        <div class="insights-table-container">
+            <table id="insightsTable" class="display" style="width:100%">
+                <thead><tr id="insightsTableHead"></tr></thead>
+                <tbody id="insightsTableBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div><!-- .content -->
+
+<script>
+// ============================================================
+// CONTEXT FROM SERVER
+// ============================================================
+const USER_ROLE       = "{{ user_role }}";
+const MAX_LIMIT       = {{ max_limit }};
+const AVAIL_FORMATS   = {{ available_formats | tojson }};
+const IS_PREMIUM      = (USER_ROLE === 'premium' || USER_ROLE === 'admin');
+
+// ============================================================
+// SAVED QUERIES MANIFEST
+// ============================================================
+const SAVED_QUERIES = [
+
+    // ----------------------------------------------------------
+    // DESCRIPTIVE - What happened?
+    // ----------------------------------------------------------
+    {
+        id: "desc_ten_most_wanted",
+        category: "Descriptive",
+        label: "Current Ten Most Wanted",
+        description: "All active FBI Ten Most Wanted fugitives.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "poster_classification", operator: "equals", value: "Ten Most Wanted" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_million_dollar",
+        category: "Descriptive",
+        label: "Million-Dollar Reward Cases",
+        description: "Active cases where the maximum reward is at least $1,000,000.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "reward_max", operator: "gte", value: 1000000 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_any_reward",
+        category: "Descriptive",
+        label: "Cases With Any Reward Offered",
+        description: "All active cases where a reward has been posted.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "reward_min", operator: "gt", value: 0 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_terrorism",
+        category: "Descriptive",
+        label: "Terrorism Cases",
+        description: "All active cases with a terrorism subject designation.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects", operator: "contains", value: "Terrorism" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_cyber",
+        category: "Descriptive",
+        label: "Cyber Crime Cases",
+        description: "All active cases with a cyber crime subject designation.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects", operator: "contains", value: "Cyber" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_violent",
+        category: "Descriptive",
+        label: "Violent Crime Cases",
+        description: "Active cases involving murder, assault, or robbery subjects.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "subjects", operator: "contains", value: "Murder" },
+                { field: "subjects", operator: "contains", value: "Assault" },
+                { field: "subjects", operator: "contains", value: "Robbery" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_white_collar",
+        category: "Descriptive",
+        label: "White Collar Crime Cases",
+        description: "Active cases with a white collar crime subject designation.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects", operator: "contains", value: "White Collar Crime" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_female",
+        category: "Descriptive",
+        label: "Female Fugitives",
+        description: "All active cases where the subject is female.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "sex", operator: "equals", value: "Female" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_seniors",
+        category: "Descriptive",
+        label: "Fugitives Age 60 or Older",
+        description: "Active cases where the minimum estimated age is 60 or above.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "age_min", operator: "gte", value: 60 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_recent_90",
+        category: "Descriptive",
+        label: "Added in Last 90 Days",
+        description: "Cases published to the wanted list within the last 90 days.",
+        tier: "BASIC",
+        dynamic: { field: "groups[0].rules[0].value", token: "TODAY-90" },
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "publication", operator: "gte", value: "[TODAY-90]" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "desc_multilingual",
+        category: "Descriptive",
+        label: "Multilingual Subjects",
+        description: "Active cases where the subject speaks Spanish, Arabic, Russian, Mandarin, or Farsi.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "languages", operator: "contains", value: "Spanish" },
+                { field: "languages", operator: "contains", value: "Arabic" },
+                { field: "languages", operator: "contains", value: "Russian" },
+                { field: "languages", operator: "contains", value: "Mandarin" },
+                { field: "languages", operator: "contains", value: "Farsi" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+
+    // ----------------------------------------------------------
+    // DIAGNOSTIC - Why did it happen?
+    // ----------------------------------------------------------
+    {
+        id: "diag_high_reward_terrorism",
+        category: "Diagnostic",
+        label: "High-Reward Terrorism Cases",
+        description: "Terrorism cases with a reward of $500,000 or more. Explores the correlation between designation and resource commitment.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects",    operator: "contains", value: "Terrorism" },
+                { field: "reward_max",  operator: "gte",      value: 500000 }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "diag_white_collar_no_reward",
+        category: "Diagnostic",
+        label: "White Collar With No Reward",
+        description: "White collar crime cases where no reward has been posted. May indicate lower enforcement priority or difficulty of attribution.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects",    operator: "contains", value: "White Collar Crime" },
+                { field: "reward_max",  operator: "equals",   value: 0 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "diag_long_running",
+        category: "Diagnostic",
+        label: "Cases Open More Than 10 Years",
+        description: "Active cases published before 2016. Useful for identifying fugitives who have evaded capture for a decade or more.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "publication", operator: "lte", value: "2016-01-01" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "diag_most_wanted_no_reward",
+        category: "Diagnostic",
+        label: "Most Wanted With No Reward",
+        description: "Ten Most Wanted cases where no reward has been posted. An unusual combination that may reflect political or diplomatic sensitivity.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "poster_classification", operator: "equals", value: "Ten Most Wanted" },
+                { field: "reward_max",            operator: "equals", value: 0 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "diag_international",
+        category: "Diagnostic",
+        label: "Cases With International Flight Risk",
+        description: "Cases flagged for possible presence in Mexico, Russia, China, Iran, or Venezuela.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "possible_countries", operator: "equals", value: "MEX" },
+                { field: "possible_countries", operator: "equals", value: "RUS" },
+                { field: "possible_countries", operator: "equals", value: "CHN" },
+                { field: "possible_countries", operator: "equals", value: "IRN" },
+                { field: "possible_countries", operator: "equals", value: "VEN" }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "diag_cyber_since_2020",
+        category: "Diagnostic",
+        label: "Cyber Cases Added Since 2020",
+        description: "Examines the growth of cyber crime cases on the wanted list since 2020.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects",    operator: "contains", value: "Cyber" },
+                { field: "publication", operator: "gte",      value: "2020-01-01" }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "diag_kidnapping_spanish",
+        category: "Diagnostic",
+        label: "Kidnapping Cases - Spanish-Speaking Subjects",
+        description: "Kidnapping cases where the subject is known to speak Spanish. Useful for cross-border investigation analysis.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "subjects",   operator: "contains", value: "Kidnapping" },
+                { field: "languages",  operator: "contains", value: "Spanish" }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+
+    // ----------------------------------------------------------
+    // PREDICTIVE - What will happen?
+    // ----------------------------------------------------------
+    {
+        id: "pred_cold_cases",
+        category: "Predictive",
+        label: "Cold Cases (Open 15+ Years)",
+        description: "Active cases published before 2011. Statistically the least likely to be resolved without a new lead.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "publication", operator: "lte", value: "2011-01-01" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "pred_no_reward_long",
+        category: "Predictive",
+        label: "No Reward, Open 5+ Years",
+        description: "Cases with no reward open since before 2021. Low incentive and long duration suggest a lower resolution probability.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "reward_max",  operator: "equals", value: 0 },
+                { field: "publication", operator: "lte",    value: "2021-01-01" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "pred_new_this_year",
+        category: "Predictive",
+        label: "New Cases This Year",
+        description: "Cases published in the current calendar year. A proxy for current FBI enforcement activity volume.",
+        tier: "BASIC",
+        dynamic: { field: "groups[0].rules[0].value", token: "YEAR-START" },
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "publication", operator: "gte", value: "[YEAR-START]" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "pred_high_value_international",
+        category: "Predictive",
+        label: "High-Value International Fugitives",
+        description: "Cases with a $100,000+ reward and possible presence in Mexico, Russia, China, Iran, or Venezuela. These cases face the most complex resolution path.",
+        tier: "PREMIUM",
+        request: {
+            groups: [
+                { condition: "AND", rules: [
+                    { field: "reward_max", operator: "gte", value: 100000 }
+                ]},
+                { condition: "OR", rules: [
+                    { field: "possible_countries", operator: "equals", value: "MEX" },
+                    { field: "possible_countries", operator: "equals", value: "RUS" },
+                    { field: "possible_countries", operator: "equals", value: "CHN" },
+                    { field: "possible_countries", operator: "equals", value: "IRN" },
+                    { field: "possible_countries", operator: "equals", value: "VEN" }
+                ]}
+            ],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "pred_recently_modified",
+        category: "Predictive",
+        label: "Records Modified in Last 30 Days",
+        description: "Cases whose data was updated in the last 30 days. Active modification often indicates developing investigative activity.",
+        tier: "BASIC",
+        dynamic: { field: "groups[0].rules[0].value", token: "TODAY-30" },
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "modified", operator: "gte", value: "[TODAY-30]" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+
+    // ----------------------------------------------------------
+    // PRESCRIPTIVE - What should we do?
+    // ----------------------------------------------------------
+    {
+        id: "presc_high_reward_stale",
+        category: "Prescriptive",
+        label: "High-Reward, Long-Running Cases",
+        description: "Cases open more than 5 years with rewards of $100,000 or more. The combination of resource commitment and lack of resolution means these cases most benefit from new tips.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "reward_max",  operator: "gte", value: 100000 },
+                { field: "publication", operator: "lte", value: "2021-01-01" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "presc_most_wanted_with_reward",
+        category: "Prescriptive",
+        label: "Most Wanted With Active Reward",
+        description: "The highest-profile fugitives with a financial incentive for tips. The most immediately actionable subset of the entire list.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "AND", rules: [
+                { field: "poster_classification", operator: "equals", value: "Ten Most Wanted" },
+                { field: "reward_max",            operator: "gt",     value: 0 }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "presc_southwest",
+        category: "Prescriptive",
+        label: "Southwest US Focus (AZ, CA, NM, TX)",
+        description: "Active cases with possible states in the US Southwest. Useful for regional law enforcement coordination, journalism, or compliance teams.",
+        tier: "BASIC",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "possible_states", operator: "equals", value: "US-AZ" },
+                { field: "possible_states", operator: "equals", value: "US-CA" },
+                { field: "possible_states", operator: "equals", value: "US-NM" },
+                { field: "possible_states", operator: "equals", value: "US-TX" }
+            ]}],
+            group_logic: "AND", limit: 25
+        }
+    },
+    {
+        id: "presc_financial_compliance",
+        category: "Prescriptive",
+        label: "Financial Crime Cases for Compliance Review",
+        description: "White collar, fraud, and money laundering cases. Relevant for financial institutions conducting enhanced due diligence screening.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "subjects", operator: "contains", value: "White Collar Crime" },
+                { field: "subjects", operator: "contains", value: "Fraud" },
+                { field: "subjects", operator: "contains", value: "Money Laundering" }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "presc_organized_crime",
+        category: "Prescriptive",
+        label: "Organized Crime and Conspiracy Cases",
+        description: "Cases involving organized crime or conspiracy subjects. Useful for investigators and journalists tracking criminal networks.",
+        tier: "PREMIUM",
+        request: {
+            groups: [{ condition: "OR", rules: [
+                { field: "subjects", operator: "contains", value: "Organized Crime" },
+                { field: "subjects", operator: "contains", value: "Conspiracy" },
+                { field: "subjects", operator: "contains", value: "RICO" }
+            ]}],
+            group_logic: "AND", limit: 100
+        }
+    },
+    {
+        id: "presc_investigative_targets",
+        category: "Prescriptive",
+        label: "Terrorism With Recent List Activity",
+        description: "Terrorism cases added or modified since 2022. A focused shortlist for investigative journalists covering active domestic and international threats.",
+        tier: "PREMIUM",
+        request: {
+            groups: [
+                { condition: "AND", rules: [
+                    { field: "subjects", operator: "contains", value: "Terrorism" }
+                ]},
+                { condition: "OR", rules: [
+                    { field: "publication", operator: "gte", value: "2022-01-01" },
+                    { field: "modified",    operator: "gte", value: "2022-01-01" }
+                ]}
+            ],
+            group_logic: "AND", limit: 100
+        }
+    }
+
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let insightsDT      = null;
+let activeQueryId   = null;
+
+// ============================================================
+// DYNAMIC DATE RESOLUTION
+// ============================================================
+function resolveDates(requestObj) {
+    const now      = new Date();
+    const pad      = n => String(n).padStart(2, '0');
+    const isoDate  = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+    const minus90  = new Date(now); minus90.setDate(minus90.getDate() - 90);
+    const minus30  = new Date(now); minus30.setDate(minus30.getDate() - 30);
+    const yearStart = `${now.getFullYear()}-01-01`;
+
+    const tokens = {
+        "[TODAY-90]":   isoDate(minus90),
+        "[TODAY-30]":   isoDate(minus30),
+        "[YEAR-START]": yearStart
+    };
+
+    const clone = JSON.parse(JSON.stringify(requestObj));
+    for (const group of clone.groups || []) {
+        for (const rule of group.rules || []) {
+            if (typeof rule.value === 'string' && tokens[rule.value]) {
+                rule.value = tokens[rule.value];
+            }
+        }
+    }
+    return clone;
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(btn, category) {
+    document.querySelectorAll('.insights-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    renderCards(category);
+}
+
+// ============================================================
+// CARD RENDERING
+// ============================================================
+function renderCards(category) {
+    const grid    = document.getElementById('insightsGrid');
+    const queries = SAVED_QUERIES.filter(q => q.category === category);
+    grid.innerHTML = '';
+
+    queries.forEach(q => {
+        const accessible = (q.tier === 'BASIC') || IS_PREMIUM;
+        const isActive   = q.id === activeQueryId;
+
+        const card = document.createElement('div');
+        card.className = [
+            'insights-card',
+            isActive   ? 'insights-card-active'  : '',
+            !accessible ? 'insights-card-locked' : ''
+        ].filter(Boolean).join(' ');
+
+        const tierBadge = q.tier === 'PREMIUM'
+            ? `<span class="insights-tier-badge${IS_PREMIUM ? ' insights-tier-unlocked' : ''}">${IS_PREMIUM ? 'PREMIUM' : 'PREMIUM'}</span>`
+            : '';
+
+        const footer = accessible
+            ? `<button class="insights-run-btn" id="btn-${q.id}" onclick="runQuery('${q.id}')">Run Query</button>`
+            : `<div class="insights-locked-notice">Upgrade to Premium to run this query</div>`;
+
+        card.innerHTML = `
+            <div class="insights-card-header">
+                <span class="insights-card-title">${q.label}</span>
+                ${tierBadge}
+            </div>
+            <p class="insights-card-desc">${q.description}</p>
+            <div class="insights-card-footer">${footer}</div>
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+// ============================================================
+// RUN QUERY
+// ============================================================
+async function runQuery(queryId) {
+    const query  = SAVED_QUERIES.find(q => q.id === queryId);
+    if (!query) return;
+
+    const btn    = document.getElementById(`btn-${queryId}`);
+    const errDiv = document.getElementById('insightsError');
+    const panel  = document.getElementById('insightsResultsPanel');
+
+    errDiv.style.display = 'none';
+    if (btn) { btn.disabled = true; btn.textContent = 'Running...'; }
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/v1/auth/login?next=/v1/auth/insights';
+        return;
+    }
+
+    const body = resolveDates(query.request);
+    body.limit = Math.min(body.limit, MAX_LIMIT);
+
+    const t0 = Date.now();
+
+    try {
+        const resp = await fetch('/v1/search/advanced', {
+            method: 'POST',
+            headers: {
+                'Content-Type':  'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (resp.status === 401) {
+            window.location.href = '/v1/auth/login?next=/v1/auth/insights';
+            return;
+        }
+
+        if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            throw new Error(errData.detail || `Request failed (${resp.status})`);
+        }
+
+        const data    = await resp.json();
+        const elapsed = Date.now() - t0;
+
+        activeQueryId = queryId;
+
+        // Re-render cards so the active one is highlighted
+        const activeTab = document.querySelector('.insights-tab.active');
+        if (activeTab) renderCards(activeTab.dataset.category);
+
+        renderResults(data, query.label, elapsed);
+
+    } catch (err) {
+        errDiv.textContent  = `Error: ${err.message}`;
+        errDiv.style.display = 'block';
+        panel.style.display  = 'none';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Run Query'; }
+    }
+}
+
+// ============================================================
+// RENDER RESULTS
+// ============================================================
+function renderResults(data, queryLabel, elapsedMs) {
+    const panel  = document.getElementById('insightsResultsPanel');
+    const items  = data.items || [];
+    const count  = data.resultcount != null ? data.resultcount : items.length;
+
+    document.getElementById('insightsResultsLabel').textContent = queryLabel;
+    document.getElementById('insightsResultsCount').textContent =
+        `${count.toLocaleString()} record${count !== 1 ? 's' : ''}`;
+    document.getElementById('insightsResultsTime').textContent  = `${elapsedMs}ms`;
+
+    buildDownloadButtons();
+    buildTable(items);
+
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+function buildTable(items) {
+    if (insightsDT) {
+        insightsDT.destroy();
+        insightsDT = null;
+    }
+
+    const container = document.querySelector('.insights-table-container');
+    container.innerHTML = '<table id="insightsTable" class="display"><thead></thead><tbody></tbody></table>';
+
+    // Columns - Name and Subjects are indices 0 and 1 (frozen by FixedColumns).
+    // Order mirrors CSV_COLUMNS except those two are promoted to the front.
+    //
+    // Nowrap index map (0-based):
+    //   0  Name          4  Sex          5  Race
+    //   6  Age Min       7  Age Max      8  Height Min   9  Height Max
+    //  10  Weight       11  Hair        12  Eyes        13  Build
+    //  14  Complexion   16  Nationality 21  Reward Min  22  Reward Max
+    //  28  Poster Class 29  Person Class 30 Source      31  Status
+    //  32  Captured     33  NCIC        39  First Seen  40  Last Seen
+    //  41  Modified     42  Published   46  Path ID
+    const NOWRAP = [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16,
+                    21, 22, 28, 29, 30, 31, 32, 33, 39, 40, 41, 42, 46];
+
+    const cols = [
+        // === FROZEN ===
+        { title: 'Name',                key: 'title'                },  // 0
+        { title: 'Subjects',            key: 'subjects'             },  // 1
+        // Identity
+        { title: 'UID',                 key: 'uid'                  },  // 2
+        { title: 'Aliases',             key: 'aliases'              },  // 3
+        // Demographics
+        { title: 'Sex',                 key: 'sex'                  },  // 4
+        { title: 'Race',                key: 'race'                 },  // 5
+        { title: 'Age Min',             key: 'age_min'              },  // 6
+        { title: 'Age Max',             key: 'age_max'              },  // 7
+        { title: 'Height Min',          key: 'height_min'           },  // 8
+        { title: 'Height Max',          key: 'height_max'           },  // 9
+        { title: 'Weight',              key: 'weight'               },  // 10
+        { title: 'Hair',                key: 'hair'                 },  // 11
+        { title: 'Eyes',                key: 'eyes'                 },  // 12
+        { title: 'Build',               key: 'build'                },  // 13
+        { title: 'Complexion',          key: 'complexion'           },  // 14
+        { title: 'Scars / Marks',       key: 'scars_and_marks'      },  // 15
+        { title: 'Nationality',         key: 'nationality'          },  // 16
+        { title: 'Place of Birth',      key: 'place_of_birth'       },  // 17
+        { title: 'Languages',           key: 'languages'            },  // 18
+        // Narrative
+        { title: 'Caution',             key: 'caution'              },  // 19
+        { title: 'Warning',             key: 'warning_message'      },  // 20
+        { title: 'Reward Min',          key: 'reward_min'           },  // 21
+        { title: 'Reward Max',          key: 'reward_max'           },  // 22
+        { title: 'Reward Text',         key: 'reward_text'          },  // 23
+        { title: 'Description',         key: 'description'          },  // 24
+        { title: 'Details',             key: 'details'              },  // 25
+        { title: 'Remarks',             key: 'remarks'              },  // 26
+        // Classification
+        { title: 'Field Offices',       key: 'field_offices'        },  // 27
+        { title: 'Poster Class.',       key: 'poster_classification'},  // 28
+        { title: 'Person Class.',       key: 'person_classification'},  // 29
+        { title: 'Source',              key: 'source'               },  // 30
+        // Status
+        { title: 'Status',              key: 'status'               },  // 31
+        { title: 'Captured',            key: 'was_captured'         },  // 32
+        { title: 'NCIC',                key: 'ncic'                 },  // 33
+        // Additional identifiers
+        { title: 'DOBs Used',           key: 'dates_of_birth_used'  },  // 34
+        { title: 'Occupations',         key: 'occupations'          },  // 35
+        { title: 'Countries',           key: 'possible_countries'   },  // 36
+        { title: 'States',              key: 'possible_states'      },  // 37
+        { title: 'Locations',           key: 'locations'            },  // 38
+        // Dates
+        { title: 'First Seen',          key: 'first_seen_date'      },  // 39
+        { title: 'Last Seen',           key: 'last_seen_date'       },  // 40
+        { title: 'Modified',            key: 'modified'             },  // 41
+        { title: 'Published',           key: 'publication'          },  // 42
+        // Links
+        { title: 'URL',                 key: 'url'                  },  // 43
+        { title: 'Poster URL',          key: 'poster_url'           },  // 44
+        { title: 'Path',                key: 'path'                 },  // 45
+        { title: 'Path ID',             key: 'pathid'               },  // 46
+    ];
+
+    function arr(v)   { return Array.isArray(v) ? v.join(', ') : (v != null ? String(v) : ''); }
+    function dt(v)    { return v ? String(v).substring(0, 10) : ''; }
+    function money(v) { return (v != null && v !== '' && Number(v) > 0) ? '$' + Number(v).toLocaleString() : ''; }
+
+    const tableData = items.map(item => {
+        const d = (item && item.data) ? item.data : (item || {});
+        const cell = {
+            title:               d.url ? `<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.title || ''}</a>` : (d.title || ''),
+            subjects:            arr(d.subjects),
+            uid:                 d.uid                  || '',
+            aliases:             arr(d.aliases),
+            sex:                 d.sex                  || '',
+            race:                d.race                 || '',
+            age_min:             d.age_min              != null ? String(d.age_min)     : '',
+            age_max:             d.age_max              != null ? String(d.age_max)     : '',
+            height_min:          d.height_min           != null ? String(d.height_min)  : '',
+            height_max:          d.height_max           != null ? String(d.height_max)  : '',
+            weight:              d.weight               != null ? String(d.weight)      : '',
+            hair:                d.hair                 || '',
+            eyes:                d.eyes                 || '',
+            build:               d.build                || '',
+            complexion:          d.complexion           || '',
+            scars_and_marks:     d.scars_and_marks      || '',
+            nationality:         d.nationality          || '',
+            place_of_birth:      d.place_of_birth       || '',
+            languages:           arr(d.languages),
+            caution:             d.caution              || '',
+            warning_message:     d.warning_message      || '',
+            reward_min:          money(d.reward_min),
+            reward_max:          money(d.reward_max),
+            reward_text:         d.reward_text          || '',
+            description:         d.description          || '',
+            details:             d.details              || '',
+            remarks:             d.remarks              || '',
+            field_offices:       arr(d.field_offices),
+            poster_classification: d.poster_classification || '',
+            person_classification: d.person_classification || '',
+            source:              d.source               || '',
+            status:              d.status               || '',
+            was_captured:        dt(d.was_captured),
+            ncic:                d.ncic                 || '',
+            dates_of_birth_used: arr(d.dates_of_birth_used),
+            occupations:         arr(d.occupations),
+            possible_countries:  arr(d.possible_countries),
+            possible_states:     arr(d.possible_states),
+            locations:           arr(d.locations),
+            first_seen_date:     dt(d.first_seen_date),
+            last_seen_date:      dt(d.last_seen_date),
+            modified:            dt(d.modified),
+            publication:         dt(d.publication),
+            url:                 d.url                  || '',
+            poster_url:          d.poster_url           || '',
+            path:                d.path                 || '',
+            pathid:              d.pathid               || '',
+        };
+        return cols.map(c => cell[c.key] || '');
+    });
+
+    insightsDT = $('#insightsTable').DataTable({
+        data:         tableData,
+        columns:      cols.map(c => ({ title: c.title })),
+        pageLength:   25,
+        order:        [[42, 'desc']],   // Published
+        autoWidth:    false,
+        scrollX:      true,
+        fixedColumns: { left: 2 },
+        columnDefs:   [
+            // Render HTML in name column
+            { targets: 0, width: '200px', render: function(d) { return d; } },
+            // No-wrap for fixed-width data columns
+            { targets: NOWRAP, className: 'dt-nowrap' },
+            // Wider narrative columns
+            { targets: [19, 20, 24, 25, 26], width: '280px' },
+            // Pass-through HTML render for all
+            { targets: '_all', render: function(d) { return d; } }
+        ]
+    });
+}
+
+
+
+
+// ============================================================
+// DOWNLOAD
+// ============================================================
+function buildDownloadButtons() {
+    const container = document.getElementById('insightsDownloadGroup');
+    container.innerHTML = '';
+    AVAIL_FORMATS.forEach(fmt => {
+        const btn       = document.createElement('button');
+        btn.className   = 'insights-download-btn';
+        btn.textContent = `Download ${fmt.toUpperCase()}`;
+        btn.onclick     = () => downloadResults(fmt);
+        container.appendChild(btn);
+    });
+}
+
+async function downloadResults(format) {
+    if (!activeQueryId) return;
+    const query = SAVED_QUERIES.find(q => q.id === activeQueryId);
+    if (!query) return;
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/v1/auth/login?next=/v1/auth/insights';
+        return;
+    }
+
+    const errDiv = document.getElementById('insightsError');
+    errDiv.style.display = 'none';
+
+    const body  = resolveDates(query.request);
+    body.limit  = Math.min(body.limit, MAX_LIMIT);
+
+    try {
+        const resp = await fetch(`/v1/search/advanced?format=${format}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type':  'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (resp.status === 401) {
+            window.location.href = '/v1/auth/login?next=/v1/auth/insights';
+            return;
+        }
+
+        if (!resp.ok) throw new Error(`Download failed (${resp.status})`);
+
+        const blob = await resp.blob();
+        const now  = new Date();
+        const pad  = n => String(n).padStart(2, '0');
+        const ts   = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_` +
+                     `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+        const filename = `bolodoc_insights_${ts}.${format}`;
+
+        const url = URL.createObjectURL(blob);
+        const a   = document.createElement('a');
+        a.href     = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+    } catch (err) {
+        errDiv.textContent   = `Download error: ${err.message}`;
+        errDiv.style.display = 'block';
+    }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderCards('Descriptive');
+});
+</script>
+{% endblock %}
