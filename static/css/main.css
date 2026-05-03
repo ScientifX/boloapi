@@ -1109,39 +1109,67 @@ pre code {
     }
 }
 
-/* FixedColumns integration
-   -------------------------
-   DataTables FixedColumns clones the frozen columns into a separate overlay.
-   These rules keep the clone visually consistent with the main table and add
-   a shadow separator between frozen and scrollable columns.
-*/
+/* ============================================================================
+   INSIGHTS PAGE - EXPAND / COLLAPSE ROWS
+   ============================================================================ */
 
-/* Header no-wrap — applies to both main table and FixedColumns clone */
-.insights-table-container thead th,
-.dtfc-fixed-left         thead th {
-    white-space: nowrap;
+/* Expand toggle cell */
+.dt-expand-cell {
+    text-align:  center;
+    cursor:      pointer;
+    user-select: none;
+    font-weight: 700;
+    font-size:   1rem;
+    color:       var(--primary-color);
+    width:       28px !important;
+    min-width:   28px;
 }
 
-/* Match frozen header background to main table header */
-.dtfc-fixed-left thead th {
-    background:   var(--primary-color) !important;
-    color:        #fff                 !important;
-    border-bottom: 2px solid var(--primary-hover) !important;
+.dt-expand-cell:hover {
+    color: var(--primary-hover);
 }
 
-/* Frozen body cell backgrounds match stripe pattern */
-.dtfc-fixed-left table.dataTable tbody tr.odd  td { background-color: #ffffff; }
-.dtfc-fixed-left table.dataTable tbody tr.even td { background-color: #fafbfc; }
-.dtfc-fixed-left table.dataTable tbody tr:hover td { background-color: #f8f9fa; }
-
-/* Shadow separator on the right edge of the frozen columns */
-.dtfc-fixed-left {
-    border-right: 2px solid var(--border-color);
-    box-shadow:   3px 0 8px rgba(0,0,0,0.07);
+/* Highlight the parent row while its child is open */
+tr.dt-row-expanded > td {
+    background-color: #f0f2f8 !important;
 }
 
-/* Ensure the FixedColumns wrapper does not clip the shadow */
-.dataTables_scrollBody,
-.dataTables_scrollHead {
-    overflow-x: auto !important;
+/* Child row wrapper */
+.insights-child-row {
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    background: #f8f9fc;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Child detail table */
+.insights-child-table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 900px;
+    font-size: 0.88rem;
+}
+
+.insights-child-table th {
+    width:         120px;
+    padding:       5px 12px 5px 0;
+    font-weight:   600;
+    color:         var(--text-muted);
+    vertical-align: top;
+    white-space:   nowrap;
+    text-align:    left;
+}
+
+.insights-child-table td {
+    padding:        5px 0;
+    color:          var(--text-color);
+    line-height:    1.55;
+    vertical-align: top;
+    max-width:      520px;
+    white-space:    normal;
+    word-wrap:      break-word;
+}
+
+.insights-child-empty {
+    color:      var(--text-muted);
+    font-style: italic;
 }

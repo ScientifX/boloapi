@@ -4,10 +4,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -528,6 +526,7 @@ const SAVED_QUERIES = [
 // ============================================================
 let insightsDT      = null;
 let activeQueryId   = null;
+let cachedItems     = [];
 
 // ============================================================
 // DYNAMIC DATE RESOLUTION
@@ -699,7 +698,38 @@ function renderResults(data, queryLabel, elapsedMs) {
 // ============================================================
 // TABLE
 // ============================================================
+function buildChildRow(item) {
+    const d = (item && item.data) ? item.data : (item || {});
+    const arr = v => Array.isArray(v) ? v.join(', ') : (v || '');
+
+    let rows = '';
+
+    if (d.description) {
+        rows += `<tr><th>Description</th><td>${d.description}</td></tr>`;
+    }
+    if (IS_PREMIUM) {
+        if (d.caution)        rows += `<tr><th>Caution</th><td>${d.caution}</td></tr>`;
+        if (d.aliases && d.aliases.length) {
+            rows += `<tr><th>Aliases</th><td>${arr(d.aliases)}</td></tr>`;
+        }
+        if (d.languages && d.languages.length) {
+            rows += `<tr><th>Languages</th><td>${arr(d.languages)}</td></tr>`;
+        }
+        if (d.nationality)    rows += `<tr><th>Nationality</th><td>${d.nationality}</td></tr>`;
+        if (d.source)         rows += `<tr><th>Data Source</th><td>${d.source}</td></tr>`;
+        if (d.was_captured)   rows += `<tr><th>Captured</th><td>${String(d.was_captured).substring(0, 10)}</td></tr>`;
+    }
+
+    if (!rows) {
+        rows = '<tr><td colspan="2" class="insights-child-empty">No additional details available.</td></tr>';
+    }
+
+    return `<div class="insights-child-row"><table class="insights-child-table">${rows}</table></div>`;
+}
+
 function buildTable(items) {
+    cachedItems = items;
+
     if (insightsDT) {
         insightsDT.destroy();
         insightsDT = null;
@@ -708,164 +738,99 @@ function buildTable(items) {
     const container = document.querySelector('.insights-table-container');
     container.innerHTML = '<table id="insightsTable" class="display"><thead></thead><tbody></tbody></table>';
 
-    // Columns - Name and Subjects are indices 0 and 1 (frozen by FixedColumns).
-    // Order mirrors CSV_COLUMNS except those two are promoted to the front.
-    //
-    // Nowrap index map (0-based):
-    //   0  Name          4  Sex          5  Race
-    //   6  Age Min       7  Age Max      8  Height Min   9  Height Max
-    //  10  Weight       11  Hair        12  Eyes        13  Build
-    //  14  Complexion   16  Nationality 21  Reward Min  22  Reward Max
-    //  28  Poster Class 29  Person Class 30 Source      31  Status
-    //  32  Captured     33  NCIC        39  First Seen  40  Last Seen
-    //  41  Modified     42  Published   46  Path ID
-    const NOWRAP = [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16,
-                    21, 22, 28, 29, 30, 31, 32, 33, 39, 40, 41, 42, 46];
-
     const cols = [
-        // === FROZEN ===
-        { title: 'Name',                key: 'title'                },  // 0
-        { title: 'Subjects',            key: 'subjects'             },  // 1
-        // Identity
-        { title: 'UID',                 key: 'uid'                  },  // 2
-        { title: 'Aliases',             key: 'aliases'              },  // 3
-        // Demographics
-        { title: 'Sex',                 key: 'sex'                  },  // 4
-        { title: 'Race',                key: 'race'                 },  // 5
-        { title: 'Age Min',             key: 'age_min'              },  // 6
-        { title: 'Age Max',             key: 'age_max'              },  // 7
-        { title: 'Height Min',          key: 'height_min'           },  // 8
-        { title: 'Height Max',          key: 'height_max'           },  // 9
-        { title: 'Weight',              key: 'weight'               },  // 10
-        { title: 'Hair',                key: 'hair'                 },  // 11
-        { title: 'Eyes',                key: 'eyes'                 },  // 12
-        { title: 'Build',               key: 'build'                },  // 13
-        { title: 'Complexion',          key: 'complexion'           },  // 14
-        { title: 'Scars / Marks',       key: 'scars_and_marks'      },  // 15
-        { title: 'Nationality',         key: 'nationality'          },  // 16
-        { title: 'Place of Birth',      key: 'place_of_birth'       },  // 17
-        { title: 'Languages',           key: 'languages'            },  // 18
-        // Narrative
-        { title: 'Caution',             key: 'caution'              },  // 19
-        { title: 'Warning',             key: 'warning_message'      },  // 20
-        { title: 'Reward Min',          key: 'reward_min'           },  // 21
-        { title: 'Reward Max',          key: 'reward_max'           },  // 22
-        { title: 'Reward Text',         key: 'reward_text'          },  // 23
-        { title: 'Description',         key: 'description'          },  // 24
-        { title: 'Details',             key: 'details'              },  // 25
-        { title: 'Remarks',             key: 'remarks'              },  // 26
-        // Classification
-        { title: 'Field Offices',       key: 'field_offices'        },  // 27
-        { title: 'Poster Class.',       key: 'poster_classification'},  // 28
-        { title: 'Person Class.',       key: 'person_classification'},  // 29
-        { title: 'Source',              key: 'source'               },  // 30
-        // Status
-        { title: 'Status',              key: 'status'               },  // 31
-        { title: 'Captured',            key: 'was_captured'         },  // 32
-        { title: 'NCIC',                key: 'ncic'                 },  // 33
-        // Additional identifiers
-        { title: 'DOBs Used',           key: 'dates_of_birth_used'  },  // 34
-        { title: 'Occupations',         key: 'occupations'          },  // 35
-        { title: 'Countries',           key: 'possible_countries'   },  // 36
-        { title: 'States',              key: 'possible_states'      },  // 37
-        { title: 'Locations',           key: 'locations'            },  // 38
-        // Dates
-        { title: 'First Seen',          key: 'first_seen_date'      },  // 39
-        { title: 'Last Seen',           key: 'last_seen_date'       },  // 40
-        { title: 'Modified',            key: 'modified'             },  // 41
-        { title: 'Published',           key: 'publication'          },  // 42
-        // Links
-        { title: 'URL',                 key: 'url'                  },  // 43
-        { title: 'Poster URL',          key: 'poster_url'           },  // 44
-        { title: 'Path',                key: 'path'                 },  // 45
-        { title: 'Path ID',             key: 'pathid'               },  // 46
+        { title: '',             key: '_expand'      },  // 0 - toggle, no header
+        { title: 'Name',         key: 'title'        },  // 1
+        { title: 'Category',     key: 'subjects'     },  // 2
+        { title: 'Sex',          key: 'sex'          },  // 3
+        { title: 'Race',         key: 'race'         },  // 4
+        { title: 'Age Min',      key: 'age_min'      },  // 5
+        { title: 'Age Max',      key: 'age_max'      },  // 6
+        { title: 'Reward Min',   key: 'reward_min'   },  // 7
+        { title: 'Reward Max',   key: 'reward_max'   },  // 8
+        { title: 'Field Offices',key: 'field_offices'},  // 9
+        { title: 'Published',    key: 'publication'  },  // 10
+        { title: 'Modified',     key: 'modified'     },  // 11
     ];
+
+    if (IS_PREMIUM) {
+        cols.push({ title: 'Aliases',     key: 'aliases'       });  // 13
+        cols.push({ title: 'Languages',   key: 'languages'     });  // 14
+        cols.push({ title: 'Nationality', key: 'nationality'   });  // 15
+        cols.push({ title: 'Data Source', key: 'source'        });  // 16
+        cols.push({ title: 'Captured',    key: 'was_captured'  });  // 17
+    }
 
     function arr(v)   { return Array.isArray(v) ? v.join(', ') : (v != null ? String(v) : ''); }
     function dt(v)    { return v ? String(v).substring(0, 10) : ''; }
     function money(v) { return (v != null && v !== '' && Number(v) > 0) ? '$' + Number(v).toLocaleString() : ''; }
+    function trunc(v, n) { return v && v.length > n ? v.substring(0, n) + '...' : (v || ''); }
 
     const tableData = items.map(item => {
         const d = (item && item.data) ? item.data : (item || {});
         const cell = {
-            title:               d.url ? `<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.title || ''}</a>` : (d.title || ''),
-            subjects:            arr(d.subjects),
-            uid:                 d.uid                  || '',
-            aliases:             arr(d.aliases),
-            sex:                 d.sex                  || '',
-            race:                d.race                 || '',
-            age_min:             d.age_min              != null ? String(d.age_min)     : '',
-            age_max:             d.age_max              != null ? String(d.age_max)     : '',
-            height_min:          d.height_min           != null ? String(d.height_min)  : '',
-            height_max:          d.height_max           != null ? String(d.height_max)  : '',
-            weight:              d.weight               != null ? String(d.weight)      : '',
-            hair:                d.hair                 || '',
-            eyes:                d.eyes                 || '',
-            build:               d.build                || '',
-            complexion:          d.complexion           || '',
-            scars_and_marks:     d.scars_and_marks      || '',
-            nationality:         d.nationality          || '',
-            place_of_birth:      d.place_of_birth       || '',
-            languages:           arr(d.languages),
-            caution:             d.caution              || '',
-            warning_message:     d.warning_message      || '',
-            reward_min:          money(d.reward_min),
-            reward_max:          money(d.reward_max),
-            reward_text:         d.reward_text          || '',
-            description:         d.description          || '',
-            details:             d.details              || '',
-            remarks:             d.remarks              || '',
-            field_offices:       arr(d.field_offices),
-            poster_classification: d.poster_classification || '',
-            person_classification: d.person_classification || '',
-            source:              d.source               || '',
-            status:              d.status               || '',
-            was_captured:        dt(d.was_captured),
-            ncic:                d.ncic                 || '',
-            dates_of_birth_used: arr(d.dates_of_birth_used),
-            occupations:         arr(d.occupations),
-            possible_countries:  arr(d.possible_countries),
-            possible_states:     arr(d.possible_states),
-            locations:           arr(d.locations),
-            first_seen_date:     dt(d.first_seen_date),
-            last_seen_date:      dt(d.last_seen_date),
-            modified:            dt(d.modified),
-            publication:         dt(d.publication),
-            url:                 d.url                  || '',
-            poster_url:          d.poster_url           || '',
-            path:                d.path                 || '',
-            pathid:              d.pathid               || '',
+            _expand:      '+',
+            title:        d.url
+                            ? `<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.title || ''}</a>`
+                            : (d.title || ''),
+            subjects:     arr(d.subjects),
+            sex:          d.sex          || '',
+            race:         d.race         || '',
+            age_min:      d.age_min      != null ? String(d.age_min) : '',
+            age_max:      d.age_max      != null ? String(d.age_max) : '',
+            reward_min:   money(d.reward_min),
+            reward_max:   money(d.reward_max),
+            field_offices: arr(d.field_offices),
+            publication:  dt(d.publication),
+            modified:     dt(d.modified),
+            aliases:      Array.isArray(d.aliases) ? String(d.aliases.length) : (d.aliases ? '1' : '0'),
+            languages:    arr(d.languages),
+            nationality:  d.nationality  || '',
+            source:       d.source       || '',
+            was_captured: dt(d.was_captured),
         };
-        return cols.map(c => cell[c.key] || '');
+        return cols.map(c => cell[c.key] || '--');
     });
 
     insightsDT = $('#insightsTable').DataTable({
         data:         tableData,
         columns:      cols.map(c => ({ title: c.title })),
-        pageLength:   25,
-        order:        [[42, 'desc']],   // Published
+        pageLength:   10,
+        order:        [[10, 'desc']],
         autoWidth:    false,
         scrollX:      true,
-        fixedColumns: { left: 2 },
+        createdRow:   function(row, data, dataIndex) {
+            $(row).attr('data-item-idx', dataIndex);
+        },
         columnDefs:   [
-            // Render HTML in name column
-            { targets: 0, width: '200px', render: function(d) { return d; } },
-            // No-wrap for fixed-width data columns
-            { targets: NOWRAP, className: 'dt-nowrap' },
-            // Wider narrative columns
-            { targets: [19, 20, 24, 25, 26], width: '280px' },
-            // Pass-through HTML render for all
+            { targets: 0,  orderable: false, width: '28px',  className: 'dt-expand-cell' },
+            { targets: 1,  width: '200px',   render: function(d) { return d; } },
+            { targets: 9,  width: '180px',   className: 'dt-nowrap' },
+            { targets: [3, 4, 5, 6, 7, 8, 10, 11], className: 'dt-nowrap' },
             { targets: '_all', render: function(d) { return d; } }
         ]
     });
+
+    // Expand / collapse click handler - re-bound each time table is built
+    $('#insightsTable tbody').off('click', 'td.dt-expand-cell').on('click', 'td.dt-expand-cell', function() {
+        const tr       = $(this).closest('tr');
+        const itemIdx  = parseInt(tr.attr('data-item-idx'));
+        const row      = insightsDT.row(tr);
+        const cell     = $(this);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass('dt-row-expanded');
+            cell.text('+');
+        } else {
+            const item = cachedItems[itemIdx];
+            row.child(buildChildRow(item)).show();
+            tr.addClass('dt-row-expanded');
+            cell.text('-');
+        }
+    });
 }
 
-
-
-
-// ============================================================
-// DOWNLOAD
-// ============================================================
 function buildDownloadButtons() {
     const container = document.getElementById('insightsDownloadGroup');
     container.innerHTML = '';
